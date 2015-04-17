@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FE23080F-F638-4721-B590-F0117881F522}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XBRLProcessor</RootNamespace>
+    <AssemblyName>XBRLProcessor</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="XbrlEngine.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Helpers\XmlNodeHandlers.cs" />
+    <Compile Include="Literals.cs" />
+    <Compile Include="Mapping\MappingDefinitions.cs" />
+    <Compile Include="Mapping\Mappings.cs" />
+    <Compile Include="Model\Base\Classes.cs" />
+    <Compile Include="Model\Base\Enums.cs" />
+    <Compile Include="Model\Base\Strings.cs" />
+    <Compile Include="Model\XbrlTable.cs" />
+    <Compile Include="Model\XbrlTaxonomy.cs" />
+    <Compile Include="Model\XbrlTaxonomyDocument.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Model\DefinitionModel\AspectNode.cs" />
+    <Compile Include="Model\DefinitionModel\BreakDown.cs" />
+    <Compile Include="Model\DefinitionModel\BreakdownTreeArc.cs" />
+    <Compile Include="Model\DefinitionModel\ClosedDefinitionNode.cs" />
+    <Compile Include="Model\DefinitionModel\ConceptRelationshipNode.cs" />
+    <Compile Include="Model\DefinitionModel\DefinitionArc.cs" />
+    <Compile Include="Model\DefinitionModel\DefinitionLink.cs" />
+    <Compile Include="Model\DefinitionModel\DefinitionNode.cs" />
+    <Compile Include="Model\DefinitionModel\DefinitionNodeSubTreeArc.cs" />
+    <Compile Include="Model\DefinitionModel\DimensionRelationshipNode.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\AbstractAspect.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\Concept.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\ExplicitDimension.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\Member.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\QName.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\RuleDimension.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\TypedDimension.cs" />
+    <Compile Include="Model\DefinitionModel\OpenDefinitionNode.cs" />
+    <Compile Include="Model\DefinitionModel\RelationshipNode.cs" />
+    <Compile Include="Model\DefinitionModel\RuleNode.cs" />
+    <Compile Include="Model\DefinitionModel\RuleSet.cs" />
+    <Compile Include="Model\DefinitionModel\Table.cs" />
+    <Compile Include="Model\DefinitionModel\TableBreakdownArc.cs" />
+    <Compile Include="Model\DefinitionModel\TableFilter.cs" />
+    <Compile Include="Model\DefinitionModel\TableParameter.cs" />
+    <Compile Include="Model\DefinitionModel\VariableFilter.cs" />
+    <Compile Include="Model\DefinitionModel\VariableParameter.cs" />
+    <Compile Include="Model\DimensionModel\ExplicitDimension.cs" />
+    <Compile Include="Model\DimensionModel\HyperCube.cs" />
+    <Compile Include="Model\DimensionModel\Member.cs" />
+    <Compile Include="Model\DimensionModel\PrimaryItem.cs" />
+    <Compile Include="Model\DimensionModel\TypedDimension.cs" />
+    <Compile Include="Model\StructuralModel\ClosedStructuralNode.cs" />
+    <Compile Include="Model\StructuralModel\OpenStructuralNode.cs" />
+    <Compile Include="Model\StructuralModel\StructuralNode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaseModel\BaseModel.csproj">
+      <Project>{0ca83cc9-6c53-4f5e-90a9-fa68ec0d5201}</Project>
+      <Name>BaseModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\LogicalModel.csproj">
+      <Project>{30b9a494-ce56-4cc0-b1a5-f62d71857d29}</Project>
+      <Name>LogicalModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{47d3d74b-af77-4ea9-81d0-4150e53753cb}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Model\DefinitionModel\Schema.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\DefinitionModel\Arcs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
