@@ -38,7 +38,16 @@ namespace Utilities
             }
             return "";
         }
-
+        public static string GetFolderName(string FilePath)
+        {
+            var folder = GetFolder(FilePath);
+            var foldername = folder.Trim('\\');
+            if (foldername.Contains("\\"))
+            {
+                foldername = foldername.Substring(foldername.LastIndexOf("\\") + 1);
+            }
+            return foldername;
+        }
         public static string GetFileName(string FilePath)
         {
             var filename = "";
@@ -63,6 +72,11 @@ namespace Utilities
         }
         public static string ResolveRelativePath(string referencePath, string relativePath)
         {
+            var hashix = relativePath.IndexOf("#");
+            if (hashix > -1)
+            {
+                relativePath = relativePath.Remove(hashix);
+            }
             Uri uri = new Uri(Path.Combine(referencePath, relativePath));
             var path = "";
             if (uri.Scheme != "http")
@@ -134,8 +148,10 @@ namespace Utilities
                 }
                 if (IsWebPath(sourcepath))
                 {
+
                     var content = Utilities.Web.readfromWeb(sourcepath);
                     System.IO.File.WriteAllText(localpath, content);
+
                 }
                 else
                 {

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Collections;
 
 namespace XBRLProcessor.Mapping
 {
@@ -70,7 +71,15 @@ namespace XBRLProcessor.Mapping
             return null;
         }
 
-        public static PropertyMapping<C, P> Map<C, P>(string XmlTag, Expression<Func<C, P>> PropertyAccessor) where C : class
+        public static PropertyMapping<C, P> PropertyMap<C, P>(string XmlTag, Expression<Func<C, P>> PropertyAccessor) where C : class
+        {
+            var pm = new PropertyMapping<C, P>(XmlTag, PropertyAccessor);
+            //pm.XmlSelector = XmlTag;
+            //pm.PropertyAccessor = PropertyAccessor;
+            return pm;
+        }
+
+        public static PropertyMapping<C> PropertyMapX<C, P>(string XmlTag, Expression<Func<C, P>> PropertyAccessor) where C : class
         {
             var pm = new PropertyMapping<C, P>(XmlTag, PropertyAccessor);
             //pm.XmlSelector = XmlTag;
@@ -98,6 +107,12 @@ namespace XBRLProcessor.Mapping
             return cm;
         }
 
+        public static ClassMapping<C> Map<C>(string XmlTag, params PropertyMapping<C>[] PropertyMappings) where C : class
+        {
+            var cm = new ClassMapping<C>(XmlTag, PropertyMappings.ToList());
+            return cm;
+        }
+
         public Mapping GetMapping(Type type) 
         {
             return MappingCollection.FirstOrDefault(i => i.ClassType == type);
@@ -122,9 +137,16 @@ namespace XBRLProcessor.Mapping
         public Mapping GetMapping(XmlNode node, Type ClassType) 
         {
             var identifier = "<" + node.Name + ">";
+            var localidentifier = "<" + node.LocalName + ">";
+
             if (ClassType == null)
             {
-                return MappingCollection.FirstOrDefault(i => i.XmlSelector == identifier);
+                var m = MappingCollection.FirstOrDefault(i => i.XmlSelector == identifier);
+                if (m == null) 
+                {
+                    m = MappingCollection.FirstOrDefault(i => i.XmlSelector == localidentifier);
+                }
+                return m;
             }
             else
             {
@@ -325,30 +347,44 @@ namespace XBRLProcessor.Mapping
         public override T Map<T>(IEnumerable<XmlNode> nodes, T instance)
         {
             var prop = (PropertyInfo)((MemberExpression)PropertyAccessor.Body).Member;
+            var IsComplexType = false;
+            var propertyTypeName = prop.PropertyType.Name;
+            if (prop.PropertyType.BaseType!= typeof(StringEnum)
+                && prop.PropertyType.IsClass && propertyTypeName != "String")
+            {
+                IsComplexType=true;
+            }
             object existingvalue = Getter(instance as TClass);
             var node = nodes.FirstOrDefault();
+
             LoadNameSpaces(node.OwnerDocument);
             Object value = null;
-            if (XmlSelector.StartsWith("<"))
+            var tagname = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
+ 
+            if (!String.IsNullOrEmpty(tagname) && IsComplexType)
             {
-                var tagname = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
 
-                //var tagnodes = Utilities.Xml.SelectNodes(node).Where(i => i.Name == tagname);
-                //foreach (XmlNode childnode in node.SelectNodes(tagname, manager))
-                foreach (XmlNode childnode in Utilities.Xml.SelectNodes(node,tagname))
-                //foreach (XmlNode childnode in tagnodes)
+                foreach (XmlNode childnode in Utilities.Xml.SelectChildNodes(node,tagname))
                 {
                     var mapping = Mappings.CurrentMapping.GetMapping(childnode, null);
-                    value = mapping.Map(childnode);
-                    if (this.EnumerableType != null)
+                    if (mapping != null)
                     {
+                        value = mapping.Map(childnode);
+                        if (this.EnumerableType != null)
+                        {
+                            var list = existingvalue as IList;
+                            list.Add(value);
+                            //prop.PropertyType.GetMethod("Add").Invoke(existingvalue, new[] { value });
+                        }
+                        else
+                        {
+                            Setter(instance as TClass, (PropertyType)value);
 
-                        prop.PropertyType.GetMethod("Add").Invoke(existingvalue, new[] { value });
+                        }
                     }
                     else 
                     {
-                        Setter(instance as TClass, (PropertyType)value);
-
+                        Console.WriteLine("Can't Find mapping for node " + childnode.Name);
                     }
                     value = null;
                 }
@@ -360,7 +396,7 @@ namespace XBRLProcessor.Mapping
                 if (attr != null)
                 {
                     value = attr.Value;
-                    if (prop.PropertyType.Name == "Int32")
+                    if (propertyTypeName == "Int32")
                     {
                         int intval;
                         if (int.TryParse(attr.Value, out intval))
@@ -370,14 +406,13 @@ namespace XBRLProcessor.Mapping
 
                     }
 
-                    //
-                    if (prop.PropertyType.FullName.StartsWith("XBRLProcessor.Model.StringEnums."))
+                    if (prop.PropertyType.BaseType==typeof(StringEnum))
                     {
                         value = StringEnum.Get(prop.PropertyType, attr.Value);
 
                     }
 
-                    if (prop.PropertyType.Name == "Boolean" || prop.PropertyType.Name == "bool")
+                    if (propertyTypeName == "Boolean" || propertyTypeName == "bool")
                     {
                         bool intval;
                         if (bool.TryParse(attr.Value, out intval))
@@ -386,7 +421,7 @@ namespace XBRLProcessor.Mapping
                         }
                     }
 
-                    if (prop.PropertyType.Name == "DateTime")
+                    if (propertyTypeName == "DateTime")
                     {
                         value = Utilities.Converters.StringToDateTime(attr.Value, "yyyy-MM-dd");
                     }
@@ -394,14 +429,25 @@ namespace XBRLProcessor.Mapping
                 }
                 else 
                 {
-                    if (node.ChildNodes.Count > 0)
+                    var stringval = "";
+                    if (!String.IsNullOrEmpty(tagname))
                     {
-                        var content = node.ChildNodes[0].Value;
-                        if (!string.IsNullOrEmpty(content))
+                        var propnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
+                        if (propnode != null)
                         {
-                            value = node.InnerText.Trim();
+                            stringval = Utilities.Xml.Content(propnode);
                         }
                     }
+                    else
+                    {
+                        stringval = Utilities.Xml.Content(node);
+
+                    }
+                    if (!string.IsNullOrEmpty(stringval) && propertyTypeName == "String") 
+                    {
+                        value = stringval;
+                    }
+
                 }
                 if (value != null)
                 {

@@ -76,12 +76,139 @@ namespace XBRLProcessor.Model.Base
         private string _RoleType= "";
         public string RoleType { get { return _RoleType; } set { _RoleType = value; } }
 
+        private string _Namespace = "";
+        public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
+
+        public override string ToString()
+        {
+            return String.Format("{0}", ID);
+        }
+
+        private LogicalModel.Base.Element _Element;
+        public LogicalModel.Base.Element Element { get { return _Element; } }
+
+        public static Func<string, LogicalModel.Base.Element> LocatorFunction = null;
+
+        public void Locate()
+        {
+            var key = String.Format("{0}:{1}", this.Namespace, this.ID);
+            if (LocatorFunction != null)
+            {
+                _Element = LocatorFunction(key);
+            }
+ 
+        }
+    }
+
+    /*
+         public class Locator : Link
+    {
+        private string _ID = "";
+        [JsonProperty]
+        public string ID
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_ID) && !String.IsNullOrEmpty(Href))
+                {
+                    var ix = Href.IndexOf("#");
+                    if (ix > -1)
+                    {
+                        _ID = Href.Substring(ix + 1);
+                    }
+                }
+                return _ID;
+            }
+            set { _ID = value; }
+        }
+
+
+        private string _LabelID = "";
+        public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
+        
+        private string _RoleType = "";
+        [JsonProperty]
+        public string RoleType
+        {
+            get { return _RoleType; } 
+            set { 
+                _RoleType = value; 
+            } 
+        }
+
+        private Element _Element;
+        public Element Element { get { return _Element;} }
+
+        public void Locate(Taxonomy tax) 
+        {
+            var key = String.Format("{0}:{1}", this.Namespace, this.ID);
+
+            if (tax.SchemaElementDictionary.ContainsKey(key)) 
+            {
+                _Element = tax.SchemaElementDictionary[key];
+
+                Type = String.Format("{0}<{1}>", Element.Type, Element.SubstitutionGroup);
+                _Value = String.Format("{0}:{1}", Element.Namespace, Element.Name);
+           
+            }
+        }
+
+        private string _Value = "";
+        [JsonProperty]
+        public string Value 
+        {
+            get 
+            {
+                if (String.IsNullOrEmpty(_Value)) 
+                {
+                    _Value = _ID;
+                }
+                return _Value;
+            }
+             set 
+            {
+                _Value = value;
+            }
+        }
+
+        private string _FullValue = "";
+        public string FullValue
+        {
+            get
+            {
+                return _FullValue;
+            }
+            set
+            {
+                _FullValue = value;
+            }
+        }
+
+
+        private string _Namespace = "";
+        [JsonProperty]
+        public string Namespace
+        {
+            get
+            {
+                return _Namespace;
+            }
+            set
+            {
+                _Namespace = value;
+            }
+        }
+
+        //public bool IsDomainItemType = false;
+
         public override string ToString()
         {
             return String.Format("{0}", ID);
         }
     }
-
+    
+     */
+    
     public class Element 
     {
         private string _ID = "";
@@ -101,15 +228,24 @@ namespace XBRLProcessor.Model.Base
 
         public Boolean Nullable { get; set; }
 
+        private Boolean _IsDefaultMember = false;
+        public Boolean IsDefaultMember { get { return _IsDefaultMember; } set { _IsDefaultMember = value; } }
+
         private string _Domain = "";
         public string Domain { get { return _Domain; } set { _Domain = value; } }
 
         private string _Hierarchy = "";
         public string Hierarchy { get { return _Hierarchy; } set { _Hierarchy = value; } }
 
+        private string _Namespace = "";
+        public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
+
         public DateTime FromDate { get; set; }
 
         public DateTime CreationDate { get; set; }
 
+        public string Key { get { return String.Format("{0}:{1}", this.Namespace, this.ID); } }
+
     }
+    
 }

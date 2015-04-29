@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 
 namespace Model.DefinitionModel.Formula
 {
-    [XmlRoot(ElementName = "formula:member")]
     public class Member
     {
         private QName _QName = new QName("");

@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XBRLProcessor.Model.Base;
+using XBRLProcessor.Model.DefinitionModel.Formula;
 
 namespace Model.DefinitionModel
 {
-    class AspectNode
+    public class AspectNode : Identifiable
     {
+
+        private DimensionAspect _DimensionAspect = null;
+        public DimensionAspect DimensionAspect { get { return _DimensionAspect; } set { _DimensionAspect = value; } }
     }
 }

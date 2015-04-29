@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,7 +10,11 @@ namespace LogicalModel
 {
     public class LayoutItem 
     {
+        private Table _Table = null;
         public int Order = 0;
+
+        private string _Axis = "";
+        public string Axis { get { return _Axis; } set { _Axis = value; } }
 
         private string _ID = "";
         public string ID { get { return _ID; } set { _ID = value; } }
@@ -17,21 +22,31 @@ namespace LogicalModel
         private string _LabelID = "";
         public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
 
-        //public LayoutItem Parent = null;
-        //public List<LayoutItem> Children = new List<LayoutItem>();
-    
+        private bool _IsAbstract = false;
+        public bool IsAbstract { get { return _IsAbstract; } set { _IsAbstract = value; } }
+
+        private bool _IsAspect = false;
+        public bool IsAspect { get { return _IsAspect; } set { _IsAspect = value; } }
+
         public Label Label = null;
-        
+
+        private String _LabelContent = "";
         public String LabelContent 
         {
             get 
             {
-                var strvalue = "";
-                if (Label != null) 
+                if (string.IsNullOrEmpty(_LabelContent))
                 {
-                    strvalue = Label.Content;
+                    if (Label != null)
+                    {
+                        _LabelContent = Label.Content;
+                    }
                 }
-                return strvalue;
+                return _LabelContent;
+            }
+            set 
+            {
+                _LabelContent = value;
             }
         }
         
@@ -47,8 +62,9 @@ namespace LogicalModel
                 return strvalue;
             }
         }
-        
-        public List<String> Dimensions = new List<String>();
+
+        private List<Dimension> _Dimensions = new List<Dimension>();
+        public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
         
         public String DimensionString 
         {
@@ -96,10 +112,61 @@ namespace LogicalModel
             set { _Factidentifier = value; }
         }
 
+        private string _FactString = "";
+        public string FactString
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_FactString))
+                {
+                    _FactString = "";
+                    if (!String.IsNullOrEmpty(Concept))
+                    {
+                        _FactString += Concept + ">";
+                    }
+                    if (!string.IsNullOrEmpty(DimensionString))
+                    {
+                        _FactString += DimensionString;
+
+                    }
+                }
+                return _FactString;
+            }
+            set 
+            {
+                _FactString = value;
+                var s = _FactString;
+                var cix = s.IndexOf(">");
+                if (cix > -1) 
+                {
+                    Concept = s.Remove(cix);
+                    s = s.Substring(cix + 1);
+                }
+                //Dimensions = s.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            }
+        }
+        
+        [JsonIgnore]
+        public Table Table 
+        {
+            get { return _Table; }
+            set { _Table = value; }
+        }
+
+
         public LayoutItem()
         {
         }
 
-        
+
+
+        public void LoadLabel(Taxonomy Taxonomy)
+        {
+            var folder = _Table.FolderName;
+            var key = Label.GetKey(folder, this.LabelID);
+            this.Label = Taxonomy.FindLabel(key);
+            //this.Label = Taxonomy.TaxonomyLabels.FirstOrDefault(i => i.LocalID == this.LabelID);
+
+        }
     }
 }

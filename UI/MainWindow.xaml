@@ -27,6 +27,7 @@
                     <TextBox Name="TB_TaxonomyPath"  Width="200"></TextBox>
                     <Button Name="B_LoadTaxonomy" Padding="5,1" Click="B_LoadTaxonomy_Click">Load</Button>
                     <Button Name="B_LoadLabel" Content="Load Labels" Width="75" Click="B_LoadLabel_Click"/>
+                    <Button Name="B_Test" Content="Test" Width="75" Click="B_Test_Click"/>
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch">
@@ -40,7 +41,7 @@
                         <RowDefinition Height="25"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TabControl Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" >
+                    <TabControl Name="TabControl_Left"  Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" >
                         <TabItem Header="XML">
                             <TreeView Name="XML_Tree" ItemTemplate="{DynamicResource HDT}" Margin="0" SelectedItemChanged="XML_Tree_SelectedItemChanged">
                                 <TreeView.Resources>
@@ -57,15 +58,15 @@
                             </TreeView>
                         </TabItem>
                         <TabItem Header="Tables">
-                            <TreeView Name="Table_Tree" ItemTemplate="{DynamicResource HDT}" Margin="0" SelectedItemChanged="Table_Tree_SelectedItemChanged">
+                            <TreeView Name="Table_Tree"  Margin="0" SelectedItemChanged="Table_Tree_SelectedItemChanged">
                                 <TreeView.Resources>
-                                    <DataTemplate x:Key="DT" DataType="{x:Type xbrlmodel:Table}">
+                                    <DataTemplate DataType="{x:Type xbrlmodel:LayoutItem}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Path=ID}" Foreground="Red" />
+                                            <TextBlock Text="{Binding Path=LabelContent}" Foreground="Red" />
                                         </StackPanel>
                                     </DataTemplate>
-                                    <HierarchicalDataTemplate x:Key="HDT" DataType="x:Type local:TaxonomyDocument" 
-                                                     >
+                                    <HierarchicalDataTemplate DataType="{x:Type xbrlmodel:Table}" 
+                                                    ItemsSource="{Binding Extensions}" >
                                         <TextBlock Text="{Binding ID}" Foreground="Blue" MouseDown="Table_Tree_Node_MouseLeftButtonUp"></TextBlock>
                                     </HierarchicalDataTemplate>
                                 </TreeView.Resources>

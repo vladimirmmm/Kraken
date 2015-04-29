@@ -20,6 +20,10 @@ namespace Model.DefinitionModel
         private String _TargetRole = "";
         public String TargetRole { get { return _TargetRole; } set { _TargetRole = value; } }
 
+        private String _Namespace = "";
+        public String Namespace { get { return _Namespace; } set { _Namespace = value; } }
+
+
         public String RoleType
         {
             get

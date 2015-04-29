@@ -30,6 +30,7 @@ namespace XBRLProcessor
   
             CurrentTaxonomy.LoadAllReferences();
             CurrentTaxonomy.LoadLabels();
+            CurrentTaxonomy.LoadSchemaElements();
             CurrentTaxonomy.LoadTables();
     
         }

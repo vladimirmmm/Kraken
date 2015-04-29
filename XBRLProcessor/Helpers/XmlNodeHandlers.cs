@@ -18,11 +18,11 @@ namespace XBRLProcessor.Helpers
 
         public XmlNodeHandler() { }
 
-        public XmlNodeHandler(string Name, Func<XmlNode, XbrlTaxonomyDocument, bool> Handler)
-        {
-            this.Name=Name;
-            this.Handler = Handler;
-        }
+        //public XmlNodeHandler(string Name, Func<XmlNode, XbrlTaxonomyDocument, bool> Handler)
+        //{
+        //    this.Name=Name;
+        //    this.Handler = Handler;
+        //}
 
         public XmlNodeHandler(string[] XmlTagNames, Func<XmlNode, XbrlTaxonomyDocument, bool> Handler)
         {

@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\DefinitionModel\AspectNodeFilterArc.cs" />
+    <Compile Include="Model\DefinitionModel\Filter\ConceptFilter.cs" />
+    <Compile Include="Model\DefinitionModel\Filter\DimensionFilter.cs" />
+    <Compile Include="Model\DefinitionModel\Formula\DimensionAspect.cs" />
     <Compile Include="XbrlEngine.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Helpers\XmlNodeHandlers.cs" />
@@ -71,7 +75,7 @@
     <Compile Include="Model\DefinitionModel\Formula\Concept.cs" />
     <Compile Include="Model\DefinitionModel\Formula\ExplicitDimension.cs" />
     <Compile Include="Model\DefinitionModel\Formula\Member.cs" />
-    <Compile Include="Model\DefinitionModel\Formula\QName.cs" />
+    <Compile Include="Model\DefinitionModel\QName.cs" />
     <Compile Include="Model\DefinitionModel\Formula\RuleDimension.cs" />
     <Compile Include="Model\DefinitionModel\Formula\TypedDimension.cs" />
     <Compile Include="Model\DefinitionModel\OpenDefinitionNode.cs" />

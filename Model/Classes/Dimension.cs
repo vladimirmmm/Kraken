@@ -8,11 +8,18 @@ namespace LogicalModel
 {
     public class Dimension
     {
-        public Dimension Parent = null;
-        public XbrlValue Value { get; set; }
-        public XbrlValue QName { get; set; }
-        public XbrlValue ScenarioItem { get; set; }
-        public List<Dimension> Dimensions = new List<Dimension>();
+        public String Value { get; set; }
+        public String Domain { get; set; }
+        public String DomainMember { get; set; }
 
+        public string Content 
+        {
+            get { return String.Format("{0}:{1}", Domain, Value); }
+        }
+
+        public override string ToString()
+        {
+            return String.Format("[{0}]{1}:{2}", Value, Domain, DomainMember);
+        }
     }
 }

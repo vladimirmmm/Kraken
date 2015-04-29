@@ -9,6 +9,7 @@ using XBRLProcessor.Literals;
 using XBRLProcessor.Mapping;
 using Utilities;
 using XBRLProcessor.Model;
+using XBRLProcessor.Model.Base;
 
 namespace XBRLProcessor.Models
 {
@@ -27,6 +28,7 @@ namespace XBRLProcessor.Models
             }
         }
 
+        protected Dictionary<string, XbrlTaxonomyDocument> TaxonomyDocumentDictionary = new Dictionary<string, XbrlTaxonomyDocument>();
 
         public new XbrlTaxonomyDocument EntryDocument
         {
@@ -35,20 +37,83 @@ namespace XBRLProcessor.Models
         }
         public List<XbrlTable> TaxonomyTables = new List<XbrlTable>();
 
+      
+
         public XbrlTaxonomy(string entrypath)
             : base(entrypath)
         {
             EntryDocument = new XbrlTaxonomyDocument(this, entrypath);
-            this.TaxonomyDocuments.Add(EntryDocument);
+           
+            this.AddTaxonomyDocument(EntryDocument);
 
             LabelHandler = new XmlNodeHandler(Tags.Labels, HandleLabel);
 
             TableHandler = new XmlNodeHandler(Tags.TableContainers, HandleTables);
+
+            ElementHandler = new XmlNodeHandler(Tags.SchemaElements, HandleElements);
+
+            Locator.LocatorFunction = Locate;
+            LogicalModel.Label.SetLabelPrefix(Literal.LabelPrefix);
         }
+        public void AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
+        {
+            if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalPath))
+            {
+                this.TaxonomyDocumentDictionary.Add(document.LocalPath.ToLower(), document);
+            }
+        }
+        public void AddTaxonomyDocument(XbrlTaxonomyDocument document)
+        {
+            AddTaxonomyDocumentToDictionary(document);
+            if (this.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == document.LocalPath) == null) 
+            {
+                this.TaxonomyDocuments.Add(document);
+
+            }
+        }
+        public void AddLabelToDictionary(LogicalModel.Label label)
+        {
+            if (!this.TaxonomyLabelDictionary.ContainsKey(label.Key))
+            {
+                this.TaxonomyLabelDictionary.Add(label.Key, label);
+            }
+            else 
+            {
+                int z = 0;
+            }
+
+        }
+        public void AddLabel(LogicalModel.Label label)
+        {
+            AddLabelToDictionary(label);
+            if (this.TaxonomyLabels.FirstOrDefault(i => i.Key == label.Key) == null)
+            {
+                this.TaxonomyLabels.Add(label);
+
+            }
+        }
+        public override void LoadLabelDictionary()
+        {
+            foreach (var label in this.TaxonomyLabels)
+            {
+                AddLabelToDictionary(label);
+            }
+        }
+        public XbrlTaxonomyDocument FindDocument(string localpath) 
+        {
+            localpath = localpath.ToLower();
+            if (TaxonomyDocumentDictionary.ContainsKey(localpath)) 
+            {
+                return TaxonomyDocumentDictionary[localpath];
+            }
+            return null;
+        }
+
+
 
         public override void LoadAllReferences()
         {
-            Console("Load References");
+            Console.WriteLine("Load References");
 
             if (!System.IO.File.Exists(TaxonomyStructurePath))
             {
@@ -60,8 +125,11 @@ namespace XBRLProcessor.Models
             {
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyStructurePath);
                 this.TaxonomyDocuments = Utilities.Converters.JsonTo<List<XbrlTaxonomyDocument>>(jsoncontent);
-
-                var existing_entry = this.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == EntryDocument.LocalPath);
+                foreach (var doc in this.TaxonomyDocuments)
+                {
+                    this.AddTaxonomyDocumentToDictionary(doc);
+                }
+                var existing_entry = this.FindDocument(EntryDocument.LocalPath);
                 EntryDocument.ReferencedFiles = existing_entry.ReferencedFiles;
                 EntryDocument.TagNames = existing_entry.TagNames;
                 this.TaxonomyDocuments.Remove(existing_entry);
@@ -71,7 +139,7 @@ namespace XBRLProcessor.Models
                 {
                     foreach (var file in td.ReferencedFiles)
                     {
-                        var referenced = this.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == file);
+                        var referenced = this.FindDocument(file);
                         if (referenced != null)
                         {
                             td.References.Add(referenced);
@@ -80,57 +148,10 @@ namespace XBRLProcessor.Models
                 }
 
             }
-            Console("Load References Completed");
+            Console.WriteLine("Load References Completed");
 
         }
-        /*
-        public override void LoadLabels()
-        {
-            Console("Load Labels");
-
-            //Save
-            if (!System.IO.File.Exists(TaxonomyLabelPath))
-            {
-
-                LabelHandler.HandleTaxonomy(this);
-
-                var jsoncontent = Utilities.Converters.ToJson(TaxonomyLabels);
-                System.IO.File.WriteAllText(TaxonomyLabelPath, jsoncontent);
-            }
-            else
-            {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyLabelPath);
-                this.TaxonomyLabels = Utilities.Converters.JsonTo<List<LogicalModel.Label>>(jsoncontent);
-            }
-            Console("Load Labels Completed");
-
-        }
-
-        public void LoadTables()
-        {
-            Console("Load Tables");
-
-            if (!System.IO.File.Exists(TaxonomyTablesPath))
-            {
-                TableHandler.HandleTaxonomy(this);
-
-                var jsoncontent = Utilities.Converters.ToJson(TaxonomyTables);
-                System.IO.File.WriteAllText(TaxonomyTablesPath, jsoncontent);
-            }
-            else
-            {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyTablesPath);
-                this.Tables = Utilities.Converters.JsonTo<List<LogicalModel.Table>>(jsoncontent);
-
-                foreach (var table in this.TaxonomyTables)
-                {
-                    table.Taxonomy = this;
-                }
-            }
-            Console("Load Tables completed");
-
-        }
-        */
+        
 
         #region Handlers
 
@@ -141,15 +162,31 @@ namespace XBRLProcessor.Models
             var labeltext = node.InnerText;
             var role = node.Attributes[Attributes.LabelRole].Value;
             var lang = node.Attributes[Attributes.Language].Value;
-            var label = this.TaxonomyLabels.FirstOrDefault(i => i.LabelID == labelid && i.Lang == lang);
+            var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
+            if (FileID.Contains("-lab-")) 
+            {
+                FileID = FileID.Remove(FileID.IndexOf("-lab-") + 5);
+            }
+            var newlabel = new LogicalModel.Label();
+            newlabel.LabelID = labelid;
+            newlabel.Lang = lang;
+            newlabel.FileName = FileID;
+
+            //var label = this.TaxonomyLabels.FirstOrDefault(i => i.LabelID == labelid && i.Lang == lang
+            //    && i.FileName == FileID
+            //    );
+            var label = FindLabel(newlabel.Key);
+
             if (label == null)
             {
-                label = new LogicalModel.Label();
-                this.TaxonomyLabels.Add(label);
-                label.LocalID = labelid.StartsWith(Literal.LabelPrefix) ? labelid.Substring(6) : labelid;
-                label.LabelID = labelid;
-                label.Lang = lang;
+                label = newlabel;
+                AddLabel(label);
+                //label.LocalID = labelid.StartsWith(Literal.LabelPrefix) ? labelid.Substring(6) : labelid;
 
+            }
+            else 
+            {
+                //label=
             }
             //label.FileName = this.FileName;
             if (role.In(Roles.LabelCodeRoles))
@@ -208,6 +245,8 @@ namespace XBRLProcessor.Models
                 var definitionfilename = taxonomydocument.FileName.Replace(".xsd", Literal.DefinitionFileSuffix).ToLower();
 
                 table.XsdPath = taxonomydocument.LocalPath;
+                logicaltable.FolderName = Utilities.Strings.GetFolderName(table.XsdPath);
+
                 var layoutdocument = taxonomydocument.References.FirstOrDefault(i => i.FileName.ToLower() == layoutfilename);
                 table.LayoutPath = layoutdocument.LocalPath;
                 var definitiondocument = taxonomydocument.References.FirstOrDefault(i => i.FileName.ToLower() == definitionfilename);
@@ -215,11 +254,34 @@ namespace XBRLProcessor.Models
 
                 MapDefinition(definitiondocument.XmlDocument.ChildNodes[0], table);
 
+                foreach (var definitionlink in table.DefinitionLinks) 
+                {
+                    foreach (var locator in definitionlink.Locators)
+                    {
+                        if (!string.IsNullOrEmpty(locator.Href)) 
+                        {
+                            //var path = Utilities.Strings.GetLocalPath(this.LocalFolder, locator.Href);
+                            var localhref = locator.Href;
+                            if (!Utilities.Strings.IsRelativePath(localhref))
+                            {
+                                localhref = Utilities.Strings.GetLocalPath(this.LocalFolder, locator.Href);
+                            }
+                            var path = Utilities.Strings.ResolveRelativePath(definitiondocument.LocalFolder, localhref);
+                            var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
+                            locator.Namespace = GetTargetNamespace(defdoc.XmlDocument); 
+     
+                        }
+
+                    }
+                }
+              
+
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
 
                 table.LoadLayoutHierarchy(logicaltable);
                 table.LoadDefinitionHierarchy(logicaltable);
-                logicaltable.CreateHtmlLayout();
+        
+                logicaltable.LoadLayout();
 
                 this.Tables.Add(logicaltable);
                 this.TaxonomyTables.Add(table);
@@ -227,6 +289,51 @@ namespace XBRLProcessor.Models
 
             return result;
 
+        }
+
+        private LogicalModel.Base.Element Locate(string key) 
+        {
+            LogicalModel.Base.Element element = null;
+            if (this.SchemaElementDictionary.ContainsKey(key)) 
+            {
+                element = this.SchemaElementDictionary[key];
+            }
+            return element;
+        }
+        
+        private string GetTargetNamespace(XmlDocument doc) 
+        {
+            var ns = "";
+            var targetnamespace = doc.DocumentElement.Attributes[Literals.Attributes.TargetNamespace];
+            if (targetnamespace != null)
+            {
+                foreach (XmlAttribute attr in doc.DocumentElement.Attributes)
+                {
+                    if (attr.Name != Literals.Attributes.TargetNamespace && String.Equals(attr.Value, targetnamespace.Value, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        ns = attr.LocalName;
+                        break;
+                    }
+
+                }
+            }
+            return ns;
+        }
+        
+        public bool HandleElements(XmlNode node, XbrlTaxonomyDocument taxonomydocument) 
+        {
+            var element = new Element();
+            if (node.Attributes["id"] != null)
+            {
+                Mappings.CurrentMapping.Map(node, element);
+
+                element.Namespace = GetTargetNamespace(node.OwnerDocument);
+
+                var logicalelement = Mappings.ToLogical(element);
+                this.SchemaElements.Add(logicalelement);
+                this.SchemaElementDictionary.Add(logicalelement.Key, logicalelement);
+            }
+            return true;
         }
 
         public void MapLayout(XmlNode node, XbrlTable instance)
@@ -237,8 +344,10 @@ namespace XBRLProcessor.Models
 
         public void MapDefinition(XmlNode node, XbrlTable instance)
         {
+        
             var rootnode = Utilities.Xml.SelectSingleNode(node, "//" + Tags.LinkBase);
             var table = Mappings.CurrentMapping.Map<XbrlTable>(rootnode, instance);
+
         }
 
         #endregion

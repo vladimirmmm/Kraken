@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
+using Utilities;
 using XBRLProcessor;
 
 namespace UI
@@ -30,7 +31,50 @@ namespace UI
             InitializeComponent();
             TB_TaxonomyPath.Text = @"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2014-07-31\mod\corep_ind.xsd";
             //TB_TaxonomyPath.Text = @"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\finrep\its-2013-03\2014-07-31\mod\finrep_con_ifrs.xsd";
-            Taxonomy.Console = ShowMessage;
+
+            var uitw = new UITextWriter(ShowMessage);
+            Console.SetOut(uitw);
+
+            Browser.LoadCompleted += Browser_LoadCompleted;
+            var ofs =new JsClass();
+            ofs.UIAction=fromJS;
+            Browser.ObjectForScripting = ofs;
+
+        }
+
+        void fromJS(object param) 
+        {
+            var commad = String.Format("{0}", param);
+            Console.WriteLine(commad);
+            if (commad == "ready") 
+            {
+                SetExtension();
+            }
+        }
+
+        void Browser_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            if (TabControl_Left.SelectedIndex == 1) 
+            {
+            }
+        }
+
+        private void SetExtension() 
+        {
+            var table = Table_Tree.SelectedItem as Table;
+            var extension = Table_Tree.SelectedItem as LayoutItem;
+            if (extension != null)
+            {
+                table = extension.Table;
+            }
+            try
+            {
+                Browser.InvokeScript("SetExtension", Utilities.Converters.ToJson(table.CurrentExtension));
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private void ShowMessage(string content) 
@@ -78,13 +122,13 @@ namespace UI
 
         private void B_LoadLabel_Click(object sender, RoutedEventArgs e)
         {
-            var table = (Table)Table_Tree.SelectedItem;
+            var table = Table_Tree.SelectedItem as Table;
             if (table != null)
             {
                 table.CreateHtmlLayout();
             }
-
-            
+            Browser.Refresh();
+   
         }
 
         private void Table_Tree_Node_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -109,7 +153,13 @@ namespace UI
 
         private void Table_Tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            var table = (Table)Table_Tree.SelectedItem;
+            var table = Table_Tree.SelectedItem as Table;
+            var extension = Table_Tree.SelectedItem as LayoutItem;
+            if (extension != null)
+            {
+                table = extension.Table;
+                table.CurrentExtension = extension;
+            }
             if (table != null)
             {
                 Browser.Navigate(table.HtmlPath);
@@ -125,6 +175,15 @@ namespace UI
               {
                   TB_TreeDocumentTitle.Text = String.Format("{0} - {1}", td.FileName, td.LocalPath);
               }
+        }
+
+        private void B_Test_Click(object sender, RoutedEventArgs e)
+        {
+            var x = new List<Utilities.KeyValue<string, string>>();
+            x.Add(new KeyValue<string, string>("a", "111"));
+            x.Add(new KeyValue<string, string>("b", "112"));
+  
+            Browser.InvokeScript("test", Utilities.Converters.ToJson(x));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BaseModel;
+using LogicalModel.Base;
 using LogicalModel.Helpers;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,16 @@ namespace LogicalModel
         public List<Table> Tables = new List<Table>();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
-        public static Action<string> Console = null;
+        public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
+
+        public List<Element> SchemaElements = new List<Element>();
+        public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
+        
+        //public static Action<string> Console = null;
 
         public TaxHandler TableHandler = new TaxHandler();
         public TaxHandler LabelHandler = new TaxHandler();
+        public TaxHandler ElementHandler = new TaxHandler();
 
         public string SourceTaxonomyPath = "";
         public string SourceTaxonomyFolder
@@ -55,6 +62,11 @@ namespace LogicalModel
         {
             get { return EntryDocument.LocalFolder + "Tabels.json"; }
         }
+        public string TaxonomySchemaElementsPath
+        {
+            get { return EntryDocument.LocalFolder + "SchemaElements.json"; }
+        }
+
         public string TaxonomyLayoutFolder
         {
             get { return EntryDocument.LocalFolder + "Layout\\"; }
@@ -65,12 +77,23 @@ namespace LogicalModel
         {
             this.TaxonomyDocuments.Clear();
             SourceTaxonomyPath = entrypath;
+            LogicalModel.Table.LabelAccessor = FindLabel;
+        
+        }
 
+        public LogicalModel.Label FindLabel(string key)
+        {
+            key = key.ToLower();
+            if (TaxonomyLabelDictionary.ContainsKey(key))
+            {
+                return TaxonomyLabelDictionary[key];
+            }
+            return null;
         }
 
         public virtual void LoadLabels()
         {
-            Console("Load Labels");
+            Console.WriteLine("Load Labels");
 
             //Save
             if (!System.IO.File.Exists(TaxonomyLabelPath))
@@ -85,14 +108,60 @@ namespace LogicalModel
             {
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyLabelPath);
                 this.TaxonomyLabels = Utilities.Converters.JsonTo<List<LogicalModel.Label>>(jsoncontent);
+                LoadLabelDictionary();
             }
-            Console("Load Labels Completed");
+            Console.WriteLine("Load Labels Completed");
 
         }
 
+        public virtual void LoadLabelDictionary() { }
+
         public virtual void LoadTables()
         {
-            Console("Load Tables");
+            Console.WriteLine("Load Tables");
+            //refresh files
+            if (!System.IO.Directory.Exists(TaxonomyLayoutFolder))
+            {
+                System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
+            }
+
+            var jquerypath = TaxonomyLayoutFolder + "jquery-2.0.3.js";
+
+            if (!System.IO.File.Exists(jquerypath))
+            {
+                System.IO.File.Copy("jquery-2.0.3.js", jquerypath);
+            }
+            var tablejsfilename = "Table.js";
+            var tablejsoriginalpath = @"C:\My\Developement\XTree-M\XTree-M\Model\" + tablejsfilename;
+            var fi_out = new System.IO.FileInfo(tablejsfilename);
+
+            if (System.IO.File.Exists(tablejsoriginalpath)) 
+            {
+                var fi_dev = new System.IO.FileInfo(tablejsoriginalpath);
+                if (fi_dev.LastWriteTime > fi_out.LastWriteTime) 
+                {
+                    System.IO.File.Copy(fi_dev.FullName, fi_out.FullName, true);
+                }
+
+            }
+            var jstablepath = TaxonomyLayoutFolder + tablejsfilename;
+            var fi_layout = new System.IO.FileInfo(jstablepath);
+            var shouldcopy = false;
+            if (System.IO.File.Exists(jstablepath))
+            {
+                var fi_main2 = new System.IO.FileInfo(jstablepath);
+                shouldcopy = fi_out.LastWriteTime > fi_layout.LastWriteTime;
+            }
+            else
+            {
+                shouldcopy = true;
+            }
+            if (shouldcopy)
+            {
+                System.IO.File.Copy(tablejsfilename, jstablepath, true);
+
+            }
+            //
 
             if (!System.IO.File.Exists(TaxonomyTablesPath))
             {
@@ -105,13 +174,45 @@ namespace LogicalModel
             {
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyTablesPath);
                 this.Tables = Utilities.Converters.JsonTo<List<LogicalModel.Table>>(jsoncontent);
+                
+
 
                 foreach (var table in this.Tables)
                 {
                     table.Taxonomy = this;
+                    table.Reload();
+                    table.LoadDefinitions();
+                    table.LoadLayout();
+
+
                 }
             }
-            Console("Load Tables completed");
+            Console.WriteLine("Load Tables completed");
+
+        }
+
+        public virtual void LoadSchemaElements()
+        {
+            Console.WriteLine("Load Elements");
+
+            if (!System.IO.File.Exists(TaxonomySchemaElementsPath))
+            {
+                ElementHandler.HandleTaxonomy(this);
+
+                var jsoncontent = Utilities.Converters.ToJson(SchemaElements);
+                System.IO.File.WriteAllText(TaxonomySchemaElementsPath, jsoncontent);
+            }
+            else
+            {
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomySchemaElementsPath);
+                this.SchemaElements = Utilities.Converters.JsonTo<List<Element>>(jsoncontent);
+                foreach (var schemaelement in this.SchemaElements)
+                {
+                    this.SchemaElementDictionary.Add(schemaelement.Key, schemaelement);
+                }
+
+            }
+            Console.WriteLine("Load Elements completed");
 
         }
 

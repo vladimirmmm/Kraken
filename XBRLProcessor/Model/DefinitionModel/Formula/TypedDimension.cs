@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Model.DefinitionModel.Formula
 {
-    class TypedDimension
+    public class TypedDimension:RuleDimension
     {
     }
 }

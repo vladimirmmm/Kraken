@@ -12,6 +12,7 @@ namespace XBRLProcessor.Literals
         public static string[] Imports = { "xs:import" };
         public static string[] Labels = { "label:label", "xbrlle:label", "eg:label", "fn:label", "link:label", "xbrli:label", "xfi:label", "xbrldi:label", "xbrldt:label", "xl:label", "xlink:label", "xs:label", "xsi:label", "gen:label", "variable :label", "iso4217:label" };
         public static string[] TableContainers = { "xs:appinfo" };
+        public static string[] SchemaElements = { "xs:element", "element" };
 
         public const string UsedOn = "link:usedOn";
         public const string TableLayoutContainer = "gen:link";
@@ -41,6 +42,7 @@ namespace XBRLProcessor.Literals
         public const string LabelID = "xlink:label";
         public const string LabelRole = "xlink:role";
         public const string Language = "xml:lang";
+        public const string TargetNamespace = "targetNamespace";
     }
 }
  

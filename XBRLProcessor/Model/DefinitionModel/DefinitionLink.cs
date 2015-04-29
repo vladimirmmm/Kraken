@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XBRLProcessor.Enums;
+using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
 
 namespace Model.DefinitionModel
@@ -26,6 +28,12 @@ namespace Model.DefinitionModel
         [JsonIgnore]
         public List<Hierarchy<Locator>> DefinitionItems = new List<Hierarchy<Locator>>();
 
+        private string _RoleType = "";
+        public string RoleType
+        {
+            get { return _RoleType; }
+            set { _RoleType = value; }
+        }
 
         public void LoadHierarchy()
         {
@@ -38,7 +46,19 @@ namespace Model.DefinitionModel
             }
             DefinitionRoot = Hierarchy<Locator>.GetHierarchy(Arcs, DefinitionItems,
                                (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
-                               (i, a) => { i.Order = a.Order; i.Item.RoleType = ((DefinitionArc)a).RoleType; });
+                               (i, a) => { 
+                                   i.Order = a.Order; 
+                                   i.Item.RoleType = ((DefinitionArc)a).RoleType;
+                                   if (i.Item.RoleType == ArcRoleType.domain_member)
+                                   {
+                                      
+                                   }
+                               });
+
+            if (DefinitionRoot.Children.Count == 1) 
+            {
+                RoleType = DefinitionRoot.Children.FirstOrDefault().Item.RoleType;
+            }
         }
     }
 }

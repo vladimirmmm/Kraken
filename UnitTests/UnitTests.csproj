@@ -67,26 +67,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="dim.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="exp.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="met.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="table.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="typ.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="xbrldt-2005.xsd">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Choose>

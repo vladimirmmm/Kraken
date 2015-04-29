@@ -8,6 +8,7 @@ namespace LogicalModel
 {
     public class Label
     {
+        private static string labelprefix = "";
         public string _LocalID = "";
         public string _LabelID = "";
         public string _Content = "";
@@ -15,13 +16,38 @@ namespace LogicalModel
         public string _Lang = "";
         public string _FileName = "";
 
+        public static void SetLabelPrefix(string prefix) 
+        {
+            if (string.IsNullOrEmpty(labelprefix))
+            {
+                labelprefix = prefix;
+            }
+        }
+
         public string DisplayName 
         {
             get { return String.Format("{0} [{1}] {2}", _LabelID, _Code, _Content);  }
         }
 
-        public string LocalID { get { return _LocalID; } set { _LocalID = value; } }
-        public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
+        public string LocalID
+        {
+            get { return _LocalID; }
+            set
+            {
+                _LocalID = value;
+                _LabelID = labelprefix + _LocalID;
+            }
+        }
+        public string LabelID
+        {
+            get { return _LabelID; }
+            set
+            {
+                _LabelID = value;
+                _LocalID = _LabelID.StartsWith(labelprefix) ? _LabelID.Substring(labelprefix.Length) : _LabelID;
+
+            }
+        }
         public string Content { get { return _Content; } set { _Content = value; } }
         public string Code { get { return _Code; } set { _Code = value; } }
         public string Lang { get { return _Lang; } set { _Lang = value; } }
@@ -30,6 +56,24 @@ namespace LogicalModel
         public override string ToString()
         {
             return String.Format("{0}:{1}", _LabelID, _Content);
+        }
+
+        public string Key 
+        {
+            get
+            {
+                //return String.Format("{0}[{1}]{2}", _FileName, _Lang, _LabelID).ToLower();
+                return String.Format("{0}[{1}]{2}", _FileName, _Lang, _LabelID).ToLower();
+            }
+        }
+
+        public static string GetKey(string fileid, string localID)
+        {
+            var l = new Label();
+            l.FileName = fileid;
+            l.Lang = "en";
+            l.LocalID = localID;
+            return l.Key;
         }
     }
 }

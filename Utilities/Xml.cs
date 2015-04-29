@@ -50,14 +50,46 @@ namespace Utilities
             return null;
         }
 
+        public static string Content(XmlNode node)
+        {
+            if (node.ChildNodes.Count > 0) 
+            {
+                var content = node.ChildNodes[0].Value;
+                return content;
+            }
+            return null;
+        }
+
         public static XmlNode SelectSingleNode(XmlNode node, string XPath)
         {
             XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
 
             return node.OwnerDocument.SelectSingleNode(XPath, manager);
         }
-        public static XmlNodeList SelectNodes(XmlNode node, string XPath)
+
+        public static XmlNode SelectChildNode(XmlNode node, string XPath)
         {
+            XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
+
+            var childnode =  node.SelectSingleNode(XPath, manager);
+            if (childnode != null)
+            {
+                if (childnode.ParentNode == node)
+                {
+                    return childnode;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return null;
+        }
+        
+
+        public static List<XmlNode> SelectChildNodes(XmlNode node, string XPath)
+        {
+            var result = new List<XmlNode>();
             XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
             if (XPath.Contains(":")) 
             {
@@ -69,10 +101,45 @@ namespace Utilities
                 ns = ns.Remove(ns.IndexOf(":"));
                 if (!manager.HasNamespace(ns)) 
                 {
-                    return node.OwnerDocument.SelectNodes("xffgh");
+                    return result;
+                    //return node.OwnerDocument.SelectNodes("xffgh");
                 }
             }
-            return node.SelectNodes(XPath, manager);
+            var nodes = node.SelectNodes(XPath, manager);
+            foreach (XmlNode xnode in nodes) 
+            {
+                if (xnode.ParentNode == node) 
+                {
+                    result.Add(xnode);
+                }
+            }
+            return result;
+        }
+
+        public static List<XmlNode> SelectNodes(XmlNode node, string XPath)
+        {
+            var result = new List<XmlNode>();
+            XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
+            if (XPath.Contains(":"))
+            {
+                var ns = XPath;
+                if (XPath.StartsWith("//"))
+                {
+                    ns = XPath.Substring(2);
+                }
+                ns = ns.Remove(ns.IndexOf(":"));
+                if (!manager.HasNamespace(ns))
+                {
+                    return result;
+                    //return node.OwnerDocument.SelectNodes("xffgh");
+                }
+            }
+            var nodes = node.SelectNodes(XPath, manager);
+            foreach (XmlNode xnode in nodes)
+            {
+                result.Add(xnode);
+            }
+            return result;
         }
 
         public static List<XmlNode> SelectNodes(XmlNode node)

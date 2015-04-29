@@ -43,7 +43,9 @@
     <Compile Include="DocumentCollection.cs" />
     <Compile Include="Hierarchy.cs" />
     <Compile Include="Interfaces\IModelLoader.cs" />
+    <Compile Include="JsonIgnore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringValue.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

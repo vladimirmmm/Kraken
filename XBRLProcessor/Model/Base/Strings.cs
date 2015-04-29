@@ -59,4 +59,34 @@ namespace XBRLProcessor.Model.StringEnums
         public static readonly Axis Z = new Axis(0, "z");
 
     }
+
+    public class FilterAxis : StringEnum
+    {
+        public FilterAxis(int value, String name) : base(value, name) { }
+
+        public static readonly FilterAxis ChildOrSelf = new FilterAxis(0, "child-or-self");
+        public static readonly FilterAxis Child = new FilterAxis(0, "child");
+        public static readonly FilterAxis Descendant = new FilterAxis(0, "descendant");
+        public static readonly FilterAxis DescendantorSelf = new FilterAxis(0, "descendant-or-self");
+
+    }
+
+    public class FilterPeriod : StringEnum
+    {
+        public FilterPeriod(int value, String name) : base(value, name) { }
+
+        public static readonly FilterPeriod Instant = new FilterPeriod(0, "instant");
+        public static readonly FilterPeriod Duration = new FilterPeriod(0, "duration");
+
+    }
+
+    public class FilterBalance : StringEnum
+    {
+        public FilterBalance(int value, String name) : base(value, name) { }
+
+        public static readonly FilterBalance Debit = new FilterBalance(0, "debit");
+        public static readonly FilterBalance Credit = new FilterBalance(0, "credit");
+        public static readonly FilterBalance None = new FilterBalance(0, "none");
+
+    }
 }

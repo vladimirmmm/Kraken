@@ -20,6 +20,8 @@ namespace XBRLProcessor.Models
             set { base.Taxonomy=value; }
         }
 
+        private List<String> _LoadedSourcePathes = new List<String>();
+
         private List<XbrlTaxonomyDocument> _References = new List<XbrlTaxonomyDocument>();
         public new List<XbrlTaxonomyDocument> References
         {
@@ -44,7 +46,7 @@ namespace XBRLProcessor.Models
         {
             get
             {
-                if (System.IO.File.Exists(this.LocalPath) && _XmlDocument == null)
+                if (_XmlDocument == null && System.IO.File.Exists(this.LocalPath))
                 {
                     _XmlDocument = new XmlDocument();
                     _XmlDocument.Load(this.LocalPath);
@@ -94,10 +96,16 @@ namespace XBRLProcessor.Models
 
             SetLocalPath(localpath);
             SetSourcePath(sourcepath);
+            try
+            {
+                Utilities.Strings.CopyToLocal(sourcepath, localpath, false);
+                LoadDocument();
 
-            Utilities.Strings.CopyToLocal(sourcepath, localpath, false);
-
-            LoadDocument();
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(String.Format("Can't get source file {0}. Error: {1}", sourcepath, ex));
+            }
 
             structurehandlers.Add(new XmlNodeHandler(Tags.Links, LoadLink));
 
@@ -106,16 +114,19 @@ namespace XBRLProcessor.Models
 
         public override void LoadReferences()
         {
-            var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
-            _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
-            foreach (var handler in structurehandlers)
+            if (XmlDocument != null)
             {
-                var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));
-                foreach (var subtag in subtags)
+                var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
+                _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
+                foreach (var handler in structurehandlers)
                 {
-                    handler.Handle(subtag, this);
-                }
+                    var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));
+                    foreach (var subtag in subtags)
+                    {
+                        handler.Handle(subtag, this);
+                    }
 
+                }
             }
         }
 
@@ -140,36 +151,46 @@ namespace XBRLProcessor.Models
         public void LoadTaxonomyDocument(string path)
         {
             //remove hash
+            
             if (path.Contains("#"))
             {
                 path = path.Remove(path.IndexOf("#"));
             }
-            var fullpath = path;
-            //var taxonomydocument = Engine.CurrentEngine.TaxonomyDocuments.FirstOrDefault(i => i.SourcePath == path);
 
-
-            var sourcepath = path;
-            if (Utilities.Strings.IsRelativePath(sourcepath))
+            var loaded = _LoadedSourcePathes.FirstOrDefault(i => i == path);
+            if (loaded == null)
             {
-                sourcepath = Utilities.Strings.ResolveRelativePath(SourceFolder, path);
-            }
-            var localpath = Utilities.Strings.GetLocalPath(Taxonomy.LocalFolder, sourcepath);
+                _LoadedSourcePathes.Add(path);
 
-            var taxonomydocument = Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == localpath);
-            if (taxonomydocument == null)
-            {
-                //Console.WriteLine(path);
-                taxonomydocument = new XbrlTaxonomyDocument(path, this);
-                Taxonomy.TaxonomyDocuments.Add(taxonomydocument);
-                taxonomydocument.LoadReferences();
-            }
-            //var reference = References.FirstOrDefault(i => i.SourcePath == path);
-            var reference = References.FirstOrDefault(i => i.LocalPath == localpath);
-            if (reference == null)
-            {
-                References.Add(taxonomydocument);
-                ReferencedFiles.Add(taxonomydocument.LocalPath);
 
+                var fullpath = path;
+                //var taxonomydocument = Engine.CurrentEngine.TaxonomyDocuments.FirstOrDefault(i => i.SourcePath == path);
+
+
+                var sourcepath = path;
+                if (Utilities.Strings.IsRelativePath(sourcepath))
+                {
+                    sourcepath = Utilities.Strings.ResolveRelativePath(SourceFolder, path);
+                }
+                var localpath = Utilities.Strings.GetLocalPath(Taxonomy.LocalFolder, sourcepath);
+                //Console.WriteLine(localpath);
+
+                var taxonomydocument = Taxonomy.FindDocument(localpath);
+                if (taxonomydocument == null)
+                {
+                    //Console.WriteLine(path);
+                    taxonomydocument = new XbrlTaxonomyDocument(path, this);
+                    Taxonomy.AddTaxonomyDocument(taxonomydocument);
+                    taxonomydocument.LoadReferences();
+                }
+                //var reference = References.FirstOrDefault(i => i.SourcePath == path);
+                var reference = References.FirstOrDefault(i => i.LocalPath == localpath);
+                if (reference == null)
+                {
+                    References.Add(taxonomydocument);
+                    ReferencedFiles.Add(taxonomydocument.LocalPath);
+
+                }
             }
         }
 

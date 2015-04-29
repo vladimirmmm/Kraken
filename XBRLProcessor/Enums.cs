@@ -21,7 +21,7 @@ namespace XBRLProcessor.Enums
         public static string Add(string key, string value) 
         {
             keys.Add(new KeyValue<string, string>(key, value.ToLower()));
-            return value;
+            return key; // value;
         }
 
         public static string GetKeyByValue(string value)
