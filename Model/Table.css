@@ -1,0 +1,26 @@
+﻿table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+body {
+    font-family: 'Segoe UI',Verdana;
+    font-size: 10pt;
+}
+
+h1 {
+    font-size: 14pt;
+}
+
+
+.left { text-align:left;}
+
+.right { text-align:right;}
+
+.blocked 
+{
+    background:#808080;
+}

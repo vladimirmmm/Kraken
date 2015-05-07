@@ -9,7 +9,7 @@ using XBRLProcessor.Model.StringEnums;
 
 namespace XBRLProcessor.Model.DefinitionModel.Filter
 {
-    public class DimensionFilter:Identifiable 
+    public class DimensionFilter:XbrlIdentifiable 
     {
         public DimensionQName Dimension { get; set; }
 

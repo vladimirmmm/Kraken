@@ -82,8 +82,9 @@ namespace LogicalModel
                 return sb.ToString();
             }
         }
-        
-        public String Concept = "";
+
+        public String _Concept = "";
+        public Concept Concept { get; set; }
 
         public override string ToString()
         {
@@ -97,7 +98,8 @@ namespace LogicalModel
             {
                 if (string.IsNullOrEmpty(_Factidentifier))
                 {
-                    if (!String.IsNullOrEmpty(Concept))
+                    //if (!String.IsNullOrEmpty(Concept))
+                    if (Concept!=null)
                     {
                         _Factidentifier = String.Format("Concept<{0}>", Concept);
                     }
@@ -120,7 +122,8 @@ namespace LogicalModel
                 if (string.IsNullOrEmpty(_FactString))
                 {
                     _FactString = "";
-                    if (!String.IsNullOrEmpty(Concept))
+                    //if (!String.IsNullOrEmpty(Concept))
+                    if (Concept!=null)
                     {
                         _FactString += Concept + ">";
                     }
@@ -139,7 +142,8 @@ namespace LogicalModel
                 var cix = s.IndexOf(">");
                 if (cix > -1) 
                 {
-                    Concept = s.Remove(cix);
+                    if (Concept == null) { Concept = new Concept(); }
+                    Concept.Content = s.Remove(cix);
                     s = s.Substring(cix + 1);
                 }
                 //Dimensions = s.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList();

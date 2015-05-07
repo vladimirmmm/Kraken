@@ -39,6 +39,7 @@ namespace XBRLProcessor.Literals
     {
         public const string XlinkHref = "xlink:href";
         public static string SchemaLocation = "schemaLocation";
+        public const string ID = "id";
         public const string LabelID = "xlink:label";
         public const string LabelRole = "xlink:role";
         public const string Language = "xml:lang";

@@ -20,6 +20,12 @@ namespace Utilities
             return str;
         }
 
+
+        public static List<XmlNode> AllNodes(XmlDocument doc) 
+        {
+            return doc.GetElementsByTagName("*").Cast<XmlNode>().ToList();
+        }
+
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
         {
             var manager = new XmlNamespaceManager(doc.NameTable);
@@ -39,15 +45,31 @@ namespace Utilities
 
         public static string Attr(XmlNode node, string Name)
         {
+            var lowername = Name.ToLower();
+            if (lowername.StartsWith("@")) 
+            {
+                if (lowername == "@content") 
+                {
+                    return Content(node);
+                }
+                if (lowername == "@name")
+                {
+                    return node.Name;
+                }
+            }
+
             if (node.Attributes != null)
             {
-                var attr = node.Attributes[Name];
+                var attributes = node.Attributes.Cast<XmlAttribute>();
+
+                //var attr = node.Attributes[Name];
+                var attr = attributes.FirstOrDefault(i=>i.Name.Equals(lowername,StringComparison.OrdinalIgnoreCase) );
                 if (attr != null)
                 {
                     return attr.Value;
                 }
             }
-            return null;
+            return "";
         }
 
         public static string Content(XmlNode node)
@@ -69,21 +91,7 @@ namespace Utilities
 
         public static XmlNode SelectChildNode(XmlNode node, string XPath)
         {
-            XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
-
-            var childnode =  node.SelectSingleNode(XPath, manager);
-            if (childnode != null)
-            {
-                if (childnode.ParentNode == node)
-                {
-                    return childnode;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
+            return SelectChildNodes(node, XPath).FirstOrDefault();
         }
         
 

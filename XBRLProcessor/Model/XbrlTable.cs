@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 using XBRLProcessor.Enums;
+using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
 using XBRLProcessor.Models;
 
 namespace XBRLProcessor.Model
 {
-    public class XbrlTable : Identifiable
+    public class XbrlTable : XbrlIdentifiable
     {
         private string _HtmlPath = "";
         public string HtmlPath
@@ -79,9 +80,9 @@ namespace XBRLProcessor.Model
 
 
 
-        private List<Table> _Tables = new List<Table>();
+        private List<TableNode> _Tables = new List<TableNode>();
         [JsonIgnore]
-        public List<Table> Tables { get { return _Tables; } set { _Tables = value; } }
+        public List<TableNode> Tables { get { return _Tables; } set { _Tables = value; } }
 
         private List<DefinitionLink> _DefinitionLinks = new List<DefinitionLink>();
         public List<DefinitionLink> DefinitionLinks { get { return _DefinitionLinks; } set { _DefinitionLinks = value; } }
@@ -91,7 +92,7 @@ namespace XBRLProcessor.Model
 
 
         [JsonIgnore]
-        public List<Identifiable> Identifiables = new List<Identifiable>();
+        public List<XbrlIdentifiable> Identifiables = new List<XbrlIdentifiable>();
         [JsonIgnore]
         public List<Arc> Arcs = new List<Arc>();
 
@@ -124,7 +125,7 @@ namespace XBRLProcessor.Model
                 {
                     if (rule.Concept != null)
                     {
-                        li.Concept = rule.Concept.QName.Content;
+                        li.Concept = Mappings.ToLogical(rule.Concept); //rule.Concept.QName.Content;
                     }
                     if (rule.Abstract) 
                     {
@@ -136,7 +137,7 @@ namespace XBRLProcessor.Model
                         var explicitDimension = dimension as ExplicitDimension;
                         var typedDimension = dimension as TypedDimension;
                         if (explicitDimension!=null){
-                            logicaldimension.Value = explicitDimension.Dimension;
+                            logicaldimension.DimensionItem = explicitDimension.Dimension;
                             if (explicitDimension.Members.Count == 1)
                             {
                                 var member = explicitDimension.Members.FirstOrDefault();
@@ -168,7 +169,7 @@ namespace XBRLProcessor.Model
 
                     li.IsAspect = true;
                     var logicaldimension = new LogicalModel.Dimension();
-                    logicaldimension.Value = aspect.DimensionAspect.Value;
+                    logicaldimension.DimensionItem = aspect.DimensionAspect.Content;
                     logicaldimension.Domain = aspect.DimensionAspect.Domain;
                     logicaldimension.DomainMember = aspect.DimensionAspect.Value;
 
@@ -198,18 +199,61 @@ namespace XBRLProcessor.Model
             var rootNode = new Hierarchy<Locator>(rootlocator);
             DefinitionItems.Add(rootNode);
             Console.WriteLine(this.XsdPath);
-            
+
+            //including the roles
+            //foreach (var definitionlink in DefinitionLinks)
+            //{
+            //    var arcswithrole = definitionlink.DefinitionArcs.Where(i => !String.IsNullOrEmpty(i.TargetRole)).ToList();
+            //    foreach (var arc in arcswithrole) 
+            //    {
+            //        var arcdeflink = DefinitionLinks.FirstOrDefault(i => i.Role == arc.TargetRole);
+            //        definitionlink.DefinitionArcs.AddRange(arcdeflink.DefinitionArcs);
+            //        var locatorfound = false;
+            //        foreach (var locator in arcdeflink.Locators)
+            //        {
+            //            var islocator = false;
+            //            if (!locatorfound)
+            //            {
+            //                islocator = definitionlink.Locators.Any(i => i.ID == locator.ID);
+            //            }
+            //            if (locatorfound || !islocator)
+            //            {
+            //                definitionlink.Locators.Add(locator);
+            //            }
+            //            if (islocator) 
+            //            {
+            //                locatorfound = true;
+            //            }
+            //        }
+            //    }
+            //}
+            //
             foreach (var definitionlink in DefinitionLinks)
             {
+                definitionlink.LoadHierarchy();
+                DefinitionItems.AddRange(definitionlink.DefinitionItems);
+
+            }
+            foreach (var definitionlink in DefinitionLinks)
+            {
+                var locatorswithroles = definitionlink.DefinitionRoot.Where(i => !String.IsNullOrEmpty(i.Item.TargetRole)).ToList();
+                foreach (var l in locatorswithroles) 
+                {
+                    var ss = DefinitionLinks.FirstOrDefault(i => i.Role == l.Item.TargetRole).DefinitionRoot;
+                    ss.Item.RoleType = l.Item.RoleType;
+                    l.Item = ss.Item;
+                    l.Children = ss.Children;
+                }
                 var hascube = definitionlink.DefinitionArcs.Any(i => i.RoleType == ArcRoleType.hypercube_dimension);
                 if (hascube)
                 {
-                    definitionlink.LoadHierarchy();
+                    //definitionlink.LoadHierarchy();
+
                     if (definitionlink.DefinitionRoot.Find(i => i.Item.RoleType == ArcRoleType.domain_member) != null)
                     {
                         rootNode.Children.Add(definitionlink.DefinitionRoot);
                         definitionlink.DefinitionRoot.Parent = rootNode;
-                        DefinitionItems.AddRange(definitionlink.DefinitionItems);
+                        //DefinitionItems.AddRange(definitionlink.DefinitionItems);
 
                     }
                     else

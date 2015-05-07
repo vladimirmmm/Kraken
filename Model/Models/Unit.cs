@@ -9,7 +9,7 @@ namespace LogicalModel
 {
     public class Unit:Identifiable
     {
-        public XbrlValue Measure { get; set; }
+        public QualifiedName Measure { get; set; }
 
         public override string ToString()
         {

@@ -1,4 +1,5 @@
 ﻿using Model.DefinitionModel;
+using Model.InstanceModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace XBRLProcessor
     {
 
         public XbrlTaxonomy CurrentTaxonomy = null;
+        public XbrlInstance CurrentInstance = null;
         public static XbrlEngine CurrentEngine = null;
      
 
@@ -26,13 +28,22 @@ namespace XBRLProcessor
 
         public void LoadTaxonomy(string filepath) 
         {
+            Console.WriteLine("Loading Taxonomy ");
             CurrentTaxonomy = new XbrlTaxonomy(filepath);
   
             CurrentTaxonomy.LoadAllReferences();
             CurrentTaxonomy.LoadLabels();
             CurrentTaxonomy.LoadSchemaElements();
             CurrentTaxonomy.LoadTables();
+            CurrentTaxonomy.LoadFacts();
+            Console.WriteLine("Loading Taxonomy finished");
     
+        }
+        public void LoadInstance(string filepath)
+        {
+            var instance = new XbrlInstance(filepath);
+            instance.Load();
+            LoadTaxonomy(instance.SchemaRef.Href);
         }
 
         public void LoadLabels()

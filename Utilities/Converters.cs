@@ -12,6 +12,7 @@ namespace Utilities
 {
     public class Converters
     {
+        private static CultureInfo dci = new CultureInfo("en-US");
         class PublicContractResolver : DefaultContractResolver
         {
 
@@ -37,7 +38,7 @@ namespace Utilities
 
         public static String ToJson(object obj) 
         {
-            var settings = new JsonSerializerSettings{  ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
+            var settings = new JsonSerializerSettings(){  ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
             //Newtonsoft.Json.Serialization.DefaultContractResolver dcr = new Newtonsoft.Json.Serialization.DefaultContractResolver();
             //dcr.DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic;
             //jss.ContractResolver = dcr;
@@ -102,21 +103,32 @@ namespace Utilities
             CultureInfo ci = new CultureInfo("en-US");
             return String.Format(ci, format, dt);
         }
-
         public static DateTime StringToDateTime(String dt, string format)
         {
             DateTime result = DateTime.Now.AddYears(-200);
-
-            CultureInfo ci = new CultureInfo("en-US");
-            var dtfi = ci.DateTimeFormat;
-            dtfi.ShortDatePattern = format;
-            dtfi.FullDateTimePattern = format;
-
-            if (!DateTime.TryParse(dt, dtfi, DateTimeStyles.None, out result))
+            if (!DateTime.TryParseExact(dt, format, dci, DateTimeStyles.None, out result))
             {
+            }
+            else 
+            {
+
             }
             return result;
         }
+        //public static DateTime StringToDateTime(String dt, string format)
+        //{
+        //    DateTime result = DateTime.Now.AddYears(-200);
+
+            
+        //    var dtfi = ci.DateTimeFormat;
+        //    dtfi.ShortDatePattern = format;
+        //    dtfi.FullDateTimePattern = format;
+
+        //    if (!DateTime.TryParse(dt, dtfi, DateTimeStyles.None, out result))
+        //    {
+        //    }
+        //    return result;
+        //}
 
     }
 }

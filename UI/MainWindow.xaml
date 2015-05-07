@@ -22,7 +22,7 @@
                     <RowDefinition Height="25"></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
-                <Menu Grid.Row="0" Name="Menu" Margin="-199,0,199,0" />
+                <Menu Grid.Row="0" Name="Menu" Margin="0" />
                 <StackPanel Grid.Row="1" Name="ControlContainer" Orientation="Horizontal">
                     <TextBox Name="TB_TaxonomyPath"  Width="200"></TextBox>
                     <Button Name="B_LoadTaxonomy" Padding="5,1" Click="B_LoadTaxonomy_Click">Load</Button>
@@ -90,6 +90,44 @@
                                 </ListView>
                             </Grid>
                             
+                        </TabItem>
+                        <TabItem Header="Facts">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Name="TB_FactFilter" TextChanged="TB_FactFilter_TextChanged"></TextBox>
+                                <ListView Grid.Row="1" Name="LV_Facts" ItemTemplate="{DynamicResource DT}">
+                                    <ListView.Resources>
+                                        <DataTemplate x:Key="DT">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding}" Foreground="Black" MouseDown="LabelNode_MouseLeftButtonUp"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.Resources>
+                                </ListView>
+                            </Grid>
+
+                        </TabItem>
+                        <TabItem Header="Cells">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Name="TB_CellFilter" TextChanged="TB_CellFilter_TextChanged"></TextBox>
+                                <ListView Grid.Row="1" Name="LV_Cells" ItemTemplate="{DynamicResource DT}">
+                                    <ListView.Resources>
+                                        <DataTemplate x:Key="DT">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding}" Foreground="Black" MouseDown="LabelNode_MouseLeftButtonUp"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.Resources>
+                                </ListView>
+                            </Grid>
+
                         </TabItem>
                     </TabControl>
 

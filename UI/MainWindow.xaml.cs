@@ -1,4 +1,5 @@
 ﻿using LogicalModel;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,12 +26,11 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private XbrlEngine Engine = new XbrlEngine();
+        private MenuCommand rootcommand=new MenuCommand("root","");
+        protected Features Features = null;
         public MainWindow()
         {
             InitializeComponent();
-            TB_TaxonomyPath.Text = @"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2014-07-31\mod\corep_ind.xsd";
-            //TB_TaxonomyPath.Text = @"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\finrep\its-2013-03\2014-07-31\mod\finrep_con_ifrs.xsd";
 
             var uitw = new UITextWriter(ShowMessage);
             Console.SetOut(uitw);
@@ -39,6 +39,10 @@ namespace UI
             var ofs =new JsClass();
             ofs.UIAction=fromJS;
             Browser.ObjectForScripting = ofs;
+            var mw =this;
+            this.Features = new Features(this);
+
+            this.Features.LoadMenu(this.Features.CommandContainer, null);
 
         }
 
@@ -79,23 +83,30 @@ namespace UI
 
         private void ShowMessage(string content) 
         {
-            String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
-            TB_Console.Text += msg;
-            TB_Console.Focus();
-            TB_Console.CaretIndex = TB_Console.Text.Length;
-            TB_Console.ScrollToEnd();
-            TB_Console.UpdateLayout();
-            //Console.WriteLine(msg);
+            if (this.Dispatcher.CheckAccess())
+            {
+                String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
+                TB_Console.Text += msg;
+                TB_Console.Focus();
+                TB_Console.CaretIndex = TB_Console.Text.Length;
+                TB_Console.ScrollToEnd();
+                TB_Console.UpdateLayout();
+            }
+            else 
+            {
+                this.Dispatcher.Invoke(() => { ShowMessage(content); });
+            }
         }
 
         private void B_LoadTaxonomy_Click(object sender, RoutedEventArgs e)
         {
-            Engine.LoadTaxonomy(TB_TaxonomyPath.Text);
-            XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
-            Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
-
+            var path = TB_TaxonomyPath.Text;
+            Utilities.Threading.ExecuteAsync(() => { Features.LoadTaxonomy(path); });
         }
 
+
+
+   
         private void XML_Tree_Node_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var td = (TaxonomyDocument)XML_Tree.SelectedItem;
@@ -125,7 +136,7 @@ namespace UI
             var table = Table_Tree.SelectedItem as Table;
             if (table != null)
             {
-                table.CreateHtmlLayout();
+                table.CreateHtmlLayout(true);
             }
             Browser.Refresh();
    
@@ -139,11 +150,8 @@ namespace UI
 
         private void TB_LabelFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var searchpattern = TB_LabelFilter.Text;
-            if (searchpattern.Length > 1)
-            {
-                LV_labels.ItemsSource = Engine.CurrentTaxonomy.TaxonomyLabels.Where(i => i.DisplayName.Contains(searchpattern));
-            }
+            Features.SearchLabels(TB_LabelFilter.Text);
+         
         }
 
         private void LabelNode_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -162,6 +170,7 @@ namespace UI
             }
             if (table != null)
             {
+                table.EnsureHtmlLayout();
                 Browser.Navigate(table.HtmlPath);
                 TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
 
@@ -179,11 +188,40 @@ namespace UI
 
         private void B_Test_Click(object sender, RoutedEventArgs e)
         {
-            var x = new List<Utilities.KeyValue<string, string>>();
-            x.Add(new KeyValue<string, string>("a", "111"));
-            x.Add(new KeyValue<string, string>("b", "112"));
+            //var x = new List<Utilities.KeyValue<string, string>>();
+            //x.Add(new KeyValue<string, string>("a", "111"));
+            //x.Add(new KeyValue<string, string>("b", "112"));
   
-            Browser.InvokeScript("test", Utilities.Converters.ToJson(x));
+            //Browser.InvokeScript("test", Utilities.Converters.ToJson(x));
+
+            var table = Table_Tree.SelectedItem as Table;
+            var extension = Table_Tree.SelectedItem as LayoutItem;
+            if (extension != null)
+            {
+                table = extension.Table;
+                table.CurrentExtension = extension;
+            }
+            if (table != null)
+            {
+                table.LoadLayout();
+                //Browser.Navigate(table.HtmlPath);
+                //TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
+
+            }
         }
+
+        private void TB_FactFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Features.SearchFacts(TB_FactFilter.Text);
+        }
+
+        private void TB_CellFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Features.SearchCells(TB_CellFilter.Text);
+        }
+
+
+
+
     }
 }

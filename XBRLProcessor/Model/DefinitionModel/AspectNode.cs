@@ -8,7 +8,7 @@ using XBRLProcessor.Model.DefinitionModel.Formula;
 
 namespace Model.DefinitionModel
 {
-    public class AspectNode : Identifiable
+    public class AspectNode : XbrlIdentifiable
     {
 
         private DimensionAspect _DimensionAspect = null;

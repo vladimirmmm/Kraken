@@ -47,12 +47,22 @@ namespace Model.DefinitionModel
             DefinitionRoot = Hierarchy<Locator>.GetHierarchy(Arcs, DefinitionItems,
                                (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
                                (i, a) => { 
-                                   i.Order = a.Order; 
-                                   i.Item.RoleType = ((DefinitionArc)a).RoleType;
-                                   if (i.Item.RoleType == ArcRoleType.domain_member)
-                                   {
+                                   i.Order = a.Order;
+                                   var defarc = a as DefinitionArc;
+                                   i.Item.RoleType = defarc.RoleType;
+                                   i.Item.TargetRole = defarc.TargetRole;
+                                   //if (i.Item.RoleType == ArcRoleType.domain_member)
+                                   //{
                                       
-                                   }
+                                   //}
+                                   //var defarc = a as DefinitionArc;
+                                   //if (defarc != null)
+                                   //{
+                                   //    if (!String.IsNullOrEmpty(defarc.TargetRole)) 
+                                   //    { 
+                                   //        links.FirstOrDefault(i=>i.)
+                                   //    }
+                                   //}
                                });
 
             if (DefinitionRoot.Children.Count == 1) 

@@ -14,9 +14,9 @@ window.onerror = ErrorHandler;
 
 function SetExtension(extension) {
     var li = JSON.parse(extension);
-    Notify(extension);
+    //Notify(extension);
     if (li != null && 'LabelContent' in li) {
-        Notify("ok");
+        //Notify("ok");
         $("#Extension").html(li.LabelContent);
     }
 }

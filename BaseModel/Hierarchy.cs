@@ -19,6 +19,7 @@ namespace BaseModel
         
 
         private  Hierarchy<TClass> _Parent = null;
+        [JsonIgnore]
         public Hierarchy<TClass> Parent 
         {
             get { return _Parent; }

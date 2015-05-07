@@ -11,11 +11,5 @@ namespace LogicalModel
     {
         public String Scheme { get; set; }
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-
-        //
     }
 }

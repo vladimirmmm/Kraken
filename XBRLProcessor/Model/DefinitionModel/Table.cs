@@ -8,7 +8,7 @@ using XBRLProcessor.Model.StringEnums;
 
 namespace Model.DefinitionModel
 {
-    public class Table:Identifiable
+    public class TableNode:XbrlIdentifiable
     {
         public AspectModel _AspectModel = AspectModel.Dimensional;
         public AspectModel AspectModel { get { return _AspectModel; } set { _AspectModel = value; } }

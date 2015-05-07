@@ -48,6 +48,11 @@
     <Compile Include="Model\DefinitionModel\Filter\ConceptFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\DimensionFilter.cs" />
     <Compile Include="Model\DefinitionModel\Formula\DimensionAspect.cs" />
+    <Compile Include="Model\InstanceModel\Context.cs" />
+    <Compile Include="Model\InstanceModel\XbrlFact.cs" />
+    <Compile Include="Model\InstanceModel\FilingIndicator.cs" />
+    <Compile Include="Model\InstanceModel\Scenario.cs" />
+    <Compile Include="Model\InstanceModel\XbrlInstance.cs" />
     <Compile Include="XbrlEngine.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Helpers\XmlNodeHandlers.cs" />
@@ -72,7 +77,6 @@
     <Compile Include="Model\DefinitionModel\DefinitionNodeSubTreeArc.cs" />
     <Compile Include="Model\DefinitionModel\DimensionRelationshipNode.cs" />
     <Compile Include="Model\DefinitionModel\Formula\AbstractAspect.cs" />
-    <Compile Include="Model\DefinitionModel\Formula\Concept.cs" />
     <Compile Include="Model\DefinitionModel\Formula\ExplicitDimension.cs" />
     <Compile Include="Model\DefinitionModel\Formula\Member.cs" />
     <Compile Include="Model\DefinitionModel\QName.cs" />

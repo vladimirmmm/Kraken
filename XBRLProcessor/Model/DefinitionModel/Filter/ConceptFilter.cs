@@ -9,7 +9,7 @@ using XBRLProcessor.Model.StringEnums;
 
 namespace XBRLProcessor.Model.DefinitionModel.Filter
 {
-    public class ConceptFilter : Identifiable 
+    public class ConceptFilter : XbrlIdentifiable 
     {
 
     }

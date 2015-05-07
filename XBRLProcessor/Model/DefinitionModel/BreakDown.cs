@@ -10,7 +10,7 @@ using XBRLProcessor.Model.Base;
 namespace Model.DefinitionModel
 {
 
-    public class BreakDown : Identifiable
+    public class BreakDown : XbrlIdentifiable
     {
         private ParentChildOrder _ParentChildOrder = ParentChildOrder.ChildFirst;
         public ParentChildOrder ParentChildOrder { get { return _ParentChildOrder; } set { _ParentChildOrder = value; } }

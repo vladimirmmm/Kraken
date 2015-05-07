@@ -11,7 +11,7 @@ namespace LogicalModel
     public class Rule:Identifiable
     {
         public List<Table> Tables = new List<Table>();
-        public List<Fact> Facts = new List<Fact>();
+        //public List<Fact> Facts = new List<Fact>();
         public Func<Object[], bool> Function = null;
 
         public String RuleValue = "";

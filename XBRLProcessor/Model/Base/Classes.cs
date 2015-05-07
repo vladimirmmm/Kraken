@@ -36,7 +36,7 @@ namespace XBRLProcessor.Model.Base
 
     }
 
-    public class Identifiable : Link 
+    public class XbrlIdentifiable : Link 
     {
         private string _ID = "";
         public string ID { get { return _ID; } set { _ID = value; } }
@@ -76,6 +76,10 @@ namespace XBRLProcessor.Model.Base
         private string _RoleType= "";
         public string RoleType { get { return _RoleType; } set { _RoleType = value; } }
 
+        private string _TargetRole = "";
+        public string TargetRole { get { return _TargetRole; } set { _TargetRole = value; } }
+
+
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
 
@@ -100,115 +104,6 @@ namespace XBRLProcessor.Model.Base
         }
     }
 
-    /*
-         public class Locator : Link
-    {
-        private string _ID = "";
-        [JsonProperty]
-        public string ID
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(_ID) && !String.IsNullOrEmpty(Href))
-                {
-                    var ix = Href.IndexOf("#");
-                    if (ix > -1)
-                    {
-                        _ID = Href.Substring(ix + 1);
-                    }
-                }
-                return _ID;
-            }
-            set { _ID = value; }
-        }
-
-
-        private string _LabelID = "";
-        public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
-        
-        private string _RoleType = "";
-        [JsonProperty]
-        public string RoleType
-        {
-            get { return _RoleType; } 
-            set { 
-                _RoleType = value; 
-            } 
-        }
-
-        private Element _Element;
-        public Element Element { get { return _Element;} }
-
-        public void Locate(Taxonomy tax) 
-        {
-            var key = String.Format("{0}:{1}", this.Namespace, this.ID);
-
-            if (tax.SchemaElementDictionary.ContainsKey(key)) 
-            {
-                _Element = tax.SchemaElementDictionary[key];
-
-                Type = String.Format("{0}<{1}>", Element.Type, Element.SubstitutionGroup);
-                _Value = String.Format("{0}:{1}", Element.Namespace, Element.Name);
-           
-            }
-        }
-
-        private string _Value = "";
-        [JsonProperty]
-        public string Value 
-        {
-            get 
-            {
-                if (String.IsNullOrEmpty(_Value)) 
-                {
-                    _Value = _ID;
-                }
-                return _Value;
-            }
-             set 
-            {
-                _Value = value;
-            }
-        }
-
-        private string _FullValue = "";
-        public string FullValue
-        {
-            get
-            {
-                return _FullValue;
-            }
-            set
-            {
-                _FullValue = value;
-            }
-        }
-
-
-        private string _Namespace = "";
-        [JsonProperty]
-        public string Namespace
-        {
-            get
-            {
-                return _Namespace;
-            }
-            set
-            {
-                _Namespace = value;
-            }
-        }
-
-        //public bool IsDomainItemType = false;
-
-        public override string ToString()
-        {
-            return String.Format("{0}", ID);
-        }
-    }
-    
-     */
-    
     public class Element 
     {
         private string _ID = "";

@@ -55,42 +55,57 @@ namespace XBRLProcessor.Models
             Locator.LocatorFunction = Locate;
             LogicalModel.Label.SetLabelPrefix(Literal.LabelPrefix);
         }
-        public void AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
+        public bool AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
         {
             if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalPath))
             {
                 this.TaxonomyDocumentDictionary.Add(document.LocalPath.ToLower(), document);
+                return true;
             }
+            else
+            {
+                this.TaxonomyDocumentDictionary[document.LocalPath] = document;
+            }
+            return false;
         }
         public void AddTaxonomyDocument(XbrlTaxonomyDocument document)
         {
-            AddTaxonomyDocumentToDictionary(document);
-            if (this.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == document.LocalPath) == null) 
+            if (AddTaxonomyDocumentToDictionary(document))
             {
                 this.TaxonomyDocuments.Add(document);
 
             }
+            //if (this.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == document.LocalPath) == null) 
+            //{
+            //    this.TaxonomyDocuments.Add(document);
+
+            //}
         }
-        public void AddLabelToDictionary(LogicalModel.Label label)
+        public bool AddLabelToDictionary(LogicalModel.Label label)
         {
             if (!this.TaxonomyLabelDictionary.ContainsKey(label.Key))
             {
                 this.TaxonomyLabelDictionary.Add(label.Key, label);
+                return true;
             }
             else 
             {
                 int z = 0;
             }
-
+            return false;
         }
         public void AddLabel(LogicalModel.Label label)
         {
-            AddLabelToDictionary(label);
-            if (this.TaxonomyLabels.FirstOrDefault(i => i.Key == label.Key) == null)
+            if (AddLabelToDictionary(label)) 
             {
                 this.TaxonomyLabels.Add(label);
 
             }
+            //if (this.TaxonomyLabels.FirstOrDefault(i => i.Key == label.Key) == null)
+            //{
+            //    this.TaxonomyLabels.Add(label);
+
+            //}
         }
         public override void LoadLabelDictionary()
         {
@@ -119,7 +134,7 @@ namespace XBRLProcessor.Models
             {
                 EntryDocument.LoadReferences();
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyDocuments);
-                System.IO.File.WriteAllText(TaxonomyStructurePath, jsoncontent);
+                Utilities.FS.WriteAllText(TaxonomyStructurePath, jsoncontent);
             }
             else
             {
@@ -158,10 +173,10 @@ namespace XBRLProcessor.Models
         public bool HandleLabel(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)
         {
             var result = true;
-            var labelid = node.Attributes[Attributes.LabelID].Value;
+            var labelid = Utilities.Xml.Attr(node,Attributes.LabelID);
             var labeltext = node.InnerText;
-            var role = node.Attributes[Attributes.LabelRole].Value;
-            var lang = node.Attributes[Attributes.Language].Value;
+            var role = Utilities.Xml.Attr(node,Attributes.LabelRole);
+            var lang = Utilities.Xml.Attr(node,Attributes.Language);
             var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
             if (FileID.Contains("-lab-")) 
             {
@@ -280,7 +295,8 @@ namespace XBRLProcessor.Models
 
                 table.LoadLayoutHierarchy(logicaltable);
                 table.LoadDefinitionHierarchy(logicaltable);
-        
+
+                logicaltable.LoadDefinitions();
                 logicaltable.LoadLayout();
 
                 this.Tables.Add(logicaltable);
@@ -294,9 +310,13 @@ namespace XBRLProcessor.Models
         private LogicalModel.Base.Element Locate(string key) 
         {
             LogicalModel.Base.Element element = null;
-            if (this.SchemaElementDictionary.ContainsKey(key)) 
+            if (this.SchemaElementDictionary.ContainsKey(key))
             {
                 element = this.SchemaElementDictionary[key];
+            }
+            else 
+            {
+                
             }
             return element;
         }
@@ -304,12 +324,12 @@ namespace XBRLProcessor.Models
         private string GetTargetNamespace(XmlDocument doc) 
         {
             var ns = "";
-            var targetnamespace = doc.DocumentElement.Attributes[Literals.Attributes.TargetNamespace];
+            var targetnamespace = Utilities.Xml.Attr(doc.DocumentElement, Literals.Attributes.TargetNamespace);
             if (targetnamespace != null)
             {
                 foreach (XmlAttribute attr in doc.DocumentElement.Attributes)
                 {
-                    if (attr.Name != Literals.Attributes.TargetNamespace && String.Equals(attr.Value, targetnamespace.Value, StringComparison.InvariantCultureIgnoreCase))
+                    if (attr.Name != Literals.Attributes.TargetNamespace && String.Equals(attr.Value, targetnamespace, StringComparison.InvariantCultureIgnoreCase))
                     {
                         ns = attr.LocalName;
                         break;
@@ -323,7 +343,7 @@ namespace XBRLProcessor.Models
         public bool HandleElements(XmlNode node, XbrlTaxonomyDocument taxonomydocument) 
         {
             var element = new Element();
-            if (node.Attributes["id"] != null)
+            if (!String.IsNullOrEmpty(Utilities.Xml.Attr(node,Literals.Attributes.ID)))
             {
                 Mappings.CurrentMapping.Map(node, element);
 
