@@ -39,7 +39,8 @@ namespace XBRLProcessor.Models
         private string[] _TagNames = new string[] { };
         public string[] TagNames { get { return _TagNames; } set { _TagNames = value; } }
 
- 
+        private string _TargetNamespace = "";
+        public string TargetNamespace { get { return _TargetNamespace; } set { _TargetNamespace = value; } }
 
         private XmlDocument _XmlDocument = null;
         public XmlDocument XmlDocument
@@ -118,6 +119,7 @@ namespace XBRLProcessor.Models
             {
                 var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
                 _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
+                _TargetNamespace = this.Taxonomy.GetTargetNamespace(XmlDocument);
                 foreach (var handler in structurehandlers)
                 {
                     var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));

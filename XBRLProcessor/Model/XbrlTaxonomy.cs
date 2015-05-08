@@ -10,6 +10,7 @@ using XBRLProcessor.Mapping;
 using Utilities;
 using XBRLProcessor.Model;
 using XBRLProcessor.Model.Base;
+using Model.DefinitionModel;
 
 namespace XBRLProcessor.Models
 {
@@ -55,6 +56,7 @@ namespace XBRLProcessor.Models
             Locator.LocatorFunction = Locate;
             LogicalModel.Label.SetLabelPrefix(Literal.LabelPrefix);
         }
+        
         public bool AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
         {
             if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalPath))
@@ -68,6 +70,7 @@ namespace XBRLProcessor.Models
             }
             return false;
         }
+        
         public void AddTaxonomyDocument(XbrlTaxonomyDocument document)
         {
             if (AddTaxonomyDocumentToDictionary(document))
@@ -75,12 +78,8 @@ namespace XBRLProcessor.Models
                 this.TaxonomyDocuments.Add(document);
 
             }
-            //if (this.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == document.LocalPath) == null) 
-            //{
-            //    this.TaxonomyDocuments.Add(document);
-
-            //}
         }
+        
         public bool AddLabelToDictionary(LogicalModel.Label label)
         {
             if (!this.TaxonomyLabelDictionary.ContainsKey(label.Key))
@@ -94,6 +93,7 @@ namespace XBRLProcessor.Models
             }
             return false;
         }
+        
         public void AddLabel(LogicalModel.Label label)
         {
             if (AddLabelToDictionary(label)) 
@@ -107,6 +107,7 @@ namespace XBRLProcessor.Models
 
             //}
         }
+        
         public override void LoadLabelDictionary()
         {
             foreach (var label in this.TaxonomyLabels)
@@ -114,6 +115,7 @@ namespace XBRLProcessor.Models
                 AddLabelToDictionary(label);
             }
         }
+        
         public XbrlTaxonomyDocument FindDocument(string localpath) 
         {
             localpath = localpath.ToLower();
@@ -123,8 +125,6 @@ namespace XBRLProcessor.Models
             }
             return null;
         }
-
-
 
         public override void LoadAllReferences()
         {
@@ -166,7 +166,46 @@ namespace XBRLProcessor.Models
             Console.WriteLine("Load References Completed");
 
         }
-        
+
+        public override void LoadHierarchy()
+        {
+            var hierdocs = this.TaxonomyDocuments.Where(i => i.FileName.ToLower() == "hier.xsd");
+            foreach (var hierdoc in hierdocs) 
+            {
+                var ns = GetTargetNamespace(hierdoc.XmlDocument);
+                var hierdefdoc = hierdoc.References.FirstOrDefault(i=>i.FileName=="hier-def.xml");
+
+                var node = hierdefdoc.XmlDocument.DocumentElement;
+                var hier = new Hier();
+                Mappings.CurrentMapping.Map<Hier>(node, hier);
+                foreach (var deflink in hier.DefinitionLinks) 
+                {
+                    deflink.LoadHierarchy();
+                    foreach (var loc in deflink.Locators) 
+                    {
+                        var path = Utilities.Strings.ResolveRelativePath(hierdefdoc.LocalFolder, loc.Href);
+                        var loc_doc = FindDocument(path);
+                        ns = GetTargetNamespace(loc_doc.XmlDocument);
+                        loc.Namespace = ns;
+                        loc.Locate();
+                    }
+                    int z = 0;
+                }
+
+            }
+        }
+
+        public override void LoadConcepts()
+        {
+            var conceptelements = this.SchemaElements.Where(i => i.Namespace == "eba_met");
+            foreach (var conceptelement in conceptelements)
+            {
+                var concept = new LogicalModel.Concept();
+                concept.Namespace = conceptelement.Namespace;
+                concept.Name = conceptelement.Name;
+                //var 
+            }
+        }
 
         #region Handlers
 
@@ -293,8 +332,9 @@ namespace XBRLProcessor.Models
 
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
 
-                table.LoadLayoutHierarchy(logicaltable);
+                //table.LoadLayoutHierarchy(logicaltable);
                 table.LoadDefinitionHierarchy(logicaltable);
+                table.LoadLayoutHierarchy(logicaltable);
 
                 logicaltable.LoadDefinitions();
                 logicaltable.LoadLayout();
@@ -321,7 +361,7 @@ namespace XBRLProcessor.Models
             return element;
         }
         
-        private string GetTargetNamespace(XmlDocument doc) 
+        public string GetTargetNamespace(XmlDocument doc) 
         {
             var ns = "";
             var targetnamespace = Utilities.Xml.Attr(doc.DocumentElement, Literals.Attributes.TargetNamespace);

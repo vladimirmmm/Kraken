@@ -48,6 +48,7 @@
     <Compile Include="Model\DefinitionModel\Filter\ConceptFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\DimensionFilter.cs" />
     <Compile Include="Model\DefinitionModel\Formula\DimensionAspect.cs" />
+    <Compile Include="Model\DefinitionModel\Hier.cs" />
     <Compile Include="Model\InstanceModel\Context.cs" />
     <Compile Include="Model\InstanceModel\XbrlFact.cs" />
     <Compile Include="Model\InstanceModel\FilingIndicator.cs" />

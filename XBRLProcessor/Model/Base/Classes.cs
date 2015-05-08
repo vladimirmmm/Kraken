@@ -135,6 +135,9 @@ namespace XBRLProcessor.Model.Base
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
 
+        private string _TypedDomainRef = "";
+        public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
+
         public DateTime FromDate { get; set; }
 
         public DateTime CreationDate { get; set; }

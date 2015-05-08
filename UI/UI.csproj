@@ -53,6 +53,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ControlNode.cs" />
     <Compile Include="Features.cs" />
     <Compile Include="JsClass.cs" />
     <Compile Include="MenuCommand.cs" />

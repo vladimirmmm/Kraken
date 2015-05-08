@@ -256,6 +256,11 @@ namespace LogicalModel
             ManageUIFile("Table.css");           
             
         }
+
+        public virtual void LoadHierarchy() 
+        {
+
+        }
         
         public virtual void LoadSchemaElements()
         {

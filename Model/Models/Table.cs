@@ -239,7 +239,7 @@ namespace LogicalModel
             var factdeflist = new List<String>();
             var blocked = new Dictionary<string, bool>();
             var sb = new StringBuilder();
-            LayoutCells.Clear();
+            //LayoutCells.Clear();
             if (LayoutCells.Count == 0)
             {
                 foreach (var row in Rows)
@@ -272,7 +272,7 @@ namespace LogicalModel
                                 xcell.Report = cell.Report;
                                 xcell.Row = cell.Row;
                                 xcell.Column = cell.Column;
-                                xcell.Extension = ext.ID;
+                                xcell.Extension = ext.LabelCode;
                                 xcell.Concept = cell.Concept;
                                 xcell.Dimensions.AddRange(cell.Dimensions);
                                 xcell.Dimensions.AddRange(ext.Dimensions);
@@ -454,6 +454,7 @@ namespace LogicalModel
                 }
             }
         }
+        
         public void EnsureHtmlLayout()
         {
             if (!System.IO.File.Exists(HtmlPath))
@@ -461,6 +462,7 @@ namespace LogicalModel
                 CreateHtmlLayout();
             }
         }
+        
         public void CreateHtmlLayout(bool regenerate = false)
         {
             if (regenerate || !System.IO.File.Exists(HtmlPath))

@@ -8,6 +8,7 @@ using XBRLProcessor.Model.DefinitionModel.Formula;
 
 namespace Model.DefinitionModel
 {
+    //TODO
     public class AspectNode : XbrlIdentifiable
     {
 

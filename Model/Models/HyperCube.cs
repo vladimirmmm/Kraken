@@ -43,10 +43,35 @@ namespace LogicalModel
             var dimensionitem = DimensionItems.FirstOrDefault(i => i.FullName == dimension.DimensionItem);
             if (dimensionitem != null) 
             {
-                var domain = dimensionitem.Domains.FirstOrDefault(i => i.ID == dimension.Domain);
-                if (domain != null) 
+                if (!String.IsNullOrEmpty(dimension.Domain))
                 {
-                    return domain.DomainMembers.Any(i => i.Name == dimension.DomainMember);
+                    var domain = dimensionitem.Domains.FirstOrDefault(i => i.FullName == dimension.Domain);
+                    if (domain == null)
+                    {
+                        domain = dimensionitem.Domains.FirstOrDefault(i => i.ID == dimension.Domain);
+                    }
+                    if (domain != null)
+                    {
+                        var hasmember = domain.DomainMembers.Any(i => i.Name == dimension.DomainMember);
+                        if (!hasmember)
+                        {
+                            if (domain.DomainMembers.Count == 1 && domain.DomainMembers[0].CanHaveAnyValue)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                    else 
+                    {
+                    }
+                }
+                else
+                {
+                    return true;
                 }
             }
             return false;

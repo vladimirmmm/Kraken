@@ -155,5 +155,14 @@ namespace Utilities
             var tags = node.OwnerDocument.GetElementsByTagName("*").Cast<XmlNode>().ToList();
             return tags;
         }
+
+        public static XmlNode FirstChild(XmlNode node)
+        {
+            if (node.ChildNodes != null && node.ChildNodes.Count > 0)
+            {
+                return node.ChildNodes[0];
+            }
+            return null;
+        }
     }
 }

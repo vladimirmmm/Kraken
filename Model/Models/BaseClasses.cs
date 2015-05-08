@@ -71,6 +71,10 @@ namespace LogicalModel.Base
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
 
+        private string _TypedDomainRef = "";
+        public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
+
+
         public DateTime FromDate { get; set; }
 
         public DateTime CreationDate { get; set; }
@@ -103,7 +107,7 @@ namespace LogicalModel.Base
         private string _Name = "";
         public string Name { get { return _Name; } set { _Name = value; } }
 
-        public string FullName 
+        public virtual string FullName 
         {
             get 
             {

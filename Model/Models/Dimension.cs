@@ -14,7 +14,15 @@ namespace LogicalModel
 
         public string DomainMemberFullName 
         {
-            get { return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember); }
+            get 
+            {
+                if (String.IsNullOrEmpty(DomainMember)) 
+                {
+                    return String.Format("[{0}]{1}", DimensionItem, Domain, DomainMember);
+
+                }
+                return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
+            }
         }
 
         public string DimensionItemFullName
@@ -47,4 +55,10 @@ namespace LogicalModel
             return this.DomainMemberFullName.GetHashCode();
         }
     }
+
+    //public class TypeDimension : Dimension
+    //{
+    //    public override 
+
+    //}
 }

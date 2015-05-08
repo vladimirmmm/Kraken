@@ -170,13 +170,22 @@ namespace XBRLProcessor.Model
                     li.IsAspect = true;
                     var logicaldimension = new LogicalModel.Dimension();
                     logicaldimension.DimensionItem = aspect.DimensionAspect.Content;
-                    logicaldimension.Domain = aspect.DimensionAspect.Domain;
-                    logicaldimension.DomainMember = aspect.DimensionAspect.Value;
-
-                    if (logicaldimension != null)
+                    var hc = logicaltable.HyperCubes.FirstOrDefault(i => i.DimensionItems.Any(j => j.FullName == logicaldimension.DimensionItem));
+                    if (hc != null) 
                     {
-                        li.Dimensions.Add(logicaldimension);
+                        var dimitem = hc.DimensionItems.FirstOrDefault(i=>i.FullName==logicaldimension.DimensionItem);
+                        if (dimitem!=null && dimitem.Domains.Count>0)
+                        {
+                            logicaldimension.Domain = dimitem.Domains.FirstOrDefault().FullName;
+
+                        }
                     }
+                    //logicaldimension.Domain = aspect.DimensionAspect.Domain;
+                    //logicaldimension.DomainMember = aspect.DimensionAspect.Value;
+
+
+                    li.Dimensions.Add(logicaldimension);
+
 
                 }
                 logicaltable.LayoutItems.Add(hi);
@@ -200,34 +209,7 @@ namespace XBRLProcessor.Model
             DefinitionItems.Add(rootNode);
             Console.WriteLine(this.XsdPath);
 
-            //including the roles
-            //foreach (var definitionlink in DefinitionLinks)
-            //{
-            //    var arcswithrole = definitionlink.DefinitionArcs.Where(i => !String.IsNullOrEmpty(i.TargetRole)).ToList();
-            //    foreach (var arc in arcswithrole) 
-            //    {
-            //        var arcdeflink = DefinitionLinks.FirstOrDefault(i => i.Role == arc.TargetRole);
-            //        definitionlink.DefinitionArcs.AddRange(arcdeflink.DefinitionArcs);
-            //        var locatorfound = false;
-            //        foreach (var locator in arcdeflink.Locators)
-            //        {
-            //            var islocator = false;
-            //            if (!locatorfound)
-            //            {
-            //                islocator = definitionlink.Locators.Any(i => i.ID == locator.ID);
-            //            }
-            //            if (locatorfound || !islocator)
-            //            {
-            //                definitionlink.Locators.Add(locator);
-            //            }
-            //            if (islocator) 
-            //            {
-            //                locatorfound = true;
-            //            }
-            //        }
-            //    }
-            //}
-            //
+         
             foreach (var definitionlink in DefinitionLinks)
             {
                 definitionlink.LoadHierarchy();
@@ -296,19 +278,56 @@ namespace XBRLProcessor.Model
                 var domains = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.dimension_domain).Where(i => i.Children.Count > 0).ToList();
                 domains = domains.Where(i => i.Children.FirstOrDefault(j => !j.Item.Element.IsDefaultMember) != null).ToList();
 
-                var hypercubeitems = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.hypercube_dimension).Where(i => i.Children.Count > 0).ToList();
+                var hypercubeitems = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.hypercube_dimension).ToList(); //.Where(i => i.Children.Count > 0)
                 foreach (var hypercubeitem in hypercubeitems) 
                 {
                     var logicalhypercubeitem = new LogicalModel.Dimensions.DimensionItem();
                     logicalhypercubeitem.Content = hypercubeitem.Item.Element.Key;
                     logicalhypercubeitem.Name = hypercubeitem.Item.Element.Name;
+                    logicalhypercubeitem.LabelID = hypercubeitem.Item.LabelID;
+
+                    if (hypercubeitem.Children.Count == 0) 
+                    {
+                        var domainref = hypercubeitem.Item.Element.TypedDomainRef;
+                        if (!String.IsNullOrEmpty(domainref))
+                        {
+                            var se_dim_doc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == hypercubeitem.Item.Element.Namespace);
+                            var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
+                            var se_domain_doc = this.Taxonomy.FindDocument(path);
+                            var refid = domainref.Substring(domainref.IndexOf("#") + 1);
+                            var se_domain_key = se_domain_doc.TargetNamespace + ":" + refid;
+                            var se_domain = Taxonomy.SchemaElementDictionary[se_domain_key];
+
+                            if (se_domain != null)
+                            {
+                                var logicaldomain = new LogicalModel.Dimensions.DimensionDomain();
+                                logicaldomain.Content = se_domain_key;
+                                logicaldomain.Name = se_domain.Name;
+                                logicaldomain.DimensionItem = logicalhypercubeitem;
+                                logicaldomain.LabelID = se_domain.ID;        
+                                logicalhypercubeitem.Domains.Add(logicaldomain);
+
+                                var logicalmember = new LogicalModel.Dimensions.TypedDimensionMember();
+                                logicalmember.Content = logicaldomain.Name + ":*";
+                                logicalmember.Name = "*";
+                                logicalmember.Domain = logicaldomain;
+                                logicalmember.LabelID = "";
+                                //logicalmember.IsDefaultMember = domainmember.Item.Element.IsDefaultMember;
+                                logicaldomain.DomainMembers.Add(logicalmember);
+
+                                hypercube.DimensionItems.Add(logicalhypercubeitem);
+
+                            }
+                        }
+                        //var xs = Taxonomy.SchemaElementDictionary[hypercubeitem.Item.]
+                    }
 
                     var completedomains = hypercubeitem.Children.Where(i => i.Children.FirstOrDefault(j => !j.Item.Element.IsDefaultMember) != null).ToList();
-                    if (completedomains.Count > 0) 
+                    if (completedomains.Count > 0)
                     {
-                        logicalhypercubeitem.LabelID = hypercubeitem.Item.LabelID;
                         hypercube.DimensionItems.Add(logicalhypercubeitem);
                     }
+
                     foreach (var domain in completedomains) 
                     {
                         var logicaldomain= new LogicalModel.Dimensions.DimensionDomain();
@@ -339,6 +358,9 @@ namespace XBRLProcessor.Model
             }
            
         }
+        
+
+
         public void LocateDefinitions()
         {
             foreach (var definition in this.DefinitionItems)

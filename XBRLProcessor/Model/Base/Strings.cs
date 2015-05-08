@@ -28,6 +28,10 @@ namespace XBRLProcessor.Model.StringEnums
         }
         public static StringEnum Get(Type StringEnumType, string key) 
         {
+            if (!StringEnum.Values.ContainsKey(StringEnumType)) 
+            {
+                var x = new typeloaderclass();
+            }
             var items = StringEnum.Values[StringEnumType];
             return items[key.ToLower()];
         }
@@ -36,6 +40,7 @@ namespace XBRLProcessor.Model.StringEnums
             return name;
         }
     }
+
     public class ParentChildOrder: StringEnum
     {
         public ParentChildOrder(int value, String name) : base(value, name) { }
@@ -88,5 +93,15 @@ namespace XBRLProcessor.Model.StringEnums
         public static readonly FilterBalance Credit = new FilterBalance(0, "credit");
         public static readonly FilterBalance None = new FilterBalance(0, "none");
 
+    }
+
+    class typeloaderclass 
+    {
+        public FilterAxis a1 = FilterAxis.Child;
+        public FilterBalance a2 = FilterBalance.Credit;
+        public FilterPeriod a3=FilterPeriod.Duration;
+        public Axis a4 = Axis.Z;
+        public AspectModel a5 = AspectModel.Dimensional;
+        public ParentChildOrder a6=ParentChildOrder.ChildFirst;
     }
 }

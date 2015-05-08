@@ -1,5 +1,6 @@
 ﻿using BaseModel;
 using LogicalModel.Base;
+using LogicalModel.Dimensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace LogicalModel
 {
     public class Concept :QualifiedName
     {
-    
+        public DimensionDomain Domain { get; set; }
+        //public List<Dimension> PossibleDimensions = new List<Dimension>();
     }
 }

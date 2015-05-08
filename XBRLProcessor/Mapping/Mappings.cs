@@ -399,75 +399,76 @@ namespace XBRLProcessor.Mapping
             }
             else
             {
+                var stringval = "";
                 if (!String.IsNullOrEmpty(tagname) && !IsComplexType)
                 {
                     var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
                     if (childnode != null)
                     {
-                        value = Utilities.Xml.Attr(childnode, "@content");
+                        stringval = Utilities.Xml.Attr(childnode, "@content");
+                    }
+
+                }
+                if (XmlSelector.StartsWith("/")) 
+                {
+                    XmlNode firstchild = Utilities.Xml.FirstChild(node);
+                    if (firstchild != null) 
+                    {
+                        var selector = XmlSelector.Substring(1);
+                        stringval = Utilities.Xml.Attr(firstchild, selector);
+
+                    }
+                }
+                //else
+                if (String.IsNullOrEmpty(stringval)) //default case
+                {
+                    stringval = Utilities.Xml.Attr(node, XmlSelector);
+                }
+   
+                if (!String.IsNullOrEmpty(stringval))
+                {
+                    value = stringval;
+                    if (propertyTypeName == "Int32")
+                    {
+                        int intval;
+                        if (int.TryParse(stringval, out intval))
+                        {
+                            value = intval;
+                        }
+
+                    }
+
+                    if (prop.PropertyType.BaseType == typeof(StringEnum))
+                    {
+                        value = StringEnum.Get(prop.PropertyType, stringval);
+
+                    }
+
+                    if (propertyTypeName == "Boolean" || propertyTypeName == "bool")
+                    {
+                        bool intval;
+                        if (bool.TryParse(stringval, out intval))
+                        {
+                            value = intval;
+                        }
+                    }
+
+                    if (propertyTypeName == "DateTime")
+                    {
+                        value = Utilities.Converters.StringToDateTime(stringval, "yyyy-MM-dd");
                     }
 
                 }
                 else
                 {
-                    var attrvalue = Utilities.Xml.Attr(node, XmlSelector);
-                    if (!String.IsNullOrEmpty(attrvalue))
+
+                    if (!string.IsNullOrEmpty(stringval) && propertyTypeName == "String")
                     {
-                        value = attrvalue;
-                        if (propertyTypeName == "Int32")
-                        {
-                            int intval;
-                            if (int.TryParse(attrvalue, out intval))
-                            {
-                                value = intval;
-                            }
-
-                        }
-
-                        if (prop.PropertyType.BaseType == typeof(StringEnum))
-                        {
-                            value = StringEnum.Get(prop.PropertyType, attrvalue);
-
-                        }
-
-                        if (propertyTypeName == "Boolean" || propertyTypeName == "bool")
-                        {
-                            bool intval;
-                            if (bool.TryParse(attrvalue, out intval))
-                            {
-                                value = intval;
-                            }
-                        }
-
-                        if (propertyTypeName == "DateTime")
-                        {
-                            value = Utilities.Converters.StringToDateTime(attrvalue, "yyyy-MM-dd");
-                        }
-
+                        value = stringval;
                     }
-                    else
-                    {
-                        var stringval = "";
-                        //if (!String.IsNullOrEmpty(tagname))
-                        //{
-                        //    var propnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
-                        //    if (propnode != null)
-                        //    {
-                        //        stringval = Utilities.Xml.Content(propnode);
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    stringval = Utilities.Xml.Content(node);
 
-                        //}
-                        if (!string.IsNullOrEmpty(stringval) && propertyTypeName == "String")
-                        {
-                            value = stringval;
-                        }
-
-                    }
                 }
+                
                 if (value != null)
                 {
                     Setter(instance as TClass, (PropertyType)value);

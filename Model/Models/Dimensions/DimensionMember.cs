@@ -32,5 +32,22 @@ namespace LogicalModel.Dimensions
             get;
             set;
         }
+
+        public bool CanHaveAnyValue 
+        {
+            get { return this.Name == "*"; }
+        }
+    }
+
+    public class TypedDimensionMember : DimensionMember 
+    {
+        public override string FullName
+        {
+            get
+            {
+                return String.Format("{0}:{1}", Domain.Namespace, Domain.Name);
+            }
+
+        }
     }
 }

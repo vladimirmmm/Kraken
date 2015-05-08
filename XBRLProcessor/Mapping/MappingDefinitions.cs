@@ -32,7 +32,8 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("model:domain", (Element i) => i.Domain),
                     Mappings.PropertyMap("model:hierarchy", (Element i) => i.Hierarchy),
                     Mappings.PropertyMap("model:fromDate", (Element i) => i.FromDate),
-                    Mappings.PropertyMap("model:creationDate", (Element i) => i.CreationDate)
+                    Mappings.PropertyMap("model:creationDate", (Element i) => i.CreationDate),
+                    Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef)
                 ),
 
                 Mappings.Map<Link>("<xlink>",
@@ -164,6 +165,11 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("dimension", (Dimension i) => i.DimensionItem),
                     Mappings.PropertyMap("@content", (Dimension i) => i.DomainMember)
                  ),
+                Mappings.Map<Dimension>("<xbrldi:typedMember>",
+                    Mappings.PropertyMap("dimension", (Dimension i) => i.DimensionItem),
+                    Mappings.PropertyMap("/@name", (Dimension i) => i.Domain),
+                    Mappings.PropertyMap("/@content", (Dimension i) => i.DomainMember)
+                 ),
                 Mappings.Map<LogicalModel.Base.QualifiedName>("<qname>", 
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                 ),
@@ -181,7 +187,8 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<xbrli:enddate>", (Period i) => i.EndDate)
                  ),
                  Mappings.Map<Scenario>("<xbrli:scenario>",
-                    Mappings.PropertyMap("<xbrldi:explicitMember>", (Scenario i) => i.Dimensions)
+                    Mappings.PropertyMap("<xbrldi:explicitMember>", (Scenario i) => i.Dimensions),
+                    Mappings.PropertyMap("<xbrldi:typedMember>", (Scenario i) => i.Dimensions)
                  ),
                  Mappings.Map<FilingIndicator>("<find:filingIndicator>",
                     Mappings.PropertyMap("contextRef", (FilingIndicator i) => i.ContextRef),
@@ -212,7 +219,10 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<xbrli:unit>", (XbrlInstance i) => i.Units)
                  ),
                  //End Instance
-  
+                //hier
+                  Mappings.Map<Hier>("<hier>",
+                    Mappings.PropertyMap("<link:definitionLink>", (Hier i) => i.DefinitionLinks)
+                 ),
             };
 
            
@@ -233,6 +243,7 @@ namespace XBRLProcessor.Mapping
             toitem.SubstitutionGroup = item.SubstitutionGroup;
             toitem.Type = item.Type;
             toitem.Namespace = item.Namespace;
+            toitem.TypedDomainRef = item.TypedDomainRef;
             return toitem;
         }
 
