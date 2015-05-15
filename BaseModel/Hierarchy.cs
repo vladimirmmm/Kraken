@@ -269,13 +269,13 @@ namespace BaseModel
             return items;
         }
 
-        public string ToHierarchyString(string tag="") 
+        public string ToHierarchyString(Func<TClass,string> tostringexpression,string tag="") 
         {
             var sb = new StringBuilder();
-            sb.AppendLine(String.Format("{0}{1}", tag, this.Item));
+            sb.AppendLine(String.Format("{0}{1}", tag, tostringexpression(this.Item)));
             foreach (var child in this.Children)
             {
-                sb.Append(child.ToHierarchyString(tag + "    "));
+                sb.Append(child.ToHierarchyString(tostringexpression, tag + "    "));
             }
             return sb.ToString();
         }

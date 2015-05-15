@@ -10,7 +10,7 @@ using XBRLProcessor.Models;
 
 namespace XBRLProcessor
 {
-    public partial class XbrlEngine
+    public partial class XbrlEngine: LogicalModel.TaxonomyEngine
     {
 
         public XbrlTaxonomy CurrentTaxonomy = null;
@@ -26,7 +26,7 @@ namespace XBRLProcessor
             }
         }
 
-        public void LoadTaxonomy(string filepath) 
+        public override void LoadTaxonomy(string filepath) 
         {
             Console.WriteLine("Loading Taxonomy ");
             CurrentTaxonomy = new XbrlTaxonomy(filepath);
@@ -39,13 +39,28 @@ namespace XBRLProcessor
             CurrentTaxonomy.LoadHierarchy();
 
             Console.WriteLine("Loading Taxonomy finished");
-    
+            base.LoadTaxonomy(filepath);
         }
-        public void LoadInstance(string filepath)
+        public override void LoadInstance(string filepath)
         {
-            var instance = new XbrlInstance(filepath);
-            instance.Load();
-            LoadTaxonomy(instance.SchemaRef.Href);
+            Console.WriteLine("Loading Instance started");
+            CurrentInstance = new XbrlInstance(filepath);
+            CurrentInstance.Load();
+            base.LoadInstance(filepath);
+            Console.WriteLine("Loading Instance finished");
+            var taxonomyloadneeded = true;
+            if (CurrentTaxonomy!=null){
+                var localmoduleentry = Utilities.Strings.GetLocalPath(CurrentTaxonomy.LocalFolder, CurrentInstance.SchemaRef.Href);
+                taxonomyloadneeded = CurrentTaxonomy.EntryDocument.LocalPath != localmoduleentry;
+            }
+            if (taxonomyloadneeded)
+            {
+                LoadTaxonomy(CurrentInstance.SchemaRef.Href);
+            
+            }
+            CurrentInstance.Taxonomy = CurrentTaxonomy;
+            CurrentInstance.ModulePath = Utilities.Strings.GetLocalPath(CurrentTaxonomy.LocalFolder, CurrentInstance.TaxonomyModuleReference);
+
         }
 
         public void LoadLabels()

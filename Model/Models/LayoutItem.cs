@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LogicalModel.Helpers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,29 +92,6 @@ namespace LogicalModel
             return String.Format("{0} - {1}", ID, Label == null ? LabelID : LabelContent);
         }
 
-        private string _Factidentifier = "";
-        public string Factidentifier 
-        {
-            get 
-            {
-                if (string.IsNullOrEmpty(_Factidentifier))
-                {
-                    //if (!String.IsNullOrEmpty(Concept))
-                    if (Concept!=null)
-                    {
-                        _Factidentifier = String.Format("Concept<{0}>", Concept);
-                    }
-                    if (!string.IsNullOrEmpty(DimensionString))
-                    {
-                        _Factidentifier = _Factidentifier + String.Format(" Dimensions<{0}>", DimensionString);
-
-                    }
-                }
-                return _Factidentifier;
-            }
-            set { _Factidentifier = value; }
-        }
-
         private string _FactString = "";
         public string FactString
         {
@@ -121,32 +99,16 @@ namespace LogicalModel
             {
                 if (string.IsNullOrEmpty(_FactString))
                 {
-                    _FactString = "";
-                    //if (!String.IsNullOrEmpty(Concept))
-                    if (Concept!=null)
-                    {
-                        _FactString += Concept + ">";
-                    }
-                    if (!string.IsNullOrEmpty(DimensionString))
-                    {
-                        _FactString += DimensionString;
-
-                    }
+                    _FactString = QNameHelpers.GetFactString(Concept, Dimensions);
                 }
                 return _FactString;
             }
-            set 
+            set
             {
                 _FactString = value;
-                var s = _FactString;
-                var cix = s.IndexOf(">");
-                if (cix > -1) 
-                {
-                    if (Concept == null) { Concept = new Concept(); }
-                    Concept.Content = s.Remove(cix);
-                    s = s.Substring(cix + 1);
-                }
-                //Dimensions = s.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var fb = QNameHelpers.GetFactBase(_FactString);
+                this.Concept = fb.Concept;
+                this.Dimensions = fb.Dimensions;
             }
         }
         

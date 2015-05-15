@@ -89,8 +89,22 @@ namespace XBRLProcessor.Models
             }
             else 
             {
-                int z = 0;
+        
             }
+            return false;
+        }
+
+        public bool AddFactToDictionary(LogicalModel.Fact fact)
+        {
+            //if (!this.Facts.ContainsKey(fact.FactString))
+            //{
+            //    this.TaxonomyLabelDictionary.Add(fact.FactString, fact);
+            //    return true;
+            //}
+            //else
+            //{
+
+            //}
             return false;
         }
         
@@ -113,6 +127,14 @@ namespace XBRLProcessor.Models
             foreach (var label in this.TaxonomyLabels)
             {
                 AddLabelToDictionary(label);
+            }
+        }
+
+        public override void LoadFactDictionary()
+        {
+            foreach (var fact in this.Facts)
+            {
+                //AddFactToDictionary(fact);
             }
         }
         
@@ -217,6 +239,7 @@ namespace XBRLProcessor.Models
             var role = Utilities.Xml.Attr(node,Attributes.LabelRole);
             var lang = Utilities.Xml.Attr(node,Attributes.Language);
             var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
+            //FileID = GetTargetNamespace(((XbrlTaxonomyDocument)taxonomydocument).XmlDocument);
             if (FileID.Contains("-lab-")) 
             {
                 FileID = FileID.Remove(FileID.IndexOf("-lab-") + 5);
@@ -332,13 +355,18 @@ namespace XBRLProcessor.Models
 
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
 
-                //table.LoadLayoutHierarchy(logicaltable);
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
 
+             
+                //for debug
+                //Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));
+                //Utilities.FS.WriteAllText(logicaltable.LayoutPath, logicaltable.LayoutRoot.ToHierarchyString(i => i.ID+"<"+i.FactString+">"));
+               
                 logicaltable.LoadDefinitions();
                 logicaltable.LoadLayout();
-
+                var s = Utilities.Converters.ToJson(logicaltable);
+                Utilities.FS.WriteAllText(logicaltable.HtmlPath.Replace(".html", ".json"), s);
                 this.Tables.Add(logicaltable);
                 this.TaxonomyTables.Add(table);
             }

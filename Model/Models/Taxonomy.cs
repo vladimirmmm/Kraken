@@ -131,6 +131,7 @@ namespace LogicalModel
         }
 
         public virtual void LoadLabelDictionary() { }
+        public virtual void LoadFactDictionary() { }
 
         public virtual void LoadFacts()
         {
@@ -141,7 +142,7 @@ namespace LogicalModel
 
             if (!System.IO.File.Exists(TaxonomyFactsPath))
             {
-                foreach (var table in Tables) 
+                foreach (var table in Tables)
                 {
                     table.LoadDefinitions();
                 }
@@ -156,6 +157,9 @@ namespace LogicalModel
 
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
                 this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
+
+                this.LoadFactDictionary();
+
                 LoadCells();
             }
             Console.WriteLine("Load Facts completed");
@@ -170,7 +174,10 @@ namespace LogicalModel
                 var cells = fact.Value;
                 foreach (var cell in cells) 
                 {
-                    Cells.Add(cell, new List<string>() { fact.Key });
+                    if (!Cells.ContainsKey(cell))
+                    {
+                        Cells.Add(cell, new List<string>() { fact.Key });
+                    }
                 }
             }
             Console.WriteLine("Load Cells completed");
@@ -230,6 +237,7 @@ namespace LogicalModel
 
             if (!System.IO.File.Exists(taxpath))
             {
+                Utilities.FS.EnsurePath(taxpath);
                 System.IO.File.Copy(finfo_build.FullName, taxpath, true);
             }
             else 
@@ -250,10 +258,14 @@ namespace LogicalModel
             {
                 System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
             }
-            
-            ManageUIFile("jquery-2.0.3.js");
-            ManageUIFile("Table.js");
-            ManageUIFile("Table.css");           
+
+            ManageUIFile(@"Scripts\jquery-2.1.3.js");
+            ManageUIFile(@"Scripts\Linq.js");
+            ManageUIFile(@"Scripts\Instance.js");
+            ManageUIFile(@"Scripts\Models.js");
+            ManageUIFile(@"Scripts\Table.js");
+            ManageUIFile(@"Scripts\Utils.js");
+            ManageUIFile(@"Table.css");           
             
         }
 
@@ -323,6 +335,14 @@ namespace LogicalModel
         public virtual void ClearCache()
         {
 
+        }
+        public void Clear_All_But_Structure()
+        {
+            Clear_Tables();
+            Clear_Layout();
+            Clear_Labels();
+            Clear_SchemaElements();
+            Clear_Facts();
         }
         public void Clear_All()
         {

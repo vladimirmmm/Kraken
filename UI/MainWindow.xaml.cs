@@ -26,8 +26,8 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MenuCommand rootcommand=new MenuCommand("root","");
         protected Features Features = null;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -43,6 +43,7 @@ namespace UI
             this.Features = new Features(this);
 
             this.Features.LoadMenu(this.Features.CommandContainer, null);
+            this.Features.LoadFeatures(this.Features.FeatureContainer, null);
 
         }
 
@@ -61,6 +62,19 @@ namespace UI
             if (TabControl_Left.SelectedIndex == 1) 
             {
             }
+
+            mshtml.HTMLDocument doc;
+            doc = (mshtml.HTMLDocument)Browser.Document;
+            mshtml.HTMLDocumentEvents2_Event iEvent;
+            iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
+            iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(HtmlDocumentClickEventHandler);
+  
+        }
+
+        private bool HtmlDocumentClickEventHandler(mshtml.IHTMLEventObj pEvtObj)
+        {
+            int z = 0;
+            return true;
         }
 
         private void SetExtension() 
@@ -74,6 +88,11 @@ namespace UI
             try
             {
                 Browser.InvokeScript("SetExtension", Utilities.Converters.ToJson(table.CurrentExtension));
+                var instance = Features.CurrentInstance;
+                if (instance != null)
+                {
+                    Browser.InvokeScript("LoadInstance", Utilities.Converters.ToJson(instance));
+                }
             }
             catch (Exception ex) 
             {
@@ -218,6 +237,30 @@ namespace UI
         private void TB_CellFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             Features.SearchCells(TB_CellFilter.Text);
+        }
+
+        private void TB_GeneralFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TB_GeneralFilter.Text.Length > 1) 
+            {
+                Features.Search(TB_GeneralFilter.Text);
+            }
+        }
+
+        private void B_Browser_Back_Click(object sender, RoutedEventArgs e)
+        {
+            if (Browser.CanGoBack) 
+            {
+                Browser.GoBack();
+            }
+        }
+
+        private void B_Browser_Forward_Click(object sender, RoutedEventArgs e)
+        {
+            if (Browser.CanGoForward)
+            {
+                Browser.GoForward();
+            }
         }
 
 

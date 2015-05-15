@@ -10,10 +10,13 @@ namespace LogicalModel
     public class Fact
     {
 
-        private String _FactKey= "";
-        public String FactKey { get { return _FactKey; } set { _FactKey = value; } }
+        private String _FactString= "";
+        public String FactString { get { return _FactString; } set { _FactString = value; } }
 
         public int Decimals { get; set; }
+
+        private String _Concept= "";
+        public String Concept { get { return _Concept; } set { _Concept = value; } }
 
         private String _Value = "";
         public String Value { get { return _Value; } set { _Value = value; } }
@@ -24,9 +27,9 @@ namespace LogicalModel
                 if (String.IsNullOrEmpty(_Value)) { return 0; }
                 return float.Parse(_Value, CultureInfo.InvariantCulture);
             }
-            set {
-                _Value = String.Format("{0:0.##}", value); 
-            }
+            //set {
+            //    _Value = String.Format("{0:0.##}", value); 
+            //}
         }
 
         public String ContextID { get; set; }
@@ -38,7 +41,7 @@ namespace LogicalModel
 
         public override string ToString()
         {
-            return String.Format("Value: {0}; FactKey: {1};", Value, FactKey);
+            return String.Format("Value: {0}; FactString: {1};", Value, FactString);
         }
     }
 }

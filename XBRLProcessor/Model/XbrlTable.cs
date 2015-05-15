@@ -131,12 +131,14 @@ namespace XBRLProcessor.Model
                     {
                         li.IsAbstract = rule.Abstract;
                     }
-                    foreach (var dimension in rule.Dimensions) 
+                    var dimensions = rule.Dimensions;//.Where(i=>i.)
+                    foreach (var dimension in dimensions)
                     {
                         var logicaldimension = new LogicalModel.Dimension();
                         var explicitDimension = dimension as ExplicitDimension;
                         var typedDimension = dimension as TypedDimension;
-                        if (explicitDimension!=null){
+                        if (explicitDimension != null)
+                        {
                             logicaldimension.DimensionItem = explicitDimension.Dimension;
                             if (explicitDimension.Members.Count == 1)
                             {
@@ -149,16 +151,12 @@ namespace XBRLProcessor.Model
                                 Console.WriteLine("Multiple Members Detected");
                             }
                         }
-                        if (typedDimension != null) 
+                        if (typedDimension != null)
                         {
                             Console.WriteLine("Typed Dimension Detected");
 
                         }
-                        if (logicaldimension != null) 
-                        {
-                            li.Dimensions.Add(logicaldimension);
-
-                        }
+                        li.Dimensions.Add(logicaldimension);
                     }
             
                 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LogicalModel.Base;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,66 +8,50 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
-    public class Cell
+    [JsonObject(MemberSerialization.OptIn)]
+    public class Cell:FactBase
     {
-        public Concept Concept { get; set; }
-        private List<Dimension> _Dimensions = new List<Dimension>();
-        public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
-
         private string _Report = "";
         public string Report { get { return _Report; } set { _Report = value; } }
-
-        //y
-        private string _Row = "";
-        public string Row { get { return _Row; } set { _Row = value; } }
-
-        //x
-        private string _Column = "";
-        public string Column { get { return _Column; } set { _Column = value; } }
 
         //z
         private string _Extension = "";
         public string Extension { get { return _Extension; } set { _Extension = value; } }
 
+        //y
+        private string _Row = "";
+        [JsonProperty]
+        public string Row { get { return _Row; } set { _Row = value; } }
+
+        //x
+        private string _Column = "";
+        [JsonProperty]
+        public string Column { get { return _Column; } set { _Column = value; } }
+
+     
+        [JsonProperty]
         public Boolean IsBlocked { get; set; }
 
         private string _Formula = "";
         public string Formula { get { return _Formula; } set { _Formula = value; } }
 
         private string _FactString = "";
+        [JsonProperty]
         public string FactString
         {
             get
             {
                 if (string.IsNullOrEmpty(_FactString))
                 {
-                    _FactString = "";
-                    //if (!String.IsNullOrEmpty(Concept))
-                    if (Concept != null)
-                    {
-                        _FactString += Concept + ">";
-                    }
-                    foreach (var dimension in Dimensions)
-                    {
-
-                        _FactString += dimension.DomainMemberFullName+" ";
-
-                    }
+                    _FactString = GetFactString();
+               
                 }
                 return _FactString;
             }
             set
             {
                 _FactString = value;
-                var s = _FactString;
-                var cix = s.IndexOf(">");
-                if (cix > -1)
-                {
-                    if (Concept == null) { Concept = new Concept(); }
-                    Concept.Content = s.Remove(cix);
-                    s = s.Substring(cix + 1);
-                }
-                //Dimensions = s.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                SetFromString(_FactString);
             }
         }
 
@@ -77,18 +63,28 @@ namespace LogicalModel
             }
         }
 
+        public string LayoutID
+        {
+            get
+            {
+                return string.Format("R{0}|C{1}",Row, Column);
+            }
+        }
+
         public string FactKey 
         {
             get {
                 var sb = new StringBuilder();
                 sb.AppendFormat("{0},", this.Concept);
-                foreach (var dim in Dimensions)
+                var dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+                foreach (var dim in dimensions)
                 {
                     sb.AppendFormat("{0},", dim.DomainMemberFullName);
                 }
                 return sb.ToString();
             }
         }
+        
         public override string ToString()
         {
             return String.Format("{0} - R{1}|C{2}",Report, Row, Column);

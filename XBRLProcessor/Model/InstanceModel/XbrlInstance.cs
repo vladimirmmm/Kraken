@@ -10,19 +10,12 @@ using XBRLProcessor.Model.Base;
 
 namespace Model.InstanceModel
 {
-    public class XbrlInstance
+    public class XbrlInstance: LogicalModel.Instance
     {
-        private String _FullPath = "";
-        public String FullPath { get { return _FullPath; } set { _FullPath = value; } }
+
 
         public Link SchemaRef { get; set; }
 
-        private List<Unit> _Units = new List<Unit>();
-        public List<Unit> Units
-        {
-            get { return _Units; }
-            set { _Units = value; }
-        }
 
         private List<Context> _Contexts = new List<Context>();
         public List<Context> Contexts
@@ -31,18 +24,18 @@ namespace Model.InstanceModel
             set { _Contexts = value; }
         }
 
-        private List<XbrlFact> _Facts = new List<XbrlFact>();
-        public List<XbrlFact> Facts
+        private List<XbrlFact> _XbrlFacts = new List<XbrlFact>();
+        public List<XbrlFact> XbrlFacts
         {
-            get { return _Facts; }
-            set { _Facts = value; }
+            get { return _XbrlFacts; }
+            set { _XbrlFacts = value; }
         }
 
-        private List<FilingIndicator> _FilingIndicators = new List<FilingIndicator>();
-        public List<FilingIndicator> FilingIndicators
+        private List<FilingIndicator> _XbrlFilingIndicators = new List<FilingIndicator>();
+        public List<FilingIndicator> XbrlFilingIndicators
         {
-            get { return _FilingIndicators; }
-            set { _FilingIndicators = value; }
+            get { return _XbrlFilingIndicators; }
+            set { _XbrlFilingIndicators = value; }
         }
 
         private XmlDocument _XmlDocument = null;
@@ -76,27 +69,29 @@ namespace Model.InstanceModel
             {
                 var item = new XbrlFact();
                 Mappings.CurrentMapping.Map<XbrlFact>(factnode, item);
-                this.Facts.Add(item);
+                this.XbrlFacts.Add(item);
             }
 
-            this.FilingIndicators.Clear();
+            this.XbrlFilingIndicators.Clear();
             var filingnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.Equals("find:filingIndicator", StringComparison.OrdinalIgnoreCase)).ToList();
             foreach (var filingnode in filingnodes)
             {
                 var item = new FilingIndicator();
                 Mappings.CurrentMapping.Map<FilingIndicator>(filingnode, item);
-                this.FilingIndicators.Add(item);
+                this.XbrlFilingIndicators.Add(item);
             }
+            LoadLogicalData();
         }
 
-        public Instance GetInstance() 
+
+
+        public void LoadLogicalData() 
         {
-            var instance = new Instance();
-            instance.Entity = Contexts.FirstOrDefault().Entity;
-            instance.ReportingDate = Contexts.FirstOrDefault().Period.Instant;
-            instance.TaxonomyModuleReference = this.SchemaRef.Href;
-            instance.FilingIndicators = this.FilingIndicators.Select(i=>i.Value).ToList();
-            foreach (var xbrlfact in Facts) 
+            this.Entity = Contexts.FirstOrDefault().Entity;
+            this.ReportingDate = Contexts.FirstOrDefault().Period.Instant;
+            this.TaxonomyModuleReference = this.SchemaRef.Href;
+            this.FilingIndicators = this.XbrlFilingIndicators.Select(i=>i.Value).ToList();
+            foreach (var xbrlfact in XbrlFacts) 
             {
                 var xbrlcontext = this.Contexts.FirstOrDefault(i => i.ID == xbrlfact.ContextRef);
                 var logicalfact = new Fact();
@@ -106,18 +101,31 @@ namespace Model.InstanceModel
                 
                 var factkey = "";
                 factkey = String.Format("{0},",xbrlfact.Concept);
-                foreach (var dimension in xbrlcontext.Scenario.Dimensions) 
+                logicalfact.Concept = xbrlfact.Concept;
+                var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
+                foreach (var dimension in dimensions) 
                 {
                     var dimitem = String.Format("{0},", dimension.DomainMemberFullName);
                     factkey += dimitem;
                 }
 
-                logicalfact.FactKey = factkey;
+                logicalfact.FactString = factkey;
                 logicalfact.Value = xbrlfact.Value;
-                instance.Facts.Add(logicalfact);
+                this.Facts.Add(logicalfact);
 
             }
-            return instance;
+        }
+
+        public override bool Validate()
+        {
+            Console.WriteLine("Validating Instance started");
+
+            var isvalid = true;
+
+            var basevalidation = base.Validate();
+            Console.WriteLine("Validating Instance finished");
+
+            return isvalid && basevalidation;
         }
 
         private void Test() 
@@ -126,7 +134,6 @@ namespace Model.InstanceModel
             var instance = new XbrlInstance(instancepath);
             instance.Load();
 
-            var inst = instance.GetInstance();
             int z = 0;
         }
     }

@@ -21,7 +21,7 @@ namespace Utilities
             loHttp.Timeout = 9000;
 
             loHttp.UserAgent = "Code Sample Web Client";
-
+            Console.WriteLine(String.Format("Downlading {0}", path));
             // *** Retrieve request info headers
             System.Net.HttpWebResponse loWebResponse = (HttpWebResponse)loHttp.GetResponse();
 

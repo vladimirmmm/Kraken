@@ -38,6 +38,7 @@ namespace LogicalModel
                 _LabelID = labelprefix + _LocalID;
             }
         }
+        
         public string LabelID
         {
             get { return _LabelID; }

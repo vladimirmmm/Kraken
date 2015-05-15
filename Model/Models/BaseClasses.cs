@@ -8,7 +8,61 @@ using System.Threading.Tasks;
 
 namespace LogicalModel.Base
 {
-    
+    public class FactBase 
+    {
+
+        public Concept Concept { get; set; }
+
+        private List<Dimension> _Dimensions = new List<Dimension>();
+        public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
+
+        public string GetFactString() 
+        {
+            var sb = new StringBuilder();
+            if (Concept != null)
+            {
+                sb.Append(Concept + ">");
+            }
+            foreach (var dimension in Dimensions)
+            {
+                sb.Append(dimension.DomainMemberFullName + "|");
+            }
+            return sb.ToString();
+        }
+
+        public void SetFromString(string item) 
+        {
+            var cix = item.IndexOf(">");
+            if (cix > -1)
+            {
+                var concept = new Concept();
+                concept.Content = item.Remove(cix);
+                item = item.Substring(cix + 1);
+                this.Concept = concept;
+
+            }
+            var dimparts = item.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var dimpart in dimparts)
+            {
+                var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
+                var domainpart = dimpart.Substring(dimitem.Length + 2);
+                var domain = domainpart;
+                var member = "";
+                if (domainpart.Contains(":"))
+                {
+                    var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    domain = domainparts[0];
+                    member = domainparts[1];
+                }
+                var dim = new Dimension();
+                dim.DimensionItem = dimitem;
+                dim.Domain = domain;
+                dim.DomainMember = member;
+                this.Dimensions.Add(dim);
+            }
+        }
+        
+    }
     public class Identifiable
     {
         private string _ID = "";
@@ -102,16 +156,37 @@ namespace LogicalModel.Base
         }
 
         private string _Namespace = "";
-        public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
+        public string Namespace
+        {
+            get { return _Namespace; }
+            set
+            {
+                _Namespace = value;
+                SetFullName();
+            }
+        }
 
         private string _Name = "";
-        public string Name { get { return _Name; } set { _Name = value; } }
+        public string Name
+        {
+            get { return _Name; }
+            set
+            {
+                _Name = value;
+                SetFullName();
+            }
+        }
 
+        private void SetFullName() 
+        {
+            _FullName = String.Format("{0}:{1}", _Namespace, _Name);
+        }
+        private string _FullName = "";
         public virtual string FullName 
         {
             get 
             {
-                return String.Format("{0}:{1}", _Namespace, _Name);
+                return _FullName;
             }
 
         }

@@ -8,20 +8,79 @@ namespace LogicalModel
 {
     public class Dimension
     {
-        public String DimensionItem { get; set; }
-        public String Domain { get; set; }
-        public String DomainMember { get; set; }
 
+        private String _DimensionItem = "";
+        public String DimensionItem
+        {
+            get { return _DimensionItem; }
+            set
+            {
+                _DimensionItem = value;
+                SetDomainMemberFullName();
+
+            }
+        }
+
+        private String _Domain= "";
+        public String Domain
+        {
+            get { return _Domain; }
+            set
+            {
+                _Domain = value;
+                SetDomainMemberFullName();
+
+            }
+        }
+
+
+        private String _DomainMember = "";
+        public String DomainMember
+        {
+            get { return _DomainMember; }
+            set
+            {
+                _DomainMember = value;
+                SetDomainMemberFullName();
+            }
+        }
+
+        private string _DomainMemberFullName = "";
+
+        private void SetDomainMemberFullName() 
+        {
+            var setted = false;
+            if (String.IsNullOrEmpty(DomainMember))
+            {
+                _DomainMemberFullName =  String.Format("[{0}]{1}", DimensionItem, Domain);
+                setted = true;
+            }
+            if (String.IsNullOrEmpty(Domain))
+            {
+                _DomainMemberFullName = String.Format("[{0}]{1}", DimensionItem, DomainMember);
+                setted = true;
+            }
+            if (!setted)
+            {
+                _DomainMemberFullName = String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
+            }
+        }
         public string DomainMemberFullName 
         {
             get 
             {
-                if (String.IsNullOrEmpty(DomainMember)) 
-                {
-                    return String.Format("[{0}]{1}", DimensionItem, Domain, DomainMember);
+                return _DomainMemberFullName;
+                //if (String.IsNullOrEmpty(DomainMember)) 
+                //{
+                //    return String.Format("[{0}]{1}", DimensionItem, Domain);
 
-                }
-                return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
+                //}
+                //if (String.IsNullOrEmpty(Domain))
+                //{
+                //    return String.Format("[{0}]{1}", DimensionItem, DomainMember);
+
+                //}
+                //return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
             }
         }
 

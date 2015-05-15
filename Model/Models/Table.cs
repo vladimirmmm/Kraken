@@ -23,7 +23,26 @@ namespace LogicalModel
             get { return _HtmlPath; }
             set { _HtmlPath=value; }
         }
-
+        public string FactMapPath
+        {
+            get { return _HtmlPath.Replace(".html", "-factmap.js"); }
+        }
+        public string FactPath 
+        {
+            get { return _HtmlPath.Replace(".html", "-facts.txt"); }
+        }
+        public string CubePath
+        {
+            get { return _HtmlPath.Replace(".html", "-cubes.txt"); }
+        }
+        public string DefPath
+        {
+            get { return _HtmlPath.Replace(".html", "-def.txt"); }
+        }
+        public string LayoutPath
+        {
+            get { return _HtmlPath.Replace(".html", "-layout.txt"); }
+        }
         private string _FolderName = "";
         public string FolderName
         {
@@ -156,10 +175,13 @@ namespace LogicalModel
                     {
                         throw new Exception("First item of the hypercube slice is not a Concept!"); 
                     }
+                    childslices.Remove(conceptslicechild);
+                    //childslices=childslices.OrderBy(i=>(i as DimensionMember).Domain)
                     var conceptpart = string.Format("{0},",conceptslicechild.FullName);
                     sb_fact.Append(conceptpart);
                     key += conceptpart;
-                    for (int i = 1; i < childslices.Count; i++)
+                    var dimkeyparts =new List<string>();
+                    for (int i = 0; i < childslices.Count; i++)
                     {
                         var slicechild = childslices[i];
 
@@ -167,12 +189,23 @@ namespace LogicalModel
                         if (!dimmember.IsDefaultMember)
                         {
                             var dimitem = String.Format("[{0}]{1},", dimmember.Domain.DimensionItem.FullName, dimmember.FullName);
-                            sb_fact.Append(dimitem);
-                            key += dimitem;
+                       
+                            dimkeyparts.Add(dimitem);
+
                         }
 
 
                     }
+
+                    dimkeyparts = dimkeyparts.OrderBy(i => i).ToList();
+
+                    foreach (var dimkeypart in dimkeyparts)
+                    {
+                        sb_fact.Append(dimkeypart);
+                        key += dimkeypart;
+
+                    }
+
                     if (!this.Taxonomy.Facts.ContainsKey(key)) 
                     {
                         this.Taxonomy.Facts.Add(key, new List<String>());
@@ -181,16 +214,15 @@ namespace LogicalModel
                 }
             }
             Console.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
-            var factpath = HtmlPath.Replace(".html", "-facts.txt");
-            var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
-            //Utilities.FS.WriteAllText(factpath, sb_fact.ToString());
+            //var factpath = HtmlPath.Replace(".html", "-facts.txt");
+            //var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
+            //Utilities.FS.WriteAllText(FactPath, sb_fact.ToString());
+            sb_fact.Clear();
 
         }
 
         public IEnumerable<IEnumerable<QualifiedName>> GetCubeSlices(HyperCube cube) 
         {
-
-
             var cubelist = new List<List<QualifiedName>>();
 
             cubelist.Add(cube.Concepts.Cast<QualifiedName>().ToList());
@@ -238,85 +270,84 @@ namespace LogicalModel
 
             var factdeflist = new List<String>();
             var blocked = new Dictionary<string, bool>();
-            var sb = new StringBuilder();
+            //var sb = new StringBuilder();
             //LayoutCells.Clear();
             if (LayoutCells.Count == 0)
             {
-                foreach (var row in Rows)
+                var exts = Extensions.ToList();
+                if (exts.Count == 0)
                 {
-                    foreach (var col in Columns)
+                    var li = new LayoutItem();
+                    li.ID = "";
+                    var label = new Label();
+                    label.Code = "000";
+                    label.Lang = "en";
+                    li.Label = label;
+                    exts.Add(li);
+                }
+                var factmap = new Dictionary<string, Dictionary<string,string>>();
+                foreach (var ext in exts)
+                {
+                    var factextdict = new Dictionary<string, string>();
+                    factmap.Add(ext.LabelCode, factextdict);
+
+                    foreach (var row in Rows)
                     {
-
-                        var cell = new Cell();
-                        cell.Report = this.ID;
-                        cell.Row = row.Item.LabelCode;
-                        cell.Column = col.Item.LabelCode;
-                        cell.Concept = row.Item.Concept != null ? row.Item.Concept : col.Item.Concept;
-                        cell.Dimensions.AddRange(row.Item.Dimensions);
-                        cell.Dimensions.AddRange(col.Item.Dimensions);
-                        cell.Dimensions = cell.Dimensions.Distinct().OrderBy(i=>i.DomainMemberFullName).ToList();
-
-                        var cubes = GetHyperCubes(row.Item, col.Item, sb);
-                        if (cubes.Count>0)
+                        foreach (var col in Columns)
                         {
-                            var exts = Extensions.ToList();
-                            if (exts.Count == 0) 
-                            { 
-                                var li = new LayoutItem();
-                                li.ID="";
-                                exts.Add(li);
-                            }
-                            foreach (var ext in exts)
+                            var cell = this.LayoutCells.FirstOrDefault(i => i.Row == row.Item.LabelCode && i.Column == col.Item.LabelCode);
+                            if (cell == null)
                             {
-                                var xcell = new Cell();
-                                xcell.Report = cell.Report;
-                                xcell.Row = cell.Row;
-                                xcell.Column = cell.Column;
-                                xcell.Extension = ext.LabelCode;
-                                xcell.Concept = cell.Concept;
-                                xcell.Dimensions.AddRange(cell.Dimensions);
-                                xcell.Dimensions.AddRange(ext.Dimensions);
-                                xcell.Dimensions = xcell.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-                                if (this.Taxonomy.Facts.ContainsKey(xcell.FactKey))
+                                cell = new Cell();
+                                cell.Report = this.ID;
+                                cell.Row = row.Item.LabelCode;
+                                cell.Column = col.Item.LabelCode;
+                                cell.Concept = row.Item.Concept != null ? row.Item.Concept : col.Item.Concept;
+                                cell.Dimensions.AddRange(row.Item.Dimensions);
+                                cell.Dimensions.AddRange(col.Item.Dimensions);
+                                cell.Dimensions = cell.Dimensions.Distinct().OrderBy(i => i.DomainMemberFullName).ToList();
+                                LayoutCells.Add(cell);
+
+                            }
+                            //var cubes = GetHyperCubes(row.Item, col.Item, sb);
+                            var xcell = new Cell();
+                            xcell.Report = cell.Report;
+                            xcell.Row = cell.Row;
+                            xcell.Column = cell.Column;
+                            xcell.Extension = ext.LabelCode;
+                            xcell.Concept = cell.Concept;
+                            xcell.Dimensions.AddRange(cell.Dimensions);
+                            xcell.Dimensions.AddRange(ext.Dimensions);
+                            xcell.Dimensions = xcell.Dimensions.Where(i => !i.IsDefaultMemeber).OrderBy(i => i.DomainMemberFullName).ToList();
+
+                            if (this.Taxonomy.Facts.ContainsKey(xcell.FactKey))
+                            {
+
+
+                                var item = this.Taxonomy.Facts[xcell.FactKey];
+                                item.Add(xcell.CellID);
+                                factextdict.Add(xcell.LayoutID, xcell.FactKey);
+
+
+                            }
+                            else
+                            {
+                                cell.IsBlocked = true;
+                                if (!blocked.ContainsKey(cell.ToString()))
                                 {
-                                    var item = this.Taxonomy.Facts[xcell.FactKey];
-                                    item.Add(xcell.CellID);
+                                    blocked.Add(cell.ToString(), true);
+                                    //sb.AppendLine(String.Format("Cell {0} - {1} is blocked! ", cell, cell.FactString));
                                 }
-                                else
-                                {
-
-                                }
-
-                            }
-
-                            if (cubes.Count >1) 
-                            {
-                          
-                                
- 
-                            }
-
-
-                            //CellList.Add(String.Format("{0}|R{1}|C{2}: {3},{4}",
-                            //    this.ID, row.Item.LabelCode, col.Item.LabelCode,
-                            //    row.Item.FactString, col.Item.FactString));
-                        }
-                        else
-                        {
-                            cell.IsBlocked = true;
-                            if (!blocked.ContainsKey(cell.ToString()))
-                            {
-                                blocked.Add(cell.ToString(), true);
-                                sb.AppendLine(String.Format("Cell {0} - {1} is blocked! ", cell, cell.FactString));
                             }
                         }
-                        LayoutCells.Add(cell);
                     }
                 }
+                var jsoncontent = Utilities.Converters.ToJson(factmap);
+                //var jscontent = "var FactMap = " + jsoncontent.Replace("\r\n", "\\ \r\n") + ";";
+                var jscontent = "var FactMap = " + jsoncontent + ";";
+                System.IO.File.WriteAllText(FactMapPath, jscontent);
+
             }
-            //var cubenotfoundpath = HtmlPath.Replace(".html", "-cubenotfound.txt");
-            //System.IO.File.WriteAllText(cubenotfoundpath, sb.ToString());
-            //Console.WriteLine(sb.ToString());
 
             CreateHtmlLayout();
         }
@@ -399,13 +430,17 @@ namespace LogicalModel
                                 li.Table = this;
                                 var dim = new Dimension();
                                 dim.DimensionItem = dimension.DimensionItemFullName;
-                                dim.Domain = dm.Domain.Name;
+                                dim.Domain = dm.Domain.ID;
                                 dim.DomainMember = dm.Name;
                                 li.Dimensions.Add(dim);
                                 li.LabelID = dm.ID;
                                 var labelkey = Label.GetKey(dim.Domain, dm.ID);
                                 li.Label = this.Taxonomy.FindLabel(labelkey);
-
+                                if (li.Label == null) 
+                                {
+                                    labelkey = Label.GetKey(dim.Domain.Replace("eba_",""), dm.ID);
+                                    li.Label = this.Taxonomy.FindLabel(labelkey);
+                                }
                                 //li.LoadLabel(this.Taxonomy);
                                 extensions.Add(li);
                             }
@@ -434,10 +469,15 @@ namespace LogicalModel
                 var current=item.Parent;
                 while (current != null) 
                 {
-                    //MergeDimensions(item.Item.Dimensions, current.Parent.Item.Dimensions);
                     MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
+
+                    if (current.Item.Concept==null || current.Item.Concept.Content == item.Item.Concept.Content)
+                    {
+                    }
+
                     current = current.Parent;
                 }
+                item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMemeber).ToList();
             }
         }
 
@@ -446,10 +486,8 @@ namespace LogicalModel
             foreach (var item in items) 
             {
                 var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
-                //var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DomainMember == item.DomainMember);
                 if (existing == null) 
                 {
-
                     target.Add(item);
                 }
             }
@@ -457,6 +495,8 @@ namespace LogicalModel
         
         public void EnsureHtmlLayout()
         {
+            Taxonomy.ManageUIFiles();
+
             if (!System.IO.File.Exists(HtmlPath))
             {
                 CreateHtmlLayout();
@@ -473,6 +513,7 @@ namespace LogicalModel
                 var html = template;
                 html = html.Replace("#table#", GetTableHtml());
                 html = html.Replace("#style#", GetStyle());
+                html = html.Replace("#jsonpath#", Utilities.Strings.GetFileName( this.FactMapPath));
                 htmlbuilder.AppendLine(html);
 
 
@@ -530,7 +571,7 @@ namespace LogicalModel
                         columncoderow = columncoderow + String.Format("<th {0} {1}>{2}</th>\r\n", colspan, rowspan, item.Item.LabelCode);
                     }
                     sb.AppendLine(String.Format("<th {0} {1} factid=\"{3}\" title=\"{4}\">{2}</th>",
-                        colspan, rowspan, item.Item.LabelContent, item.Item.Factidentifier, item.Item.FactString));
+                        colspan, rowspan, item.Item.LabelContent, item.Item.FactString, item.Item.FactString));
                 }
                 sb.AppendLine("</tr>");
 
@@ -585,7 +626,7 @@ namespace LogicalModel
                     {
                         cssclass+=" blocked";
                     }
-                    sb.AppendLine(String.Format("<td data=\"{0}\" class=\"{1}\" title=\"{0}\"></td>", alt ,cssclass));
+                    sb.AppendLine(String.Format("<td layoutid=\"{0}\" factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>", alt, cssclass, cell.FactKey));
                 }
 
                 sb.AppendLine("</tr>");
