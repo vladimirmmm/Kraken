@@ -6,42 +6,34 @@ var UI;
             this.Extensions = [];
             this.FactMap = {};
             this.CurrentExtension = null;
-            this.JSONPath = "";
             this.Instance = null;
-            this.CurrentCells = [];
+            this.$TemplateRow = null;
             this.GetFactMap();
+            this.SetExtension("");
         }
         Table.prototype.LoadCellsFromHtml = function () {
             var me = this;
             var s_ix = 1;
             me.Cells = [];
             $(".data").each(function (index, item) {
-                var layoutid = $(item).attr("layoutid");
-                var factstring = $(item).attr("factstring");
-                var factarray = factstring.split(",");
+                var layoutid = $(item).attr("id");
                 var row = layoutid.split("|")[0];
                 var col = layoutid.split("|")[1];
                 row = row.substring(1);
                 col = col.substring(1);
                 var cell = new Model.Cell();
-                cell.Row = row;
                 cell.IsBlocked = $(item).hasClass("blocked");
                 if (!cell.IsBlocked) {
+                    cell.Row = row;
                     cell.Column = col;
-                    cell.Concept = Model.QualifiedName.Create(factarray[0]);
-                    for (var i = 1; i < factarray.length; i++) {
-                        if (!IsNull(factarray[i])) {
-                            var dimparts = factarray[i].split(/[\[\]:]+/);
-                            var dimension = new Model.Dimension();
-                            dimension.DimensionItem = dimparts.length > s_ix ? dimparts[s_ix] + ":" + dimparts[s_ix + 1] : "";
-                            dimension.Domain = dimparts.length > s_ix + 2 ? dimparts[s_ix + 2] : "";
-                            dimension.DomainMember = dimparts.length > s_ix + 3 ? dimparts[s_ix + 3] : "";
-                            cell.Dimensions.push(dimension);
-                        }
-                    }
                     me.Cells.push(cell);
                 }
             });
+            var templaterow = $(".dynamic");
+            if (templaterow.length > 0) {
+                me.$TemplateRow = $(templaterow[0]);
+                me.AddRow("newrow", false, "");
+            }
         };
         Table.prototype.LoadCells = function (cells) {
             this.Cells = cells;
@@ -51,16 +43,20 @@ var UI;
         };
         Table.prototype.LoadExtension = function (li) {
             this.CurrentExtension = li;
-            //this.SetCurrentCells();
+            $("#Extension").html(li.LabelContent);
+            $("#Extension").attr("title", li.FactString);
         };
         Table.prototype.LoadInstance = function (instance) {
             var me = this;
-            //this.SetCurrentCells();
+            $("dynamicdata").remove();
             if (IsNull(me.Instance)) {
-                instance.FactDictionary = {};
-                instance.Facts.forEach(function (fact, index) {
-                    instance.FactDictionary[fact.FactString] = fact;
-                });
+                if (IsNull(instance.FactDictionary)) {
+                    Notify("Loading Fact Dictionary");
+                    instance.FactDictionary = {};
+                    instance.Facts.forEach(function (fact, index) {
+                        instance.FactDictionary[fact.FactString] = fact;
+                    });
+                }
                 me.Instance = instance;
             }
             if (!IsNull(me.FactMap)) {
@@ -69,17 +65,47 @@ var UI;
                 if (extfacts != null) {
                     this.Cells.forEach(function (cell, index) {
                         if (!cell.IsBlocked) {
-                            if (!(cell.FactString in me.Instance.FactDictionary)) {
-                            }
-                            else {
-                                var value = me.Instance.FactDictionary[extfacts[cell.LayoutID]];
-                                if (!IsNull(value)) {
-                                    var selector = "[layoutid=\"" + cell.LayoutID + "\"]";
-                                    if ($(selector).length == 0) {
-                                        Notify(Format("No cell found with selector {0}", selector));
+                            if (cell.LayoutID in extfacts) {
+                                var factstring = extfacts[cell.LayoutID];
+                                if (!IsNull(factstring)) {
+                                    if (!(factstring in me.Instance.FactDictionary)) {
                                     }
-                                    c++;
-                                    $(selector).html(value.Value);
+                                    else {
+                                        var facts = me.Instance.FactDictionary[factstring];
+                                        if (facts.length == 1 && facts[0].FactKey == facts[0].FactString) {
+                                            var fact = facts[0];
+                                            if (!IsNull(fact)) {
+                                                var selector = "#" + cell.LayoutID.replace("|", "\\|");
+                                                if ($(selector).length == 0) {
+                                                    Notify(Format("No cell found with selector {0}", selector));
+                                                }
+                                                c++;
+                                                $(selector).html(fact.Value);
+                                            }
+                                        }
+                                        else {
+                                            //dynamic
+                                            facts.forEach(function (factobj, index) {
+                                                var fact = Model.Fact.Convert(factobj);
+                                                fact.Load();
+                                                var opendimension = fact.Dimensions.AsLinq().FirstOrDefault();
+                                                if (!IsNull(opendimension)) {
+                                                    var idvalue = opendimension.DomainMember;
+                                                    var cellid = cell.LayoutID;
+                                                    var r_ix = cellid.indexOf("R");
+                                                    if (r_ix > -1) {
+                                                        cellid = cellid.replace("R", "R" + idvalue);
+                                                    }
+                                                    var selector = "#" + cellid.replace("|", "\\|");
+                                                    if ($(selector).length == 0) {
+                                                        var $newrow = me.AddRow("dynamicdata", true, idvalue);
+                                                    }
+                                                    $(selector).html(fact.Value);
+                                                    c++;
+                                                }
+                                            });
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -88,36 +114,48 @@ var UI;
                 }
             }
         };
-        Table.prototype.SetCurrentCells = function () {
-            this.CurrentCells = [];
+        Table.prototype.AddRow = function (rowclass, beforelast, idvalue) {
             var me = this;
-            var ext_dimensions = IsNull(me.CurrentExtension) ? [] : me.CurrentExtension.Dimensions;
-            var ext_concept = IsNull(me.CurrentExtension) ? null : me.CurrentExtension.Concept;
-            this.Cells.forEach(function (uicell, index) {
-                var fact = new Model.Cell();
-                var dimensions = uicell.Dimensions.concat(ext_dimensions);
-                fact.Dimensions = dimensions.AsLinq().OrderBy(function (i) { return i.DomainMemberFullName; }).ToArray();
-                fact.Concept = IsNull(uicell.Concept) ? ext_concept : uicell.Concept;
-                fact.Row = uicell.Row;
-                fact.Column = uicell.Column;
-                fact.IsBlocked = uicell.IsBlocked;
-                me.CurrentCells.push(fact);
-            });
-        };
-        Table.prototype.SetExtension = function (item) {
-            var li = JSON.parse(item);
-            if (li != null && 'LabelContent' in li) {
-                this.LoadExtension(li);
-                $("#Extension").html(li.LabelContent);
-                $("#Extension").attr("title", li.FactString);
+            var $newrow = me.$TemplateRow.clone();
+            me.$TemplateRow.find("td").html("");
+            var lastrow = me.$TemplateRow.parent().find("tr:last");
+            if (beforelast) {
+                $(lastrow).before($newrow);
             }
             else {
+                $(lastrow).after($newrow);
+            }
+            $newrow.attr("id", Format("R{0}", idvalue));
+            $newrow.addClass(rowclass);
+            $newrow.removeClass("dynamic");
+            $("td", $newrow).each(function (index, td) {
+                var $td = $(td);
+                var cellid = $td.attr("id");
+                var r_ix = cellid.indexOf("R");
+                if (r_ix > -1) {
+                    cellid = cellid.replace("R", "R" + idvalue);
+                    $td.attr("id", cellid);
+                }
+            });
+            $newrow.find(".code").html(idvalue);
+            if (IsNull(idvalue.trim())) {
+                $newrow.find(".title").html("new row");
+            }
+            return $newrow;
+        };
+        Table.prototype.SetExtension = function (item) {
+            var li = null;
+            if (!IsNull(item)) {
+                li = JSON.parse(item);
+            }
+            if (IsNull(li)) {
                 li = new Model.LayoutItem();
                 var label = new Model.Label();
                 label.Code = "000";
                 li.Label = label;
-                this.LoadExtension(li);
             }
+            Notify(Format("Setting Extension to {0}", li.LabelCode));
+            this.LoadExtension(li);
         };
         Table.prototype.SetCells = function (item) {
             var cells = JSON.parse(item);

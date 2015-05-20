@@ -87,11 +87,12 @@ namespace UI
             }
             try
             {
-                Browser.InvokeScript("SetExtension", Utilities.Converters.ToJson(table.CurrentExtension));
+                var extparam = table.CurrentExtension == null ? "" : Utilities.Converters.ToJson(table.CurrentExtension);
+                Browser.InvokeScript("SetExtension", extparam);
                 var instance = Features.CurrentInstance;
                 if (instance != null)
                 {
-                    Browser.InvokeScript("LoadInstance", Utilities.Converters.ToJson(instance));
+                    Browser.InvokeScript("LoadInstance", instance.JsonValue);
                 }
             }
             catch (Exception ex) 

@@ -22,9 +22,13 @@ namespace LogicalModel
         public List<Table> Tables = new List<Table>();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
+        public List<Concept> Concepts = new List<Concept>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
 
         public List<Element> SchemaElements = new List<Element>();
+
+        public List<Hierarchy<QualifiedItem>> Hierarchies = new List<Hierarchy<QualifiedItem>>();
+
         public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
 
         private Dictionary<string, List<String>> _Facts = new Dictionary<string, List<String>>();
@@ -68,6 +72,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Hypercube.json"; }
         }
+        public string TaxonomyHierarchyPath
+        {
+            get { return ModuleFolder + "Hierarchy.json"; }
+        }
         public string TaxonomyLabelPath
         {
             get { return ModuleFolder + "Labels.json"; }
@@ -103,6 +111,9 @@ namespace LogicalModel
             if (TaxonomyLabelDictionary.ContainsKey(key))
             {
                 return TaxonomyLabelDictionary[key];
+            }
+            else
+            {
             }
             return null;
         }
@@ -299,8 +310,6 @@ namespace LogicalModel
 
         }
 
-
-
         public virtual void LoadLayouts()
         {
 
@@ -318,7 +327,38 @@ namespace LogicalModel
 
         public virtual void LoadConcepts()
         {
+            Console.WriteLine("Load Concepts");
 
+            if (!System.IO.File.Exists(TaxonomyConceptPath))
+            {
+
+                var conceptelements = SchemaElements.Where(i => i.Namespace == "eba_met").ToList();
+                foreach (var conceptelement in conceptelements) 
+                {
+                    var concept = new Concept();
+                    if (!String.IsNullOrEmpty(conceptelement.Domain))
+                    {
+                        concept.Domain = new QualifiedName();
+                        concept.Domain.Content = conceptelement.Domain;
+                    }
+                    concept.Name = conceptelement.Name;
+                    concept.Namespace = conceptelement.Namespace;
+
+                    this.Concepts.Add(concept);
+                }
+
+
+                var jsoncontent = Utilities.Converters.ToJson(this.Concepts);
+                Utilities.FS.WriteAllText(TaxonomyConceptPath, jsoncontent);
+            }
+            else
+            {
+
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyConceptPath);
+                this.Concepts = Utilities.Converters.JsonTo<List<Concept>>(jsoncontent);
+
+            }
+            Console.WriteLine("Load Concepts completed");
         }
 
         public virtual void LoadInstance(string filepath)

@@ -13,19 +13,21 @@ interface JQuery
 {
     w8n(...any);
     serializeObject(...any);
+    padding(direction: string): number;
 }
 
 interface External {
     Notify(obj: any)
 }
-
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
     Notify(errortext);
     return true;
 }
-window.onerror = ErrorHandler;
+if (typeof console === "undefined") {
 
+    window.onerror = ErrorHandler;
+}
 function Notify(notification) {
     if ('Notify' in window.external) {
         window.external.Notify(notification);
@@ -44,7 +46,26 @@ function Notify(notification) {
 
 //    }
 //}
+function GetFunctionBody(f: Function):string
+{
+    var result = "";
+    var entire = f.toString();
+    var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
+    return result;
+}
 
+function GetReturnStatement(f: Function): string
+{
+    var body = GetFunctionBody(f);
+    var body = body.substring(body.lastIndexOf("return "));
+    return body.substring(body.indexOf(" ") + 1);
+
+}
+
+function GetMemberExpression(f: Function): string
+{
+    return "";
+}
 function StringEquals(s1: any, s2: any): boolean
 {
 
@@ -591,7 +612,35 @@ function FilesIntoUL(viewmodel) {
     return html;
 
 }
+$.fn.extend({
+    padding: function (direction: string):number {
+        // calculate the values you need, using a switch statement
+        // or some other clever solution you figure out
 
+        // this now contains a wrapped set with the element you apply the 
+        // function on, and direction should be one of the four strings 'top', 
+        // 'right', 'left' or 'bottom'
+
+        // That means you could probably do something like (pseudo code):
+        var paddingvalue:string = this.css('padding-' + direction).trim();
+        var intPart = "";
+        var unit = paddingvalue.substring(paddingvalue.length-2);
+        intPart = paddingvalue.replace(unit, "");
+        //stest.substring(0, stest.lastIndexOf("px"))
+        //var intPart = this.css('padding-' + direction).rem();
+        //var unit = this.css('padding-' + direction).getUnit();
+
+        switch (unit) {
+            case 'px':
+                return Number(intPart);
+            case 'em':
+                return 0; //ConvertEmToPx(intPart)
+            default:
+            // Do whatever you feel good about as default action
+            // Just make sure you return a value on each code path
+        }
+    }
+});
 $.fn.extend({
     editable: function () {
         var that = this,
@@ -734,13 +783,104 @@ module Engine
     }
 }
 
+class Editor
+{
+    public HtmlFormat: string = "";
+    public ValueGetter: Function = null;
+    public ValueSetter: Function = null;
+    public TargetValueGetter: Function = null;
+    public TargetValueSetter: Function = null;
+    public $Target: JQuery = null; 
+    public $Me: JQuery = null; 
+    public Current_Value: string;
+    public Original_Value: string;
+
+    static editclass: string = "editing";
+
+    constructor(HtmlFormat: string, ValueGetter: Function, ValueSetter: Function)
+    {
+        this.HtmlFormat = HtmlFormat;
+        this.ValueGetter = ValueGetter;
+        this.ValueSetter = ValueSetter;
+    }
+
+    public Save()
+    {
+        this.TargetValueSetter(this.ValueGetter(this.$Me));
+        this.$Target.removeClass(Editor.editclass);
+        this.$Me.remove();
+    }
+
+    public Load(Target: JQuery, TargetValueGetter: Function, TargetValueSetter: Function)
+    {
+        var me = this;
+        this.TargetValueGetter = TargetValueGetter;
+        this.TargetValueSetter = TargetValueSetter;
+        this.Original_Value = TargetValueGetter().trim();
+        this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
+
+        //setting UI
+        var containerwidth = Target.width() - (Target.padding("left") + Target.padding("right"));
+        var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
+        var containerfontfamily = Target.css('font-family');
+        var containerfontsize = Target.css('font-size');
+        var containerlineheight = Target.css('line-height');
+
+        this.$Me.width(containerwidth);
+        this.$Me.height(containerheight);
+        this.$Me.css('font-family', containerfontfamily);
+        this.$Me.css('font-size', containerfontsize);
+        this.$Me.css('line-height', containerlineheight);
+        //end setting UI
+        this.ValueSetter(this.$Me, this.Original_Value);
+
+        this.$Target = Target;
+        this.$Target.html('');
+        this.$Me.appendTo(this.$Target);
+        this.$Target.addClass(Editor.editclass);
+
+
+        this.$Me.blur(function () { me.Save(); });
+        this.$Me.keypress(function (e) {
+            if (e.which == 13) {
+                me.Save();
+            }
+        });
+
+        this.$Me.focus();
+    }
+}
+function MakeEditable2(cellselector)
+{
+    $(cellselector).off("click");
+    $(cellselector).click(function () {
+        var $target = $(this);
+        if (!$target.hasClass(Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
+            editor.Load($target,() => $target.html(),() => $target.html(editor.ValueGetter(editor.$Me)));
+        }
+    });
+}
+
+function MakeEditable3(cellselector, optionObject) {
+    $(cellselector).off("click");
+    $(cellselector).click(function () {
+        var $target = $(this);
+        if (!$target.hasClass(Editor.editclass)) {
+  
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
+            editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
+        }
+    });
+}
+var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs"};
+
 function MakeEditable(cellselector)
 {
     function SaveCell(target)
     {
         var parent = target.parent();
         var iskey = parent.hasClass("data-key");
-        //return false;
         var newvalue = iskey ? target.val() : target.text();
         if (iskey && IsNull(newvalue))
         {
@@ -780,8 +920,6 @@ function MakeEditable(cellselector)
             });
             jitem.children().first().blur(function () {
                 SaveCell($(this))
-                //$(this).parent().text(OriginalContent);
-                //$(this).parent().removeClass("cellEditing");
             });
         }
     });
@@ -789,6 +927,17 @@ function MakeEditable(cellselector)
 
 }
 
+function ToOptionList(obj: Object): string
+{
+    var result = "";
+    for (var prop in obj) {
+        var val = obj[prop];
+        if (obj.hasOwnProperty(prop) && typeof val !== "function") {
+            result += Format('<option value="{0}">{1}</option>\n', prop, val);
+        }
+    }
+    return result;
+}
 function NormalizeFolderPath(folder:any):string
 {
     if (folder == null) { folder = ""; }

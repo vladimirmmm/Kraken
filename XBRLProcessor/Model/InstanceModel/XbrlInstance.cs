@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Schema;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
 
@@ -46,6 +47,7 @@ namespace Model.InstanceModel
                 if (_XmlDocument == null && System.IO.File.Exists(this.FullPath))
                 {
                     _XmlDocument = new XmlDocument();
+                    _XmlDocument.XmlResolver = null;
                     _XmlDocument.Load(this.FullPath);
                 }
                 return _XmlDocument;
@@ -99,20 +101,32 @@ namespace Model.InstanceModel
                 logicalfact.ContextID = xbrlfact.ContextRef;
                 logicalfact.Unit = this.Units.FirstOrDefault(i => i.ID == xbrlfact.UnitRef);
                 
-                var factkey = "";
-                factkey = String.Format("{0},",xbrlfact.Concept);
+                var factstring = "";
+                factstring = String.Format("{0},",xbrlfact.Concept);
+                var factkey = factstring;
                 logicalfact.Concept = xbrlfact.Concept;
                 var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
                 foreach (var dimension in dimensions) 
                 {
                     var dimitem = String.Format("{0},", dimension.DomainMemberFullName);
-                    factkey += dimitem;
+                    var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain);
+                    factstring += dimitem;
+                    factkey += dimension.IsTyped ? dimitemforkey : dimitem;
                 }
 
-                logicalfact.FactString = factkey;
+                logicalfact.FactString = factstring;
+                logicalfact.FactKey = factkey;
                 logicalfact.Value = xbrlfact.Value;
                 this.Facts.Add(logicalfact);
-
+                if (!this.FactDictionary.ContainsKey(logicalfact.FactKey))
+                {
+                    this.FactDictionary.Add(logicalfact.FactKey, new List<Fact>() { logicalfact });
+                }
+                else 
+                {
+                    var factlist = this.FactDictionary[logicalfact.FactKey];
+                    factlist.Add(logicalfact);
+                }
             }
         }
 
@@ -121,11 +135,26 @@ namespace Model.InstanceModel
             Console.WriteLine("Validating Instance started");
 
             var isvalid = true;
+            var schemaset = new XmlSchemaSet();
+            var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
+            IDictionary<string, string> dic = nsmanager.GetNamespacesInScope(XmlNamespaceScope.All);
+            foreach (var dicitem in dic) 
+            {
+                //schemaset.Add(dicitem.Key, dicitem.Value);
+                //this.XmlDocument.Schemas.Add(dicitem.Key, dicitem.Value);
+            }
+            //this.XmlDocument.Validate(OnValidated);
 
             var basevalidation = base.Validate();
             Console.WriteLine("Validating Instance finished");
 
             return isvalid && basevalidation;
+        }
+
+        public void OnValidated(Object sender,ValidationEventArgs e) 
+        {
+            Console.WriteLine("Xml Validation:");
+            Console.WriteLine(e.Message);
         }
 
         private void Test() 

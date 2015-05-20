@@ -11,7 +11,7 @@ namespace LogicalModel
 {
     public class Concept :QualifiedName
     {
-        public DimensionDomain Domain { get; set; }
+        public QualifiedName Domain { get; set; }
         //public List<Dimension> PossibleDimensions = new List<Dimension>();
     }
 }

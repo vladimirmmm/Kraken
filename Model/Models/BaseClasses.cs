@@ -8,6 +8,60 @@ using System.Threading.Tasks;
 
 namespace LogicalModel.Base
 {
+
+    public class QualifiedItem : QualifiedName, ILabeled 
+    {
+        private Label _Label = null;
+        public Label Label
+        {
+            get
+            {
+                return _Label;
+            }
+            set
+            {
+                _Label = value;
+            }
+        }
+
+        public string LabelContent
+        {
+            get 
+            {
+                if (_Label != null) 
+                {
+                    return Label.Content;
+                }
+                return "";
+            }
+        }
+
+        public string LabelCode
+        {
+            get
+            {
+                if (_Label != null)
+                {
+                    return Label.Code;
+                }
+                return "";
+            }
+        }
+
+        private string _LabelID = "";
+        public string LabelID
+        {
+            get
+            {
+                return _LabelID;
+            }
+            set
+            {
+                _LabelID = value;
+            }
+        }
+    }
+
     public class FactBase 
     {
 
@@ -63,6 +117,7 @@ namespace LogicalModel.Base
         }
         
     }
+    
     public class Identifiable
     {
         private string _ID = "";

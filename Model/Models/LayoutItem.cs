@@ -50,17 +50,25 @@ namespace LogicalModel
                 _LabelContent = value;
             }
         }
-        
+
+        private String _LabelCode = "";
         public String LabelCode
         {
             get
             {
-                var strvalue = "";
-                if (Label != null)
+
+                if (string.IsNullOrEmpty(_LabelCode))
                 {
-                    strvalue = Label.Code;
+                    if (Label != null)
+                    {
+                        _LabelCode = Label.Code;
+                    }
                 }
-                return strvalue;
+                return _LabelCode;
+            }
+            set
+            {
+                _LabelCode = value;
             }
         }
 

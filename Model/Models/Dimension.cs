@@ -8,7 +8,7 @@ namespace LogicalModel
 {
     public class Dimension
     {
-
+        public Boolean IsTyped { get; set; }
         private String _DimensionItem = "";
         public String DimensionItem
         {
@@ -70,18 +70,11 @@ namespace LogicalModel
             get 
             {
                 return _DomainMemberFullName;
-                //if (String.IsNullOrEmpty(DomainMember)) 
-                //{
-                //    return String.Format("[{0}]{1}", DimensionItem, Domain);
-
-                //}
-                //if (String.IsNullOrEmpty(Domain))
-                //{
-                //    return String.Format("[{0}]{1}", DimensionItem, DomainMember);
-
-                //}
-                //return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
             }
+        }
+        public string DimensionItemWithDomain
+        {
+            get { return String.Format("[{0}]{1}", DimensionItem, Domain); }
         }
 
         public string DimensionItemFullName

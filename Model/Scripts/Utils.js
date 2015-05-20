@@ -3,7 +3,9 @@ function ErrorHandler(errorMsg, url, lineNumber) {
     Notify(errortext);
     return true;
 }
-window.onerror = ErrorHandler;
+if (typeof console === "undefined") {
+    window.onerror = ErrorHandler;
+}
 function Notify(notification) {
     if ('Notify' in window.external) {
         window.external.Notify(notification);
@@ -19,6 +21,20 @@ function Notify(notification) {
 //        $("#Extension").attr("title", li.FactString);
 //    }
 //}
+function GetFunctionBody(f) {
+    var result = "";
+    var entire = f.toString();
+    var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
+    return result;
+}
+function GetReturnStatement(f) {
+    var body = GetFunctionBody(f);
+    var body = body.substring(body.lastIndexOf("return "));
+    return body.substring(body.indexOf(" ") + 1);
+}
+function GetMemberExpression(f) {
+    return "";
+}
 function StringEquals(s1, s2) {
     if (typeof s1 == "string" && typeof s2 == "string") {
         return s1.toString().toLowerCase() == s2.toString().toLowerCase();
@@ -564,6 +580,27 @@ function FilesIntoUL(viewmodel) {
     return html;
 }
 $.fn.extend({
+    padding: function (direction) {
+        // calculate the values you need, using a switch statement
+        // or some other clever solution you figure out
+        // this now contains a wrapped set with the element you apply the 
+        // function on, and direction should be one of the four strings 'top', 
+        // 'right', 'left' or 'bottom'
+        // That means you could probably do something like (pseudo code):
+        var paddingvalue = this.css('padding-' + direction).trim();
+        var intPart = "";
+        var unit = paddingvalue.substring(paddingvalue.length - 2);
+        intPart = paddingvalue.replace(unit, "");
+        switch (unit) {
+            case 'px':
+                return Number(intPart);
+            case 'em':
+                return 0;
+            default:
+        }
+    }
+});
+$.fn.extend({
     editable: function () {
         var that = this, $edittextbox = $('<input type="text"></input>').css('min-width', that.width()), submitChanges = function () {
             that.html($edittextbox.val());
@@ -677,11 +714,87 @@ var Engine;
     })();
     Engine.UIManager = UIManager;
 })(Engine || (Engine = {}));
+var Editor = (function () {
+    function Editor(HtmlFormat, ValueGetter, ValueSetter) {
+        this.HtmlFormat = "";
+        this.ValueGetter = null;
+        this.ValueSetter = null;
+        this.TargetValueGetter = null;
+        this.TargetValueSetter = null;
+        this.$Target = null;
+        this.$Me = null;
+        this.HtmlFormat = HtmlFormat;
+        this.ValueGetter = ValueGetter;
+        this.ValueSetter = ValueSetter;
+    }
+    Editor.prototype.Save = function () {
+        this.TargetValueSetter(this.ValueGetter(this.$Me));
+        this.$Target.removeClass(Editor.editclass);
+        this.$Me.remove();
+    };
+    Editor.prototype.Load = function (Target, TargetValueGetter, TargetValueSetter) {
+        var me = this;
+        this.TargetValueGetter = TargetValueGetter;
+        this.TargetValueSetter = TargetValueSetter;
+        this.Original_Value = TargetValueGetter().trim();
+        this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
+        //setting UI
+        var containerwidth = Target.width() - (Target.padding("left") + Target.padding("right"));
+        var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
+        var containerfontfamily = Target.css('font-family');
+        var containerfontsize = Target.css('font-size');
+        var containerlineheight = Target.css('line-height');
+        this.$Me.width(containerwidth);
+        this.$Me.height(containerheight);
+        this.$Me.css('font-family', containerfontfamily);
+        this.$Me.css('font-size', containerfontsize);
+        this.$Me.css('line-height', containerlineheight);
+        //end setting UI
+        this.ValueSetter(this.$Me, this.Original_Value);
+        this.$Target = Target;
+        this.$Target.html('');
+        this.$Me.appendTo(this.$Target);
+        this.$Target.addClass(Editor.editclass);
+        this.$Me.blur(function () {
+            me.Save();
+        });
+        this.$Me.keypress(function (e) {
+            if (e.which == 13) {
+                me.Save();
+            }
+        });
+        this.$Me.focus();
+    };
+    Editor.editclass = "editing";
+    return Editor;
+})();
+function MakeEditable2(cellselector) {
+    $(cellselector).off("click");
+    $(cellselector).click(function () {
+        var $target = $(this);
+        if (!$target.hasClass(Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+        }
+    });
+}
+function MakeEditable3(cellselector, optionObject) {
+    $(cellselector).off("click");
+    $(cellselector).click(function () {
+        var $target = $(this);
+        if (!$target.hasClass(Editor.editclass)) {
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject)), function (i) { return i.val(); }, function (i, val) {
+                i.val(val);
+            });
+            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+        }
+    });
+}
+var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs" };
 function MakeEditable(cellselector) {
     function SaveCell(target) {
         var parent = target.parent();
         var iskey = parent.hasClass("data-key");
-        //return false;
         var newvalue = iskey ? target.val() : target.text();
         if (iskey && IsNull(newvalue)) {
             var jrow = parent.closest('tr');
@@ -715,11 +828,19 @@ function MakeEditable(cellselector) {
             });
             jitem.children().first().blur(function () {
                 SaveCell($(this));
-                //$(this).parent().text(OriginalContent);
-                //$(this).parent().removeClass("cellEditing");
             });
         }
     });
+}
+function ToOptionList(obj) {
+    var result = "";
+    for (var prop in obj) {
+        var val = obj[prop];
+        if (obj.hasOwnProperty(prop) && typeof val !== "function") {
+            result += Format('<option value="{0}">{1}</option>\n', prop, val);
+        }
+    }
+    return result;
 }
 function NormalizeFolderPath(folder) {
     if (folder == null) {

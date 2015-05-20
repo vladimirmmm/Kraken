@@ -71,6 +71,15 @@ namespace LogicalModel
         public static string GetKey(string fileid, string localID)
         {
             var l = new Label();
+            if (fileid.Contains("eba_exp"))
+            {
+                fileid = fileid.Replace("eba_exp", "dom");
+            }
+            if (fileid.Contains("eba_")) 
+            {
+                fileid = fileid.Replace("eba_", "");
+            }
+         
             l.FileName = fileid;
             l.Lang = "en";
             l.LocalID = localID;

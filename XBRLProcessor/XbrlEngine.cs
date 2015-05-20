@@ -34,6 +34,7 @@ namespace XBRLProcessor
             CurrentTaxonomy.LoadAllReferences();
             CurrentTaxonomy.LoadLabels();
             CurrentTaxonomy.LoadSchemaElements();
+            CurrentTaxonomy.LoadConcepts();
             CurrentTaxonomy.LoadTables();
             CurrentTaxonomy.LoadFacts();
             CurrentTaxonomy.LoadHierarchy();
@@ -60,7 +61,7 @@ namespace XBRLProcessor
             }
             CurrentInstance.Taxonomy = CurrentTaxonomy;
             CurrentInstance.ModulePath = Utilities.Strings.GetLocalPath(CurrentTaxonomy.LocalFolder, CurrentInstance.TaxonomyModuleReference);
-
+            CurrentInstance.JsonValue = Utilities.Converters.ToJson(CurrentInstance);
         }
 
         public void LoadLabels()

@@ -3,6 +3,7 @@
         public DimensionItem: string;
         public Domain: string;
         public DomainMember: string;
+        public IsTyped: boolean;
 
         public get DomainMemberFullName(): string {
             if (IsNull(this.DomainMember)) {
@@ -44,13 +45,29 @@
         public Concept: QualifiedName = null;
         public Dimensions: Dimension[] = [];
 
-        public get FactString(): string {
+        private _FactString: string = "";
+        public GetFactString(): string
+        {
             var me = this;
-            var result = this.Concept.FullName + ",";
+
+            var result = "";
+            if (!IsNull(this.Concept)) {
+                result = this.Concept.FullName + ",";
+            }
             this.Dimensions.forEach(function (dimension, index) {
                 result += Format("{0},", dimension.DomainMemberFullName);
             });
             return result;
+        }
+
+        public get FactString(): string {
+            if (IsNull(this._FactString)) {
+                this._FactString = this.GetFactString();
+            }
+            return this._FactString;
+        }
+        public set FactString(value:string) {
+            this._FactString = value;
         }
     }
 
@@ -58,7 +75,59 @@
         public Value: string;
         public Entity: Entity;
         public Unit: Unit;
+        public UnitID: string;
         public ContextID: string;
+        public FactKey: string;
+        public FactString: string;
+
+        public static Convert(obj:Object): Fact
+        {
+            var item = new Fact();
+            item.FactKey = obj["FactKey"];
+            item.FactString = obj["FactString"];
+            item.ContextID = obj["ContextID"];
+            item.UnitID = obj["UnitID"];
+            item.Value = obj["Value"];
+            return item;
+        }
+
+        public Load()
+        {
+            var items = this.FactString.split(",");
+            if (items.length > 0)
+            {
+                var item = items[0];
+                if (item.indexOf("[") == -1)
+                {
+                    this.Concept = Model.QualifiedName.Create(item);
+                }
+                for (var i = 1; i < items.length; i++)
+                {
+                    var item = items[i];
+                    if (!IsNull(item.trim())) {
+                        var dimension = new Model.Dimension();
+                        dimension.DimensionItem = TextBetween(item, "[", "]");
+                        var domainmember = item.substring(item.lastIndexOf("]") + 1);
+                        var domainmemberparts = domainmember.split(":");
+                        if (domainmemberparts.length == 1) {
+                            dimension.Domain = domainmemberparts[0];
+                        }
+                        if (domainmemberparts.length == 2) {
+                            dimension.Domain = domainmemberparts[0];
+                            dimension.DomainMember = domainmemberparts[1];
+                        }
+                        if (domainmemberparts.length == 3)
+                        {
+                            dimension.Domain = Format("{0}:{1}", domainmemberparts[0], domainmemberparts[1]);
+                            dimension.DomainMember = domainmemberparts[2];
+
+                        }
+                        this.Dimensions.push(dimension);
+                    }
+                }
+
+            }
+        }
 
     }
 
@@ -121,7 +190,7 @@
         public ReportingCurrency: string;
         public Entity: Entity;
 
-        public FactDictionary:Object = {};
+        public FactDictionary:Object = null;
     }   
 
     export class Label {

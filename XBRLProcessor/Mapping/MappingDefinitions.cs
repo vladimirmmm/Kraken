@@ -166,6 +166,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@content", (Dimension i) => i.DomainMember)
                  ),
                 Mappings.Map<Dimension>("<xbrldi:typedMember>",
+                    Mappings.PropertyMap("#true", (Dimension i) => i.IsTyped),
                     Mappings.PropertyMap("dimension", (Dimension i) => i.DimensionItem),
                     Mappings.PropertyMap("/@name", (Dimension i) => i.Domain),
                     Mappings.PropertyMap("/@content", (Dimension i) => i.DomainMember)
@@ -253,6 +254,18 @@ namespace XBRLProcessor.Mapping
             toitem.Content = item.Content;
             return toitem;
         }
+
+        public static LogicalModel.Base.QualifiedItem ToQualifiedItem(Locator item)
+        {
+            var toitem = new LogicalModel.Base.QualifiedItem();
+            toitem.Namespace = item.Namespace;
+            toitem.Name = item.Element.Name;
+            toitem.LabelID = item.LabelID;
+            toitem.ID = item.ID;
+            toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(LogicalModel.Label.GetKey(toitem.Namespace, toitem.ID));
+            return toitem;
+        }
+        
         
     }
 }

@@ -305,6 +305,20 @@ namespace BaseModel
             return list;
         }
 
+        public Hierarchy<TargetClass> Cast<TargetClass>(Func<TClass,TargetClass> castexpression) where TargetClass:class
+        {
+            var result = new Hierarchy<TargetClass>();
+            result.Item = castexpression(this.Item);
+            foreach (var child in this.Children)
+            {
+                var item = child.Cast<TargetClass>(castexpression);
+                result.Children.Add(item);
+                item.Parent = result;
+            }
+
+            return result;
+        }
+
         public void SetParents()
         {
             foreach (var child in this.Children)

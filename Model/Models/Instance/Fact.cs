@@ -13,6 +13,9 @@ namespace LogicalModel
         private String _FactString= "";
         public String FactString { get { return _FactString; } set { _FactString = value; } }
 
+        private String _FactKey = "";
+        public String FactKey { get { return _FactKey; } set { _FactKey = value; } }
+
         public int Decimals { get; set; }
 
         private String _Concept= "";

@@ -46,6 +46,10 @@ namespace Utilities
         public static string Attr(XmlNode node, string Name)
         {
             var lowername = Name.ToLower();
+            if (lowername.StartsWith("#"))
+            {
+                return lowername.Substring(1);
+            }
             if (lowername.StartsWith("@")) 
             {
                 if (lowername == "@content") 

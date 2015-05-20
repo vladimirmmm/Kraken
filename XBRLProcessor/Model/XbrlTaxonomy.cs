@@ -11,6 +11,7 @@ using Utilities;
 using XBRLProcessor.Model;
 using XBRLProcessor.Model.Base;
 using Model.DefinitionModel;
+using BaseModel;
 
 namespace XBRLProcessor.Models
 {
@@ -191,44 +192,59 @@ namespace XBRLProcessor.Models
 
         public override void LoadHierarchy()
         {
-            var hierdocs = this.TaxonomyDocuments.Where(i => i.FileName.ToLower() == "hier.xsd");
-            foreach (var hierdoc in hierdocs) 
-            {
-                var ns = GetTargetNamespace(hierdoc.XmlDocument);
-                var hierdefdoc = hierdoc.References.FirstOrDefault(i=>i.FileName=="hier-def.xml");
+            Console.WriteLine("Load Hierarchies");
 
-                var node = hierdefdoc.XmlDocument.DocumentElement;
-                var hier = new Hier();
-                Mappings.CurrentMapping.Map<Hier>(node, hier);
-                foreach (var deflink in hier.DefinitionLinks) 
+            if (!System.IO.File.Exists(TaxonomyHierarchyPath))
+            {
+                var hierdocs = this.TaxonomyDocuments.Where(i => i.FileName.ToLower() == "hier.xsd");
+                var hierarchies = new List<BaseModel.Hierarchy<Locator>>();
+                foreach (var hierdoc in hierdocs)
                 {
-                    deflink.LoadHierarchy();
-                    foreach (var loc in deflink.Locators) 
+                    var ns = GetTargetNamespace(hierdoc.XmlDocument);
+                    var hierdefdoc = hierdoc.References.FirstOrDefault(i => i.FileName == "hier-def.xml");
+
+                    var node = hierdefdoc.XmlDocument.DocumentElement;
+                    var hier = new Hier();
+                    Mappings.CurrentMapping.Map<Hier>(node, hier);
+                    foreach (var deflink in hier.DefinitionLinks)
                     {
-                        var path = Utilities.Strings.ResolveRelativePath(hierdefdoc.LocalFolder, loc.Href);
-                        var loc_doc = FindDocument(path);
-                        ns = GetTargetNamespace(loc_doc.XmlDocument);
-                        loc.Namespace = ns;
-                        loc.Locate();
+                        deflink.LoadHierarchy();
+                        foreach (var loc in deflink.Locators)
+                        {
+                            var path = Utilities.Strings.ResolveRelativePath(hierdefdoc.LocalFolder, loc.Href);
+                            var loc_doc = FindDocument(path);
+                            ns = GetTargetNamespace(loc_doc.XmlDocument);
+                            loc.Namespace = ns;
+                            loc.Locate();
+                        }
+                        hierarchies.Add(deflink.DefinitionRoot);
+                        int z = 0;
                     }
-                    int z = 0;
+
                 }
 
-            }
-        }
+                var sb = new StringBuilder();
+                foreach (var hier in hierarchies)
+                {
+                    this.Hierarchies.Add(hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem));
+                }
 
-        public override void LoadConcepts()
-        {
-            var conceptelements = this.SchemaElements.Where(i => i.Namespace == "eba_met");
-            foreach (var conceptelement in conceptelements)
+                var jsoncontent = Utilities.Converters.ToJson(this.Hierarchies);
+                Utilities.FS.WriteAllText(TaxonomyHierarchyPath, jsoncontent);
+            }
+            else
             {
-                var concept = new LogicalModel.Concept();
-                concept.Namespace = conceptelement.Namespace;
-                concept.Name = conceptelement.Name;
-                //var 
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyHierarchyPath);
+                this.Hierarchies = Utilities.Converters.JsonTo<List<Hierarchy<LogicalModel.Base.QualifiedItem>>>(jsoncontent);
             }
+
+            Console.WriteLine("Load Hierarchies completed");
+
+            //Utilities.FS.WriteAllText(this.ModuleFolder + "Hierarchy.json", Utilities.Converters.ToJson(hierarchies));
+            //Utilities.FS.WriteAllText(this.ModuleFolder + "Hierarchy.txt", sb.ToString());
         }
 
+       
         #region Handlers
 
         public bool HandleLabel(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)
@@ -239,7 +255,6 @@ namespace XBRLProcessor.Models
             var role = Utilities.Xml.Attr(node,Attributes.LabelRole);
             var lang = Utilities.Xml.Attr(node,Attributes.Language);
             var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
-            //FileID = GetTargetNamespace(((XbrlTaxonomyDocument)taxonomydocument).XmlDocument);
             if (FileID.Contains("-lab-")) 
             {
                 FileID = FileID.Remove(FileID.IndexOf("-lab-") + 5);
@@ -249,23 +264,17 @@ namespace XBRLProcessor.Models
             newlabel.Lang = lang;
             newlabel.FileName = FileID;
 
-            //var label = this.TaxonomyLabels.FirstOrDefault(i => i.LabelID == labelid && i.Lang == lang
-            //    && i.FileName == FileID
-            //    );
             var label = FindLabel(newlabel.Key);
 
             if (label == null)
             {
                 label = newlabel;
                 AddLabel(label);
-                //label.LocalID = labelid.StartsWith(Literal.LabelPrefix) ? labelid.Substring(6) : labelid;
 
             }
             else 
             {
-                //label=
             }
-            //label.FileName = this.FileName;
             if (role.In(Roles.LabelCodeRoles))
             {
                 label.Code = labeltext;
