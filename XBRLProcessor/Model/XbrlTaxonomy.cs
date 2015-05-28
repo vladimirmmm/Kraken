@@ -12,6 +12,8 @@ using XBRLProcessor.Model;
 using XBRLProcessor.Model.Base;
 using Model.DefinitionModel;
 using BaseModel;
+using LogicalModel.Expression;
+using XBRLProcessor.Validation;
 
 namespace XBRLProcessor.Models
 {
@@ -38,6 +40,7 @@ namespace XBRLProcessor.Models
             set { base.EntryDocument = value; }
         }
         public List<XbrlTable> TaxonomyTables = new List<XbrlTable>();
+        public List<XbrlValidation> Validations = new List<XbrlValidation>();
 
       
 
@@ -217,6 +220,7 @@ namespace XBRLProcessor.Models
                             loc.Namespace = ns;
                             loc.Locate();
                         }
+                        deflink.DefinitionRoot.Item.Role = deflink.Role;
                         hierarchies.Add(deflink.DefinitionRoot);
                         int z = 0;
                     }
@@ -231,6 +235,8 @@ namespace XBRLProcessor.Models
 
                 var jsoncontent = Utilities.Converters.ToJson(this.Hierarchies);
                 Utilities.FS.WriteAllText(TaxonomyHierarchyPath, jsoncontent);
+                Utilities.FS.WriteAllText(TaxonomyLayoutFolder + "hierarchies.js", "var hierarchies = " + jsoncontent + ";");
+
             }
             else
             {
@@ -244,6 +250,40 @@ namespace XBRLProcessor.Models
             //Utilities.FS.WriteAllText(this.ModuleFolder + "Hierarchy.txt", sb.ToString());
         }
 
+        public override void LoadValidations()
+        {
+            var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
+            var validations = new List<XbrlValidation>();
+            var sb = new StringBuilder();
+            var parser = new XbrlFormulaParser();
+            FunctionExpression.FunctionProvider = Functions.Current.Find;
+            Expression testobj = null;
+            var expressionfile = this.ModuleFolder + "expressions.txt";
+            foreach (var validdoc in validationdocuments) 
+            {
+                var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement,"//gen:link");
+                var validation = new XbrlValidation();
+                Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
+                if (validation.ValueAssertion != null)
+                {
+                    validation.LoadValidationHierarchy();
+                    validations.Add(validation);
+
+                    var obj = parser.ParseExpression(validation.ValueAssertion.Test);
+                    var tree = parser.GetTreeString(validation.ValueAssertion.Test);
+                    sb.AppendLine(validation.ID);
+                    sb.AppendLine(validation.ValueAssertion.Test);
+                    sb.AppendLine(obj.Translate(parser));
+
+                    sb.AppendLine(tree.ToHierarchyString(i => i));
+                    sb.AppendLine("_______________________________________");
+                }
+            }
+            if (!System.IO.File.Exists(expressionfile)||1==1)
+            {
+                Utilities.FS.WriteAllText(expressionfile, sb.ToString());
+            }
+        }
        
         #region Handlers
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BaseModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -14,45 +15,7 @@ namespace UI
     //    public List<T> Where(Func<T, bool> func);
 
     //}
-    public class Hier<T> where T:class 
-    {
-    
-        //private List<H<T>> HChildren = new List<H<T>>();
-        //public List<T> Children 
-        //{
-        //    get 
-        //    {
-        //        return HChildren.Select(i => i.Item).ToList();
-        //    }
-        //}
-        public List<T> Children = new List<T>();
 
-        public T Parent;
-        private T Item 
-        {
-            get { return this as T; }
-        }
-
-
-        public List<T> Where(Func<T, bool> func)
-        {
-            var results = new List<T>();
-            if (func(this.Item))
-            {
-                results.Add(this.Item);
-            }
-            else
-            {
-                foreach (var child in this.Children)
-                {
-                    results.AddRange((child as Hier<T>).Where(func));
-                }
-            }
-            return results;
-        }
-
-
-    }
 
 
 

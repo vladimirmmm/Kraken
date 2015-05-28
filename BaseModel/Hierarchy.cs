@@ -183,28 +183,57 @@ namespace BaseModel
 
             }
 
-            /*
+
+            return root;
+        }
+
+        public static Hierarchy<TClass> GetHierarchy<TArc>(List<TArc> Arcs, List<TClass> Items,
+            Func<Hierarchy<TClass>, TArc, Boolean> FromExpression,
+            Func<Hierarchy<TClass>, TArc, Boolean> ToExpression,
+            Action<Hierarchy<TClass>, TArc> OrderExpression)
+        {
+            var hierarchylist = new List<Hierarchy<TClass>>();
+            foreach (var item in Items) 
+            {
+                hierarchylist.Add(new Hierarchy<TClass>(item));
+            }
+            Hierarchy<TClass> root = hierarchylist.FirstOrDefault();
+
             foreach (var arc in Arcs)
             {
-                var parent = Items.FirstOrDefault(i => FromExpression(i, arc));
-                var child = Items.FirstOrDefault(i => ToExpression(i, arc));
-                if (parent != null && child != null)
-                {
-                    child.Parent = parent;
-                    OrderExpression(child, arc);
-                    parent.Children.Add(child);
+                var parents = hierarchylist.Where(i => FromExpression(i, arc));
+                var children = hierarchylist.Where(i => ToExpression(i, arc));
+                var childtemplate = children.FirstOrDefault();
 
-                }
-                else
+                var nullchild = hierarchylist.FirstOrDefault(i => i.Parent == null);
+                var child = childtemplate.Parent == null ? childtemplate :
+                    nullchild != null ? nullchild :
+                    new Hierarchy<TClass>(childtemplate);
+                if (parents.ToList().Count > 1 || children.ToList().Count > 1)
                 {
-                    if (child != null)
+                    int x = 0;
+                }
+                foreach (var parent in parents)
+                {
+                    if (parent != null && child != null)
                     {
-                        root = child;
+                        child.Parent = parent;
+                        OrderExpression(child, arc);
+                        parent.Children.Add(child);
+
+                    }
+                    else
+                    {
+                        if (child != null)
+                        {
+                            root = child;
+                        }
                     }
                 }
-         
+
             }
-            */
+
+
             return root;
         }
 
@@ -333,5 +362,90 @@ namespace BaseModel
             return String.Format("H<{0}> - {1}", typeof(TClass).Name, this.Item);
         }
 
+    }
+
+    public class Hier<T> where T : class
+    {
+
+        public List<T> Children = new List<T>();
+        private List<Hier<T>> _HChildren = new List<Hier<T>>();
+        public List<Hier<T>> HChildren 
+        {
+            get
+            {
+                if (_HChildren.Count != Children.Count)
+                {
+                    _HChildren.Clear();
+                    foreach (var child in Children) 
+                    {
+                        var existing = new Hier<T>(child);
+                        _HChildren.Add(existing);
+                        //var existing = _HChildren.FirstOrDefault(i => i.Item == child);
+                        //if (existing == null) 
+                        //{
+                        //    existing = new Hier<T>(child);
+                        //    _HChildren.Add(existing);
+                        //}
+                    }
+                }
+                return _HChildren;
+            }
+        }
+
+        public T Parent;
+        private T _Item;
+        public T Item
+        {
+            get
+            {
+                if (_Item == null)
+                {
+                    _Item = this as T;
+                }
+                return _Item;
+            }
+            set { _Item = value; }
+        }
+        public void AddChildren(Hier<T> item)
+        {
+            item.Parent = this.Item;
+            Children.Add(item.Item);
+            _HChildren.Add(item);
+        }
+        public Hier() 
+        {
+
+        }
+        public Hier(T item)
+        {
+            this.Item = item;
+        }
+        public List<T> Where(Func<T, bool> func)
+        {
+            var results = new List<T>();
+            if (func(this.Item))
+            {
+                results.Add(this.Item);
+            }
+            else
+            {
+                foreach (var child in this.Children)
+                {
+                    results.AddRange((child as Hier<T>).Where(func));
+                }
+            }
+            return results;
+        }
+
+        public string ToHierarchyString(Func<T, string> tostringexpression, string tag = "")
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(String.Format("{0}{1}", tag, tostringexpression(this.Item)));
+            foreach (var child in HChildren)
+            {
+                sb.Append(child.ToHierarchyString(tostringexpression, tag + "    "));
+            }
+            return sb.ToString();
+        }
     }
 }

@@ -6,6 +6,27 @@ var __extends = this.__extends || function (d, b) {
 };
 var Model;
 (function (Model) {
+    var Hierarchy = (function () {
+        function Hierarchy() {
+            this.Children = [];
+            this.Parent = null;
+            this.Item = null;
+        }
+        Hierarchy.prototype.ToArray = function () {
+            var me = this;
+            var items = [];
+            items.push(this.Item);
+            this.Children.forEach(function (item) {
+                if ("ToArray" in item == false) {
+                    item["ToArray"] = me.ToArray;
+                }
+                items = items.concat(item.ToArray());
+            });
+            return items;
+        };
+        return Hierarchy;
+    })();
+    Model.Hierarchy = Hierarchy;
     var Dimension = (function () {
         function Dimension() {
         }
@@ -22,8 +43,16 @@ var Model;
         return Dimension;
     })();
     Model.Dimension = Dimension;
-    var QualifiedName = (function () {
+    var Identifiable = (function () {
+        function Identifiable() {
+        }
+        return Identifiable;
+    })();
+    Model.Identifiable = Identifiable;
+    var QualifiedName = (function (_super) {
+        __extends(QualifiedName, _super);
         function QualifiedName() {
+            _super.apply(this, arguments);
         }
         QualifiedName.Create = function (content) {
             var result = new QualifiedName();
@@ -48,8 +77,40 @@ var Model;
             configurable: true
         });
         return QualifiedName;
-    })();
+    })(Identifiable);
     Model.QualifiedName = QualifiedName;
+    var QualifiedItem = (function (_super) {
+        __extends(QualifiedItem, _super);
+        function QualifiedItem() {
+            _super.apply(this, arguments);
+        }
+        Object.defineProperty(QualifiedItem.prototype, "LabelContent", {
+            get: function () {
+                return IsNull(this.Label) ? "" : this.Label.Content;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(QualifiedItem.prototype, "LabelCode", {
+            get: function () {
+                return IsNull(this.Label) ? "" : this.Label.Code;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return QualifiedItem;
+    })(QualifiedName);
+    Model.QualifiedItem = QualifiedItem;
+    var Concept = (function (_super) {
+        __extends(Concept, _super);
+        function Concept() {
+            _super.apply(this, arguments);
+            this.Domain = null;
+            this.HierarchyRole = "";
+        }
+        return Concept;
+    })(QualifiedName);
+    Model.Concept = Concept;
     var FactBase = (function () {
         function FactBase() {
             this.Concept = null;
@@ -130,12 +191,6 @@ var Model;
         return Fact;
     })(FactBase);
     Model.Fact = Fact;
-    var Identifiable = (function () {
-        function Identifiable() {
-        }
-        return Identifiable;
-    })();
-    Model.Identifiable = Identifiable;
     var Unit = (function (_super) {
         __extends(Unit, _super);
         function Unit() {

@@ -16,5 +16,7 @@ namespace UI
         Structure,
         Tables,
         Elements,
+        Concepts,
+        Hierarchies,
     }
 }

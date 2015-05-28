@@ -228,10 +228,15 @@ namespace XBRLProcessor.Mapping
             get {
                 var mappings = new List<PropertyMapping>();
                 mappings.AddRange(OwnPropertyMappings);
-                var basemapping = (ClassMapping)Mappings.CurrentMapping.GetMapping(this.ClassType.BaseType);
-                if (basemapping != null) 
+                Type basetype = this.ClassType.BaseType;
+                while (basetype != null && basetype!=typeof(Object))
                 {
-                    mappings.AddRange(basemapping.PropertyMappings);
+                    var basemapping = (ClassMapping)Mappings.CurrentMapping.GetMapping(basetype);
+                    if (basemapping != null)
+                    {
+                        mappings.AddRange(basemapping.PropertyMappings);
+                    }
+                    basetype = basetype.BaseType;
                 }
                 return mappings;
             }
@@ -368,6 +373,15 @@ namespace XBRLProcessor.Mapping
             LoadNameSpaces(node.OwnerDocument);
             Object value = null;
             var tagname = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
+
+            if (XmlSelector.Contains("df:typedDimension"))
+            {
+                var c = Utilities.Xml.SelectChildNodes(node, tagname).Count;
+                if (c > 0) 
+                {
+
+                }
+            }
  
             if (!String.IsNullOrEmpty(tagname) && IsComplexType)
             {

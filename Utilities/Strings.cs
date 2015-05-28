@@ -183,6 +183,31 @@ namespace Utilities
             return text.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        public static string[] SplitPreserve(string text, string[] separators)
+        {
+            var result = new List<string>();
+            for (int i = 0; i < separators.Length; i++) 
+            {
+                var separator = separators[i];
+                var s_ix=0;
+                var ix = text.IndexOf(separator,s_ix);
+                while (ix > -1) 
+                {
+                    var item = text.Substring(s_ix, ix);
+                    var sepitem = text.Substring(ix, separator.Length);
+                    result.Add(item);
+                    result.Add(sepitem);
+                    s_ix = ix + separator.Length;
+                    ix = text.IndexOf(separator, s_ix);
+                }
+            }
+            foreach (var item in result) 
+            {
+
+            }
+            return result.ToArray();
+        }
+
         public static string TextBetween(String text, string begintag, string endtag)
         {
             if (!String.IsNullOrEmpty(text))

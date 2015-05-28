@@ -92,7 +92,7 @@ namespace UI
                 var instance = Features.CurrentInstance;
                 if (instance != null)
                 {
-                    Browser.InvokeScript("LoadInstance", instance.JsonValue);
+                    Browser.InvokeScript("LoadInstance", "");
                 }
             }
             catch (Exception ex) 

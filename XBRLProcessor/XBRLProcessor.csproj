@@ -45,15 +45,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\DefinitionModel\AspectNodeFilterArc.cs" />
+    <Compile Include="Model\DefinitionModel\Filter\AspectFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\ConceptFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\DimensionFilter.cs" />
+    <Compile Include="Model\DefinitionModel\Filter\Filters.cs" />
     <Compile Include="Model\DefinitionModel\Formula\DimensionAspect.cs" />
     <Compile Include="Model\DefinitionModel\Hier.cs" />
+    <Compile Include="Model\DefinitionModel\ValidationClasses.cs" />
     <Compile Include="Model\InstanceModel\Context.cs" />
     <Compile Include="Model\InstanceModel\XbrlFact.cs" />
     <Compile Include="Model\InstanceModel\FilingIndicator.cs" />
     <Compile Include="Model\InstanceModel\Scenario.cs" />
     <Compile Include="Model\InstanceModel\XbrlInstance.cs" />
+    <Compile Include="Model\XbrlValidation.cs" />
+    <Compile Include="Validation\Functions.cs" />
     <Compile Include="XbrlEngine.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Helpers\XmlNodeHandlers.cs" />
@@ -101,6 +106,7 @@
     <Compile Include="Model\StructuralModel\ClosedStructuralNode.cs" />
     <Compile Include="Model\StructuralModel\OpenStructuralNode.cs" />
     <Compile Include="Model\StructuralModel\StructuralNode.cs" />
+    <Compile Include="XbrlParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BaseModel\BaseModel.csproj">

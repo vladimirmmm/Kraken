@@ -1,4 +1,28 @@
 ﻿module Model {
+
+    export class Hierarchy<T>
+    {
+        public Children: Hierarchy<T>[] = [];
+        public Parent: Hierarchy<T> = null;
+        public Order: number;
+        public Item: T = null;
+
+        public ToArray(): T[]
+        {
+            var me = this;
+            var items: T[] = [];
+            items.push(this.Item);
+            this.Children.forEach(function (item) {
+                if ("ToArray" in item == false)
+                {
+                    item["ToArray"] = me.ToArray;
+                }
+                items = items.concat(item.ToArray());
+            });
+            return items; 
+        }
+    }
+
     export class Dimension {
         public DimensionItem: string;
         public Domain: string;
@@ -14,13 +38,15 @@
         }
     }
 
-    export class QualifiedName {
+    export class Identifiable {
+        public ID: string;
+
+    }
+
+    export class QualifiedName extends Identifiable {
         public Namespace: string;
         public Name: string;
 
-        constructor() {
-
-        }
         static Create(content: string): QualifiedName {
             var result = new QualifiedName();
             var parts = content.split(":");
@@ -39,6 +65,27 @@
             }
             return Format("{0}:{1}", this.Namespace, this.Name);
         }
+    }
+
+    export class QualifiedItem extends QualifiedName
+    {
+        public Role: string;
+        public LabelID: string;
+        public Label: Label;
+
+        public get LabelContent() {
+            return IsNull(this.Label) ? "" : this.Label.Content;
+        }
+
+        public get LabelCode() {
+            return IsNull(this.Label) ? "" : this.Label.Code;
+        }
+    }
+
+    export class Concept extends QualifiedName
+    {
+        public Domain: QualifiedName = null;
+        public HierarchyRole: string = "";
     }
 
     export class FactBase {
@@ -131,17 +178,14 @@
 
     }
 
-    export class Identifiable {
-        public ID: string;
-
-    }
-
     export class Unit extends Identifiable {
         public Measure: QualifiedName;
     }
+
     export class Entity extends Identifiable {
         public Scheme: string;
     }
+
     export class LayoutItem extends FactBase {
         public ID: string;
         public Axis: string;

@@ -783,7 +783,7 @@ function MakeEditable3(cellselector, optionObject) {
     $(cellselector).click(function () {
         var $target = $(this);
         if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject)), function (i) { return i.val(); }, function (i, val) {
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)), function (i) { return i.val(); }, function (i, val) {
                 i.val(val);
             });
             editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
@@ -832,8 +832,11 @@ function MakeEditable(cellselector) {
         }
     });
 }
-function ToOptionList(obj) {
+function ToOptionList(obj, addemptyoption) {
     var result = "";
+    if (addemptyoption) {
+        result += Format('<option value="">-select-</option>\n');
+    }
     for (var prop in obj) {
         var val = obj[prop];
         if (obj.hasOwnProperty(prop) && typeof val !== "function") {

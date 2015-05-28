@@ -868,7 +868,7 @@ function MakeEditable3(cellselector, optionObject) {
         var $target = $(this);
         if (!$target.hasClass(Editor.editclass)) {
   
-            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
             editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
         }
     });
@@ -927,9 +927,13 @@ function MakeEditable(cellselector)
 
 }
 
-function ToOptionList(obj: Object): string
+function ToOptionList(obj: Object, addemptyoption:boolean): string
 {
     var result = "";
+    if (addemptyoption)
+    {
+        result += Format('<option value="">-select-</option>\n');
+    }
     for (var prop in obj) {
         var val = obj[prop];
         if (obj.hasOwnProperty(prop) && typeof val !== "function") {

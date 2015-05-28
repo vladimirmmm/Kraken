@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using XBRLProcessor.Enums;
 using XBRLProcessor.Model;
 using XBRLProcessor.Model.Base;
+using XBRLProcessor.Model.DefinitionModel;
 using XBRLProcessor.Model.DefinitionModel.Filter;
 using XBRLProcessor.Model.DefinitionModel.Formula;
 
@@ -135,7 +136,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<df:explicitDimension>", (XbrlTable i) => i.DimensionFilters),                    
                     Mappings.PropertyMap("<link:definitionLink>", (XbrlTable i) => i.DefinitionLinks)                  
                 ),
-
+             
                  Mappings.Map<DimensionFilter>("<DimensionFilter>",
                     Mappings.PropertyMap("<df:dimension>", (DimensionFilter i) => i.Dimension)
                  ),
@@ -152,9 +153,49 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<df:arcrole>", (DimensionMember i) => i.ArcRole),
                     Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.Axis)
                  ),
+                 Mappings.Map<VariableArc>("<variable:variableArc>",
+                    Mappings.PropertyMap("name", (VariableArc i) => i.Name)
+                 ),
+                 Mappings.Map<Filter>("<bf:orFilter>"),
+
+                 Mappings.Map<Filter>("<bf:andFilter>"),
+
+                 Mappings.Map<ValueAssertion>("<va:valueAssertion>",
+                    Mappings.PropertyMap("test", (ValueAssertion i) => i.Test),
+                    Mappings.PropertyMap("aspectModel", (ValueAssertion i) => i.AspectModel),
+                    Mappings.PropertyMap("implicitFiltering", (ValueAssertion i) => i.ImplicitFiltering)
+                 ),
+                 Mappings.Map<VariableSetFilterArc>("<variable:variableSetFilterArc>",
+                    Mappings.PropertyMap("complement", (VariableSetFilterArc i) => i.Complement)
+                 ),
+                 Mappings.Map<VariableFilterArc>("<variable:variableFilterArc>",
+                    Mappings.PropertyMap("complement", (VariableFilterArc i) => i.Complement),
+                    Mappings.PropertyMap("cover", (VariableFilterArc i) => i.Cover)
+                 ),
+
+                 Mappings.Map<ConceptNameFilter>("<cf:conceptName>",
+                    Mappings.PropertyMap("<cf:concept>", (ConceptNameFilter i) => i.Concept)
+                 ),
+
+                   Mappings.Map<AspectCoverFilter>("<acf:aspectCover>",
+                    Mappings.PropertyMap("/@content", (AspectCoverFilter i) => i.Aspect)
+                 ),
+
+                  Mappings.Map<ConceptQName>("<cf:concept>",
+                    Mappings.PropertyMap("<df:qname>", (ConceptQName i) => i.QName)
+                 ),
 
                  Mappings.Map<ExplicitDimensionFilter>("<df:explicitDimension>",
                     Mappings.PropertyMap("<df:member>", (ExplicitDimensionFilter i) => i.Member)
+                 ),
+
+                  Mappings.Map<TypedDimensionFilter>("<df:typedDimension>"),
+
+                  Mappings.Map<FactVariable>("<variable:factVariable>"),
+
+                  Mappings.Map<Variable>("<variable>",
+                    Mappings.PropertyMap("bindAsSequence", (Variable i) => i.BindAsSequence),
+                    Mappings.PropertyMap("fallbackValue", (Variable i) => i.FallbackValue)
                  ),
 
                  Mappings.Map<TypedDimensionFilter>("<df:explicitDimension>",
@@ -224,6 +265,22 @@ namespace XBRLProcessor.Mapping
                   Mappings.Map<Hier>("<hier>",
                     Mappings.PropertyMap("<link:definitionLink>", (Hier i) => i.DefinitionLinks)
                  ),
+                 //validation
+                 Mappings.Map<XbrlValidation>("<validation>",
+                    Mappings.PropertyMap("<variable:variableArc>", (XbrlValidation i) => i.VariableArcs),
+                    Mappings.PropertyMap("<variable:variableFilterArc>", (XbrlValidation i) => i.VariableFilterArcs),
+                    Mappings.PropertyMap("<variable:variableSetFilterArc>", (XbrlValidation i) => i.VariableSetFilterArcs),
+                    Mappings.PropertyMap("<df:explicitDimension>", (XbrlValidation i) => i.DimensionFilters),
+                    Mappings.PropertyMap("<df:typedDimension>", (XbrlValidation i) => i.DimensionFilters),
+                    Mappings.PropertyMap("<cf:conceptName>", (XbrlValidation i) => i.ConceptFilters),
+                    Mappings.PropertyMap("<acf:aspectCover>", (XbrlValidation i) => i.AspectFilters),
+                    Mappings.PropertyMap("<va:valueAssertion>", (XbrlValidation i) => i.ValueAssertion),
+                    Mappings.PropertyMap("<bf:orFilter>", (XbrlValidation i) => i.Filters),
+                    Mappings.PropertyMap("<bf:andFilter>", (XbrlValidation i) => i.Filters),
+                    Mappings.PropertyMap("<variable:factVariable>", (XbrlValidation i) => i.FactVariables)
+                    
+                 ),
+                 //end validation
             };
 
            
@@ -262,6 +319,7 @@ namespace XBRLProcessor.Mapping
             toitem.Name = item.Element.Name;
             toitem.LabelID = item.LabelID;
             toitem.ID = item.ID;
+            toitem.Role = item.Role;
             toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(LogicalModel.Label.GetKey(toitem.Namespace, toitem.ID));
             return toitem;
         }

@@ -60,6 +60,19 @@ namespace LogicalModel.Base
                 _LabelID = value;
             }
         }
+
+        private string _Role = "";
+        public string Role
+        {
+            get
+            {
+                return _Role;
+            }
+            set
+            {
+                _Role = value;
+            }
+        }
     }
 
     public class FactBase 

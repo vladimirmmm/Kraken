@@ -8,9 +8,80 @@ var UI;
             this.CurrentExtension = null;
             this.Instance = null;
             this.$TemplateRow = null;
+            this.Concepts = [];
+            this.Hierarchies = [];
+            this.ConceptValues = [];
             this.GetFactMap();
             this.SetExtension("");
+            this.SetExternals();
         }
+        Table.prototype.SetExternals = function () {
+            this.Concepts = window["concepts"] == null ? [] : window["concepts"];
+            this.Concepts = this.Concepts.AsLinq().Where(function (i) { return i.Domain != null; }).ToArray();
+            this.Hierarchies = window["hierarchies"] == null ? [] : window["hierarchies"];
+            this.LoadConceptValues();
+            this.SetCellEditors();
+        };
+        Table.prototype.LoadConceptValues = function () {
+            var me = this;
+            me.ConceptValues = [];
+            var htemp = new Model.Hierarchy();
+            me.Concepts.forEach(function (concept) {
+                concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
+                var hier = me.Hierarchies.AsLinq().FirstOrDefault(function (i) { return i.Item.Name == concept.Domain.Name && i.Item.Namespace == concept.Domain.Namespace && i.Item.Role == concept.HierarchyRole; });
+                if (hier != null) {
+                    var clkp = new ConceptLookUp();
+                    clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
+                    hier["ToArray"] = htemp.ToArray; //() => htemp.ToArray.apply(hier);
+                    var items = hier.ToArray();
+                    items.forEach(function (item, index) {
+                        if (index > 0) {
+                            var v = {};
+                            var id = Format("{0}:{1}", item.Namespace, item.Name);
+                            clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                        }
+                    });
+                    clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                    me.ConceptValues.push(clkp);
+                }
+            });
+        };
+        Table.prototype.GetConcepOptions = function (concept) {
+            var clkp = this.ConceptValues.AsLinq().FirstOrDefault(function (i) { return i.Concept == concept; });
+            if (clkp != null) {
+                return clkp.OptionsHTML;
+            }
+            return "";
+        };
+        Table.prototype.SetCellEditors = function () {
+            var me = this;
+            var cellselector = ".data";
+            $(cellselector).off("click");
+            $(cellselector).each(function (ix, item) {
+                var $target = $(item);
+                var factitems = $target.attr("factstring").split(",");
+                var concept = "";
+                if (factitems[0].indexOf("eba_met:") > -1) {
+                    concept = factitems[0];
+                }
+                if (!$target.parent().hasClass("dynamic")) {
+                    $target.click(function () {
+                        if (!$target.hasClass(Editor.editclass)) {
+                            var editor = null;
+                            if (factitems[0].indexOf("eba_met:ei") == 0) {
+                                editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)), function (i) { return i.val(); }, function (i, val) {
+                                    i.val(val);
+                                });
+                            }
+                            else {
+                                editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+                            }
+                            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+                        }
+                    });
+                }
+            });
+        };
         Table.prototype.LoadCellsFromHtml = function () {
             var me = this;
             var s_ix = 1;
@@ -110,6 +181,7 @@ var UI;
                             }
                         }
                     });
+                    me.SetCellEditors();
                     Notify(Format("{0} cells were populated!", c));
                 }
             }
@@ -168,17 +240,25 @@ var UI;
             this.LoadInstance(instance);
         };
         Table.prototype.TestInstance = function () {
-            this.LoadInstance(window["lastinstance"]);
+            this.LoadInstance(window["currentinstance"]);
         };
         return Table;
     })();
     UI.Table = Table;
+    var ConceptLookUp = (function () {
+        function ConceptLookUp() {
+            this.Concept = "";
+            this.Values = {};
+            this.OptionsHTML = "";
+        }
+        return ConceptLookUp;
+    })();
 })(UI || (UI = {}));
 var Table = null;
 function SetExtension(extjson) {
     Table.SetExtension(extjson);
 }
 function LoadInstance(instancejson) {
-    Table.SetInstance(instancejson);
+    Table.LoadInstance(window["currentinstance"]);
 }
 //# sourceMappingURL=Table.js.map

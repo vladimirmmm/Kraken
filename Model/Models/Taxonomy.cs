@@ -284,6 +284,8 @@ namespace LogicalModel
         {
 
         }
+
+        public virtual void LoadValidations() { }
         
         public virtual void LoadSchemaElements()
         {
@@ -340,6 +342,7 @@ namespace LogicalModel
                     {
                         concept.Domain = new QualifiedName();
                         concept.Domain.Content = conceptelement.Domain;
+                        concept.HierarchyRole = conceptelement.Hierarchy;
                     }
                     concept.Name = conceptelement.Name;
                     concept.Namespace = conceptelement.Namespace;
@@ -350,6 +353,7 @@ namespace LogicalModel
 
                 var jsoncontent = Utilities.Converters.ToJson(this.Concepts);
                 Utilities.FS.WriteAllText(TaxonomyConceptPath, jsoncontent);
+                Utilities.FS.WriteAllText(TaxonomyLayoutFolder+"concepts.js", "var concepts = " + jsoncontent+ ";");
             }
             else
             {
@@ -378,6 +382,8 @@ namespace LogicalModel
         }
         public void Clear_All_But_Structure()
         {
+            Clear_Concepts();
+            Clear_Hierarchies();
             Clear_Tables();
             Clear_Layout();
             Clear_Labels();
@@ -386,6 +392,8 @@ namespace LogicalModel
         }
         public void Clear_All()
         {
+            Clear_Concepts();
+            Clear_Hierarchies();
             Clear_Structure();
             Clear_Tables();
             Clear_Layout();
@@ -400,6 +408,14 @@ namespace LogicalModel
         public void Clear_Structure() 
         {
             Utilities.FS.DeleteFile(TaxonomyStructurePath);
+        }
+        public void Clear_Concepts()
+        {
+            Utilities.FS.DeleteFile(TaxonomyConceptPath);
+        }
+        public void Clear_Hierarchies()
+        {
+            Utilities.FS.DeleteFile(TaxonomyHierarchyPath);
         }
         public void Clear_Tables()
         {
