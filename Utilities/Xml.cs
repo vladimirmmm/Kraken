@@ -26,19 +26,38 @@ namespace Utilities
             return doc.GetElementsByTagName("*").Cast<XmlNode>().ToList();
         }
 
+        public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
+        private static Object DictionaryLocker = new Object();
+        
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
         {
-            var manager = new XmlNamespaceManager(doc.NameTable);
-            manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
-            //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
-            var linkbasenode = doc.DocumentElement;
-            foreach (XmlAttribute attr in linkbasenode.Attributes)
+            XmlNamespaceManager manager = null;
+            
+            if (!NamespaceDictionary.ContainsKey(doc))
             {
-                if (attr.Prefix.ToLower() == "xmlns")
+                lock (DictionaryLocker)
                 {
-                    manager.AddNamespace(attr.LocalName, attr.Value);
+                    if (!NamespaceDictionary.ContainsKey(doc))
+                    {
+                        manager = new XmlNamespaceManager(doc.NameTable);
+                        manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
+                        //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
+                        var linkbasenode = doc.DocumentElement;
+                        foreach (XmlAttribute attr in linkbasenode.Attributes)
+                        {
+                            if (attr.Prefix.ToLower() == "xmlns")
+                            {
+                                manager.AddNamespace(attr.LocalName, attr.Value);
 
+                            }
+                        }
+                        NamespaceDictionary.Add(doc, manager);
+                    }
                 }
+            }
+            else 
+            {
+                manager = NamespaceDictionary[doc];
             }
             return manager;
         }

@@ -1,4 +1,4 @@
-﻿using LogicalModel.Expression;
+﻿using LogicalModel.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace XBRLProcessor
             this.Syntax.BlockContainer_Left = "(";
             this.Syntax.BlockContainer_Right = ")";
             this.Syntax.ParameterSeparator = ",";
-            this.Syntax.Separator = " ";
+            this.Syntax.CodeItemSeparator = " ";
             this.Syntax.StringDelimiter = "'";
             this.Syntax.If = "if";
             this.Syntax.Then = "then";
@@ -53,7 +53,6 @@ namespace XBRLProcessor
         public override Expression ParseExpressionString(string expressionstring)
         {
             var expression = new Expression();
-            //var tree = GetTreeString(expressionstring);
 
             var fixedstring = expressionstring;
             var operators = Syntax.Operators.Values.Where(i => !String.IsNullOrEmpty(i)).Distinct().ToList();
@@ -70,7 +69,6 @@ namespace XBRLProcessor
             {
                 var item = items[0];
                 var simpleexpression = GetSimpleExpression(item);
-                //expression.SubExpressions.Add(simpleexpression);
                 expression = simpleexpression;
             }
             if (items.Length > 1 && items.Length % 2 == 1)
@@ -97,12 +95,7 @@ namespace XBRLProcessor
                     }
                 }
             }
-            if (expression.SubExpressions.Count == 1)
-            {
-                //var subexpression = expression.SubExpressions[0];
-                //subexpression.SubExpressions.AddRange(expression.SubExpressions.Where(i=>i!=subexpression));
-                //return subexpression;
-            }
+
             return expression;
         }
 
@@ -114,7 +107,7 @@ namespace XBRLProcessor
             var leftcontainer_ix = item.IndexOf(Syntax.ExpressionContainer_Left);
             var rightcontainer_ix = item.IndexOf(Syntax.ExpressionContainer_Right);
             var separator_ix = item.IndexOf(Syntax.ParameterSeparator);
-            if (leftcontainer_ix > -1) 
+            if (leftcontainer_ix > -1)
             {
                 if (separator_ix > -1)
                 {
@@ -123,7 +116,7 @@ namespace XBRLProcessor
                         isfunction = leftcontainer_ix < separator_ix;
                     }
                 }
-                else 
+                else
                 {
                     isfunction = true;
                 }
@@ -140,18 +133,10 @@ namespace XBRLProcessor
                     iffunction.condition = GetSimpleExpression(p_condition);
                     iffunction.truepath = GetSimpleExpression(p_true);
                     iffunction.falsepath = GetSimpleExpression(p_false);
-                    /*
-                    iffunction.SubExpressions.Add(iffunction.condition);
-                    iffunction.SubExpressions.Add(iffunction.truepath);
-                    iffunction.SubExpressions.Add(iffunction.falsepath);
-                    */
-                    for (int i = 0; i < 3;i++)
+
+                    for (int i = 0; i < 3; i++)
                     {
-                        //var parameter = new Expression();
-                        //parameter.Value = Syntax.ExpressionPlaceholder + i.ToString();
-                        //var param = new ParameterValue();
-                        //param.PlaceHolderIndex = GetSubExpressionIndex(param.StringValue);
-                        //iffunction.Parameters.Add(param);
+
                         var pv = Syntax.ExpressionPlaceholder + i.ToString();
                         var itemexpression = GetSimpleExpression(pv);
                         itemexpression.PlaceHolderIndex = GetSubExpressionIndex(itemexpression.StringValue);
@@ -168,13 +153,10 @@ namespace XBRLProcessor
                     var parameterstring = Utilities.Strings.TextBetween(item, Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
                     if (!string.IsNullOrEmpty(parameterstring))
                     {
-                        //var param = new ParameterValue(parameterstring);
-                        //param.PlaceHolderIndex = GetSubExpressionIndex(param.StringValue);
-                        //func.Parameters.Add(param);
                         var itemexpression = GetSimpleExpression(parameterstring);
                         itemexpression.PlaceHolderIndex = GetSubExpressionIndex(itemexpression.StringValue);
                         func.Items.Add(itemexpression);
-                      
+
                     }
                     //TODO add the Expression<Func here
                     result = func;
@@ -188,10 +170,6 @@ namespace XBRLProcessor
                     var listexpression = new ListExpression();
                     foreach (var pm in parameters)
                     {
-                        //var pmv = new ParameterValue(pm);
-                        //pmv.PlaceHolderIndex = GetSubExpressionIndex(pmv.StringValue);
-                        //pmv.Name = pm.Contains(Syntax.ParameterSpecifier) ? pmv.Name : "";
-                        //listexpression.Parameters.Add(pmv);
 
                         var itemexpression = GetSimpleExpression(pm);
                         itemexpression.PlaceHolderIndex = GetSubExpressionIndex(itemexpression.StringValue);
@@ -204,15 +182,97 @@ namespace XBRLProcessor
             {
                 result = new Expression();
                 result.PlaceHolderIndex = GetSubExpressionIndex(item);
-                result.Value = item;
+                var svalue = item;
+                var trimmed = item.Trim();
+                if (trimmed.StartsWith(Syntax.StringDelimiter) && trimmed.EndsWith(Syntax.StringDelimiter))
+                {
+                    svalue = trimmed.Trim(Syntax.StringDelimiter.ToCharArray());
+                    result.IsString = true;
+                }
+                if (trimmed.StartsWith(Syntax.ParameterSpecifier)) 
+                {
+                    result.IsParameter = true;
+                    svalue = trimmed.Substring(Syntax.ParameterSpecifier.Length);
+                    result.Parameters.Add(svalue);
+                }
+                result.Value = svalue;
+
             }
             return result;
         }
 
-        public void Test() 
+        #region Translate
+
+
+        public override string Translate(IfExpression expression)
         {
-            var expr = this.ParseExpression("$a = (xs:QName('eba_ZZ:x27'), xs:QName('eba_ZZ:x28'))");     
-            var item = expr.Translate(this);
+            var sb = new StringBuilder();
+            var format = Syntax.If + Syntax.ExpressionContainer_Left + "#0" + Syntax.ExpressionContainer_Right
+                + Syntax.CodeItemSeparator + Syntax.Then + Syntax.CodeItemSeparator
+                + Syntax.BlockContainer_Left + "#1" + Syntax.BlockContainer_Right
+                + Syntax.CodeItemSeparator + Syntax.Else + Syntax.CodeItemSeparator 
+                + Syntax.BlockContainer_Left + "#2" + Syntax.BlockContainer_Right;
+            format = format.Replace("{", "{{").Replace("}", "}}");
+            format = format.Replace("#0", "{0}").Replace("#1", "{1}").Replace("#2", "{2}");
+            sb.Append(String.Format(format, Translate(expression.condition), Translate(expression.truepath), Translate(expression.falsepath)));
+            return sb.ToString();
+        }
+
+        #endregion
+
+        public void Test()
+        {
+            var xbrlparser = new XbrlFormulaParser();
+            var csparser = new CSharpParser();
+            var expr1 = this.ParseExpression("$a = (xs:QName('eba_ZZ:x27'), xs:QName('eba_ZZ:x28'))");
+            var expr2 = this.ParseExpression("if ($ReportingLevel = 'con') then ($a = xs:QName('eba_SC:x7')) else (true())");
+            var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum(((iaf:numeric-multiply($b, $c)), (iaf:numeric-multiply($d, $e)), (iaf:numeric-multiply($f, $g))))), $h))");
+
+            var prs1 = GetParameters(expr1);
+            var prs2 = GetParameters(expr2);
+            var prs3 = GetParameters(expr3);
+
+            var v1 = new LogicalModel.Validation.ValidationRule();
+            v1.RootExpression = expr1;
+            v1.ID = "v1";
+            foreach (var p in prs1) 
+            {
+                var pm = new LogicalModel.Validation.ValidationParameter(p);
+                pm.TypeString = "DoubleValue";
+                v1.Parameters.Add(pm);
+
+            }
+
+            var v2 = new LogicalModel.Validation.ValidationRule();
+            v2.RootExpression = expr2;
+            v2.ID = "v2";
+            foreach (var p in prs2)
+            {
+                var pm = new LogicalModel.Validation.ValidationParameter(p);
+                pm.TypeString = "DoubleValue";
+                v2.Parameters.Add(pm);
+
+            }
+
+            var v3 = new LogicalModel.Validation.ValidationRule();
+            v3.RootExpression = expr3;
+            v3.ID = "v3";
+            foreach (var p in prs3)
+            {
+                var pm = new LogicalModel.Validation.ValidationParameter(p);
+                pm.TypeString = "DoubleValue";
+                v3.Parameters.Add(pm);
+
+            }
+
+
+            var item1_xbrl = xbrlparser.Translate(expr1);
+            var item1_cs = csparser.GetFunction(v1);
+            var item2_xbrl = xbrlparser.Translate(expr2);
+            var item2_cs = csparser.GetFunction(v2);
+            var item3_xbrl = xbrlparser.Translate(expr3);
+            var item3_cs = csparser.GetFunction(v3);
+            var test = item1_cs + item2_cs + item3_cs;
         }
     }
 

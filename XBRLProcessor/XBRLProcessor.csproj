@@ -58,7 +58,6 @@
     <Compile Include="Model\InstanceModel\Scenario.cs" />
     <Compile Include="Model\InstanceModel\XbrlInstance.cs" />
     <Compile Include="Model\XbrlValidation.cs" />
-    <Compile Include="Validation\Functions.cs" />
     <Compile Include="XbrlEngine.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Helpers\XmlNodeHandlers.cs" />
@@ -127,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\DefinitionModel\Arcs\" />
+    <Folder Include="Validation\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

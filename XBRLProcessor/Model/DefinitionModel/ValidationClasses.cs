@@ -31,17 +31,19 @@ namespace XBRLProcessor.Model.DefinitionModel
     {
 
     }
-
-    public class VariableFilterArc : Arc 
+    public class ComplementArc : Arc 
     {
-        public Boolean Cover { get; set; }
-
         public Boolean Complement { get; set; }
 
     }
-    public class VariableSetFilterArc : Arc
+    public class VariableFilterArc : ComplementArc 
     {
-        public Boolean Complement { get; set; }
+        public Boolean Cover { get; set; }
+
+
+    }
+    public class VariableSetFilterArc : ComplementArc
+    {
 
     }
     public class VariableArc : Arc

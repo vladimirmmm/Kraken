@@ -1,4 +1,5 @@
-﻿using LogicalModel.Base;
+﻿using BaseModel;
+using LogicalModel.Base;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace LogicalModel
         [JsonProperty]
         public string Column { get { return _Column; } set { _Column = value; } }
 
+        public Hierarchy<LayoutItem> LayoutRow = null;
+        public Hierarchy<LayoutItem> LayoutColumn = null;
      
         [JsonProperty]
         public Boolean IsBlocked { get; set; }

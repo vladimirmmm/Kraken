@@ -52,6 +52,10 @@ namespace LogicalModel
         {
             get { return Utilities.Strings.GetFolder(SourceTaxonomyPath); }
         }
+        public string TaxonomyTestPath
+        {
+            get { return ModuleFolder + "Test.txt"; }
+        }
         public string TaxonomyStructurePath
         {
             get { return ModuleFolder + "Structure.json"; }
@@ -87,6 +91,16 @@ namespace LogicalModel
         public string TaxonomySchemaElementsPath
         {
             get { return ModuleFolder + "SchemaElements.json"; }
+        }
+
+        public string TaxonomyCsPath
+        {
+            get { return ModuleFolder + "Validations.cs"; }
+        }
+
+        public string TaxonomyDotNetLibPath
+        {
+            get { return ModuleFolder + "Validations.dll"; }
         }
 
         public string TaxonomyLayoutFolder

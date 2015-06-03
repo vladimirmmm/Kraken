@@ -11,6 +11,8 @@ namespace LogicalModel
 {
     public class LayoutItem 
     {
+        public string RowSpan = "";
+        public string ColSpan = "";
         private Table _Table = null;
         public int Order = 0;
 
@@ -25,6 +27,10 @@ namespace LogicalModel
 
         private bool _IsAbstract = false;
         public bool IsAbstract { get { return _IsAbstract; } set { _IsAbstract = value; } }
+
+        public bool IsPlaceholder = false;
+        //private bool _IsAbstract = false;
+        //public bool IsAbstract { get { return _IsAbstract; } set { _IsAbstract = value; } }
 
         private bool _IsAspect = false;
         public bool IsAspect { get { return _IsAspect; } set { _IsAspect = value; } }
@@ -97,7 +103,7 @@ namespace LogicalModel
 
         public override string ToString()
         {
-            return String.Format("{0} - {1}", ID, Label == null ? LabelID : LabelContent);
+            return String.Format("{0} - [{1}] {2}", ID, Label == null ? LabelID : LabelCode, Label == null ? LabelID : LabelContent);
         }
 
         private string _FactString = "";
@@ -130,6 +136,18 @@ namespace LogicalModel
 
         public LayoutItem()
         {
+        }
+
+        public LayoutItem(LayoutItem item)
+        {
+            this.ID = item.ID;
+            this.IsAbstract = item.IsAbstract;
+            this.IsAspect = item.IsAspect;
+            this.Axis = item.Axis;
+            this.Concept = item.Concept;
+            this.Dimensions = item.Dimensions;
+            this.Label = item.Label;
+            this.Order = item.Order;
         }
 
 

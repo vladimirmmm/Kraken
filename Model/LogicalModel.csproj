@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expression\CSharpParser.cs" />
     <Compile Include="Expression\Expression.cs" />
     <Compile Include="Expression\Parser.cs" />
     <Compile Include="Helpers\QNameHelper.cs" />
@@ -73,6 +74,9 @@
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\XbrlValue.cs" />
     <Compile Include="TaxonomyEngine.cs" />
+    <Compile Include="Validation\Functions.cs" />
+    <Compile Include="Validation\Test.cs" />
+    <Compile Include="Validation\ValidationRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\Instance.js">

@@ -33,6 +33,7 @@ namespace XBRLProcessor.Literals
         public const string RenderFileSuffix = "-rend.xml";
         public const string DefinitionFileSuffix = "-def.xml";
         public const string LabelPrefix = "label_";
+        public const string Defaultmember = "x0";
     }
 
     public class Attributes

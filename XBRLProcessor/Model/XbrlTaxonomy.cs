@@ -12,8 +12,7 @@ using XBRLProcessor.Model;
 using XBRLProcessor.Model.Base;
 using Model.DefinitionModel;
 using BaseModel;
-using LogicalModel.Expression;
-using XBRLProcessor.Validation;
+using LogicalModel.Expressions;
 
 namespace XBRLProcessor.Models
 {
@@ -141,7 +140,47 @@ namespace XBRLProcessor.Models
                 //AddFactToDictionary(fact);
             }
         }
-        
+        public string FindDimensionDomain(string dimensionitem) 
+        {
+            var domain = "";
+    
+            LogicalModel.Base.Element se = null;
+            if (!this.SchemaElementDictionary.ContainsKey(dimensionitem))
+            {
+                var ebadimensionkey = "";
+                if (dimensionitem.Contains(":"))
+                {
+                    var items = dimensionitem.Split(':');
+                    if (!items[1].StartsWith("eba_"))
+                    {
+                        items[1] = "eba_" + items[1];
+                    }
+                    ebadimensionkey = String.Format("{0}:{1}", items[0], items[1]);
+                }
+                if (this.SchemaElementDictionary.ContainsKey(ebadimensionkey))
+                {
+                    se = this.SchemaElementDictionary[ebadimensionkey];
+                }
+            }
+            else 
+            {
+                se = this.SchemaElementDictionary[dimensionitem];
+
+            }
+            if (se!=null)
+            {
+                var domainref = se.TypedDomainRef;
+                var se_dim_doc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == se.Namespace);
+                //TODO
+                var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
+                var se_domain_doc = FindDocument(path);
+                var refid = domainref.Substring(domainref.IndexOf("#") + 1);
+                var se_domain_key = se_domain_doc.TargetNamespace + ":" + refid;
+                var se_domain = SchemaElementDictionary[se_domain_key];
+                domain = se_domain.ID;
+            }
+            return domain;
+        }
         public XbrlTaxonomyDocument FindDocument(string localpath) 
         {
             localpath = localpath.ToLower();
@@ -252,37 +291,91 @@ namespace XBRLProcessor.Models
 
         public override void LoadValidations()
         {
+            Console.WriteLine("Loading Validations started");
             var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
             var validations = new List<XbrlValidation>();
+            var logicalvalidations = new List<LogicalModel.Validation.ValidationRule>();
             var sb = new StringBuilder();
             var parser = new XbrlFormulaParser();
-            FunctionExpression.FunctionProvider = Functions.Current.Find;
+            var csparser = new CSharpParser();
             Expression testobj = null;
             var expressionfile = this.ModuleFolder + "expressions.txt";
             foreach (var validdoc in validationdocuments) 
             {
                 var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement,"//gen:link");
                 var validation = new XbrlValidation();
+                validation.Taxonomy = this;
                 Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
                 if (validation.ValueAssertion != null)
                 {
                     validation.LoadValidationHierarchy();
-                    validations.Add(validation);
 
+                    var item = validation.GetLogicalRule();
+                    logicalvalidations.Add(item);
+                    validations.Add(validation);
+                    item.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
+                    item.FunctionString = csparser.GetFunction(item);
+                    /*
                     var obj = parser.ParseExpression(validation.ValueAssertion.Test);
                     var tree = parser.GetTreeString(validation.ValueAssertion.Test);
                     sb.AppendLine(validation.ID);
                     sb.AppendLine(validation.ValueAssertion.Test);
-                    sb.AppendLine(obj.Translate(parser));
-
+                    sb.AppendLine(parser.Translate(obj));
+                    sb.AppendLine(csparser.Translate(obj));
+                    sb.AppendLine("___");
                     sb.AppendLine(tree.ToHierarchyString(i => i));
                     sb.AppendLine("_______________________________________");
+                    */
                 }
             }
-            if (!System.IO.File.Exists(expressionfile)||1==1)
+            var sb_functions = new StringBuilder();
+            var sb_dictionary = new StringBuilder();
+            var sb_cs = new StringBuilder();
+            var tab = "  ";
+            foreach (var val in logicalvalidations) 
+            {
+                sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
+                sb_functions.AppendLine(val.FunctionString);
+
+            }
+            sb_cs.AppendLine("using System;");
+            sb_cs.AppendLine("using System.Collections.Generic;");
+            sb_cs.AppendLine("using System.Linq;");
+            sb_cs.AppendLine("using System.Text;");
+            sb_cs.AppendLine("using LogicalModel.Expressions;");
+            sb_cs.AppendLine("using LogicalModel.Base;");
+            sb_cs.AppendLine("using LogicalModel.Validation;");
+            sb_cs.AppendLine("using Utilities;");
+
+            sb_cs.AppendLine("namespace LogicalModel.Validation");
+            sb_cs.AppendLine("{");
+
+            sb_cs.AppendLine("  public class ValidationsX: ValidationFunctionContainer");
+            sb_cs.AppendLine("  {");
+
+            sb_cs.AppendLine("      public ValidationsX()");
+            sb_cs.AppendLine("      {");
+
+            sb_cs.AppendLine(sb_dictionary.ToString());
+
+            sb_cs.AppendLine("      }");
+
+            sb_cs.AppendLine(sb_functions.ToString());
+
+            sb_cs.AppendLine("  }");
+            sb_cs.AppendLine("}");
+
+            if (!System.IO.File.Exists(expressionfile))
             {
                 Utilities.FS.WriteAllText(expressionfile, sb.ToString());
             }
+
+            if (!System.IO.File.Exists(this.TaxonomyCsPath) || 1 == 1)
+            {
+                Utilities.FS.WriteAllText(this.TaxonomyCsPath, sb_cs.ToString());
+            }
+            Console.WriteLine("Loading Validations completed");
+
         }
        
         #region Handlers
@@ -409,7 +502,7 @@ namespace XBRLProcessor.Models
 
              
                 //for debug
-                //Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));
+                Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));
                 //Utilities.FS.WriteAllText(logicaltable.LayoutPath, logicaltable.LayoutRoot.ToHierarchyString(i => i.ID+"<"+i.FactString+">"));
                
                 logicaltable.LoadDefinitions();

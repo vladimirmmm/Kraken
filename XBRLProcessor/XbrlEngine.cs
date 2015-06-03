@@ -35,9 +35,9 @@ namespace XBRLProcessor
             CurrentTaxonomy.LoadLabels();
             CurrentTaxonomy.LoadSchemaElements();
             CurrentTaxonomy.LoadConcepts();
-            CurrentTaxonomy.LoadValidations();
             CurrentTaxonomy.LoadTables();
             CurrentTaxonomy.LoadFacts();
+            CurrentTaxonomy.LoadValidations();
             CurrentTaxonomy.LoadHierarchy();
 
             Console.WriteLine("Loading Taxonomy finished");

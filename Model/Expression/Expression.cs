@@ -5,20 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogicalModel.Expression
+namespace LogicalModel.Expressions
 {
     public class Expression
     {
         public int PlaceHolderIndex = -1;
+        public List<String> Parameters = new List<String>();
         public List<Expression> SubExpressions = new List<Expression>();
         public List<OperatorEnum> Operators = new List<OperatorEnum>();
-        
+        public bool IsString = false;
+        public bool IsParameter = false;
+
         public string StringValue
         {
             get
             {
                 return String.Format("{0}", this.Value);
             }
+        }
+
+        public virtual List<Expression> ChildExpressions() 
+        {
+            return SubExpressions;
         }
 
         public Object Value = null;
@@ -45,7 +53,6 @@ namespace LogicalModel.Expression
             }
         }
 
-
         public virtual Expression GetExpressionForPlaceHolder(int ix)
         {
             if (this.PlaceHolderIndex==ix)
@@ -64,14 +71,18 @@ namespace LogicalModel.Expression
         {
             var s = "";
             var handled = false;
-            if (this.StringValue.StartsWith(parser.Syntax.ParameterSpecifier)) 
-            {
-                s = this.StringValue.Substring(parser.Syntax.ParameterSpecifier.Length);
-                handled = true;
-            }
+         
             if (!handled) 
             {
                 s = this.StringValue;
+                if (IsString)
+                {
+                    s = parser.Syntax.StringDelimiter + s + parser.Syntax.StringDelimiter;
+                }
+                if (IsParameter)
+                {
+                    s = parser.Syntax.ParameterSpecifier + s;
+                }
             }
             return s;
         }
@@ -84,23 +95,25 @@ namespace LogicalModel.Expression
             {
                 if (i == 0)
                 {
-                    sb.Append(parser.Syntax.ExpressionContainer_Left);
+                    //sb.Append(parser.Syntax.ExpressionContainer_Left);
                 }
                 var subexpr = SubExpressions[i];
-                sb.Append(subexpr.Translate(parser));
+                sb.Append(parser.Translate(subexpr));
                 if (i < SubExpressions.Count - 1)
                 {
-                    var opstring = parser.Syntax.Operators[Operators[i]];
+                    var opstring = parser.Syntax.CodeItemSeparator + parser.Syntax.Operators[Operators[i]] + parser.Syntax.CodeItemSeparator;
                     sb.Append(opstring);
                 }
                 else
                 {
 
-                    sb.Append(parser.Syntax.ExpressionContainer_Right);
+                    //sb.Append(parser.Syntax.ExpressionContainer_Right);
                 }
             }
             return sb.ToString();
         }
+
+
         
         public override string ToString()
         {
@@ -113,6 +126,14 @@ namespace LogicalModel.Expression
     {
         private List<Expression> _Items = new List<Expression>();
         public List<Expression> Items { get { return _Items; } set { _Items = value; } }
+
+        public override List<Expression> ChildExpressions()
+        {
+            var result = new List<Expression>();
+            result.AddRange(SubExpressions);
+            result.AddRange(this.Items);
+            return result;
+        }
 
         public override Expression GetExpressionForPlaceHolder(int ix)
         {
@@ -142,40 +163,7 @@ namespace LogicalModel.Expression
             return null;
         }
 
-        public override string Translate(Parser parser)
-        {
-            var sb = new StringBuilder();
-            string delimiter = "";
-            for (int i = 0; i < Items.Count; i++)
-            {
-                var subexpr = Items[i];
-                delimiter = i == Items.Count - 1 ? "" : parser.Syntax.ParameterSeparator;
-                bool handled = false;
-                var paramv = subexpr.StringValue;
-                if (subexpr.StringValue.StartsWith(parser.Syntax.ExpressionPlaceholder))
-                {
-                    var ix = int.Parse(subexpr.StringValue.Substring(parser.Syntax.ExpressionPlaceholder.Length));
-                    if (this.SubExpressions.Count > 1) 
-                    { 
-                    }
-                    //paramv = SubExpressions[ix].Translate(parser);
-                    paramv = SubExpressions.FirstOrDefault().Translate(parser);
-                    sb.Append(paramv + delimiter);
-                    handled = true;
-                }
-                if (subexpr.StringValue.StartsWith(parser.Syntax.ParameterSpecifier))
-                {
-                    paramv = subexpr.StringValue.Substring(parser.Syntax.ParameterSpecifier.Length);
-                    sb.Append(paramv + delimiter);
-                    handled = true;
-                }
-                if (!handled)
-                {
-                    sb.Append(subexpr.Translate(parser) + delimiter);
-                }
-            }
-            return sb.ToString();
-        }
+        
 
         public override string ToString()
         {
@@ -193,51 +181,8 @@ namespace LogicalModel.Expression
     public class FunctionExpression : ListExpression
     {
         public string Name = "";
-        public static Func<string, Func<Object[], Object>> FunctionProvider = null;
-        private Func<Object[], Object> _Function = null;
-        public Func<Object[], Object> Function
-        {
-            get 
-            {
-                if (_Function == null) 
-                {
-                    _Function = FunctionProvider(this.Name);
-                }
-                return _Function;
-            }
-            set 
-            {
-                _Function = value;
-            }
-        }
 
-        public override string Translate(Parser parser)
-        {
-            var sb = new StringBuilder();
-            sb.Append(String.Format("{0}({1})", this.Name, base.Translate(parser)));
-            return sb.ToString();
-        }
-
-        public override Object Evaluate(params Object[] parameters)
-        {
-            Object result = null;
-            if (Function != null)
-            {
-                result = Function(parameters);
-            }
-            return result;
-        }
-
-        public override Object Evaluate(params ParameterValue[] parameters)
-        {
-            Object result = null;
-     
-            if (Function != null)
-            {
-                result = Function(parameters.Select(i => i.Value).ToArray());
-            }
-            return result;
-        }
+  
 
         public override string ToString()
         {
@@ -254,41 +199,6 @@ namespace LogicalModel.Expression
         public IfExpression()
         {
 
-        }
-        public override string Translate(Parser parser)
-        {
-            var sb = new StringBuilder();
-            var format = parser.Syntax.If + parser.Syntax.ExpressionContainer_Left + "{0}" + parser.Syntax.ExpressionContainer_Right
-                + parser.Syntax.Then
-                + parser.Syntax.ExpressionContainer_Left + "{1}" + parser.Syntax.ExpressionContainer_Right
-                + parser.Syntax.Else
-                + parser.Syntax.ExpressionContainer_Left + "{2}" + parser.Syntax.ExpressionContainer_Right;
-
-            sb.Append(String.Format(format, condition.Translate(parser), truepath.Translate(parser), falsepath.Translate(parser)));
-            return sb.ToString();
-        }
-
-        public override object Evaluate(params ParameterValue[] parameters)
-        {
-            return null;
-        }
-
-        public override object Evaluate(params Object[] parameters)
-        {
-            if (condition == null) { throw new Exception("Condition Missing!"); }
-            if (truepath == null) { throw new Exception("True Path Missing!"); }
-            if ((bool)condition.Evaluate(parameters))
-            {
-                return truepath.Evaluate(parameters);
-            }
-            else
-            {
-                if (falsepath != null)
-                {
-                    return falsepath.Evaluate(parameters);
-                }
-                return null;
-            }
         }
 
         public override string ToString()

@@ -7,7 +7,7 @@ using XBRLProcessor.Model.Base;
 
 namespace XBRLProcessor.Model.DefinitionModel.Filter
 {
-    public class AspectFilter : XbrlIdentifiable
+    public class AspectFilter : Filter
     {
 
     }

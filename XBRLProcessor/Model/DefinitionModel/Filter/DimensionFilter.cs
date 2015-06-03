@@ -9,14 +9,15 @@ using XBRLProcessor.Model.StringEnums;
 
 namespace XBRLProcessor.Model.DefinitionModel.Filter
 {
-    public class DimensionFilter:XbrlIdentifiable 
+    public class DimensionFilter:Filter 
     {
         public DimensionQName Dimension { get; set; }
 
     }
     public class ExplicitDimensionFilter : DimensionFilter
     {
-        public DimensionMember Member { get; set; }
+        private List<DimensionMember> _Members = new List<DimensionMember>();
+        public List<DimensionMember> Members { get { return _Members; } set { _Members = value; } }
     }
 
     public class TypedDimensionFilter : DimensionFilter

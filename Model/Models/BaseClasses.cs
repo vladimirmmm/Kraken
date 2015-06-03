@@ -97,6 +97,20 @@ namespace LogicalModel.Base
             return sb.ToString();
         }
 
+        public string GetFactKey()
+        {
+            var sb = new StringBuilder();
+            if (Concept != null)
+            {
+                sb.Append(Concept + ",");
+            }
+            foreach (var dimension in Dimensions)
+            {
+                sb.Append(dimension.DomainMemberFullName + ",");
+            }
+            return sb.ToString();
+        }
+
         public void SetFromString(string item) 
         {
             var cix = item.IndexOf(">");
@@ -128,7 +142,11 @@ namespace LogicalModel.Base
                 this.Dimensions.Add(dim);
             }
         }
-        
+
+        public override string ToString()
+        {
+            return GetFactString();
+        }
     }
     
     public class Identifiable

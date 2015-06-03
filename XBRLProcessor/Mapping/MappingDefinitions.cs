@@ -156,9 +156,9 @@ namespace XBRLProcessor.Mapping
                  Mappings.Map<VariableArc>("<variable:variableArc>",
                     Mappings.PropertyMap("name", (VariableArc i) => i.Name)
                  ),
-                 Mappings.Map<Filter>("<bf:orFilter>"),
+                 Mappings.Map<OrFilter>("<bf:orFilter>"),
 
-                 Mappings.Map<Filter>("<bf:andFilter>"),
+                 Mappings.Map<AndFilter>("<bf:andFilter>"),
 
                  Mappings.Map<ValueAssertion>("<va:valueAssertion>",
                     Mappings.PropertyMap("test", (ValueAssertion i) => i.Test),
@@ -182,11 +182,11 @@ namespace XBRLProcessor.Mapping
                  ),
 
                   Mappings.Map<ConceptQName>("<cf:concept>",
-                    Mappings.PropertyMap("<df:qname>", (ConceptQName i) => i.QName)
+                    Mappings.PropertyMap("<cf:qname>", (ConceptQName i) => i.QName)
                  ),
 
                  Mappings.Map<ExplicitDimensionFilter>("<df:explicitDimension>",
-                    Mappings.PropertyMap("<df:member>", (ExplicitDimensionFilter i) => i.Member)
+                    Mappings.PropertyMap("<df:member>", (ExplicitDimensionFilter i) => i.Members)
                  ),
 
                   Mappings.Map<TypedDimensionFilter>("<df:typedDimension>"),
@@ -305,10 +305,48 @@ namespace XBRLProcessor.Mapping
             return toitem;
         }
 
-        public static LogicalModel.Concept ToLogical(Concept item)
+        public static LogicalModel.Concept ToLogical(LogicalModel.Concept item) 
         {
             var toitem = new LogicalModel.Concept();
             toitem.Content = item.Content;
+            return toitem;
+        }
+
+        public static LogicalModel.Concept ToLogical(ConceptFilter item)
+        {
+            var toitem = new LogicalModel.Concept();
+            if (item is ConceptNameFilter)
+            {
+                var citem = item as ConceptNameFilter;
+                toitem.Content = citem.Concept.QName.Content;
+            }
+            return toitem;
+        }
+
+        public static List<LogicalModel.Dimension> ToLogicalDimensions(DimensionFilter item)
+        {
+            var toitem = new List<LogicalModel.Dimension>();
+            var dimensionitem = item.Dimension;
+            if (item is ExplicitDimensionFilter) 
+            {
+                var citem = item as ExplicitDimensionFilter;
+                foreach (var member in citem.Members) 
+                {
+                    var dimension = new Dimension();
+                    dimension.DimensionItem = dimensionitem.QName.Content;
+                    dimension.Domain = member.QName.Domain;
+                    dimension.DomainMember = member.QName.Value;                     
+                    toitem.Add(dimension);
+                }
+            }
+            if (item is TypedDimensionFilter) 
+            {
+                var dimension = new Dimension();
+                dimension.DimensionItem = dimensionitem.QName.Content;
+                dimension.IsTyped = true;
+                toitem.Add(dimension);
+
+            }
             return toitem;
         }
 

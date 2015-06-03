@@ -223,7 +223,9 @@ namespace UI
             }
             if (table != null)
             {
+                table.LayoutCells.Clear();
                 table.LoadLayout();
+                table.CreateHtmlLayout(true);
                 //Browser.Navigate(table.HtmlPath);
                 //TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
 

@@ -20,5 +20,15 @@ namespace Utilities
             }
             return null;
         }
+
+        public static String ListToString<T>(IEnumerable<T> items) 
+        {
+            var sb = new StringBuilder();
+            foreach (var item in items) 
+            {
+                sb.AppendLine(item.ToString());
+            }
+            return sb.ToString();
+        }
     }
 }
