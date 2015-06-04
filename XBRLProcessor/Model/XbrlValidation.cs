@@ -11,7 +11,7 @@ using XBRLProcessor.Models;
 
 namespace XBRLProcessor.Model
 {
-    public class XbrlValidation
+    public partial class XbrlValidation
     {
         public XbrlTaxonomy Taxonomy = null;
         public string ID 
@@ -106,96 +106,37 @@ namespace XBRLProcessor.Model
             var sb = new StringBuilder();
             sb.AppendLine(logicalrule.Label.Content);
             sb.AppendLine(this.ValueAssertion.Test);
+
+            var factgroups = GetGroups();
+            
             foreach (var fv in factvariables) 
             {
                 var name = fv.Item.ID.Substring(fv.Item.ID.LastIndexOf(".") + 1);
                 var parameter = new LogicalModel.Validation.ValidationParameter(name);
                 parameter.BindAsSequence = (fv.Item as FactVariable).BindAsSequence;
-                var or_filters = fv.Where(i => i.Item is OrFilter).ToList();
-                var and_filters = fv.Where(i => i.Item is AndFilter).ToList();
-                var facts = new List<LogicalModel.Base.FactBase>();
+        
                 if (this.ID.Contains("0726") && name=="c")
                 {
                 }
+            
                 //TODO
-                foreach (var f_or in or_filters) 
+                foreach (var factgroup in factgroups) 
                 {
-                    foreach (var child in f_or.Children) 
-                    {
-                        var fact = new LogicalModel.Base.FactBase();
-
-                        var f_and = child.Item as AndFilter;
-                        if (f_and == null)
-                        {
-
-                        }
-                        else 
-                        {
-                            var concepts = GetConcepts(child);
-                            if (concepts.Count > 1) 
-                            {
-
-                            }
-                            if (concepts.Count == 1)
-                            {
-                                fact.Concept = concepts.FirstOrDefault();
-                            }
-   
-                            var dimensions = GetDimensions(child).SelectMany(i => i).ToList();
-                            dimensions = dimensions.Where(i => !i.IsDefaultMemeber).ToList();
-                            fact.Dimensions.AddRange(dimensions);
-                        }
-                        facts.Add(fact);
-                    }
-
+                    var parameterfactgroup= factgroup.Copy();
+                    parameter.FactGroups.Add(parameterfactgroup);
+                    var facts = GetFacts(fv);
+                    parameterfactgroup.Facts = facts;
+                    SetFacts(parameterfactgroup);
                 }
 
-                if (or_filters.Count == 0)
-                {
-                  
 
-                    var param_concepts = GetConcepts(fv);
-                    var param_dimensions = GetDimensions(fv).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
-                    var groups = param_dimensions.GroupBy(i => i.DimensionItemWithDomain);
-             
-                    var simpledimensions = groups.Where(i=>i.Count()==1).SelectMany(i=>i).ToList();
-                    var dimensionsets = new List<IEnumerable<LogicalModel.Dimension>>();
 
-                    var multigroups = groups.Where(i=>i.Count()>1).ToList();
-                    
-                    var multidimensions = new List<List<LogicalModel.Dimension>>();
-                    foreach (var group in multigroups)
-                    {
-                        multidimensions.Add(group.ToList());
-                      
-                    }
 
-                    if (multidimensions.Count > 0)
-                    {
-                        dimensionsets.AddRange(Utilities.MathX.CartesianProduct(multidimensions));
 
-                    }
-                    else 
-                    {
-                        dimensionsets.Add(new List<LogicalModel.Dimension>());
 
-                    }
-                    foreach (var dimensionset in dimensionsets)
-                    {
-                        var fact = new LogicalModel.Base.FactBase();
-                        fact.Concept = param_concepts.Count == 1 ? param_concepts.FirstOrDefault() : null;
-                        fact.Dimensions.AddRange(dimensionset);
-                        fact.Dimensions.AddRange(simpledimensions);
-                        facts.Add(fact);
-                    }
-                    //}
-                    //param_dimensions = param_dimensions.Where(i => !i.IsDefaultMemeber).ToList();
 
-                    //var fact = new LogicalModel.Base.FactBase();
-                    //fact.Concept = param_concepts.Count == 1 ? param_concepts.FirstOrDefault() : null;
-                    //fact.Dimensions.AddRange(param_dimensions);
-                    //facts.Add(fact);
-                }
+
+                /*
                 var factstoAdd = new List<LogicalModel.Base.FactBase>();
                 foreach (var fact in facts) 
                 {
@@ -250,6 +191,9 @@ namespace XBRLProcessor.Model
                     fact.Dimensions = fact.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
                     facts.Add(fact);
                 }
+                 */
+                //Fixin the domains of Typed Dimensions
+                /*
                 foreach (var fact in facts) 
                 {
                     foreach (var dim in fact.Dimensions)
@@ -261,8 +205,9 @@ namespace XBRLProcessor.Model
                         }
                     }
                 }
+                */
                 var typestring = "DoubleValue";
-                var firstfact = facts.FirstOrDefault();
+                var firstfact = factgroups.FirstOrDefault().Facts.FirstOrDefault();
                 if (firstfact != null && firstfact.Concept != null) 
                 {
                     if (firstfact.Concept.ID.StartsWith("ei")) 
@@ -271,79 +216,15 @@ namespace XBRLProcessor.Model
                     }
                 }
                 parameter.TypeString = typestring;
+
+
+
                 var sequence = parameter.BindAsSequence ? "Sequence":"";
                 sb.AppendLine("parameter: " + name + " " + sequence);
-                var cellfound = false;
-                foreach (var fact in facts)
-                {
-                    var cellslist = new List<String>();
-                    var factkey = fact.GetFactKey();
-                    if (Taxonomy.Facts.ContainsKey(factkey))
-                    {
-                        var cells = Taxonomy.Facts[factkey];
-                        cellslist.AddRange(cells);
-                        if (cells.Count == 0) 
-                        {
-                            Console.WriteLine(this.ID + " not found! " + factkey);
-                        }
-                    }
-                    else
-                    {
 
-                        var s_facts = Taxonomy.Facts.Keys.AsEnumerable();
-                        if (fact.Concept != null)
-                        {
-                            s_facts = s_facts.Where(i => i.StartsWith(fact.Concept.Content));
-                        }
-                        foreach (var dimension in fact.Dimensions)
-                        {
-                            s_facts = s_facts.Where(i => i.Contains(dimension.DomainMemberFullName));
-                        }
-                        var s_factlist = s_facts.ToList();
-                        if (s_factlist.Count > 0)
-                        {
-                            foreach (var s_fact in s_factlist)
-                            {
-                                var cells = Taxonomy.Facts[s_fact];
-                                if (cells.Count == 0) 
-                                {
-                                    Console.WriteLine(this.ID + " for parameter " +parameter.Name+ " not found! " + s_fact);
 
-                                }
-                                cellslist.AddRange(cells);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine(this.ID + " fact for parameter " + parameter.Name + " not found! " + factkey);
+                sb.AppendLine(CheckCells(parameter));
 
-                        }
-
-                    }
-                    if (cellslist.Count == 0)
-                    {
-
-                    }
-                    else 
-                    {
-                        cellfound = true;
-                    }
-                    //sb.AppendLine(fact.GetFactKey());
-                    foreach (var cell in cellslist)
-                    {                   
-                        sb.Append(cell + ", ");
-                    }
-                    //sb.AppendLine();
-                    sb.AppendLine();
-
-                }
-                if (!cellfound) 
-                {
-
-                }
-                sb.AppendLine();
-
-                parameter.Facts.AddRange(facts);
                 logicalrule.Parameters.Add(parameter);
               
             }
@@ -352,9 +233,9 @@ namespace XBRLProcessor.Model
             {
                 if (pc == 0) 
                 {
-                    pc = pv.Facts.Count;
+                    pc = pv.FactGroups.Count;
                 }
-                if (pc != pv.Facts.Count)                 
+                if (pc != pv.FactGroups.Count)                 
                 {
                     if (!pv.BindAsSequence) 
                     {

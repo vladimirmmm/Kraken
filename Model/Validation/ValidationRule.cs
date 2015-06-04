@@ -43,83 +43,79 @@ namespace LogicalModel.Validation
         {
             Setinstance(instance);
             var result = true;
-            foreach (var p in Parameters) 
+            var factgroups = Parameters.FirstOrDefault().FactGroups;
+            foreach (var factgroup in factgroups) 
             {
-                //TODO
-                var facts = instance.GetFacts(p.Facts.FirstOrDefault().GetFactString());
-                if (facts.Count >0)
+                
+                foreach (var p in Parameters)
                 {
-                    p.StringValue = facts.FirstOrDefault().Value;
+                    p.Clear();
+                    var parameterfactgroup = p.FactGroups.FirstOrDefault(i => i.GetFactKey() == factgroup.GetFactKey());
+                    if (p.BindAsSequence)
+                    {
+                        if (p.TypeString == Utilities.Linq.GetPropertyName((ValidationParameter i) => i.StringValue))
+                        {
+                            p.StringValues = GetValues(parameterfactgroup.Facts).ToArray();
+                        }
+                        if (p.TypeString == Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DoubleValue))
+                        {
+                            p.DoubleValues = GetValues(parameterfactgroup.Facts).Select(i => double.Parse(i)).ToArray();
+                        }
+                    }
+                    else 
+                    {
+                        if (parameterfactgroup.Facts.Count > 1)
+                        {
+                            Console.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
+                        }
+                        else 
+                        {
+                            var fact = parameterfactgroup.Facts.FirstOrDefault();
+                            var insatncefacts = instance.GetFacts(fact.GetFactKey());
+                            if (insatncefacts.Count == 0)
+                            {
+                                //fact is not present in the instance
+                            }
+                            else
+                            {
+                                if (insatncefacts.Count == 1)
+                                {
+                                    p.StringValue = insatncefacts.FirstOrDefault().Value;
+                                }
+                                else
+                                {
+                                    //dynamic reports
+
+
+                                }
+                            }
+                        }
+                    }
+                    var partialresult = Function(Parameters);
+                    result = result && partialresult;
+                    if (!partialresult) 
+                    { 
+                        Console.WriteLine(String.Format("Error {0}", this.Label.Content));
+                    }
                 }
             }
-            result = Function(Parameters);
+     
             return result;
         }
 
-
-    }
-
-    public class ValidationParameter 
-    {
-        public string Name { get; set; }
-        public List<FactBase> Facts = new List<FactBase>();
-        public string FallBackValue { get; set; }
-        public string TypeString { get; set; }
-        public bool BindAsSequence { get; set; }
-        private string _StringValue = "";
-        public string StringValue {
-            get 
+        public List<String> GetValues(List<FactBase> Facts) 
+        {
+            var values = new List<String>();
+            foreach (var fact in Facts) 
             {
-                return String.IsNullOrEmpty(_StringValue) ? FallBackValue : _StringValue;
+                var item = instance.FactDictionary[fact.GetFactKey()].FirstOrDefault();
+                values.Add(item.Value);
             }
-            set { _StringValue=value; }
-        
+            return values;
         }
-
-        public double DoubleValue 
-        {
-            get { return double.Parse(this.StringValue); }
-        }
-
-        public ValidationParameter(string name) 
-        {
-            this.Name = name;
-        }
-
 
 
     }
 
-    public class ValidationParameter<T> : ValidationParameter 
-    {
-        public ValidationParameter(string name):base(name)
-        {
-            this.Name = name;
-        }
-        public T Value
-        {
-            get 
-            {
-                if (typeof(T) == typeof(double)) 
-                {
-                    Object o = double.Parse(this.StringValue);
-                    return (T)o;
-                }
-                if (typeof(T) == typeof(string))
-                {
-                    Object o = this.StringValue;
-                    return (T)o;
-                }
-                return default(T);
-            }
-        }
-    }
 
-
-    public enum TypeEnum 
-    {
-        Numeric,
-        String,
-        Date
-    }
 }

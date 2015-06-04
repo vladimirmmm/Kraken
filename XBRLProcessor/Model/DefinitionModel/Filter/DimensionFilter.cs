@@ -18,6 +18,20 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     {
         private List<DimensionMember> _Members = new List<DimensionMember>();
         public List<DimensionMember> Members { get { return _Members; } set { _Members = value; } }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(this.Dimension.QName.Content);
+            sb.Append(" - {");
+            foreach (var member in Members) 
+            {
+                sb.Append(member.QName.Content + ", ");
+            }
+            sb.Append("}");
+
+            return String.Format("{0} >> {1}", base.ToString(), sb.ToString());
+        }
     }
 
     public class TypedDimensionFilter : DimensionFilter

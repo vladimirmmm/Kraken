@@ -148,7 +148,21 @@ namespace LogicalModel.Base
             return GetFactString();
         }
     }
-    
+
+    public class FactGroup : FactBase 
+    {
+        private List<FactBase> _Facts = new List<FactBase>();
+        public List<FactBase> Facts { get { return _Facts; } set { _Facts = value; } }
+
+        public FactGroup Copy() 
+        {
+            var item = new FactGroup();
+            item.Concept = this.Concept;
+            item.Dimensions.AddRange(this.Dimensions);
+            return item;
+        }
+    }
+
     public class Identifiable
     {
         private string _ID = "";

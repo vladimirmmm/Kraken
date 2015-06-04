@@ -259,6 +259,10 @@ namespace LogicalModel
         {
             var slices = new List<IEnumerable<QualifiedName>>();
             var sb_fact = new StringBuilder();
+            if (this.ID.Contains("29")) 
+            {
+
+            }
             foreach(var hypercube in HyperCubes){
                 var cubeslices = GetCubeSlices(hypercube);
                 foreach (var slice in cubeslices) {

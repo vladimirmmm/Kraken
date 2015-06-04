@@ -18,6 +18,7 @@ namespace XBRLProcessor.Model.DefinitionModel
 
         public Boolean ImplicitFiltering { get; set; }
 
+
     }
     public class Variable : XbrlIdentifiable
     {
@@ -29,7 +30,7 @@ namespace XBRLProcessor.Model.DefinitionModel
     }
     public class FactVariable : Variable 
     {
-
+    
     }
     public class ComplementArc : Arc 
     {

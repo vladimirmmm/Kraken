@@ -37,6 +37,8 @@ namespace LogicalModel
             get { return _Facts; }
             set { _Facts = value; }
         }
+        public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
+   
         public Dictionary<string, List<String>> Cells = new Dictionary<string, List<String>>();
         
         //public static Action<string> Console = null;
@@ -173,6 +175,7 @@ namespace LogicalModel
                 }
                 LoadCells();
 
+                this.LoadFactDictionary();
 
                 var jsoncontent = Utilities.Converters.ToJson(Facts);
                 Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);

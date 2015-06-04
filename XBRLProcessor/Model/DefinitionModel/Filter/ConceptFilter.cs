@@ -16,6 +16,11 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     public class ConceptNameFilter : ConceptFilter
     {
         public ConceptQName Concept { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("{0} >> {1}", base.ToString(), this.Concept.QName.Content);
+        }
     }
 
     public class ConceptPeriodTypeFilter : ConceptFilter

@@ -76,6 +76,7 @@
     <Compile Include="TaxonomyEngine.cs" />
     <Compile Include="Validation\Functions.cs" />
     <Compile Include="Validation\Test.cs" />
+    <Compile Include="Validation\ValidationParameter.cs" />
     <Compile Include="Validation\ValidationRule.cs" />
   </ItemGroup>
   <ItemGroup>

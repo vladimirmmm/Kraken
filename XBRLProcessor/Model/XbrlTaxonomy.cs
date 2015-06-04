@@ -135,9 +135,22 @@ namespace XBRLProcessor.Models
 
         public override void LoadFactDictionary()
         {
+            FactsOfConcepts.Clear();
             foreach (var fact in this.Facts)
             {
                 //AddFactToDictionary(fact);
+                var conceptkey = fact.Key.Remove(fact.Key.IndexOf(","));
+                List<string> keylist = null;
+                if (!FactsOfConcepts.ContainsKey(conceptkey))
+                {
+                    keylist = new List<string>();
+                    FactsOfConcepts.Add(conceptkey, keylist);
+                }
+                else 
+                {
+                    keylist = FactsOfConcepts[conceptkey];
+                }
+                keylist.Add(fact.Key);
             }
         }
         public string FindDimensionDomain(string dimensionitem) 
@@ -300,6 +313,8 @@ namespace XBRLProcessor.Models
             var csparser = new CSharpParser();
             Expression testobj = null;
             var expressionfile = this.ModuleFolder + "expressions.txt";
+            Utilities.FS.WriteAllText(TaxonomyTestPath, "");
+
             foreach (var validdoc in validationdocuments) 
             {
                 var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement,"//gen:link");
@@ -317,15 +332,17 @@ namespace XBRLProcessor.Models
                     item.FunctionString = csparser.GetFunction(item);
                     /*
                     var obj = parser.ParseExpression(validation.ValueAssertion.Test);
-                    var tree = parser.GetTreeString(validation.ValueAssertion.Test);
-                    sb.AppendLine(validation.ID);
-                    sb.AppendLine(validation.ValueAssertion.Test);
+              
                     sb.AppendLine(parser.Translate(obj));
                     sb.AppendLine(csparser.Translate(obj));
                     sb.AppendLine("___");
-                    sb.AppendLine(tree.ToHierarchyString(i => i));
                     sb.AppendLine("_______________________________________");
                     */
+                    var tree = parser.GetTreeString(validation.ValueAssertion.Test);
+                    sb.AppendLine(validation.ID);
+                    sb.AppendLine(validation.ValueAssertion.Test);
+                    sb.AppendLine(validation.ValidationRoot.ToHierarchyString(i => i.ToString()));
+
                 }
             }
             var sb_functions = new StringBuilder();
