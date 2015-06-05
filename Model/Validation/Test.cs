@@ -710,7 +710,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -721,7 +720,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -729,7 +727,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
         }
 
@@ -739,7 +736,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -751,7 +747,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -761,7 +756,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -769,7 +763,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 0.08), p_b);
         }
 
@@ -777,42 +770,36 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 0.12), p_b);
         }
 
         public bool ebav3763s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3764s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3765s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3766s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3767s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -823,7 +810,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -831,7 +817,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
         }
 
@@ -842,7 +827,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -851,7 +835,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -859,42 +842,36 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 0.08), p_b);
         }
 
         public bool ebav3778s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3779s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3780s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3781s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3782s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -905,7 +882,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -913,7 +889,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
         }
 
@@ -924,28 +899,24 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
         public bool ebav3789s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3790s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3791s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -956,7 +927,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -964,7 +934,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
         }
 
@@ -975,7 +944,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -985,7 +953,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -995,49 +962,42 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, functions.sum(p_b, p_c, p_d));
         }
 
         public bool ebav3783s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3784s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3785s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3786s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3787s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3788s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -1046,7 +1006,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1056,7 +1015,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1065,7 +1023,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1074,7 +1031,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1082,7 +1038,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -1090,7 +1045,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -1100,7 +1054,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1109,7 +1062,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1119,7 +1071,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1128,7 +1079,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1137,7 +1087,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1145,7 +1094,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -1154,7 +1102,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1163,7 +1110,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1172,7 +1118,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1181,7 +1126,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1190,7 +1134,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1199,7 +1142,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1207,77 +1149,66 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(functions.abs(p_a), functions.abs(p_b));
         }
 
         public bool ebav2052s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3736s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3737s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3738s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3739s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3740s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3741s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3742s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3743s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3744s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -1291,7 +1222,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -1303,7 +1233,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1315,7 +1244,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1327,7 +1255,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1339,7 +1266,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1351,7 +1277,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1363,7 +1288,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1375,7 +1299,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1387,7 +1310,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1401,7 +1323,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -1413,7 +1334,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1425,7 +1345,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1437,7 +1356,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1449,7 +1367,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1461,7 +1378,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1473,7 +1389,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1485,7 +1400,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1497,7 +1411,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -1506,7 +1419,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1517,7 +1429,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -1527,7 +1438,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1537,7 +1447,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1548,7 +1457,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(functions.N_Multiply(0.8, p_d)), functions.N_Unary_Minus(functions.N_Multiply(0.5, p_e))));
         }
 
@@ -1560,7 +1468,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -1568,7 +1475,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -1590,7 +1496,6 @@ namespace LogicalModel.Validation
             var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
             var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
             var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p));
         }
 
@@ -1611,7 +1516,6 @@ namespace LogicalModel.Validation
             var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
             var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
             var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o));
         }
 
@@ -1619,7 +1523,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -1627,21 +1530,18 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav0316m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, 0);
         }
 
         public bool ebav0317m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, 0);
         }
 
@@ -1649,7 +1549,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.02));
         }
 
@@ -1657,7 +1556,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.1));
         }
 
@@ -1665,7 +1563,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.2));
         }
 
@@ -1673,7 +1570,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.35));
         }
 
@@ -1681,7 +1577,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.5));
         }
 
@@ -1689,7 +1584,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.7));
         }
 
@@ -1697,7 +1591,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.75));
         }
 
@@ -1705,7 +1598,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -1713,7 +1605,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 1.5));
         }
 
@@ -1721,7 +1612,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 2.5));
         }
 
@@ -1729,7 +1619,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
         }
 
@@ -1737,7 +1626,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -1745,7 +1633,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -1753,7 +1640,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -1761,7 +1647,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -1769,70 +1654,60 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav2037s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3697s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3698s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3699s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3700s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3701s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3702s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3703s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3704s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -1841,7 +1716,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1852,7 +1726,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(functions.N_Multiply(0.8, p_d)), functions.N_Unary_Minus(functions.N_Multiply(0.5, p_e))));
         }
 
@@ -1861,21 +1734,18 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
         public bool ebav3707s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3708s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
@@ -1884,7 +1754,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -1892,7 +1761,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -1903,7 +1771,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(functions.N_Multiply(0.8, p_d)), functions.N_Unary_Minus(functions.N_Multiply(0.5, p_e))));
         }
 
@@ -1912,21 +1779,18 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
         public bool ebav2040s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3709s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -1936,7 +1800,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1946,7 +1809,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1956,7 +1818,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1966,21 +1827,18 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
         public bool ebav2036s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3694s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -1990,7 +1848,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -1999,7 +1856,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2007,7 +1863,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -2015,15 +1870,13 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav0658m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
@@ -2032,7 +1885,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2040,7 +1892,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -2048,7 +1899,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -2056,7 +1906,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -2064,7 +1913,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -2072,7 +1920,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -2080,7 +1927,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -2088,15 +1934,13 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
         public bool ebav0667m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_LessEqual(p_a, functions.sum(p_b));
         }
 
@@ -2104,7 +1948,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, functions.N_Multiply(p_b, 0.1));
         }
 
@@ -2112,7 +1955,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, functions.N_Multiply(p_b, 0.1));
         }
 
@@ -2121,56 +1963,48 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c));
         }
 
         public bool ebav3803s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3804s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3805s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3806s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3807s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3808s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3809s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -2179,7 +2013,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2189,7 +2022,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2198,7 +2030,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2207,7 +2038,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
         }
 
@@ -2217,7 +2047,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2227,7 +2056,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2236,7 +2064,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2245,7 +2072,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2254,7 +2080,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2264,7 +2089,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2273,7 +2097,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2282,7 +2105,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2291,7 +2113,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2301,7 +2122,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2310,7 +2130,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2319,7 +2138,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2328,7 +2146,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2338,7 +2155,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2347,7 +2163,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2356,7 +2171,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2365,7 +2179,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2375,7 +2188,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2384,7 +2196,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2393,7 +2204,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2402,7 +2212,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2412,7 +2221,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2421,7 +2229,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2430,7 +2237,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2439,7 +2245,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2448,21 +2253,18 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
         }
 
         public bool ebav2034s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3688s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -2472,7 +2274,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2507,7 +2308,6 @@ namespace LogicalModel.Validation
             var p_x = parameters.FirstOrDefault(i => i.Name == "x").DoubleValue;
             var p_y = parameters.FirstOrDefault(i => i.Name == "y").DoubleValue;
             var p_z = parameters.FirstOrDefault(i => i.Name == "z").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, p_r, p_s, p_t, p_u, p_v, p_w, p_x, p_y, p_z, p_aa, p_bb, p_cc));
         }
 
@@ -2518,7 +2318,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -2528,7 +2327,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2537,7 +2335,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2546,7 +2343,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2558,7 +2354,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -2568,7 +2363,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2577,7 +2371,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2587,7 +2380,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2595,7 +2387,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Unary_Minus(p_b));
         }
 
@@ -2614,7 +2405,6 @@ namespace LogicalModel.Validation
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
             var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
         }
 
@@ -2625,7 +2415,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -2635,7 +2424,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2643,7 +2431,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Unary_Minus(p_b));
         }
 
@@ -2663,7 +2450,6 @@ namespace LogicalModel.Validation
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
             var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
             var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n));
         }
 
@@ -2674,7 +2460,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -2684,7 +2469,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2693,14 +2477,12 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
         public bool ebav3685s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
@@ -2709,7 +2491,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2724,7 +2505,6 @@ namespace LogicalModel.Validation
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
             var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i));
         }
 
@@ -2734,7 +2514,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2743,7 +2522,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2766,7 +2544,6 @@ namespace LogicalModel.Validation
             var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
             var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
             var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q));
         }
 
@@ -2774,7 +2551,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -2786,7 +2562,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -2798,7 +2573,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -2815,7 +2589,6 @@ namespace LogicalModel.Validation
             var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k));
         }
 
@@ -2823,7 +2596,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -2834,7 +2606,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -2844,7 +2615,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2854,7 +2624,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2864,7 +2633,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -2874,14 +2642,12 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c, p_d));
         }
 
         public bool ebav3686s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -2889,7 +2655,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -2897,7 +2662,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -2905,7 +2669,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -2914,7 +2677,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2923,7 +2685,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2932,7 +2693,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -2941,7 +2701,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, p_c));
         }
 
@@ -2950,7 +2709,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(functions.N_Multiply(p_c, 0.045))));
         }
 
@@ -2959,7 +2717,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, p_c));
         }
 
@@ -2968,7 +2725,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(functions.N_Multiply(p_c, 0.06))));
         }
 
@@ -2977,7 +2733,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, p_c));
         }
 
@@ -2986,7 +2741,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(functions.N_Multiply(p_c, 0.08))));
         }
 
@@ -2995,7 +2749,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3006,7 +2759,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
         }
 
@@ -3015,7 +2767,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3024,7 +2775,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3034,7 +2784,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3043,7 +2792,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3057,7 +2805,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
         }
 
@@ -3069,7 +2816,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -3079,7 +2825,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3089,7 +2834,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3099,7 +2843,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3111,7 +2854,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -3129,7 +2871,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l));
         }
 
@@ -3138,7 +2879,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3147,7 +2887,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3160,7 +2899,6 @@ namespace LogicalModel.Validation
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
         }
 
@@ -3170,7 +2908,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3179,7 +2916,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -3187,7 +2923,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -3195,7 +2930,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -3205,42 +2939,36 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
         public bool ebav2000s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav2035s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3689s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3690s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3691s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -3248,7 +2976,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -3256,7 +2983,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -3264,7 +2990,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -3272,7 +2997,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -3280,7 +3004,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3288,7 +3011,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3296,7 +3018,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3308,7 +3029,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -3318,7 +3038,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3328,63 +3047,54 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
         public bool ebav2041s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav2042s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3710s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3711s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3712s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3713s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3714s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3715s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -3392,7 +3102,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3400,7 +3109,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3408,7 +3116,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3416,7 +3123,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3424,7 +3130,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3432,7 +3137,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3442,7 +3146,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -3450,7 +3153,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -3460,525 +3162,459 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
         public bool ebav2049s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3721s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav0350m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0351m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0352m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0353m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0354m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0355m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0356m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0357m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0358m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0359m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0360m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0361m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0362m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0363m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0364m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0365m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0366m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0367m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0368m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0369m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0370m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0371m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0372m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0373m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0374m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0375m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0376m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0377m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0378m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0379m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0380m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0381m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0382m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0383m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0384m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0385m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0386m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0387m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0388m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0389m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0390m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0391m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0392m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0393m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0394m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0395m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0396m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0397m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0398m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0399m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0400m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0401m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0402m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0403m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0404m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0405m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0406m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1666m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1667m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1668m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1669m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1670m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1671m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
@@ -3986,28 +3622,24 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav3722s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3723s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3724s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -4015,7 +3647,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -4023,7 +3654,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -4031,454 +3661,397 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
         public bool ebav3725s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav0415m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0416m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0417m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0418m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0420m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0421m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0422m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0423m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0425m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0426m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0427m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0428m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0430m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0431m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0432m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0433m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0435m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0436m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0437m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0438m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0440m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0441m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0442m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0443m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0445m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0446m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0447m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0448m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0450m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0451m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0452m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0453m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0455m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0456m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0457m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0458m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0460m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0461m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0462m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0463m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0465m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0466m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0467m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0468m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav0470m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0471m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0472m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0473m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0475m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0476m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0477m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav0478m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1672m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
         public bool ebav1673m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
         public bool ebav1674m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a), p_b);
         }
 
@@ -4487,14 +4060,12 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
         public bool ebav0481m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0.65);
         }
 
@@ -4504,7 +4075,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -4512,7 +4082,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 1.9));
         }
 
@@ -4520,7 +4089,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.008));
         }
 
@@ -4528,7 +4096,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 2.9));
         }
 
@@ -4536,7 +4103,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.008));
         }
 
@@ -4544,7 +4110,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 3.7));
         }
 
@@ -4552,49 +4117,42 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.024));
         }
 
         public bool ebav1617m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 1);
         }
 
         public bool ebav2051s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3729s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3730s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3731s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3732s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -4602,28 +4160,24 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
         public bool ebav0493m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0.65);
         }
 
         public bool ebav1675m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 1);
         }
 
         public bool ebav3733s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -4631,7 +4185,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0));
         }
 
@@ -4639,7 +4192,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 1));
         }
 
@@ -4647,7 +4199,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.5));
         }
 
@@ -4655,7 +4206,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.75));
         }
 
@@ -4663,7 +4213,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.08));
         }
 
@@ -4671,7 +4220,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
         }
 
@@ -4683,7 +4231,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4695,21 +4242,18 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
         public bool ebav3734s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3735s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -4717,7 +4261,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -4725,7 +4268,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -4733,7 +4275,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -4743,7 +4284,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -4752,7 +4292,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -4761,7 +4300,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, functions.sum(p_b, p_c));
         }
 
@@ -4784,7 +4322,6 @@ namespace LogicalModel.Validation
             var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
             var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
             var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q));
         }
 
@@ -4806,7 +4343,6 @@ namespace LogicalModel.Validation
             var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
             var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
             var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p));
         }
 
@@ -4814,7 +4350,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -4822,7 +4357,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -4832,7 +4366,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -4851,7 +4384,6 @@ namespace LogicalModel.Validation
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
             var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
         }
 
@@ -4860,7 +4392,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -4870,7 +4401,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -4882,7 +4412,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4894,7 +4423,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4902,7 +4430,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -4910,7 +4437,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -4919,7 +4445,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -4931,7 +4456,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4943,7 +4467,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4952,7 +4475,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -4964,7 +4486,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4976,7 +4497,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -4984,84 +4504,72 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(functions.abs(p_a), functions.abs(p_b));
         }
 
         public bool ebav3745s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3746s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3747s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3748s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3749s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3750s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3751s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3752s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3753s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3754s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3755s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -5075,7 +4583,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -5087,7 +4594,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5105,7 +4611,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5123,7 +4628,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5135,7 +4639,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5153,7 +4656,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5171,7 +4673,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5183,7 +4684,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5201,7 +4701,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5219,7 +4718,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5233,7 +4731,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -5251,7 +4748,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5263,7 +4759,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5281,7 +4776,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5299,7 +4793,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5311,7 +4804,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5329,7 +4821,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5347,7 +4838,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5361,7 +4851,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -5373,7 +4862,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5391,7 +4879,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5409,7 +4896,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5421,7 +4907,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5439,7 +4924,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5457,7 +4941,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5469,7 +4952,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5487,7 +4969,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5505,7 +4986,6 @@ namespace LogicalModel.Validation
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
             var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
         }
 
@@ -5525,7 +5005,6 @@ namespace LogicalModel.Validation
             var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
             var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
             var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n));
         }
 
@@ -5533,7 +5012,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5541,7 +5019,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5554,91 +5031,78 @@ namespace LogicalModel.Validation
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.sum(p_a, p_b, p_c), functions.sum(p_d, p_e, p_f, p_g));
         }
 
         public bool ebav2054s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3756s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav4007a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_AP:x27"), functions.XS_QName("eba_AP:x42"), functions.XS_QName("eba_AP:x45"));
         }
 
         public bool ebav4010a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_ZZ:x6"), functions.XS_QName("eba_ZZ:x7"), functions.XS_QName("eba_ZZ:x8"), functions.XS_QName("eba_ZZ:x9"), functions.XS_QName("eba_ZZ:x10"), functions.XS_QName("eba_ZZ:x11"), functions.XS_QName("eba_ZZ:x12"), functions.XS_QName("eba_ZZ:x13"));
         }
 
         public bool ebav4011a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_GA:AL"), functions.XS_QName("eba_GA:AT"), functions.XS_QName("eba_GA:BE"), functions.XS_QName("eba_GA:BG"), functions.XS_QName("eba_GA:CY"), functions.XS_QName("eba_GA:CZ"), functions.XS_QName("eba_GA:DK"), functions.XS_QName("eba_GA:EE"), functions.XS_QName("eba_GA:FI"), functions.XS_QName("eba_GA:FR"), functions.XS_QName("eba_GA:DE"), functions.XS_QName("eba_GA:GR"), functions.XS_QName("eba_GA:HU"), functions.XS_QName("eba_GA:IE"), functions.XS_QName("eba_GA:IT"), functions.XS_QName("eba_GA:JP"), functions.XS_QName("eba_GA:LV"), functions.XS_QName("eba_GA:LT"), functions.XS_QName("eba_GA:LU"), functions.XS_QName("eba_GA:MK"), functions.XS_QName("eba_GA:MT"), functions.XS_QName("eba_GA:NL"), functions.XS_QName("eba_GA:NO"), functions.XS_QName("eba_GA:x28"), functions.XS_QName("eba_GA:PL"), functions.XS_QName("eba_GA:PT"), functions.XS_QName("eba_GA:RO"), functions.XS_QName("eba_GA:RU"), functions.XS_QName("eba_GA:RS"), functions.XS_QName("eba_GA:SK"), functions.XS_QName("eba_GA:SI"), functions.XS_QName("eba_GA:ES"), functions.XS_QName("eba_GA:SE"), functions.XS_QName("eba_GA:CH"), functions.XS_QName("eba_GA:TR"), functions.XS_QName("eba_GA:UA"), functions.XS_QName("eba_GA:GB"), functions.XS_QName("eba_GA:US"), functions.XS_QName("eba_GA:AF"), functions.XS_QName("eba_GA:AX"), functions.XS_QName("eba_GA:DZ"), functions.XS_QName("eba_GA:AS"), functions.XS_QName("eba_GA:AD"), functions.XS_QName("eba_GA:AO"), functions.XS_QName("eba_GA:AI"), functions.XS_QName("eba_GA:AQ"), functions.XS_QName("eba_GA:AG"), functions.XS_QName("eba_GA:AR"), functions.XS_QName("eba_GA:AM"), functions.XS_QName("eba_GA:AW"), functions.XS_QName("eba_GA:AU"), functions.XS_QName("eba_GA:AZ"), functions.XS_QName("eba_GA:BS"), functions.XS_QName("eba_GA:BH"), functions.XS_QName("eba_GA:BD"), functions.XS_QName("eba_GA:BB"), functions.XS_QName("eba_GA:BY"), functions.XS_QName("eba_GA:BZ"), functions.XS_QName("eba_GA:BJ"), functions.XS_QName("eba_GA:BM"), functions.XS_QName("eba_GA:BT"), functions.XS_QName("eba_GA:BO"), functions.XS_QName("eba_GA:BQ"), functions.XS_QName("eba_GA:BA"), functions.XS_QName("eba_GA:BW"), functions.XS_QName("eba_GA:BV"), functions.XS_QName("eba_GA:BR"), functions.XS_QName("eba_GA:IO"), functions.XS_QName("eba_GA:BN"), functions.XS_QName("eba_GA:BF"), functions.XS_QName("eba_GA:BI"), functions.XS_QName("eba_GA:KH"), functions.XS_QName("eba_GA:CM"), functions.XS_QName("eba_GA:CA"), functions.XS_QName("eba_GA:CV"), functions.XS_QName("eba_GA:KY"), functions.XS_QName("eba_GA:CF"), functions.XS_QName("eba_GA:TD"), functions.XS_QName("eba_GA:CL"), functions.XS_QName("eba_GA:CN"), functions.XS_QName("eba_GA:CX"), functions.XS_QName("eba_GA:CC"), functions.XS_QName("eba_GA:CO"), functions.XS_QName("eba_GA:KM"), functions.XS_QName("eba_GA:CG"), functions.XS_QName("eba_GA:CD"), functions.XS_QName("eba_GA:CK"), functions.XS_QName("eba_GA:CR"), functions.XS_QName("eba_GA:CI"), functions.XS_QName("eba_GA:HR"), functions.XS_QName("eba_GA:CU"), functions.XS_QName("eba_GA:CW"), functions.XS_QName("eba_GA:DJ"), functions.XS_QName("eba_GA:DM"), functions.XS_QName("eba_GA:DO"), functions.XS_QName("eba_GA:EC"), functions.XS_QName("eba_GA:EG"), functions.XS_QName("eba_GA:SV"), functions.XS_QName("eba_GA:GQ"), functions.XS_QName("eba_GA:ER"), functions.XS_QName("eba_GA:ET"), functions.XS_QName("eba_GA:FK"), functions.XS_QName("eba_GA:FO"), functions.XS_QName("eba_GA:FJ"), functions.XS_QName("eba_GA:GF"), functions.XS_QName("eba_GA:PF"), functions.XS_QName("eba_GA:TF"), functions.XS_QName("eba_GA:GA"), functions.XS_QName("eba_GA:GM"), functions.XS_QName("eba_GA:GE"), functions.XS_QName("eba_GA:GH"), functions.XS_QName("eba_GA:GI"), functions.XS_QName("eba_GA:GL"), functions.XS_QName("eba_GA:GD"), functions.XS_QName("eba_GA:GP"), functions.XS_QName("eba_GA:GU"), functions.XS_QName("eba_GA:GT"), functions.XS_QName("eba_GA:GG"), functions.XS_QName("eba_GA:GN"), functions.XS_QName("eba_GA:GW"), functions.XS_QName("eba_GA:GY"), functions.XS_QName("eba_GA:HT"), functions.XS_QName("eba_GA:HM"), functions.XS_QName("eba_GA:VA"), functions.XS_QName("eba_GA:HN"), functions.XS_QName("eba_GA:HK"), functions.XS_QName("eba_GA:IS"), functions.XS_QName("eba_GA:IN"), functions.XS_QName("eba_GA:ID"), functions.XS_QName("eba_GA:IR"), functions.XS_QName("eba_GA:IQ"), functions.XS_QName("eba_GA:IM"), functions.XS_QName("eba_GA:IL"), functions.XS_QName("eba_GA:JM"), functions.XS_QName("eba_GA:JE"), functions.XS_QName("eba_GA:JO"), functions.XS_QName("eba_GA:KZ"), functions.XS_QName("eba_GA:KE"), functions.XS_QName("eba_GA:KI"), functions.XS_QName("eba_GA:KP"), functions.XS_QName("eba_GA:KR"), functions.XS_QName("eba_GA:KW"), functions.XS_QName("eba_GA:KG"), functions.XS_QName("eba_GA:LA"), functions.XS_QName("eba_GA:LB"), functions.XS_QName("eba_GA:LS"), functions.XS_QName("eba_GA:LR"), functions.XS_QName("eba_GA:LY"), functions.XS_QName("eba_GA:LI"), functions.XS_QName("eba_GA:MO"), functions.XS_QName("eba_GA:MG"), functions.XS_QName("eba_GA:MW"), functions.XS_QName("eba_GA:MY"), functions.XS_QName("eba_GA:MV"), functions.XS_QName("eba_GA:ML"), functions.XS_QName("eba_GA:MH"), functions.XS_QName("eba_GA:MQ"), functions.XS_QName("eba_GA:MR"), functions.XS_QName("eba_GA:MU"), functions.XS_QName("eba_GA:YT"), functions.XS_QName("eba_GA:MX"), functions.XS_QName("eba_GA:FM"), functions.XS_QName("eba_GA:MD"), functions.XS_QName("eba_GA:MC"), functions.XS_QName("eba_GA:MN"), functions.XS_QName("eba_GA:ME"), functions.XS_QName("eba_GA:MS"), functions.XS_QName("eba_GA:MA"), functions.XS_QName("eba_GA:MZ"), functions.XS_QName("eba_GA:MM"), functions.XS_QName("eba_GA:NA"), functions.XS_QName("eba_GA:NR"), functions.XS_QName("eba_GA:NP"), functions.XS_QName("eba_GA:NC"), functions.XS_QName("eba_GA:NZ"), functions.XS_QName("eba_GA:NI"), functions.XS_QName("eba_GA:NE"), functions.XS_QName("eba_GA:NG"), functions.XS_QName("eba_GA:NU"), functions.XS_QName("eba_GA:NF"), functions.XS_QName("eba_GA:MP"), functions.XS_QName("eba_GA:OM"), functions.XS_QName("eba_GA:PK"), functions.XS_QName("eba_GA:PW"), functions.XS_QName("eba_GA:PS"), functions.XS_QName("eba_GA:PA"), functions.XS_QName("eba_GA:PG"), functions.XS_QName("eba_GA:PY"), functions.XS_QName("eba_GA:PE"), functions.XS_QName("eba_GA:PH"), functions.XS_QName("eba_GA:PN"), functions.XS_QName("eba_GA:PR"), functions.XS_QName("eba_GA:QA"), functions.XS_QName("eba_GA:RE"), functions.XS_QName("eba_GA:RW"), functions.XS_QName("eba_GA:BL"), functions.XS_QName("eba_GA:SH"), functions.XS_QName("eba_GA:KN"), functions.XS_QName("eba_GA:LC"), functions.XS_QName("eba_GA:MF"), functions.XS_QName("eba_GA:PM"), functions.XS_QName("eba_GA:VC"), functions.XS_QName("eba_GA:WS"), functions.XS_QName("eba_GA:SM"), functions.XS_QName("eba_GA:ST"), functions.XS_QName("eba_GA:SA"), functions.XS_QName("eba_GA:SN"), functions.XS_QName("eba_GA:SC"), functions.XS_QName("eba_GA:SL"), functions.XS_QName("eba_GA:SG"), functions.XS_QName("eba_GA:SX"), functions.XS_QName("eba_GA:SB"), functions.XS_QName("eba_GA:SO"), functions.XS_QName("eba_GA:ZA"), functions.XS_QName("eba_GA:GS"), functions.XS_QName("eba_GA:SS"), functions.XS_QName("eba_GA:LK"), functions.XS_QName("eba_GA:SD"), functions.XS_QName("eba_GA:SR"), functions.XS_QName("eba_GA:SJ"), functions.XS_QName("eba_GA:SZ"), functions.XS_QName("eba_GA:SY"), functions.XS_QName("eba_GA:TW"), functions.XS_QName("eba_GA:TJ"), functions.XS_QName("eba_GA:TZ"), functions.XS_QName("eba_GA:TH"), functions.XS_QName("eba_GA:TL"), functions.XS_QName("eba_GA:TG"), functions.XS_QName("eba_GA:TK"), functions.XS_QName("eba_GA:TO"), functions.XS_QName("eba_GA:TT"), functions.XS_QName("eba_GA:TN"), functions.XS_QName("eba_GA:TM"), functions.XS_QName("eba_GA:TC"), functions.XS_QName("eba_GA:TV"), functions.XS_QName("eba_GA:UG"), functions.XS_QName("eba_GA:AE"), functions.XS_QName("eba_GA:UM"), functions.XS_QName("eba_GA:UY"), functions.XS_QName("eba_GA:UZ"), functions.XS_QName("eba_GA:VU"), functions.XS_QName("eba_GA:VE"), functions.XS_QName("eba_GA:VN"), functions.XS_QName("eba_GA:VG"), functions.XS_QName("eba_GA:VI"), functions.XS_QName("eba_GA:WF"), functions.XS_QName("eba_GA:EH"), functions.XS_QName("eba_GA:YE"), functions.XS_QName("eba_GA:ZM"), functions.XS_QName("eba_GA:ZW"), functions.XS_QName("eba_GA:_1A"), functions.XS_QName("eba_GA:_1B"), functions.XS_QName("eba_GA:_1C"), functions.XS_QName("eba_GA:_1D"), functions.XS_QName("eba_GA:_1E"), functions.XS_QName("eba_GA:_1F"), functions.XS_QName("eba_GA:_1G"), functions.XS_QName("eba_GA:_1H"), functions.XS_QName("eba_GA:_1J"), functions.XS_QName("eba_GA:_1K"), functions.XS_QName("eba_GA:_1L"), functions.XS_QName("eba_GA:_1M"), functions.XS_QName("eba_GA:_1N"), functions.XS_QName("eba_GA:_1O"), functions.XS_QName("eba_GA:_1P"), functions.XS_QName("eba_GA:_1Q"), functions.XS_QName("eba_GA:_1R"), functions.XS_QName("eba_GA:_1S"), functions.XS_QName("eba_GA:_1T"), functions.XS_QName("eba_GA:_1Z"), functions.XS_QName("eba_GA:_4A"), functions.XS_QName("eba_GA:_4B"), functions.XS_QName("eba_GA:_4C"), functions.XS_QName("eba_GA:_4D"), functions.XS_QName("eba_GA:_4E"), functions.XS_QName("eba_GA:_4F"), functions.XS_QName("eba_GA:_4G"), functions.XS_QName("eba_GA:_4H"), functions.XS_QName("eba_GA:_4I"), functions.XS_QName("eba_GA:_4V"), functions.XS_QName("eba_GA:_4J"), functions.XS_QName("eba_GA:_4K"), functions.XS_QName("eba_GA:_4L"), functions.XS_QName("eba_GA:_4M"), functions.XS_QName("eba_GA:_4N"), functions.XS_QName("eba_GA:_4O"), functions.XS_QName("eba_GA:_4P"), functions.XS_QName("eba_GA:_4Q"), functions.XS_QName("eba_GA:_4R"), functions.XS_QName("eba_GA:_4S"), functions.XS_QName("eba_GA:_4T"), functions.XS_QName("eba_GA:_4W"), functions.XS_QName("eba_GA:_4X"), functions.XS_QName("eba_GA:_4Y"), functions.XS_QName("eba_GA:_4Z"), functions.XS_QName("eba_GA:_5A"), functions.XS_QName("eba_GA:_5B"), functions.XS_QName("eba_GA:_5C"), functions.XS_QName("eba_GA:_5D"), functions.XS_QName("eba_GA:_5E"), functions.XS_QName("eba_GA:_5F"), functions.XS_QName("eba_GA:_5G"), functions.XS_QName("eba_GA:_5H"), functions.XS_QName("eba_GA:_5I"), functions.XS_QName("eba_GA:_5J"), functions.XS_QName("eba_GA:_5K"), functions.XS_QName("eba_GA:_5L"), functions.XS_QName("eba_GA:_5M"), functions.XS_QName("eba_GA:_5N"), functions.XS_QName("eba_GA:_5O"), functions.XS_QName("eba_GA:_5P"), functions.XS_QName("eba_GA:_5Q"), functions.XS_QName("eba_GA:_5R"), functions.XS_QName("eba_GA:_5S"), functions.XS_QName("eba_GA:_5T"), functions.XS_QName("eba_GA:_5U"), functions.XS_QName("eba_GA:_5V"), functions.XS_QName("eba_GA:_5W"), functions.XS_QName("eba_GA:_5X"), functions.XS_QName("eba_GA:_5Y"), functions.XS_QName("eba_GA:_5Z"), functions.XS_QName("eba_GA:_6A"), functions.XS_QName("eba_GA:_6B"), functions.XS_QName("eba_GA:_6C"), functions.XS_QName("eba_GA:_6D"), functions.XS_QName("eba_GA:_6E"), functions.XS_QName("eba_GA:_6F"), functions.XS_QName("eba_GA:_6G"), functions.XS_QName("eba_GA:_6H"), functions.XS_QName("eba_GA:_6I"), functions.XS_QName("eba_GA:_6J"), functions.XS_QName("eba_GA:_6K"), functions.XS_QName("eba_GA:_6L"), functions.XS_QName("eba_GA:_6M"), functions.XS_QName("eba_GA:_6N"), functions.XS_QName("eba_GA:_6O"), functions.XS_QName("eba_GA:_6P"), functions.XS_QName("eba_GA:_6Q"), functions.XS_QName("eba_GA:_6R"), functions.XS_QName("eba_GA:_6S"), functions.XS_QName("eba_GA:_6T"), functions.XS_QName("eba_GA:_6U"), functions.XS_QName("eba_GA:_6Z"), functions.XS_QName("eba_GA:_7Z"), functions.XS_QName("eba_GA:_8A"), functions.XS_QName("eba_GA:_9B"));
         }
 
         public bool ebav4014a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_UE:x1"), functions.XS_QName("eba_UE:x2"), functions.XS_QName("eba_UE:x3"), functions.XS_QName("eba_UE:x4"), functions.XS_QName("eba_UE:x5"), functions.XS_QName("eba_UE:x6"), functions.XS_QName("eba_UE:x8"), functions.XS_QName("eba_UE:x9"), functions.XS_QName("eba_UE:x10"), functions.XS_QName("eba_UE:x12"));
         }
 
         public bool ebav4015a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_ZZ:x3"), functions.XS_QName("eba_ZZ:x4"), functions.XS_QName("eba_ZZ:x5"), functions.XS_QName("eba_ZZ:x6"));
         }
 
         public bool ebav4018a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_RS:x1"), functions.XS_QName("eba_RS:x2"), functions.XS_QName("eba_RS:x5"), functions.XS_QName("eba_RS:x6"));
         }
 
         public bool ebav4020a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_UE:x14"), functions.XS_QName("eba_UE:x15"));
         }
 
         public bool ebav4021a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_PL:x11"), functions.XS_QName("eba_PL:x51"), functions.XS_QName("eba_PL:x72"), functions.XS_QName("eba_PL:x78"));
         }
 
         public bool ebav4022a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_TP:x1"), functions.XS_QName("eba_TP:x2"));
         }
 
         public bool ebav4024a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_RT:x10"), functions.XS_QName("eba_RT:x11"));
         }
 
@@ -5646,7 +5110,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -5654,7 +5117,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -5662,14 +5124,12 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav3757s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -5677,7 +5137,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
         }
 
@@ -5685,7 +5144,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
         }
 
@@ -5695,7 +5153,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Greater(p_a, 0) | functions.N_Greater(p_b, 0) | functions.N_Greater(p_c, 0) ? functions.N_Greater(p_d, 0) : true;
         }
 
@@ -5732,21 +5189,18 @@ namespace LogicalModel.Validation
             var p_x = parameters.FirstOrDefault(i => i.Name == "x").DoubleValue;
             var p_y = parameters.FirstOrDefault(i => i.Name == "y").DoubleValue;
             var p_z = parameters.FirstOrDefault(i => i.Name == "z").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Greater(p_a, 0) ? functions.N_Greater(p_b, 0) | functions.N_Greater(p_c, 0) | functions.N_Greater(p_d, 0) | functions.N_Greater(p_e, 0) | functions.N_Greater(p_f, 0) | functions.N_Greater(p_g, 0) | functions.N_Greater(p_h, 0) | functions.N_Greater(p_i, 0) | functions.N_Greater(p_j, 0) | functions.N_Greater(p_k, 0) | functions.N_Greater(p_l, 0) | functions.N_Greater(p_m, 0) | functions.N_Greater(p_n, 0) | functions.N_Greater(p_o, 0) | functions.N_Greater(p_p, 0) | functions.N_Greater(p_q, 0) | functions.N_Greater(p_r, 0) | functions.N_Greater(p_s, 0) | functions.N_Greater(p_t, 0) | functions.N_Greater(p_u, 0) | functions.N_Greater(p_v, 0) | functions.N_Greater(p_w, 0) | functions.N_Greater(p_x, 0) | functions.N_Greater(p_y, 0) | functions.N_Greater(p_z, 0) | functions.N_Greater(p_aa, 0) | functions.N_Greater(p_bb, 0) | functions.N_Greater(p_cc, 0) | functions.N_Greater(p_dd, 0) | functions.N_Greater(p_ee, 0) : true;
         }
 
         public bool ebav3758s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3759s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -5754,7 +5208,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
         }
 
@@ -5764,7 +5217,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Greater(p_a, 0) ? functions.N_Greater(p_b, 0) | functions.N_Greater(p_c, 0) | functions.N_Greater(p_d, 0) : true;
         }
 
@@ -5775,7 +5227,6 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(p_d), functions.N_Unary_Minus(p_e)));
         }
 
@@ -5783,21 +5234,18 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav2055s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3760s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -5805,14 +5253,12 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
         public bool ebav3762s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -5820,7 +5266,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5829,7 +5274,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -5839,7 +5283,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -5847,7 +5290,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5856,7 +5298,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -5864,7 +5305,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5872,7 +5312,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5881,7 +5320,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -5889,7 +5327,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -5898,7 +5335,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -5906,56 +5342,48 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
         public bool ebav2056s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3768s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3769s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3770s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3771s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3772s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3773s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -5969,7 +5397,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -5981,7 +5408,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -5993,7 +5419,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6005,7 +5430,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6019,7 +5443,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6031,7 +5454,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6043,7 +5465,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6055,7 +5476,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6069,7 +5489,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6081,7 +5500,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6093,7 +5511,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6105,7 +5522,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6119,7 +5535,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6131,7 +5546,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6143,7 +5557,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
@@ -6155,23 +5568,20 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
         }
 
         public bool ebav0600m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
         public bool ebav0602m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
@@ -6179,7 +5589,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -6187,7 +5596,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
@@ -6201,7 +5609,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6215,7 +5622,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6229,7 +5635,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6243,7 +5648,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6253,7 +5657,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -6265,7 +5668,6 @@ namespace LogicalModel.Validation
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
         }
 
@@ -6274,7 +5676,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6282,7 +5683,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6291,7 +5691,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6299,7 +5698,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6308,7 +5706,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6316,42 +5713,36 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
         public bool ebav2057s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3774s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3775s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3776s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3777s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -6365,7 +5756,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6379,7 +5769,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6393,7 +5782,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6407,7 +5795,6 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
         }
 
@@ -6415,7 +5802,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6424,7 +5810,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.N_Multiply(functions.max(p_b, p_c), 0.08));
         }
 
@@ -6432,7 +5817,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
         }
 
@@ -6448,7 +5832,6 @@ namespace LogicalModel.Validation
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
             var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(functions.max(p_b, p_c), functions.max(p_d, p_e), functions.max(p_f, p_g), functions.max(p_h, p_i, p_j)));
         }
 
@@ -6457,7 +5840,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6466,21 +5848,18 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
         public bool ebav3792s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3793s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -6488,7 +5867,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
         }
 
@@ -6498,7 +5876,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
         }
 
@@ -6509,35 +5886,30 @@ namespace LogicalModel.Validation
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
             var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(functions.max(p_b, p_c), functions.max(p_d, p_e)));
         }
 
         public bool ebav3794s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3795s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3796s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3797s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -6545,7 +5917,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6553,7 +5924,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6561,7 +5931,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6569,29 +5938,25 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
         public bool ebav0668m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
         public bool ebav3810s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3811s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -6599,7 +5964,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
@@ -6607,15 +5971,13 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
         public bool ebav0673m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
@@ -6624,7 +5986,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6632,24 +5993,21 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.sum(p_c)));
         }
 
         public bool ebav0677m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
         public bool ebav0678m(List<ValidationParameter> parameters)
         {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
         }
 
@@ -6657,7 +6015,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6665,30 +6022,26 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
         public bool ebav3812s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav0700m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
         public bool ebav0701m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
@@ -6696,7 +6049,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6704,7 +6056,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6713,7 +6064,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6722,7 +6072,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6730,7 +6079,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6738,46 +6086,40 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
         public bool ebav3813s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav0709m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_LessEqual(p_a, functions.sum(p_b));
         }
 
         public bool ebav0710m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_LessEqual(p_a, functions.sum(p_b));
         }
 
         public bool ebav0712m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
         public bool ebav0713m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
@@ -6785,7 +6127,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6793,7 +6134,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6802,7 +6142,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6811,7 +6150,6 @@ namespace LogicalModel.Validation
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, functions.sum(p_b, p_c));
         }
 
@@ -6819,7 +6157,6 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
@@ -6827,14 +6164,12 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, p_b);
         }
 
         public bool ebav3814s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -6842,15 +6177,13 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, p_b);
         }
 
         public bool ebav0722m(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b));
         }
 
@@ -6858,9 +6191,8 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
+            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValues;
             return functions.N_Equals(p_a, functions.sum(p_b, functions.sum(p_c), functions.sum(p_d)));
         }
 
@@ -6870,8 +6202,7 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
+            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValues;
             return p_a != 0 & p_b != 0 & p_c != 0 ? functions.N_Equals(p_d, functions.N_Divide(functions.sum(p_e), 3)) : true;
         }
 
@@ -6881,7 +6212,6 @@ namespace LogicalModel.Validation
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
             var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
             var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_Equals(p_a, 0) & functions.N_Equals(p_b, 0) ? functions.N_Equals(p_c, p_d) : true;
         }
 
@@ -6889,14 +6219,12 @@ namespace LogicalModel.Validation
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
             var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, p_b);
         }
 
         public bool ebav3815s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -6912,7 +6240,6 @@ namespace LogicalModel.Validation
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
             var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
             var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, functions.max(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j));
         }
 
@@ -6926,84 +6253,72 @@ namespace LogicalModel.Validation
             var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
             var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
             var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, functions.max(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
         }
 
         public bool ebav3761s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3687s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3706s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3716s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3717s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3718s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3719s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_LessEqual(p_a, 0);
         }
 
         public bool ebav3720s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3726s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3727s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
         public bool ebav3728s(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return functions.N_GreaterEqual(p_a, 0);
         }
 
@@ -7024,28 +6339,24 @@ namespace LogicalModel.Validation
         public bool ebav4008a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_ZZ:x16"), functions.XS_QName("eba_ZZ:x17"), functions.XS_QName("eba_ZZ:x18"));
         }
 
         public bool ebav4009a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_ZZ:x25"), functions.XS_QName("eba_ZZ:x26"));
         }
 
         public bool ebav4016a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_ZZ:x21"), functions.XS_QName("eba_ZZ:x22"), functions.XS_QName("eba_ZZ:x23"), functions.XS_QName("eba_ZZ:x24"));
         }
 
         public bool ebav4029a(List<ValidationParameter> parameters)
         {
             var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
             return p_a.In(functions.XS_QName("eba_AP:x38"), functions.XS_QName("eba_AP:x76"));
         }
 

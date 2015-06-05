@@ -96,7 +96,7 @@ namespace Model.InstanceModel
             foreach (var xbrlfact in XbrlFacts) 
             {
                 var xbrlcontext = this.Contexts.FirstOrDefault(i => i.ID == xbrlfact.ContextRef);
-                var logicalfact = new Fact();
+                var logicalfact = new InstanceFact();
                 logicalfact.UnitID = xbrlfact.UnitRef;
                 logicalfact.ContextID = xbrlfact.ContextRef;
                 logicalfact.Unit = this.Units.FirstOrDefault(i => i.ID == xbrlfact.UnitRef);
@@ -120,7 +120,7 @@ namespace Model.InstanceModel
                 this.Facts.Add(logicalfact);
                 if (!this.FactDictionary.ContainsKey(logicalfact.FactKey))
                 {
-                    this.FactDictionary.Add(logicalfact.FactKey, new List<Fact>() { logicalfact });
+                    this.FactDictionary.Add(logicalfact.FactKey, new List<InstanceFact>() { logicalfact });
                 }
                 else 
                 {
@@ -130,11 +130,12 @@ namespace Model.InstanceModel
             }
         }
 
-        public override bool Validate()
+        public override List<LogicalModel.Validation.ValidationRuleResult> Validate()
         {
+            var results = new List<LogicalModel.Validation.ValidationRuleResult>();
+
             Console.WriteLine("Validating Instance started");
 
-            var isvalid = true;
             var schemaset = new XmlSchemaSet();
             var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
             IDictionary<string, string> dic = nsmanager.GetNamespacesInScope(XmlNamespaceScope.All);
@@ -145,10 +146,10 @@ namespace Model.InstanceModel
             }
             //this.XmlDocument.Validate(OnValidated);
 
-            var basevalidation = base.Validate();
+            results.AddRange(base.Validate());
             Console.WriteLine("Validating Instance finished");
 
-            return isvalid && basevalidation;
+            return results;
         }
 
         public void OnValidated(Object sender,ValidationEventArgs e) 

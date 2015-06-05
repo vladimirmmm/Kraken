@@ -881,6 +881,109 @@ function IsFunction(functionToCheck) {
     var getType = {};
     return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
+function IsArray(value) {
+    if (Array.isArray) {
+        return Array.isArray(value);
+    }
+    return false;
+}
+function Access(obj, key) {
+    if (key == "this") {
+        return obj;
+    }
+    return key.split(".").reduce(function (o, x) {
+        return (typeof o == "undefined" || o === null) ? o : o[x];
+    }, obj);
+}
+function Bind(target, data, parent) {
+    var _this = this;
+    var fBind = function (target, data, parent) { return _this.Bind.call(_this, target, data, parent); };
+    var NoCheck = [];
+    var targetitem = $(target);
+    var bindattribute = "binding";
+    var attributespecifier = "=>";
+    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
+    var targets = [];
+    if (!IsNull($(target).attr(bindattribute))) {
+        targets.push(target);
+    }
+    jquerytargets.each(function (ix, item) {
+        targets.push(item);
+    });
+    //console.log(Format("Binding target: {0}", targets.length));
+    targets.forEach(function (item, ix) {
+        if (NoCheck.indexOf(item) == -1) {
+            var id = $(item).attr(bindattribute);
+            var targetattribute = "";
+            var formatString = "{0}";
+            var expr = id;
+            if (expr.indexOf(attributespecifier) > -1) {
+                var isplit = expr.split(attributespecifier);
+                if (isplit.length == 2) {
+                    targetattribute = isplit[0];
+                    expr = isplit[1];
+                }
+            }
+            var originalexpr = expr;
+            var expressions = [];
+            var i = 0;
+            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
+                expressions.push(expression);
+                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
+                i++;
+            }
+            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
+            if (expressions.length > 0) {
+                formatString = expr; //originalexpr.replace("{" + expr + "}", "{0}");
+            }
+            else {
+                expressions.push(originalexpr);
+            }
+            var values = [];
+            expressions.forEach(function (expression) {
+                var val = null;
+                val = Access(data, expression);
+                if (typeof val == "string") {
+                    if (val.indexOf("/Date(") == 0) {
+                        val = ToDate(val);
+                    }
+                    else {
+                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    }
+                }
+                values.push(val);
+            });
+            var elementtemplate = $('[type=template]', $(item)).first();
+            var firstvalue = values[0];
+            if (IsArray(firstvalue)) {
+                if (elementtemplate.length == 0) {
+                    console.log('no template found!');
+                }
+                $(item).empty();
+                elementtemplate.appendTo($(item));
+                firstvalue.forEach(function (childitem) {
+                    var newelement = $(elementtemplate).clone(true, true);
+                    newelement.removeAttr("type");
+                    $("[" + bindattribute + "]", newelement).each(function (ix, binded) {
+                        NoCheck.push(binded);
+                    });
+                    fBind(newelement, childitem, firstvalue);
+                    newelement.appendTo($(item));
+                });
+            }
+            else {
+                if (IsNull(targetattribute)) {
+                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
+                        $(item).html(Format(formatString, values));
+                    }
+                }
+                else {
+                    $(item).attr(targetattribute, Format(formatString, values));
+                }
+            }
+        }
+    });
+}
 var actioncenter = new Engine.ActionCenter();
 var uimanager = new Engine.UIManager();
 var resourcemanager = { Get: function (key, culture) {

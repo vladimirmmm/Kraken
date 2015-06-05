@@ -13,6 +13,8 @@ using XBRLProcessor.Model.Base;
 using Model.DefinitionModel;
 using BaseModel;
 using LogicalModel.Expressions;
+using System.CodeDom.Compiler;
+using System.Reflection;
 
 namespace XBRLProcessor.Models
 {
@@ -97,7 +99,7 @@ namespace XBRLProcessor.Models
             return false;
         }
 
-        public bool AddFactToDictionary(LogicalModel.Fact fact)
+        public bool AddFactToDictionary(LogicalModel.Base.FactBase fact)
         {
             //if (!this.Facts.ContainsKey(fact.FactString))
             //{
@@ -305,96 +307,175 @@ namespace XBRLProcessor.Models
         public override void LoadValidations()
         {
             Console.WriteLine("Loading Validations started");
-            var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
-            var validations = new List<XbrlValidation>();
-            var logicalvalidations = new List<LogicalModel.Validation.ValidationRule>();
-            var sb = new StringBuilder();
-            var parser = new XbrlFormulaParser();
-            var csparser = new CSharpParser();
-            Expression testobj = null;
-            var expressionfile = this.ModuleFolder + "expressions.txt";
-            Utilities.FS.WriteAllText(TaxonomyTestPath, "");
-
-            foreach (var validdoc in validationdocuments) 
+            if (!System.IO.File.Exists(TaxonomyValidationPath))
             {
-                var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement,"//gen:link");
-                var validation = new XbrlValidation();
-                validation.Taxonomy = this;
-                Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
-                if (validation.ValueAssertion != null)
+                var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
+                var validations = new List<XbrlValidation>();
+                var sb = new StringBuilder();
+                var parser = new XbrlFormulaParser();
+                var csparser = new CSharpParser();
+                Expression testobj = null;
+                var expressionfile = this.ModuleFolder + "expressions.txt";
+                Utilities.FS.WriteAllText(TaxonomyTestPath, "");
+
+                foreach (var validdoc in validationdocuments)
                 {
-                    validation.LoadValidationHierarchy();
+                    var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, "//gen:link");
+                    var validation = new XbrlValidation();
+                    validation.Taxonomy = this;
+                    Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
+                    if (validation.ValueAssertion != null)
+                    {
+                        validation.LoadValidationHierarchy();
 
-                    var item = validation.GetLogicalRule();
-                    logicalvalidations.Add(item);
-                    validations.Add(validation);
-                    item.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
-                    item.FunctionString = csparser.GetFunction(item);
-                    /*
-                    var obj = parser.ParseExpression(validation.ValueAssertion.Test);
+                        var logicalrule = validation.GetLogicalRule();
+                        validations.Add(validation);
+                        logicalrule.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
+                        logicalrule.FunctionString = csparser.GetFunction(logicalrule);
+                        this.ValidationRules.Add(logicalrule);
+                        /*
+                        var obj = parser.ParseExpression(validation.ValueAssertion.Test);
               
-                    sb.AppendLine(parser.Translate(obj));
-                    sb.AppendLine(csparser.Translate(obj));
-                    sb.AppendLine("___");
-                    sb.AppendLine("_______________________________________");
-                    */
-                    var tree = parser.GetTreeString(validation.ValueAssertion.Test);
-                    sb.AppendLine(validation.ID);
-                    sb.AppendLine(validation.ValueAssertion.Test);
-                    sb.AppendLine(validation.ValidationRoot.ToHierarchyString(i => i.ToString()));
+                        sb.AppendLine(parser.Translate(obj));
+                        sb.AppendLine(csparser.Translate(obj));
+                        sb.AppendLine("___");
+                        sb.AppendLine("_______________________________________");
+                        */
+                        var tree = parser.GetTreeString(validation.ValueAssertion.Test);
+                        sb.AppendLine(validation.ID);
+                        sb.AppendLine(validation.ValueAssertion.Test);
+                        sb.AppendLine(validation.ValidationRoot.ToHierarchyString(i => i.ToString()));
 
+                    }
                 }
-            }
-            var sb_functions = new StringBuilder();
-            var sb_dictionary = new StringBuilder();
-            var sb_cs = new StringBuilder();
-            var tab = "  ";
-            foreach (var val in logicalvalidations) 
-            {
-                sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
-                sb_functions.AppendLine(val.FunctionString);
+
+                GenerateCSFile();
+                CompileCSFile();
+
+                if (!System.IO.File.Exists(expressionfile))
+                {
+                    Utilities.FS.WriteAllText(expressionfile, sb.ToString());
+                }
+                var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
+                Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
 
             }
-            sb_cs.AppendLine("using System;");
-            sb_cs.AppendLine("using System.Collections.Generic;");
-            sb_cs.AppendLine("using System.Linq;");
-            sb_cs.AppendLine("using System.Text;");
-            sb_cs.AppendLine("using LogicalModel.Expressions;");
-            sb_cs.AppendLine("using LogicalModel.Base;");
-            sb_cs.AppendLine("using LogicalModel.Validation;");
-            sb_cs.AppendLine("using Utilities;");
-
-            sb_cs.AppendLine("namespace LogicalModel.Validation");
-            sb_cs.AppendLine("{");
-
-            sb_cs.AppendLine("  public class ValidationsX: ValidationFunctionContainer");
-            sb_cs.AppendLine("  {");
-
-            sb_cs.AppendLine("      public ValidationsX()");
-            sb_cs.AppendLine("      {");
-
-            sb_cs.AppendLine(sb_dictionary.ToString());
-
-            sb_cs.AppendLine("      }");
-
-            sb_cs.AppendLine(sb_functions.ToString());
-
-            sb_cs.AppendLine("  }");
-            sb_cs.AppendLine("}");
-
-            if (!System.IO.File.Exists(expressionfile))
+            else 
             {
-                Utilities.FS.WriteAllText(expressionfile, sb.ToString());
-            }
-
-            if (!System.IO.File.Exists(this.TaxonomyCsPath) || 1 == 1)
-            {
-                Utilities.FS.WriteAllText(this.TaxonomyCsPath, sb_cs.ToString());
+                var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
+                this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
+                foreach (var rule in this.ValidationRules) 
+                {
+                    rule.SetTaxonomy(this);
+                }
+           
             }
             Console.WriteLine("Loading Validations completed");
 
         }
-       
+
+        private void GenerateCSFile() 
+        {
+            if (!System.IO.File.Exists(this.TaxonomyValidationCsPath))
+            {
+                var sb_functions = new StringBuilder();
+                var sb_dictionary = new StringBuilder();
+                var sb_cs = new StringBuilder();
+                var tab = "  ";
+                foreach (var val in ValidationRules)
+                {
+                    sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
+                    sb_functions.AppendLine(val.FunctionString);
+
+                }
+                sb_cs.AppendLine("using System;");
+                sb_cs.AppendLine("using System.Collections.Generic;");
+                sb_cs.AppendLine("using System.Linq;");
+                sb_cs.AppendLine("using System.Text;");
+                sb_cs.AppendLine("using LogicalModel.Expressions;");
+                sb_cs.AppendLine("using LogicalModel.Base;");
+                sb_cs.AppendLine("using LogicalModel.Validation;");
+                sb_cs.AppendLine("using Utilities;");
+
+                sb_cs.AppendLine("namespace LogicalModel.Validation");
+                sb_cs.AppendLine("{");
+
+                sb_cs.AppendLine("  public class ValidationsX: ValidationFunctionContainer");
+                sb_cs.AppendLine("  {");
+
+                sb_cs.AppendLine("      public ValidationsX()");
+                sb_cs.AppendLine("      {");
+
+                sb_cs.AppendLine(sb_dictionary.ToString());
+
+                sb_cs.AppendLine("      }");
+
+                sb_cs.AppendLine(sb_functions.ToString());
+
+                sb_cs.AppendLine("  }");
+                sb_cs.AppendLine("}");
+
+
+
+
+                Utilities.FS.WriteAllText(this.TaxonomyValidationCsPath, sb_cs.ToString());
+            }
+        }
+
+        private void CompileCSFile() 
+        {
+            if (!System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath))
+            {
+                var content = System.IO.File.ReadAllText(this.TaxonomyValidationCsPath);
+
+                CodeDomProvider codeProvider = CodeDomProvider.CreateProvider("CSharp");
+                string Output = this.TaxonomyValidationDotNetLibPath;
+
+                System.CodeDom.Compiler.CompilerParameters parameters = new CompilerParameters();
+                //Make sure we generate an EXE, not a DLL
+                parameters.GenerateExecutable = false;
+                parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
+                var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
+                var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
+                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                parameters.ReferencedAssemblies.Add(logicalmodelassembly.Location);
+         
+                foreach (var assemblyname in logicalreferences)
+                {
+                    Assembly asm = assemblies.FirstOrDefault(i => i.GetName().Name == assemblyname.Name);
+                    if (asm != null)
+                    {
+                        parameters.ReferencedAssemblies.Add(asm.Location);
+                    }
+                    else 
+                    {
+                        Console.WriteLine("Assembly " + assemblyname.Name + " was not found!");
+                    }
+                }
+            
+                CompilerResults results = codeProvider.CompileAssemblyFromSource(parameters, content);
+
+                if (results.Errors.Count > 0)
+                {
+                    foreach (CompilerError CompErr in results.Errors)
+                    {
+                        var error = "Line number " + CompErr.Line +
+                                    ", Error Number: " + CompErr.ErrorNumber +
+                                    ", '" + CompErr.ErrorText + ";" +
+                                    Environment.NewLine + Environment.NewLine;
+                        Console.WriteLine(error);
+                    }
+                }
+                else
+                {
+                    //Successful Compile
+                    Console.WriteLine(String.Format("File {0} was successfully compiled to {1}",
+                        this.TaxonomyValidationCsPath, this.TaxonomyValidationDotNetLibPath));
+
+                }
+
+            }
+        }
         #region Handlers
 
         public bool HandleLabel(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)

@@ -144,13 +144,38 @@ var Model;
         return FactBase;
     })();
     Model.FactBase = FactBase;
-    var Fact = (function (_super) {
-        __extends(Fact, _super);
-        function Fact() {
+    var FactGroup = (function (_super) {
+        __extends(FactGroup, _super);
+        function FactGroup() {
+            _super.apply(this, arguments);
+            this.Facts = [];
+        }
+        return FactGroup;
+    })(FactBase);
+    Model.FactGroup = FactGroup;
+    var Unit = (function (_super) {
+        __extends(Unit, _super);
+        function Unit() {
             _super.apply(this, arguments);
         }
-        Fact.Convert = function (obj) {
-            var item = new Fact();
+        return Unit;
+    })(Identifiable);
+    Model.Unit = Unit;
+    var Entity = (function (_super) {
+        __extends(Entity, _super);
+        function Entity() {
+            _super.apply(this, arguments);
+        }
+        return Entity;
+    })(Identifiable);
+    Model.Entity = Entity;
+    var InstanceFact = (function (_super) {
+        __extends(InstanceFact, _super);
+        function InstanceFact() {
+            _super.apply(this, arguments);
+        }
+        InstanceFact.Convert = function (obj) {
+            var item = new InstanceFact();
             item.FactKey = obj["FactKey"];
             item.FactString = obj["FactString"];
             item.ContextID = obj["ContextID"];
@@ -158,7 +183,7 @@ var Model;
             item.Value = obj["Value"];
             return item;
         };
-        Fact.prototype.Load = function () {
+        InstanceFact.prototype.Load = function () {
             var items = this.FactString.split(",");
             if (items.length > 0) {
                 var item = items[0];
@@ -188,25 +213,9 @@ var Model;
                 }
             }
         };
-        return Fact;
+        return InstanceFact;
     })(FactBase);
-    Model.Fact = Fact;
-    var Unit = (function (_super) {
-        __extends(Unit, _super);
-        function Unit() {
-            _super.apply(this, arguments);
-        }
-        return Unit;
-    })(Identifiable);
-    Model.Unit = Unit;
-    var Entity = (function (_super) {
-        __extends(Entity, _super);
-        function Entity() {
-            _super.apply(this, arguments);
-        }
-        return Entity;
-    })(Identifiable);
-    Model.Entity = Entity;
+    Model.InstanceFact = InstanceFact;
     var LayoutItem = (function (_super) {
         __extends(LayoutItem, _super);
         function LayoutItem() {
@@ -229,6 +238,15 @@ var Model;
         return LayoutItem;
     })(FactBase);
     Model.LayoutItem = LayoutItem;
+    var ConceptLookUp = (function () {
+        function ConceptLookUp() {
+            this.Concept = "";
+            this.Values = {};
+            this.OptionsHTML = "";
+        }
+        return ConceptLookUp;
+    })();
+    Model.ConceptLookUp = ConceptLookUp;
     var Cell = (function (_super) {
         __extends(Cell, _super);
         function Cell() {
@@ -261,7 +279,7 @@ var Model;
             configurable: true
         });
         return Cell;
-    })(Fact);
+    })(InstanceFact);
     Model.Cell = Cell;
     var Instance = (function () {
         function Instance() {
@@ -278,5 +296,44 @@ var Model;
         return Label;
     })();
     Model.Label = Label;
+    var SimlpeValidationParameter = (function () {
+        function SimlpeValidationParameter() {
+            this.Facts = [];
+        }
+        return SimlpeValidationParameter;
+    })();
+    Model.SimlpeValidationParameter = SimlpeValidationParameter;
+    var ValidationParameter = (function () {
+        function ValidationParameter() {
+            this.FactGroups = [];
+        }
+        return ValidationParameter;
+    })();
+    Model.ValidationParameter = ValidationParameter;
+    var ValidationRuleResult = (function () {
+        function ValidationRuleResult() {
+            this.Parameters = [];
+        }
+        return ValidationRuleResult;
+    })();
+    Model.ValidationRuleResult = ValidationRuleResult;
+    var ValidationRule = (function () {
+        function ValidationRule() {
+            this.Parameters = [];
+        }
+        return ValidationRule;
+    })();
+    Model.ValidationRule = ValidationRule;
+    var Taxonomy = (function () {
+        function Taxonomy() {
+            this.ValidationRules = [];
+            this.FactMap = {};
+            this.Concepts = [];
+            this.Hierarchies = [];
+            this.ConceptValues = [];
+        }
+        return Taxonomy;
+    })();
+    Model.Taxonomy = Taxonomy;
 })(Model || (Model = {}));
 //# sourceMappingURL=Models.js.map

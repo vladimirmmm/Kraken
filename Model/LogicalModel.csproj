@@ -130,6 +130,7 @@
     <TypeScriptCompile Include="Scripts\Linq.ts" />
     <TypeScriptCompile Include="Scripts\Models.ts" />
     <TypeScriptCompile Include="Scripts\Table.ts" />
+    <TypeScriptCompile Include="Scripts\Taxonomy.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\Utils.ts" />
   </ItemGroup>

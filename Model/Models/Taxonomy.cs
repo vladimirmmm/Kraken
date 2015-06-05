@@ -1,6 +1,7 @@
 ﻿using BaseModel;
 using LogicalModel.Base;
 using LogicalModel.Helpers;
+using LogicalModel.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,8 +41,12 @@ namespace LogicalModel
         public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
    
         public Dictionary<string, List<String>> Cells = new Dictionary<string, List<String>>();
-        
+
+        private List<ValidationRule> _ValidationRules = new List<ValidationRule>();
+        public List<ValidationRule> ValidationRules { get { return _ValidationRules; } set { _ValidationRules = value; } }
         //public static Action<string> Console = null;
+
+        public ValidationFunctionContainer ValidationFunctionContainer = null;
 
         public TaxHandler TableHandler = new TaxHandler();
         public TaxHandler LabelHandler = new TaxHandler();
@@ -94,15 +99,28 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "SchemaElements.json"; }
         }
-
-        public string TaxonomyCsPath
+        public string TaxonomyValidationPath
+        {
+            get { return ModuleFolder + "Validations.json"; }
+        }
+        public string TaxonomyValidationCsPath
         {
             get { return ModuleFolder + "Validations.cs"; }
         }
 
-        public string TaxonomyDotNetLibPath
+        public string TaxonomyValidationDotNetLibPath
         {
             get { return ModuleFolder + "Validations.dll"; }
+        }
+
+        public string CurrentInstancePath
+        {
+            get { return ModuleFolder + "currentinstance.js"; }
+        }
+
+        public string CurrentInstanceValidationResultPath
+        {
+            get { return ModuleFolder + "validationresult.js"; }
         }
 
         public string TaxonomyLayoutFolder
@@ -450,6 +468,13 @@ namespace LogicalModel
         public void Clear_SchemaElements()
         {
             Utilities.FS.DeleteFile(TaxonomySchemaElementsPath);
+        }
+
+        public void Clear_Validations()
+        {
+            Utilities.FS.DeleteFile(TaxonomyValidationPath);
+            Utilities.FS.DeleteFile(TaxonomyValidationCsPath);
+            Utilities.FS.DeleteFile(TaxonomyValidationDotNetLibPath);
         }
     }
 }

@@ -1,5 +1,9 @@
 ﻿module Model {
 
+    interface Dictionary<T> {
+        [key: string]: T;
+    }
+
     export class Hierarchy<T>
     {
         public Children: Hierarchy<T>[] = [];
@@ -118,7 +122,20 @@
         }
     }
 
-    export class Fact extends FactBase {
+    export class FactGroup extends FactBase
+    {
+        public Facts: FactBase[] = [];
+    }
+
+    export class Unit extends Identifiable {
+        public Measure: QualifiedName;
+    }
+
+    export class Entity extends Identifiable {
+        public Scheme: string;
+    }
+
+    export class InstanceFact extends FactBase {
         public Value: string;
         public Entity: Entity;
         public Unit: Unit;
@@ -127,9 +144,9 @@
         public FactKey: string;
         public FactString: string;
 
-        public static Convert(obj:Object): Fact
+        public static Convert(obj:Object): InstanceFact
         {
-            var item = new Fact();
+            var item = new InstanceFact();
             item.FactKey = obj["FactKey"];
             item.FactString = obj["FactString"];
             item.ContextID = obj["ContextID"];
@@ -178,14 +195,6 @@
 
     }
 
-    export class Unit extends Identifiable {
-        public Measure: QualifiedName;
-    }
-
-    export class Entity extends Identifiable {
-        public Scheme: string;
-    }
-
     export class LayoutItem extends FactBase {
         public ID: string;
         public Axis: string;
@@ -200,8 +209,12 @@
         }
 
     }
-
-    export class Cell extends Fact {
+    export class ConceptLookUp {
+        public Concept: string = "";
+        public Values: Object = {};
+        public OptionsHTML: string = "";
+    }
+    export class Cell extends InstanceFact {
         public Report: string;
         public Extension: string;
         public Row: string;
@@ -228,7 +241,7 @@
 
     export class Instance
     {
-        public Facts: Fact[] = [];
+        public Facts: InstanceFact[] = [];
         public FilingIndicators: string[] = [];
         public Reporting: Date;
         public ReportingCurrency: string;
@@ -246,5 +259,51 @@
 
     }
 
+    export class SimlpeValidationParameter
+    {
+        public Name: string;
+        public Facts: FactBase[] = [];
+        public Value: string;
+
+    }
+
+    export class ValidationParameter {
+        public Name: string;
+        public FactGroups: FactGroup[] = [];
+        public FallBackValue: string;
+        public Type: string;
+        public BindAsSequence: string;
+
+    }
+
+    export class ValidationRuleResult
+    {
+        public ID: string;
+        public Parameters: SimlpeValidationParameter[] = [];
+
+    }
+
+    export class ValidationRule
+    {
+        public ID: string;
+        public FunctionName: string;
+        public OriginalExpression: string;
+        public DisplayText: string;
+        public Parameters: ValidationParameter[] = [];
+
+    }
+
+    export class Taxonomy
+    {
+        public Name: string;
+        public EntryDocumentName: string;
+        public ValidationRules: ValidationRule[] = [];
+        public FactMap: Dictionary<string[]> = {};
+
+        public Concepts: Model.Concept[] = [];
+        public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = [];
+        public ConceptValues: Model.ConceptLookUp[] = [];
+
+    }
 
 }

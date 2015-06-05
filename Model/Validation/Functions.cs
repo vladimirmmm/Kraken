@@ -103,11 +103,11 @@ namespace LogicalModel.Validation
         }
         public double N_Unary_Minus(Double a)
         {
-            return a - 1;
+            return -a;
         }
         public double N_Unary_Plus(Double a)
         {
-            return a + 1;
+            return a;
         }
         public string XS_QName(String a)
         {

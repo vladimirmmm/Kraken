@@ -18,5 +18,6 @@ namespace UI
         Elements,
         Concepts,
         Hierarchies,
+        Validations,
     }
 }

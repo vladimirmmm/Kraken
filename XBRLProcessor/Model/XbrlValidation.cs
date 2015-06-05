@@ -87,35 +87,26 @@ namespace XBRLProcessor.Model
         public LogicalModel.Validation.ValidationRule GetLogicalRule() 
         {
             var logicalrule = new LogicalModel.Validation.ValidationRule();
+            logicalrule.SetTaxonomy(this.Taxonomy);
             logicalrule.ID = this.ID;
-            var label = new LogicalModel.Label();
-            var labelkey = LogicalModel.Label.GetKey("val", this.ValueAssertion.LabelID);
-            logicalrule.Label = Taxonomy.FindLabel(labelkey);
+            logicalrule.LabelID = this.ValueAssertion.LabelID;
+            logicalrule.OriginalExpression = this.ValueAssertion.Test;
             var factvariables = ValidationRoot.Where(i => i.Item is FactVariable).ToList();
-            var rule_conceptfilters = this.ValidationRoot.Children.Where(i => i.Item is ConceptFilter).Select(s=>s.Item as ConceptFilter).ToList();
-            var rule_dimensionfilters = this.ValidationRoot.Children.Where(i => i.Item is DimensionFilter).Select(s=>s.Item as DimensionFilter).ToList();
-            rule_dimensionfilters = rule_dimensionfilters.Where(i => i.Complement == false).ToList();
-            var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
-            var rule_dimensions_x = rule_dimensionfilters.Select(i => Mapping.Mappings.ToLogicalDimensions(i)).ToList();
-            var rule_dimensions = rule_dimensionfilters.Select(i => Mapping.Mappings.ToLogicalDimensions(i)).SelectMany(i => i).ToList();
-            rule_dimensions=rule_dimensions.Where(i=>!i.IsDefaultMemeber).ToList();
-            if (rule_concepts.Count>1)
-            {
-
-            }
+ 
             var sb = new StringBuilder();
-            sb.AppendLine(logicalrule.Label.Content);
+            sb.AppendLine(logicalrule.DisplayText);
             sb.AppendLine(this.ValueAssertion.Test);
 
             var factgroups = GetGroups();
             
             foreach (var fv in factvariables) 
             {
+                var factvariable = fv.Item as FactVariable;
                 var name = fv.Item.ID.Substring(fv.Item.ID.LastIndexOf(".") + 1);
                 var parameter = new LogicalModel.Validation.ValidationParameter(name);
-                parameter.BindAsSequence = (fv.Item as FactVariable).BindAsSequence;
-        
-                if (this.ID.Contains("0726") && name=="c")
+                parameter.BindAsSequence = factvariable.BindAsSequence;
+                parameter.FallBackValue = factvariable.FallbackValue;
+                if (this.ID.Contains("3763"))
                 {
                 }
             
@@ -130,101 +121,23 @@ namespace XBRLProcessor.Model
                 }
 
 
-
-
-
-
-
-
-                /*
-                var factstoAdd = new List<LogicalModel.Base.FactBase>();
-                foreach (var fact in facts) 
+                var type = LogicalModel.Validation.TypeEnum.Numeric;
+                var firstfact = parameter.FactGroups.FirstOrDefault().Facts.FirstOrDefault();
+                if (firstfact != null && firstfact.Concept != null)
                 {
-                    if (fact.Concept == null) 
+                    if (firstfact.Concept.ID.StartsWith("ei"))
                     {
-                        fact.Concept = rule_concepts.FirstOrDefault();
-                    }
-                    foreach (var dimlist in rule_dimensions_x)
-                    {
-                        var usabledims = dimlist.Where(i=>!i.IsDefaultMemeber).ToList();
-                        if (usabledims.Count > 0)
-                        {
-                            if (usabledims.Count == 1)
-                            {
-                                var dim = usabledims.FirstOrDefault();
-                                AddDimensionIfNotExists(dim, fact);
-                                foreach (var x_fact in factstoAdd) 
-                                {
-                                    AddDimensionIfNotExists(dim, x_fact);
-                                }
-
-                            }
-                            else 
-                            {
-                                int ix = 0;
-                                var factdims = fact.Dimensions.ToList();
-                                foreach (var dim in usabledims) 
-                                {
-                                    if (ix == 0)
-                                    {
-                                        AddDimensionIfNotExists(dim, fact);
-
-                                    }
-                                    else 
-                                    {
-                                        var f = new LogicalModel.Base.FactBase();
-                                        f.Dimensions.AddRange(factdims);
-                                        f.Concept = fact.Concept;               
-                                        AddDimensionIfNotExists(dim, f);
-                                        factstoAdd.Add(f);
-                                    }
-                                    ix++;
-                                }
-                            }
-                        }
-                    }                  
-                    fact.Dimensions=fact.Dimensions.OrderBy(i=>i.DomainMemberFullName).ToList();
-                }
-
-                foreach (var fact in factstoAdd) 
-                {
-                    fact.Dimensions = fact.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-                    facts.Add(fact);
-                }
-                 */
-                //Fixin the domains of Typed Dimensions
-                /*
-                foreach (var fact in facts) 
-                {
-                    foreach (var dim in fact.Dimensions)
-                    {
-                        if (String.IsNullOrEmpty(dim.Domain)) 
-                        {
-                            //OGR issue
-                            dim.Domain = Taxonomy.FindDimensionDomain(dim.DimensionItem);
-                        }
+                        type = LogicalModel.Validation.TypeEnum.String;
                     }
                 }
-                */
-                var typestring = "DoubleValue";
-                var firstfact = factgroups.FirstOrDefault().Facts.FirstOrDefault();
-                if (firstfact != null && firstfact.Concept != null) 
-                {
-                    if (firstfact.Concept.ID.StartsWith("ei")) 
-                    {
-                        typestring = "StringValue";
-                    }
-                }
-                parameter.TypeString = typestring;
-
-
+                parameter.Type = type;
 
                 var sequence = parameter.BindAsSequence ? "Sequence":"";
                 sb.AppendLine("parameter: " + name + " " + sequence);
 
 
                 sb.AppendLine(CheckCells(parameter));
-
+     
                 logicalrule.Parameters.Add(parameter);
               
             }
@@ -247,10 +160,24 @@ namespace XBRLProcessor.Model
                 
 
             }
-            var p_rl = new LogicalModel.Validation.ValidationParameter("ReportingLevel");
-            p_rl.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("_con") ? "con" : "ind";
-            p_rl.TypeString = "StringValue";
-            logicalrule.Parameters.Add(p_rl);
+            if (this.ValueAssertion.Test.Contains("$ReportingLevel"))
+            {
+                var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel");
+                p_rl1.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("_con") ? "con" : "ind";
+                p_rl1.Type = LogicalModel.Validation.TypeEnum.String;
+                p_rl1.IsGeneral = true;
+                logicalrule.Parameters.Add(p_rl1);
+            }
+            if (this.ValueAssertion.Test.Contains("$AccountingStandard"))
+            {
+                var p_rl2 = new LogicalModel.Validation.ValidationParameter("AccountingStandard");
+                p_rl2.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("GAAP") ? "GAAP" : "IFRS";
+                p_rl2.Type = LogicalModel.Validation.TypeEnum.String;
+                p_rl2.IsGeneral = true;
+                logicalrule.Parameters.Add(p_rl2);
+            }
+
+
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyTestPath, sb.ToString());
             return logicalrule;
         }

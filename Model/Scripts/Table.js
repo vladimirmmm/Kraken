@@ -30,7 +30,7 @@ var UI;
                 concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
                 var hier = me.Hierarchies.AsLinq().FirstOrDefault(function (i) { return i.Item.Name == concept.Domain.Name && i.Item.Namespace == concept.Domain.Namespace && i.Item.Role == concept.HierarchyRole; });
                 if (hier != null) {
-                    var clkp = new ConceptLookUp();
+                    var clkp = new Model.ConceptLookUp();
                     clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
                     hier["ToArray"] = htemp.ToArray; //() => htemp.ToArray.apply(hier);
                     var items = hier.ToArray();
@@ -157,7 +157,7 @@ var UI;
                                         else {
                                             //dynamic
                                             facts.forEach(function (factobj, index) {
-                                                var fact = Model.Fact.Convert(factobj);
+                                                var fact = Model.InstanceFact.Convert(factobj);
                                                 fact.Load();
                                                 var opendimension = fact.Dimensions.AsLinq().FirstOrDefault();
                                                 if (!IsNull(opendimension)) {
@@ -245,14 +245,6 @@ var UI;
         return Table;
     })();
     UI.Table = Table;
-    var ConceptLookUp = (function () {
-        function ConceptLookUp() {
-            this.Concept = "";
-            this.Values = {};
-            this.OptionsHTML = "";
-        }
-        return ConceptLookUp;
-    })();
 })(UI || (UI = {}));
 var Table = null;
 function SetExtension(extjson) {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicalModel.Base;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
-    public class Fact
+    public class InstanceFact:FactBase
     {
 
         private String _FactString= "";

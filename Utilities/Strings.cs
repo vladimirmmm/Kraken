@@ -310,13 +310,29 @@ namespace Utilities
         public static string ArrayToString(string[] arr)
         {
             string rs = "";
+            var delimiter = ", ";
             for (int i = 0; i < arr.Length; i++)
             {
-                rs += "," + arr[i];
+                rs += delimiter + arr[i];
             }
-            if (rs.StartsWith(","))
+            if (rs.StartsWith(delimiter))
             {
-                rs = rs.Substring(1);
+                rs = rs.Substring(delimiter.Length);
+            }
+            return rs;
+        }
+
+        public static string ArrayToString(double[] arr)
+        {
+            string rs = "";
+            var delimiter = ", ";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                rs += delimiter + arr[i].ToString();
+            }
+            if (rs.StartsWith(delimiter))
+            {
+                rs = rs.Substring(delimiter.Length);
             }
             return rs;
         }

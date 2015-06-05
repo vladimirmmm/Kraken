@@ -62,7 +62,6 @@ namespace XBRLProcessor
             }
             CurrentInstance.Taxonomy = CurrentTaxonomy;
             CurrentInstance.ModulePath = Utilities.Strings.GetLocalPath(CurrentTaxonomy.LocalFolder, CurrentInstance.TaxonomyModuleReference);
-            CurrentInstance.JsonValue = Utilities.Converters.ToJson(CurrentInstance);
         }
 
         public void LoadLabels()
