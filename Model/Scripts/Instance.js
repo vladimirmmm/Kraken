@@ -14,6 +14,9 @@ var Control;
             var item = JSON.parse(instancejson);
             this.Instance = item;
         };
+        InstanceContainer.prototype.LoadToUI = function () {
+            Bind("#factlist", this.Instance.Facts);
+        };
         return InstanceContainer;
     })();
     Control.InstanceContainer = InstanceContainer;
