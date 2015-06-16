@@ -30,11 +30,11 @@ namespace LogicalModel.Validation
                 }
                 if (this.Type == TypeEnum.Numeric && !BindAsSequence)
                 {
-                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DoubleValue);
+                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DecimalValue);
                 }
                 if (this.Type == TypeEnum.Numeric && BindAsSequence)
                 {
-                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DoubleValues);
+                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DecimalValues);
                 }
                 if (this.Type == TypeEnum.Date && !BindAsSequence)
                 {
@@ -59,13 +59,13 @@ namespace LogicalModel.Validation
 
         }
 
-        public double DoubleValue
+        public decimal DecimalValue
         {
-            get { return double.Parse(this.StringValue); }
+            get { return decimal.Parse(this.StringValue); }
         }
 
         public string[] StringValues = new string[] { };
-        public double[] DoubleValues = new double[] { };
+        public decimal[] DecimalValues = new decimal[] { };
      
 
         public ValidationParameter(string name)
@@ -80,7 +80,7 @@ namespace LogicalModel.Validation
         {
             this.StringValue = "";
             this.StringValues = new string[] { };
-            this.DoubleValues = new double[] { };
+            this.DecimalValues = new decimal[] { };
         }
 
         public bool IsGeneral { get; set; }
@@ -97,9 +97,9 @@ namespace LogicalModel.Validation
         {
             get
             {
-                if (typeof(T) == typeof(double))
+                if (typeof(T) == typeof(decimal))
                 {
-                    Object o = double.Parse(this.StringValue);
+                    Object o = decimal.Parse(this.StringValue);
                     return (T)o;
                 }
                 if (typeof(T) == typeof(string))

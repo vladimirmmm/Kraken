@@ -36,16 +36,13 @@ function Notify(notification) {
     }
 }
 
-//function SetExtension(extension) {
-//    var li = <Model.LayoutItem>JSON.parse(extension);
+function LoadJS(path:string)
+{
+    var fileref = document.createElement('script')
+    fileref.setAttribute("type", "text/javascript")
+    fileref.setAttribute("src", path)
 
-//    if (li != null && 'LabelContent' in li) {
-
-//        $("#Extension").html(li.LabelContent);
-//        $("#Extension").attr("title", li.FactString);
-
-//    }
-//}
+}
 function GetFunctionBody(f: Function):string
 {
     var result = "";
@@ -209,7 +206,7 @@ function GetBaseURL() {
 
 /*Strings*/
 
-function TextBetween(text, begintag, endtag) {
+function TextBetween(text: string, begintag: string, endtag: string):string {
     var result = "";
     if (typeof text == "string") {
         var ixs = text.indexOf(begintag);
@@ -223,8 +220,35 @@ function TextBetween(text, begintag, endtag) {
     }
     return result;
 };
+
+function TextsBetween(text:string, begintag:string, endtag:string,withtags:boolean):string[] {
+    var result:string[]=[];
+    while (text.indexOf(begintag) > -1 && text.indexOf(begintag)>-1)
+    {
+        var item = TextBetween(text, begintag, endtag);
+ 
+        var fullitem = begintag + item + endtag;
+        if (withtags) {
+            result.push(fullitem);
+        } else
+        {
+            result.push(item);
+        }
+
+        text = text.substring(text.indexOf(endtag) + endtag.length);
+    }
+    return result;
+};
 function Format(...any):string {
-    var args = Array.prototype.slice.call(arguments, 1);
+    var args:any[] = Array.prototype.slice.call(arguments, 1);
+    if (args.length == 1)
+    {
+        if (IsArray(args[0]))
+        {
+            args = args[0];
+        }
+        //if 
+    }
     var format = arguments[0];
     return format.replace(/{(\d+)}/g, function (match, number) {
         return typeof args[number] != 'undefined'
@@ -996,6 +1020,12 @@ function Access(obj, key) {
     }, obj);
 }
 
+function OuterHtml(item: JQuery): string
+{
+    return item[0].outerHTML;
+    //return item.wrapAll('<div>').parent().html(); 
+}
+
 function Bind(target: any, data: any, parent?: any) {
     var fBind = (target, data, parent?) => this.Bind.call(this, target, data, parent);
     var NoCheck = [];
@@ -1053,7 +1083,10 @@ function Bind(target: any, data: any, parent?: any) {
                 values.push(val)
             });
 
-            var elementtemplate = $('[type=template]', $(item)).first();
+            var elementtemplate = $('[binding-type=template]', $(item)).first();
+            var newelementX = $(elementtemplate).clone(true, true);
+            newelementX.removeAttr("binding-type");
+
             var firstvalue = values[0];
             if (IsArray(firstvalue)) {
 
@@ -1062,18 +1095,25 @@ function Bind(target: any, data: any, parent?: any) {
                 }
                 $(item).empty();
                 elementtemplate.appendTo($(item));
-
+                var itemstoadd = [];
+                var bindattributeselector = "[" + bindattribute + "]";
                 firstvalue.forEach(function (childitem) {
-                    var newelement = $(elementtemplate).clone(true, true);
-                    newelement.removeAttr("type");
-
-                    $("[" + bindattribute + "]", newelement).each(function (ix, binded) {
+                 
+                    //var newelement = $(elementtemplate).clone(true, true);
+                    //newelement.removeAttr("binding-type");
+                    /*
+                    $(bindattributeselector, newelementX).each(function (ix, binded) {
                         NoCheck.push(binded);
                     });
+                    */
+                    fBind(newelementX, childitem, firstvalue);
+                    itemstoadd.push(OuterHtml(newelementX));
+                    //newelementX.appendTo($(item));
+                    //$(item).append(OuterHtml(newelementX));
 
-                    fBind(newelement, childitem, firstvalue);
-                    newelement.appendTo($(item));
                 });
+                //newelement.appendTo($(item));
+                $(item).append(itemstoadd.join('\n'));
             } else {
 
                 if (IsNull(targetattribute)) {
@@ -1089,6 +1129,192 @@ function Bind(target: any, data: any, parent?: any) {
             }
         }
     });
+}
+function Replace(text:string, texttoreplace:string, textwithreplace:string):string
+{
+    /*
+    var reg = new RegExp(texttoreplace, "g");
+    return text.replace(reg, textwithreplace);
+    */
+    var index = 0;
+    do {
+        text = text.replace(texttoreplace, textwithreplace);
+    }
+    while ((index = text.indexOf(texttoreplace, index + 1)) > -1);
+    return text;
+}
+class BindingTemplate
+{
+    public ID: string = "";
+    public ChildID: string = "";
+    public Children: BindingTemplate[] = [];
+    public Child: BindingTemplate = null;
+    public Parent: BindingTemplate = null;
+    public Content: string;
+    public ChildPlaceholder: string = "@children@";
+    public AccessorExpression: string = "";
+    
+    public Bind(data:Object):string
+    {
+     
+        var result_html: string = "";
+        var me = this;
+        result_html = BindLevel(this.Content, data);
+        var childitems = "";
+        if (me.Child != null) {
+            var items = Access(data, me.Child.AccessorExpression);
+
+            items.forEach(function (item) {
+                childitems += me.Child.Bind(item);
+
+
+            });
+            result_html = Replace(result_html, me.Child.ID, childitems);
+        }
+    
+        return result_html;
+
+    }
+
+    public ToHierarchyString(tab:string):string
+    {
+        var result = "";
+        tab = IsNull(tab) ? "    " : tab;
+        result += Format("{0} {1} {2}\n", tab, this.ID, this.AccessorExpression);
+        if (this.Child != null)
+        {
+            result += this.Child.ToHierarchyString(tab + tab);
+
+        }
+        return result;
+    }
+    
+    public GetExpression(item: JQuery)
+    {
+        var expr = item.attr("binding");
+        return expr;
+    } 
+}
+
+function GetBindingTemplate(target:JQuery)
+{
+    var templates = $('[binding-type=template]', target);
+    var me = this;
+
+    templates.each(function (index, item) {
+        var jitem = $(item);
+        var ix = jitem.index();
+        var parent = jitem.parents("[binding-items]")[0];
+        var parentbinding = $(parent).attr("binding-items");
+        var placeholder = "@" + index + "@";
+        var placeholdernode = document.createTextNode(placeholder);
+        //jitem.insertBefore(placeholdernode);
+        $(placeholdernode).insertBefore(jitem);
+        jitem.attr("ChildID", placeholder);
+        jitem.attr("Expression", parentbinding);
+        jitem.remove();
+
+
+    });
+
+    var templatecollection: BindingTemplate[] = [];
+
+    templates.each(function (index, item) {
+        var jitem = $(item);
+        var placeholder = "@" + index + "@";
+        var childID = jitem.attr("ChildID");
+        jitem.removeAttr("ChildID");
+        var parentBinding = jitem.attr("Expression");
+        jitem.removeAttr("Expression");
+        jitem.removeAttr("binding-type");
+        var html = OuterHtml(jitem);
+        var t = new BindingTemplate();
+        templatecollection.push(t);
+        t.ID = childID
+        t.Content = html;
+        t.AccessorExpression = parentBinding;
+
+    });
+
+    var t = new BindingTemplate();
+    templatecollection.push(t);
+    t.ID = "@root@";
+    t.Content = target.html();
+    t.AccessorExpression = "this";
+    var roottemplate: BindingTemplate = null;
+    var templatelist = templatecollection.AsLinq<BindingTemplate>();
+    templatecollection.forEach(function (item) {
+        var parenttemplate = templatelist.FirstOrDefault(i=> i.Content.indexOf(item.ID) > -1);
+        if (parenttemplate != null) {
+            item.Parent = parenttemplate;
+            if (IsNull(item.AccessorExpression)) {
+                item.AccessorExpression = parenttemplate.AccessorExpression;
+            }
+            parenttemplate.Child = item;
+        }
+        else
+        {
+            roottemplate = item;
+        }
+    });
+    if (IsNull(roottemplate))
+    {
+        roottemplate = templatelist.FirstOrDefault(i=> IsNull(i.Parent));
+    }
+    return roottemplate;
+}
+
+var TemplateDictionary: TemplateDictionaryItem[] = [];
+class TemplateDictionaryItem
+{
+    public Item: JQuery = null;
+    public Template: BindingTemplate = null;
+}
+
+function BindX(item: JQuery, data: Object)
+{
+    var bt: BindingTemplate = null;
+    var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
+    if (templatedictionaryitem == null) {
+        bt = GetBindingTemplate(item);
+        templatedictionaryitem = new TemplateDictionaryItem();
+        templatedictionaryitem.Item = item;
+        templatedictionaryitem.Template = bt;
+        TemplateDictionary.push(templatedictionaryitem);
+    } else
+    {
+        bt = templatedictionaryitem.Template;
+    }
+    item[0].innerHTML = bt.Bind(data);
+    
+}
+var S_Bind_Start = "bind[";
+var S_Bind_End = "]";
+
+function BindLevel(html: string, data: Object):string
+{
+    var result_html: string = html;
+    var bindings = TextsBetween(html, S_Bind_Start, S_Bind_End, true);
+    bindings.forEach(function (binding) {
+        var subbindings = TextsBetween(binding, "{", "}", true);
+        var bindingexpression = TextBetween(binding, S_Bind_Start, S_Bind_End);
+        if (subbindings.length == 0)
+        {
+            subbindings.push(bindingexpression);
+        } 
+        var s_html = bindingexpression;
+        subbindings.forEach(function (subbinding) {
+            var subbindingexpression = subbinding.indexOf("{")>-1 ? TextBetween(subbinding, "{", "}") : subbinding;
+            var dataitem = Access(data, subbindingexpression);
+            s_html = Replace(s_html, subbinding , dataitem);
+            //s_html = Replace(s_html, S_Bind_Start + subbinding + S_Bind_End, dataitem);
+        });
+        result_html = Replace(result_html, binding, s_html);
+
+    });
+    //result_html = Replace(result_html, S_Bind_Start, "");
+    //result_html = Replace(result_html, S_Bind_End, "");
+    return result_html;
 }
 
 var actioncenter = new Engine.ActionCenter();

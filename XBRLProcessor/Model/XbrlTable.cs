@@ -174,7 +174,7 @@ namespace XBRLProcessor.Model
                         var dimitem = hc.DimensionItems.FirstOrDefault(i=>i.FullName==logicaldimension.DimensionItem);
                         if (dimitem!=null && dimitem.Domains.Count>0)
                         {
-                            logicaldimension.Domain = dimitem.Domains.FirstOrDefault().ID;
+                            logicaldimension.Domain = dimitem.Domains.FirstOrDefault().FullName;
 
                         }
                     }

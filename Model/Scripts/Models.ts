@@ -143,6 +143,7 @@
         public ContextID: string;
         public FactKey: string;
         public FactString: string;
+        public Cells: string[] = [];
 
         public static Convert(obj:Object): InstanceFact
         {
@@ -184,7 +185,7 @@
                         {
                             dimension.Domain = Format("{0}:{1}", domainmemberparts[0], domainmemberparts[1]);
                             dimension.DomainMember = domainmemberparts[2];
-
+                            dimension.IsTyped = true;
                         }
                         this.Dimensions.push(dimension);
                     }
@@ -262,8 +263,9 @@
     export class SimlpeValidationParameter
     {
         public Name: string;
-        public Facts: FactBase[] = [];
+        public Facts: string[] = [];
         public Value: string;
+        public Cells: string[] = [];
 
     }
 
@@ -290,15 +292,17 @@
         public OriginalExpression: string;
         public DisplayText: string;
         public Parameters: ValidationParameter[] = [];
-
+        public Results: ValidationRuleResult[] = [];
     }
+
 
     export class Taxonomy
     {
         public Name: string;
         public EntryDocumentName: string;
         public ValidationRules: ValidationRule[] = [];
-        public FactMap: Dictionary<string[]> = {};
+        //public FactMap: Dictionary<string[]> = {};
+        public Labels: Dictionary<string[]> = {};
 
         public Concepts: Model.Concept[] = [];
         public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = [];

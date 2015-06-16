@@ -183,7 +183,10 @@ namespace LogicalModel
 
             if (!childfirst && !item.Item.IsAbstract && item.Children.Count>  0)
             {
-                AddPlaceHolderIfNotExists(item, placeholder, 0);
+                if (String.IsNullOrEmpty(item.Item.Axis))
+                {
+                    AddPlaceHolderIfNotExists(item, placeholder, 0);
+                }
             }
             foreach (var child in item.Children)
             {
@@ -290,7 +293,8 @@ namespace LogicalModel
 
                             if (dimmember is TypedDimensionMember)
                             {
-                                dimitem = String.Format("[{0}]{1},", dimmember.Domain.DimensionItem.FullName, dimmember.Domain.ID);
+                               // dimitem = String.Format("[{0}]{1},", dimmember.Domain.DimensionItem.FullName, dimmember.Domain.ID);
+                                dimitem = String.Format("[{0}]{1},", dimmember.Domain.DimensionItem.FullName, dimmember.FullName);
 
                             }
                             else
@@ -381,13 +385,29 @@ namespace LogicalModel
             }
         }
 
+
+        private Hierarchy<LayoutItem> GetAxisNode(string axis) 
+        {
+            var nodes = LayoutRoot.Where(i => String.Equals(i.Item.Axis, axis, StringComparison.InvariantCultureIgnoreCase)).OrderBy(i => i.Order).ToList();
+            var axislayoutitem = new LayoutItem();
+            axislayoutitem.ID = String.Format("Axis {0}", axis);
+            axislayoutitem.IsAbstract = true;
+            var axisnode = new Hierarchy<LayoutItem>(axislayoutitem);
+            foreach (var node in nodes) 
+            {
+                axisnode.Children.Add(node);
+            }
+            return axisnode;
+     
+        }
+
         public void LoadLayout()
         {
             Console.WriteLine(String.Format("Layout for {0}", this.ID));
             X_Axis.Clear();
             Y_Axis.Clear();
             Z_Axis.Clear();
-
+            /*
             rowsnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "y", StringComparison.InvariantCultureIgnoreCase));
             if (rowsnode.Children.Count == 1)
             {
@@ -398,6 +418,38 @@ namespace LogicalModel
             {
                 columnsnode = columnsnode.Children.FirstOrDefault();
             }
+            */
+            rowsnode = GetAxisNode("y");
+            columnsnode = GetAxisNode("x");
+            var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();
+
+    
+            var ix=0;
+            var columnAxisnode = columnsnode.Where(i => !String.IsNullOrEmpty(i.Item.Axis)).FirstOrDefault();
+            var aspect_row_dimension = new List<Dimension>();
+            var aspect_row_concept = "";
+            foreach (var aspect in aspects)
+            {
+                aspect.Item.LabelID = aspect.Parent.Item.LabelID;
+                aspect.Item.Label = aspect.Parent.Item.Label;
+                columnAxisnode.Children.Insert(ix, aspect);
+                rowsnode.Remove(aspect.Parent);
+                ix++;
+                aspect_row_dimension.AddRange(aspect.Item.Dimensions);
+                //aspect.Item.Dimensions.Clear();
+            }
+            if (rowsnode.Children.Count == 0) 
+            {
+                var dynrow_li = new LayoutItem();
+                dynrow_li.IsDynamic = true;
+                dynrow_li.ID = "dynrow";
+                dynrow_li.Dimensions = aspect_row_dimension;
+                var dyn_h = new Hierarchy<LayoutItem>(dynrow_li);
+                rowsnode = dyn_h;
+                //rowsnode.Children.Add(dyn_h);
+                //dyn_h.Parent = rowsnode;
+            }
+
             extensionnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "z", StringComparison.InvariantCultureIgnoreCase)); //TODO Axis should be used
             if (this.ID.Contains("08")) 
             {
@@ -482,18 +534,31 @@ namespace LogicalModel
 
                                 var item = this.Taxonomy.Facts[xcell.FactKey];
                                 item.Add(xcell.CellID);
-                                factextdict.Add(xcell.LayoutID, xcell.FactKey);
+                                if (!factextdict.ContainsKey(xcell.LayoutID))
+                                {
+                                    factextdict.Add(xcell.LayoutID, xcell.FactKey);
+                                }
+                                else 
+                                {
+
+                                }
 
 
                             }
                             else
                             {
-
-                                cell.IsBlocked = true;
-                                if (!blocked.ContainsKey(cell.ToString()))
+                                if (cell.LayoutColumn.Item.IsAspect)
                                 {
-                                    blocked.Add(cell.ToString(), true);
-                                    //sb.AppendLine(String.Format("Cell {0} - {1} is blocked! ", cell, cell.FactString));
+                                    cell.Dimensions = cell.LayoutColumn.Item.Dimensions;
+                                }
+                                else
+                                {
+                                    cell.IsBlocked = true;
+                                    if (!blocked.ContainsKey(cell.ToString()))
+                                    {
+                                        blocked.Add(cell.ToString(), true);
+                                        //sb.AppendLine(String.Format("Cell {0} - {1} is blocked! ", cell, cell.FactString));
+                                    }
                                 }
                             }
                         }
@@ -525,6 +590,12 @@ namespace LogicalModel
         {
             if (regenerate || !System.IO.File.Exists(HtmlPath))
             {
+                var taxscriptincludes = "";
+                foreach (var taxfile in Taxonomy.TaxFiles)
+                {
+                    taxscriptincludes += String.Format("<script src=\"{0}\" type=\"text/javascript\" ></script>\r\n", taxfile);
+                }
+
                 var folder = Utilities.Strings.GetFolder(HtmlPath);
                 var htmlbuilder = new StringBuilder();
                 var template = System.IO.File.ReadAllText("TableTemplate.html");
@@ -532,6 +603,9 @@ namespace LogicalModel
                 html = html.Replace("#table#", GetTableHtml());
                 html = html.Replace("#style#", GetStyle());
                 html = html.Replace("#jsonpath#", Utilities.Strings.GetFileName( this.FactMapPath));
+                html = html.Replace("#TaxScripts#", taxscriptincludes);
+                html = html.Replace("#extensions#", Utilities.Converters.ToJson(this.Extensions));
+                
                 htmlbuilder.AppendLine(html);
 
 
@@ -615,7 +689,7 @@ namespace LogicalModel
                 var level = row.GetLevel(rowsnode); //-3 for the LayoutRoot and -2 for the Rows roots node
                 var sublevelcount = level > -1 ? maxlevel - level : maxlevel;
                 var rowclass = "";
-                if (row.Item.IsAspect || row.Item.Dimensions.FirstOrDefault(i=>i.IsTyped)!=null)
+                if (row.Item.IsAspect || row.Item.Dimensions.FirstOrDefault(i=>i.IsTyped)!=null || row.Item.IsDynamic)
                 {
                     rowclass = "dynamic";
                 }
@@ -695,7 +769,7 @@ namespace LogicalModel
                 currentcol = currentcol.Parent;
             }
             cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMemeber).OrderBy(i=>i.DomainMemberFullName).ToList();
-
+            cell.Dimensions = cell.Dimensions.Distinct().ToList();
         }
         private void SetDimensions(List<Hierarchy<LayoutItem>> items)
         {

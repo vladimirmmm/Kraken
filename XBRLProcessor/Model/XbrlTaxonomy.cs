@@ -192,7 +192,8 @@ namespace XBRLProcessor.Models
                 var refid = domainref.Substring(domainref.IndexOf("#") + 1);
                 var se_domain_key = se_domain_doc.TargetNamespace + ":" + refid;
                 var se_domain = SchemaElementDictionary[se_domain_key];
-                domain = se_domain.ID;
+                //domain = se_domain.ID;
+                domain = String.Format("{0}:{1}",se_domain.Namespace, se_domain.Name);
             }
             return domain;
         }
@@ -327,7 +328,10 @@ namespace XBRLProcessor.Models
                     if (validation.ValueAssertion != null)
                     {
                         validation.LoadValidationHierarchy();
+                        if (validation.ID.Contains("0998")) 
+                        { 
 
+                        }
                         var logicalrule = validation.GetLogicalRule();
                         validations.Add(validation);
                         logicalrule.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
@@ -349,8 +353,7 @@ namespace XBRLProcessor.Models
                     }
                 }
 
-                GenerateCSFile();
-                CompileCSFile();
+                
 
                 if (!System.IO.File.Exists(expressionfile))
                 {
@@ -368,8 +371,13 @@ namespace XBRLProcessor.Models
                 {
                     rule.SetTaxonomy(this);
                 }
+                
            
             }
+            GenerateCSFile();
+            CompileCSFile();
+            base.LoadValidations();
+            //fore
             Console.WriteLine("Loading Validations completed");
 
         }
@@ -385,6 +393,7 @@ namespace XBRLProcessor.Models
                 foreach (var val in ValidationRules)
                 {
                     sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
+                    sb_functions.AppendLine("       //"+val.OriginalExpression);
                     sb_functions.AppendLine(val.FunctionString);
 
                 }
@@ -435,6 +444,8 @@ namespace XBRLProcessor.Models
                 //Make sure we generate an EXE, not a DLL
                 parameters.GenerateExecutable = false;
                 parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
+                parameters.IncludeDebugInformation = true;
+                parameters.TempFiles = new TempFileCollection(".", true);
                 var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
                 var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();

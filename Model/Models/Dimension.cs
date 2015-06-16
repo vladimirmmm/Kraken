@@ -87,6 +87,15 @@ namespace LogicalModel
             return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
         }
 
+        public string ToStringForKey() 
+        {
+            if (this.IsTyped) 
+            {
+                return String.Format("[{0}]{1}", this.DimensionItem, this.Domain);
+            }
+            return String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+        }
+
         public override bool Equals(object obj)
         {
             var item = obj as Dimension;

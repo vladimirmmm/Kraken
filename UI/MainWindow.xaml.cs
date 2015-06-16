@@ -35,10 +35,12 @@ namespace UI
             var uitw = new UITextWriter(ShowMessage);
             Console.SetOut(uitw);
 
-            Browser.LoadCompleted += Browser_LoadCompleted;
+            Browser_Right.LoadCompleted += Browser_LoadCompleted;
+            Browser_Left.LoadCompleted += Browser_LoadCompleted;
             var ofs =new JsClass();
             ofs.UIAction=fromJS;
-            Browser.ObjectForScripting = ofs;
+            Browser_Left.ObjectForScripting = ofs;
+            Browser_Right.ObjectForScripting = ofs;
             var mw =this;
             this.Features = new Features(this);
 
@@ -49,12 +51,24 @@ namespace UI
 
         void fromJS(object param) 
         {
-            var commad = String.Format("{0}", param);
-            Console.WriteLine(commad);
-            if (commad == "ready") 
+            var command = String.Format("{0}", param).ToLower();
+            Console.WriteLine(command);
+            if (command == "table_ready") 
             {
                 SetExtension();
             }
+            if (command.StartsWith("navigatetocell")) 
+            {
+                var cell = command.Substring(command.IndexOf(":") + 1);
+                var report = cell.Remove(cell.IndexOf("<"));
+                var cellspecifiers = cell.TextBetween("<", ">").Split('|');
+                var extension = cellspecifiers[0];
+                var row = cellspecifiers[1];
+                var column = cellspecifiers[2];
+
+                Features.NavigateToCell(report, extension, row, column);
+            }
+
         }
 
         void Browser_LoadCompleted(object sender, NavigationEventArgs e)
@@ -63,11 +77,11 @@ namespace UI
             {
             }
 
-            mshtml.HTMLDocument doc;
-            doc = (mshtml.HTMLDocument)Browser.Document;
-            mshtml.HTMLDocumentEvents2_Event iEvent;
-            iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
-            iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(HtmlDocumentClickEventHandler);
+            //mshtml.HTMLDocument doc;
+            //doc = (mshtml.HTMLDocument)Browser.Document;
+            //mshtml.HTMLDocumentEvents2_Event iEvent;
+            //iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
+            //iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(HtmlDocumentClickEventHandler);
   
         }
 
@@ -84,20 +98,21 @@ namespace UI
             if (extension != null)
             {
                 table = extension.Table;
-            }
-            try
-            {
-                var extparam = table.CurrentExtension == null ? "" : Utilities.Converters.ToJson(table.CurrentExtension);
-                Browser.InvokeScript("SetExtension", extparam);
-                var instance = Features.CurrentInstance;
-                if (instance != null)
+
+                try
                 {
-                    Browser.InvokeScript("LoadInstance", "");
+                    var extparam = table.CurrentExtension == null ? "" : Utilities.Converters.ToJson(table.CurrentExtension);
+                    Browser_Right.InvokeScript("SetExtension", extparam);
+                    var instance = Features.CurrentInstance;
+                    if (instance != null)
+                    {
+                        Browser_Right.InvokeScript("LoadInstance", "");
+                    }
                 }
-            }
-            catch (Exception ex) 
-            {
-                Console.WriteLine(ex.Message);
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
@@ -107,6 +122,16 @@ namespace UI
             {
                 String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
                 TB_Console.Text += msg;
+                if (TB_Console.LineCount > 3000) 
+                {
+                    var lines = TB_Console.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1000);
+                    var sb = new StringBuilder();
+                    foreach (var line in lines) 
+                    {
+                        sb.AppendLine(line);
+                    }
+                    TB_Console.Text = sb.ToString();
+                }
                 TB_Console.Focus();
                 TB_Console.CaretIndex = TB_Console.Text.Length;
                 TB_Console.ScrollToEnd();
@@ -123,10 +148,7 @@ namespace UI
             var path = TB_TaxonomyPath.Text;
             Utilities.Threading.ExecuteAsync(() => { Features.LoadTaxonomy(path); });
         }
-
-
-
-   
+  
         private void XML_Tree_Node_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var td = (TaxonomyDocument)XML_Tree.SelectedItem;
@@ -145,7 +167,7 @@ namespace UI
                     var securitytag = "<!-- saved from url=(0014)about:internet -->\r\n";
                     System.IO.File.WriteAllText(file, securitytag + content);
 
-                    Browser.Navigate(file);
+                    Browser_Left.Navigate(file);
 
                 }
             }
@@ -158,7 +180,7 @@ namespace UI
             {
                 table.CreateHtmlLayout(true);
             }
-            Browser.Refresh();
+            Browser_Right.Refresh();
    
         }
 
@@ -191,7 +213,7 @@ namespace UI
             if (table != null)
             {
                 table.EnsureHtmlLayout();
-                Browser.Navigate(table.HtmlPath);
+                Browser_Right.Navigate(table.HtmlPath);
                 TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
 
             }
@@ -252,6 +274,8 @@ namespace UI
 
         private void B_Browser_Back_Click(object sender, RoutedEventArgs e)
         {
+            var Browser = Browser_Right.IsFocused ? Browser_Right : Browser_Left;
+
             if (Browser.CanGoBack) 
             {
                 Browser.GoBack();
@@ -260,6 +284,7 @@ namespace UI
 
         private void B_Browser_Forward_Click(object sender, RoutedEventArgs e)
         {
+            var Browser = Browser_Right.IsFocused ? Browser_Right : Browser_Left;
             if (Browser.CanGoForward)
             {
                 Browser.GoForward();

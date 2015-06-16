@@ -25,87 +25,87 @@ namespace LogicalModel.Validation
         {
 
 
-            AddFunction("iaf:numeric-equal", (Double a, Double b) => a == b);
-            AddFunction("iaf:numeric-less-than", (Double a, Double b) => a < b);
-            AddFunction("iaf:numeric-less-equal-than", (Double a, Double b) => a <= b);
-            AddFunction("iaf:numeric-greater-than", (Double a, Double b) => a > b);
-            AddFunction("iaf:numeric-greater-equal-than", (Double a, Double b) => a >= b);
+            AddFunction("iaf:numeric-equal", (decimal a, decimal b) => a == b);
+            AddFunction("iaf:numeric-less-than", (decimal a, decimal b) => a < b);
+            AddFunction("iaf:numeric-less-equal-than", (decimal a, decimal b) => a <= b);
+            AddFunction("iaf:numeric-greater-than", (decimal a, decimal b) => a > b);
+            AddFunction("iaf:numeric-greater-equal-than", (decimal a, decimal b) => a >= b);
 
-            AddFunction("iaf:numeric-equal-treshold", (Double a, Double b) => a == b);
-            AddFunction("iaf:numeric-less-than-treshold", (Double a, Double b) => a < b);
-            AddFunction("iaf:numeric-less-equal-than-treshold", (Double a, Double b) => a <= b);
-            AddFunction("iaf:numeric-greater-than-treshold", (Double a, Double b) => a > b);
-            AddFunction("iaf:numeric-greater-equal-than-treshold", (Double a, Double b) => a >= b);
+            AddFunction("iaf:numeric-equal-treshold", (decimal a, decimal b) => a == b);
+            AddFunction("iaf:numeric-less-than-treshold", (decimal a, decimal b) => a < b);
+            AddFunction("iaf:numeric-less-equal-than-treshold", (decimal a, decimal b) => a <= b);
+            AddFunction("iaf:numeric-greater-than-treshold", (decimal a, decimal b) => a > b);
+            AddFunction("iaf:numeric-greater-equal-than-treshold", (decimal a, decimal b) => a >= b);
 
-            AddFunction("iaf:numeric-subtract", (Double a, Double b) => a - b);
-            AddFunction("iaf:numeric-divide", (Double a, Double b) => a / b);
-            AddFunction("iaf:numeric-multiply", (Double a, Double b) => a * b);
+            AddFunction("iaf:numeric-subtract", (decimal a, decimal b) => a - b);
+            AddFunction("iaf:numeric-divide", (decimal a, decimal b) => a / b);
+            AddFunction("iaf:numeric-multiply", (decimal a, decimal b) => a * b);
             AddFunction("xs:qname", (String a) => a);
             AddFunction("not", (Boolean a) => !a);
             AddFunction("empty", (Object a) => a == null);
-            AddFunction("abs", (Double a) => a < 0 ? -a : a);
-            AddFunction("sum", (Double[] a) => sum(a));
+            AddFunction("abs", (decimal a) => a < 0 ? -a : a);
+            AddFunction("sum", (decimal[] a) => sum(a));
 
         }
-        public bool N_Equals(Double a, Double b) 
+        public bool N_Equals(decimal a, decimal b) 
         {
             return a == b;
         }
-        public bool N_Less(Double a, Double b)
+        public bool N_Less(decimal a, decimal b)
         {
             return a < b;
         }
-        public bool N_LessEqual(Double a, Double b)
+        public bool N_LessEqual(decimal a, decimal b)
         {
             return a <= b;
         }
-        public bool N_Greater(Double a, Double b)
+        public bool N_Greater(decimal a, decimal b)
         {
             return a > b;
         }
-        public bool N_GreaterEqual(Double a, Double b)
+        public bool N_GreaterEqual(decimal a, decimal b)
         {
             return a >= b;
         }
 
-        public bool N_Equals_Treshold(Double a, Double b)
+        public bool N_Equals_Treshold(decimal a, decimal b)
         {
             return a == b;
         }
-        public bool N_Less_Treshold(Double a, Double b)
+        public bool N_Less_Treshold(decimal a, decimal b)
         {
             return a < b;
         }
-        public bool N_LessEqual_Treshold(Double a, Double b)
+        public bool N_LessEqual_Treshold(decimal a, decimal b)
         {
             return a <= b;
         }
-        public bool N_Greater_Treshold(Double a, Double b)
+        public bool N_Greater_Treshold(decimal a, decimal b)
         {
             return a > b;
         }
-        public bool N_GreaterEqual_Treshold(Double a, Double b)
+        public bool N_GreaterEqual_Treshold(decimal a, decimal b)
         {
             return a >= b;
         }
 
-        public double N_Subtract(Double a, Double b)
+        public decimal N_Subtract(decimal a, decimal b)
         {
             return a - b;
         }
-        public double N_Divide(Double a, Double b)
+        public decimal N_Divide(decimal a, decimal b)
         {
             return a / b;
         }
-        public double N_Multiply(Double a, Double b)
+        public decimal N_Multiply(decimal a, decimal b)
         {
             return a * b;
         }
-        public double N_Unary_Minus(Double a)
+        public decimal N_Unary_Minus(decimal a)
         {
             return -a;
         }
-        public double N_Unary_Plus(Double a)
+        public decimal N_Unary_Plus(decimal a)
         {
             return a;
         }
@@ -123,19 +123,19 @@ namespace LogicalModel.Validation
         {
             return a==null;
         }
-        public double abs(double a)
+        public decimal abs(decimal a)
         {
             return a < 0 ? -a : a;
         }
-        public double sum(params double[] parameters) 
+        public decimal sum(params decimal[] parameters) 
         {
             return parameters.Sum();
         }
-        public double max(params double[] parameters)
+        public decimal max(params decimal[] parameters)
         {
             return parameters.Sum();
         }
-        private Double Invert(Double a) 
+        private decimal Invert(decimal a) 
         {
             return -a;
         }

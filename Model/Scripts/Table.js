@@ -16,11 +16,43 @@ var UI;
             this.SetExternals();
         }
         Table.prototype.SetExternals = function () {
-            this.Concepts = window["concepts"] == null ? [] : window["concepts"];
+            this.Concepts = window[var_tax_concepts] == null ? [] : window[var_tax_concepts];
             this.Concepts = this.Concepts.AsLinq().Where(function (i) { return i.Domain != null; }).ToArray();
-            this.Hierarchies = window["hierarchies"] == null ? [] : window["hierarchies"];
+            this.Hierarchies = window[var_tax_hierarchies] == null ? [] : window[var_tax_hierarchies];
             this.LoadConceptValues();
+            this.Instance = window[var_currentinstance] == null ? null : window[var_currentinstance];
+        };
+        Table.prototype.Load = function () {
+            var me = this;
+            $(window).on('hashchange', function () {
+                me.HashChanged();
+            });
+            $("table").on('click', 'tr', function () {
+                $('tr', 'table').removeClass("selected");
+                $(this).addClass("selected");
+            });
+            this.LoadCellsFromHtml();
             this.SetCellEditors();
+            $(".highlight").removeClass("highlight");
+            var hash = window.location.hash;
+            if (!IsNull(hash)) {
+                this.HighlightCell();
+            }
+            else {
+                this.SetExtension(null);
+            }
+            if (!IsNull(this.Instance)) {
+                this.LoadInstance(this.Instance);
+            }
+        };
+        Table.prototype.HighlightCell = function () {
+            var hash = window.location.hash;
+            var cellid = TextBetween(hash, "cell=", ";");
+            var extcode = TextBetween(hash, "ext=", ";");
+            this.SetExtensionByCode(extcode);
+            cellid = cellid.replace("_", "\\|");
+            $("#" + cellid).addClass("highlight");
+            $("#" + cellid).focus();
         };
         Table.prototype.LoadConceptValues = function () {
             var me = this;
@@ -64,7 +96,7 @@ var UI;
                 if (factitems[0].indexOf("eba_met:") > -1) {
                     concept = factitems[0];
                 }
-                if (!$target.parent().hasClass("dynamic")) {
+                if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
                     $target.click(function () {
                         if (!$target.hasClass(Editor.editclass)) {
                             var editor = null;
@@ -76,11 +108,33 @@ var UI;
                             else {
                                 editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
                             }
-                            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+                            editor.Load($target, function () { return $target.html(); }, function () {
+                                $target.html(editor.ValueGetter(editor.$Me));
+                                me.AddNewRowIfNeeded();
+                            });
                         }
                     });
                 }
             });
+        };
+        Table.prototype.AddNewRowIfNeeded = function () {
+            var me = this;
+            if (!IsNull(me.$TemplateRow)) {
+                var $lastrow = me.$TemplateRow.parent().find("tr:last");
+                var $selectedrow = me.$TemplateRow.parent().find("tr.selected");
+                if ($selectedrow.length > 0) {
+                    var $cells = $("td", $selectedrow);
+                    var isallnull = true;
+                    $cells.each(function (ix, cell) {
+                        if (!IsNull($(cell).html().trim())) {
+                            isallnull = false;
+                        }
+                    });
+                    if (isallnull && $lastrow != $selectedrow) {
+                        $selectedrow.remove();
+                    }
+                }
+            }
         };
         Table.prototype.LoadCellsFromHtml = function () {
             var me = this;
@@ -103,7 +157,8 @@ var UI;
             var templaterow = $(".dynamic");
             if (templaterow.length > 0) {
                 me.$TemplateRow = $(templaterow[0]);
-                me.AddRow("newrow", false, "");
+                //me.GetDynamicRowID(null);
+                me.AddRowX("newrow", false, 0);
             }
         };
         Table.prototype.LoadCells = function (cells) {
@@ -114,7 +169,7 @@ var UI;
         };
         Table.prototype.LoadExtension = function (li) {
             this.CurrentExtension = li;
-            $("#Extension").html(li.LabelContent);
+            $("#Extension").html(Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
             $("#Extension").attr("title", li.FactString);
         };
         Table.prototype.LoadInstance = function (instance) {
@@ -159,21 +214,17 @@ var UI;
                                             facts.forEach(function (factobj, index) {
                                                 var fact = Model.InstanceFact.Convert(factobj);
                                                 fact.Load();
-                                                var opendimension = fact.Dimensions.AsLinq().FirstOrDefault();
-                                                if (!IsNull(opendimension)) {
-                                                    var idvalue = opendimension.DomainMember;
-                                                    var cellid = cell.LayoutID;
-                                                    var r_ix = cellid.indexOf("R");
-                                                    if (r_ix > -1) {
-                                                        cellid = cellid.replace("R", "R" + idvalue);
-                                                    }
-                                                    var selector = "#" + cellid.replace("|", "\\|");
-                                                    if ($(selector).length == 0) {
-                                                        var $newrow = me.AddRow("dynamicdata", true, idvalue);
-                                                    }
-                                                    $(selector).html(fact.Value);
-                                                    c++;
+                                                var typeddimensions = fact.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
+                                                var typedfacts = new Model.FactBase();
+                                                typedfacts.Dimensions = typeddimensions;
+                                                var rowid = me.GetDynamicRowID(typedfacts);
+                                                var cellid = cell.LayoutID;
+                                                var r_ix = cellid.indexOf("R");
+                                                if (r_ix > -1) {
+                                                    cellid = cellid.replace("R", rowid);
                                                 }
+                                                var selector = "#" + cellid.replace("|", "\\|");
+                                                $(selector).html(fact.Value);
                                             });
                                         }
                                     }
@@ -186,7 +237,88 @@ var UI;
                 }
             }
         };
-        Table.prototype.AddRow = function (rowclass, beforelast, idvalue) {
+        Table.prototype.GetDynamicRowID = function (fact) {
+            var me = this;
+            var newrowneeded = false;
+            var rownum = 1;
+            var $row = null;
+            var factkey = "";
+            if (fact != null) {
+                factkey = fact.GetFactString();
+                var $rows = $("tr", me.$TemplateRow.parent());
+                $row = $("tr[factkey='" + factkey + "']");
+                rownum = $rows.length - 1;
+                newrowneeded = $row.length == 0;
+            }
+            else {
+                newrowneeded = true;
+            }
+            if (newrowneeded) {
+                //var id = Format("R{0}", rownum);
+                var $newrow = me.AddRowX("", true, rownum);
+                $row = $newrow; //.prev();
+            }
+            if (fact != null) {
+                $row.attr("factkey", factkey);
+                var cells = $("td", $row);
+                cells.each(function (index, cell) {
+                    var $cell = $(cell);
+                    var cellfactstring = $cell.attr("factstring");
+                    cellfactstring = Replace(cellfactstring.trim(), ",", "");
+                    if (!IsNull(cellfactstring)) {
+                        var dim = fact.Dimensions.AsLinq().FirstOrDefault(function (i) { return i.DomainMemberFullName.indexOf(cellfactstring) == 0; });
+                        if (dim != null) {
+                            var text = dim.DomainMember;
+                            $cell.text(text);
+                        }
+                    }
+                });
+            }
+            return $row.attr("id");
+        };
+        Table.prototype.AddRowX = function (rowclass, beforelast, rownum) {
+            var me = this;
+            var id = Format("R{0}", rownum);
+            var $newrow = me.$TemplateRow.clone();
+            me.$TemplateRow.find("td").html("");
+            var $lastrow = me.$TemplateRow.parent().find("tr:last");
+            if (beforelast) {
+                $lastrow.before($newrow);
+            }
+            else {
+                $lastrow.after($newrow);
+            }
+            $newrow.attr("id", id);
+            $newrow.addClass("dynamicdata");
+            $newrow.removeClass("dynamic");
+            me.SetCellID($newrow);
+            if (!beforelast) {
+                $newrow.find(".title").html("new row");
+            }
+            var $rows = $("tr", me.$TemplateRow.parent());
+            /*
+            if ($rows.length > 2) {
+                $lastrow.attr("id", Format("R{0}", rownum + 1));
+                me.SetCellID($lastrow);
+            }
+            */
+            return $newrow;
+        };
+        Table.prototype.SetCellID = function ($row) {
+            var cells = $("td", $row);
+            var rowid = $row.attr("id");
+            cells.each(function (index, cell) {
+                var $cell = $(cell);
+                var cellid = $cell.attr("id");
+                cellid = cellid.substring(cellid.indexOf("|"));
+                cellid = rowid + cellid;
+                $cell.attr("id", cellid);
+                $cell.attr("title", cellid);
+            });
+        };
+        /*
+        public AddRow(rowclass:string, beforelast:boolean, idvalue: string):JQuery
+        {
             var me = this;
             var $newrow = me.$TemplateRow.clone();
             me.$TemplateRow.find("td").html("");
@@ -194,12 +326,15 @@ var UI;
             if (beforelast) {
                 $(lastrow).before($newrow);
             }
-            else {
+            else
+            {
                 $(lastrow).after($newrow);
+
             }
             $newrow.attr("id", Format("R{0}", idvalue));
             $newrow.addClass(rowclass);
             $newrow.removeClass("dynamic");
+
             $("td", $newrow).each(function (index, td) {
                 var $td = $(td);
                 var cellid = $td.attr("id");
@@ -210,10 +345,20 @@ var UI;
                 }
             });
             $newrow.find(".code").html(idvalue);
-            if (IsNull(idvalue.trim())) {
+            if (IsNull(idvalue.trim()))
+            {
                 $newrow.find(".title").html("new row");
             }
             return $newrow;
+        }
+        */
+        Table.prototype.SetExtensionByCode = function (code) {
+            if (!IsNull(code)) {
+                var ext = this.Extensions.AsLinq().FirstOrDefault(function (i) { return i.LabelCode == code; });
+                if (!IsNull(ext)) {
+                    this.LoadExtension(ext);
+                }
+            }
         };
         Table.prototype.SetExtension = function (item) {
             var li = null;
@@ -239,8 +384,11 @@ var UI;
             //f
             this.LoadInstance(instance);
         };
+        Table.prototype.HashChanged = function () {
+            this.HighlightCell();
+        };
         Table.prototype.TestInstance = function () {
-            this.LoadInstance(window["currentinstance"]);
+            this.LoadInstance(window[var_currentinstance]);
         };
         return Table;
     })();
@@ -251,6 +399,6 @@ function SetExtension(extjson) {
     Table.SetExtension(extjson);
 }
 function LoadInstance(instancejson) {
-    Table.LoadInstance(window["currentinstance"]);
+    Table.LoadInstance(window[var_currentinstance]);
 }
 //# sourceMappingURL=Table.js.map

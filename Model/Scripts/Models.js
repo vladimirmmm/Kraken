@@ -173,6 +173,7 @@ var Model;
         __extends(InstanceFact, _super);
         function InstanceFact() {
             _super.apply(this, arguments);
+            this.Cells = [];
         }
         InstanceFact.Convert = function (obj) {
             var item = new InstanceFact();
@@ -207,6 +208,7 @@ var Model;
                         if (domainmemberparts.length == 3) {
                             dimension.Domain = Format("{0}:{1}", domainmemberparts[0], domainmemberparts[1]);
                             dimension.DomainMember = domainmemberparts[2];
+                            dimension.IsTyped = true;
                         }
                         this.Dimensions.push(dimension);
                     }
@@ -299,6 +301,7 @@ var Model;
     var SimlpeValidationParameter = (function () {
         function SimlpeValidationParameter() {
             this.Facts = [];
+            this.Cells = [];
         }
         return SimlpeValidationParameter;
     })();
@@ -320,6 +323,7 @@ var Model;
     var ValidationRule = (function () {
         function ValidationRule() {
             this.Parameters = [];
+            this.Results = [];
         }
         return ValidationRule;
     })();
@@ -327,7 +331,8 @@ var Model;
     var Taxonomy = (function () {
         function Taxonomy() {
             this.ValidationRules = [];
-            this.FactMap = {};
+            //public FactMap: Dictionary<string[]> = {};
+            this.Labels = {};
             this.Concepts = [];
             this.Hierarchies = [];
             this.ConceptValues = [];

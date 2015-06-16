@@ -1,4 +1,5 @@
 ﻿using LogicalModel.Base;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
+    //[JsonObject(MemberSerialization=MemberSerialization.]
     public class InstanceFact:FactBase
     {
 
@@ -24,6 +26,9 @@ namespace LogicalModel
 
         private String _Value = "";
         public String Value { get { return _Value; } set { _Value = value; } }
+
+        private List<String> _Cells = new List<string>();
+        public List<String> Cells { get { return _Cells; } set { _Cells = value; } }
 
         public float Value_F { 
             get

@@ -21,6 +21,7 @@ namespace XBRLProcessor
             this.Syntax.ParameterSeparator = ",";
             this.Syntax.CodeItemSeparator = " ";
             this.Syntax.StringDelimiter = "'";
+            this.Syntax.Spacing = " ";
             this.Syntax.If = "if";
             this.Syntax.Then = "then";
             this.Syntax.Else = "else";
@@ -31,22 +32,22 @@ namespace XBRLProcessor
 
             this.Syntax.Operators.AddItem(OperatorEnum.Unknown, " !!unknown!! ");
             this.Syntax.Operators.AddItem(OperatorEnum.Addition, " + ");
+            this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
             this.Syntax.Operators.AddItem(OperatorEnum.And, " and ");
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " and ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Division, " / ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Equals, " = ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Greater, " > ");
-            this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, " >= ");
-            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, " / ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Less, " < ");
-            this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, " <= ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Modulo, " \\ ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Multiplication, " * ");
+            this.Syntax.Operators.AddItem(OperatorEnum.Division, "/");
+            this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, ">=");
+            this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, "<=");
+            this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
+            this.Syntax.Operators.AddItem(OperatorEnum.Equals, "=");
+            this.Syntax.Operators.AddItem(OperatorEnum.Greater, ">");
+            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, "/");
+            this.Syntax.Operators.AddItem(OperatorEnum.Less, "<");
+            this.Syntax.Operators.AddItem(OperatorEnum.Modulo, "\\");
+            this.Syntax.Operators.AddItem(OperatorEnum.Multiplication, "*");
             this.Syntax.Operators.AddItem(OperatorEnum.Not, "");
-            this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "");
             this.Syntax.Operators.AddItem(OperatorEnum.Or, " or ");
             this.Syntax.Operators.AddItem(OperatorEnum.OrAlso, " or ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
 
         }
 
@@ -56,9 +57,18 @@ namespace XBRLProcessor
 
             var fixedstring = expressionstring;
             var operators = Syntax.Operators.Values.Where(i => !String.IsNullOrEmpty(i)).Distinct().ToList();
+            var ix = 0;
             foreach (var op in operators)
             {
-                fixedstring = fixedstring.Replace(op, "@" + op + "@");
+                fixedstring = fixedstring.Replace(op, "@" + ix.ToString() + "@");
+                ix++;
+
+            }
+            ix = 0;
+            foreach (var op in operators)
+            {
+                fixedstring = fixedstring.Replace("@" + ix.ToString() + "@", "@" + op + "@");
+                ix++;
             }
             fixedstring = fixedstring.Replace("@ ", "@-").Replace(" @", "-@");
             fixedstring = fixedstring.Replace(" ", "");
@@ -124,6 +134,7 @@ namespace XBRLProcessor
             if (isfunction)
             {
                 var functionname = item.Remove(item.IndexOf(Syntax.ExpressionContainer_Left));
+                functionname = functionname.Trim();
                 if (functionname == Syntax.If)
                 {
                     var iffunction = new IfExpression();
@@ -224,7 +235,7 @@ namespace XBRLProcessor
         {
             var xbrlparser = new XbrlFormulaParser();
             var csparser = new CSharpParser();
-            var expr1 = this.ParseExpression("$a = (xs:QName('eba_ZZ:x27'), xs:QName('eba_ZZ:x28'))");
+            var expr1 = this.ParseExpression("if ($AccountingStandard = 'IFRS') then ($a = xs:QName('eba_AS:x2')) else (true())");
             var expr2 = this.ParseExpression("if ($ReportingLevel = 'con') then ($a = xs:QName('eba_SC:x7')) else (true())");
             var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum(((iaf:numeric-multiply($b, $c)), (iaf:numeric-multiply($d, $e)), (iaf:numeric-multiply($f, $g))))), $h))");
 

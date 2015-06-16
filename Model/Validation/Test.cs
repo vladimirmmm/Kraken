@@ -1,6365 +1,8449 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LogicalModel.Expressions;
-using LogicalModel.Base;
-using LogicalModel.Validation;
-using Utilities;
-namespace LogicalModel.Validation
-{
-    public class ValidationsX : ValidationFunctionContainer
-    {
-        public ValidationsX()
-        {
-            this.FunctionDictionary.Add("ebav0002h", this.ebav0002h);
-            this.FunctionDictionary.Add("ebav0006h", this.ebav0006h);
-            this.FunctionDictionary.Add("ebav0569m", this.ebav0569m);
-            this.FunctionDictionary.Add("ebav0571m", this.ebav0571m);
-            this.FunctionDictionary.Add("ebav0572m", this.ebav0572m);
-            this.FunctionDictionary.Add("ebav0574m", this.ebav0574m);
-            this.FunctionDictionary.Add("ebav0578m", this.ebav0578m);
-            this.FunctionDictionary.Add("ebav0579m", this.ebav0579m);
-            this.FunctionDictionary.Add("ebav3763s", this.ebav3763s);
-            this.FunctionDictionary.Add("ebav3764s", this.ebav3764s);
-            this.FunctionDictionary.Add("ebav3765s", this.ebav3765s);
-            this.FunctionDictionary.Add("ebav3766s", this.ebav3766s);
-            this.FunctionDictionary.Add("ebav3767s", this.ebav3767s);
-            this.FunctionDictionary.Add("ebav0004h", this.ebav0004h);
-            this.FunctionDictionary.Add("ebav0619m", this.ebav0619m);
-            this.FunctionDictionary.Add("ebav0620m", this.ebav0620m);
-            this.FunctionDictionary.Add("ebav0622m", this.ebav0622m);
-            this.FunctionDictionary.Add("ebav0623m", this.ebav0623m);
-            this.FunctionDictionary.Add("ebav3778s", this.ebav3778s);
-            this.FunctionDictionary.Add("ebav3779s", this.ebav3779s);
-            this.FunctionDictionary.Add("ebav3780s", this.ebav3780s);
-            this.FunctionDictionary.Add("ebav3781s", this.ebav3781s);
-            this.FunctionDictionary.Add("ebav3782s", this.ebav3782s);
-            this.FunctionDictionary.Add("ebav0005h", this.ebav0005h);
-            this.FunctionDictionary.Add("ebav0630m", this.ebav0630m);
-            this.FunctionDictionary.Add("ebav0631m", this.ebav0631m);
-            this.FunctionDictionary.Add("ebav3789s", this.ebav3789s);
-            this.FunctionDictionary.Add("ebav3790s", this.ebav3790s);
-            this.FunctionDictionary.Add("ebav3791s", this.ebav3791s);
-            this.FunctionDictionary.Add("ebav0007h", this.ebav0007h);
-            this.FunctionDictionary.Add("ebav0625m", this.ebav0625m);
-            this.FunctionDictionary.Add("ebav0626m", this.ebav0626m);
-            this.FunctionDictionary.Add("ebav0627m", this.ebav0627m);
-            this.FunctionDictionary.Add("ebav0628m", this.ebav0628m);
-            this.FunctionDictionary.Add("ebav3783s", this.ebav3783s);
-            this.FunctionDictionary.Add("ebav3784s", this.ebav3784s);
-            this.FunctionDictionary.Add("ebav3785s", this.ebav3785s);
-            this.FunctionDictionary.Add("ebav3786s", this.ebav3786s);
-            this.FunctionDictionary.Add("ebav3787s", this.ebav3787s);
-            this.FunctionDictionary.Add("ebav3788s", this.ebav3788s);
-            this.FunctionDictionary.Add("ebav0009h", this.ebav0009h);
-            this.FunctionDictionary.Add("ebav0505m", this.ebav0505m);
-            this.FunctionDictionary.Add("ebav0506m", this.ebav0506m);
-            this.FunctionDictionary.Add("ebav0507m", this.ebav0507m);
-            this.FunctionDictionary.Add("ebav0510m", this.ebav0510m);
-            this.FunctionDictionary.Add("ebav0512m", this.ebav0512m);
-            this.FunctionDictionary.Add("ebav0513m", this.ebav0513m);
-            this.FunctionDictionary.Add("ebav0516m", this.ebav0516m);
-            this.FunctionDictionary.Add("ebav0517m", this.ebav0517m);
-            this.FunctionDictionary.Add("ebav0518m", this.ebav0518m);
-            this.FunctionDictionary.Add("ebav0519m", this.ebav0519m);
-            this.FunctionDictionary.Add("ebav0520m", this.ebav0520m);
-            this.FunctionDictionary.Add("ebav0521m", this.ebav0521m);
-            this.FunctionDictionary.Add("ebav0522m", this.ebav0522m);
-            this.FunctionDictionary.Add("ebav0523m", this.ebav0523m);
-            this.FunctionDictionary.Add("ebav0524m", this.ebav0524m);
-            this.FunctionDictionary.Add("ebav0525m", this.ebav0525m);
-            this.FunctionDictionary.Add("ebav0526m", this.ebav0526m);
-            this.FunctionDictionary.Add("ebav0527m", this.ebav0527m);
-            this.FunctionDictionary.Add("ebav2052s", this.ebav2052s);
-            this.FunctionDictionary.Add("ebav3736s", this.ebav3736s);
-            this.FunctionDictionary.Add("ebav3737s", this.ebav3737s);
-            this.FunctionDictionary.Add("ebav3738s", this.ebav3738s);
-            this.FunctionDictionary.Add("ebav3739s", this.ebav3739s);
-            this.FunctionDictionary.Add("ebav3740s", this.ebav3740s);
-            this.FunctionDictionary.Add("ebav3741s", this.ebav3741s);
-            this.FunctionDictionary.Add("ebav3742s", this.ebav3742s);
-            this.FunctionDictionary.Add("ebav3743s", this.ebav3743s);
-            this.FunctionDictionary.Add("ebav3744s", this.ebav3744s);
-            this.FunctionDictionary.Add("ebav4047m", this.ebav4047m);
-            this.FunctionDictionary.Add("ebav4048m", this.ebav4048m);
-            this.FunctionDictionary.Add("ebav4049m", this.ebav4049m);
-            this.FunctionDictionary.Add("ebav4050m", this.ebav4050m);
-            this.FunctionDictionary.Add("ebav4051m", this.ebav4051m);
-            this.FunctionDictionary.Add("ebav4052m", this.ebav4052m);
-            this.FunctionDictionary.Add("ebav4053m", this.ebav4053m);
-            this.FunctionDictionary.Add("ebav4054m", this.ebav4054m);
-            this.FunctionDictionary.Add("ebav4055m", this.ebav4055m);
-            this.FunctionDictionary.Add("ebav4056m", this.ebav4056m);
-            this.FunctionDictionary.Add("ebav4057m", this.ebav4057m);
-            this.FunctionDictionary.Add("ebav4058m", this.ebav4058m);
-            this.FunctionDictionary.Add("ebav4059m", this.ebav4059m);
-            this.FunctionDictionary.Add("ebav4060m", this.ebav4060m);
-            this.FunctionDictionary.Add("ebav4061m", this.ebav4061m);
-            this.FunctionDictionary.Add("ebav4062m", this.ebav4062m);
-            this.FunctionDictionary.Add("ebav4063m", this.ebav4063m);
-            this.FunctionDictionary.Add("ebav4064m", this.ebav4064m);
-            this.FunctionDictionary.Add("ebav0010h", this.ebav0010h);
-            this.FunctionDictionary.Add("ebav0305m", this.ebav0305m);
-            this.FunctionDictionary.Add("ebav0306m", this.ebav0306m);
-            this.FunctionDictionary.Add("ebav0307m", this.ebav0307m);
-            this.FunctionDictionary.Add("ebav0308m", this.ebav0308m);
-            this.FunctionDictionary.Add("ebav0310m", this.ebav0310m);
-            this.FunctionDictionary.Add("ebav0311m", this.ebav0311m);
-            this.FunctionDictionary.Add("ebav0312m", this.ebav0312m);
-            this.FunctionDictionary.Add("ebav0313m", this.ebav0313m);
-            this.FunctionDictionary.Add("ebav0314m", this.ebav0314m);
-            this.FunctionDictionary.Add("ebav0315m", this.ebav0315m);
-            this.FunctionDictionary.Add("ebav0316m", this.ebav0316m);
-            this.FunctionDictionary.Add("ebav0317m", this.ebav0317m);
-            this.FunctionDictionary.Add("ebav0318m", this.ebav0318m);
-            this.FunctionDictionary.Add("ebav0319m", this.ebav0319m);
-            this.FunctionDictionary.Add("ebav0320m", this.ebav0320m);
-            this.FunctionDictionary.Add("ebav0321m", this.ebav0321m);
-            this.FunctionDictionary.Add("ebav0322m", this.ebav0322m);
-            this.FunctionDictionary.Add("ebav0323m", this.ebav0323m);
-            this.FunctionDictionary.Add("ebav0324m", this.ebav0324m);
-            this.FunctionDictionary.Add("ebav0325m", this.ebav0325m);
-            this.FunctionDictionary.Add("ebav0326m", this.ebav0326m);
-            this.FunctionDictionary.Add("ebav0327m", this.ebav0327m);
-            this.FunctionDictionary.Add("ebav0328m", this.ebav0328m);
-            this.FunctionDictionary.Add("ebav1644m", this.ebav1644m);
-            this.FunctionDictionary.Add("ebav1645m", this.ebav1645m);
-            this.FunctionDictionary.Add("ebav1647m", this.ebav1647m);
-            this.FunctionDictionary.Add("ebav1648m", this.ebav1648m);
-            this.FunctionDictionary.Add("ebav1649m", this.ebav1649m);
-            this.FunctionDictionary.Add("ebav2037s", this.ebav2037s);
-            this.FunctionDictionary.Add("ebav3697s", this.ebav3697s);
-            this.FunctionDictionary.Add("ebav3698s", this.ebav3698s);
-            this.FunctionDictionary.Add("ebav3699s", this.ebav3699s);
-            this.FunctionDictionary.Add("ebav3700s", this.ebav3700s);
-            this.FunctionDictionary.Add("ebav3701s", this.ebav3701s);
-            this.FunctionDictionary.Add("ebav3702s", this.ebav3702s);
-            this.FunctionDictionary.Add("ebav3703s", this.ebav3703s);
-            this.FunctionDictionary.Add("ebav3704s", this.ebav3704s);
-            this.FunctionDictionary.Add("ebav0011h", this.ebav0011h);
-            this.FunctionDictionary.Add("ebav1659m", this.ebav1659m);
-            this.FunctionDictionary.Add("ebav1784h", this.ebav1784h);
-            this.FunctionDictionary.Add("ebav3707s", this.ebav3707s);
-            this.FunctionDictionary.Add("ebav3708s", this.ebav3708s);
-            this.FunctionDictionary.Add("ebav0012h", this.ebav0012h);
-            this.FunctionDictionary.Add("ebav1660m", this.ebav1660m);
-            this.FunctionDictionary.Add("ebav1661m", this.ebav1661m);
-            this.FunctionDictionary.Add("ebav1785h", this.ebav1785h);
-            this.FunctionDictionary.Add("ebav2040s", this.ebav2040s);
-            this.FunctionDictionary.Add("ebav3709s", this.ebav3709s);
-            this.FunctionDictionary.Add("ebav0022h", this.ebav0022h);
-            this.FunctionDictionary.Add("ebav0023h", this.ebav0023h);
-            this.FunctionDictionary.Add("ebav0277m", this.ebav0277m);
-            this.FunctionDictionary.Add("ebav0278m", this.ebav0278m);
-            this.FunctionDictionary.Add("ebav2036s", this.ebav2036s);
-            this.FunctionDictionary.Add("ebav3694s", this.ebav3694s);
-            this.FunctionDictionary.Add("ebav0101h", this.ebav0101h);
-            this.FunctionDictionary.Add("ebav0102h", this.ebav0102h);
-            this.FunctionDictionary.Add("ebav0132h", this.ebav0132h);
-            this.FunctionDictionary.Add("ebav0657m", this.ebav0657m);
-            this.FunctionDictionary.Add("ebav0658m", this.ebav0658m);
-            this.FunctionDictionary.Add("ebav0659m", this.ebav0659m);
-            this.FunctionDictionary.Add("ebav0660m", this.ebav0660m);
-            this.FunctionDictionary.Add("ebav0661m", this.ebav0661m);
-            this.FunctionDictionary.Add("ebav0662m", this.ebav0662m);
-            this.FunctionDictionary.Add("ebav0663m", this.ebav0663m);
-            this.FunctionDictionary.Add("ebav0664m", this.ebav0664m);
-            this.FunctionDictionary.Add("ebav0665m", this.ebav0665m);
-            this.FunctionDictionary.Add("ebav0666m", this.ebav0666m);
-            this.FunctionDictionary.Add("ebav0667m", this.ebav0667m);
-            this.FunctionDictionary.Add("ebav1688m", this.ebav1688m);
-            this.FunctionDictionary.Add("ebav1689m", this.ebav1689m);
-            this.FunctionDictionary.Add("ebav1691m", this.ebav1691m);
-            this.FunctionDictionary.Add("ebav3803s", this.ebav3803s);
-            this.FunctionDictionary.Add("ebav3804s", this.ebav3804s);
-            this.FunctionDictionary.Add("ebav3805s", this.ebav3805s);
-            this.FunctionDictionary.Add("ebav3806s", this.ebav3806s);
-            this.FunctionDictionary.Add("ebav3807s", this.ebav3807s);
-            this.FunctionDictionary.Add("ebav3808s", this.ebav3808s);
-            this.FunctionDictionary.Add("ebav3809s", this.ebav3809s);
-            this.FunctionDictionary.Add("ebav0108h", this.ebav0108h);
-            this.FunctionDictionary.Add("ebav0128h", this.ebav0128h);
-            this.FunctionDictionary.Add("ebav0224m", this.ebav0224m);
-            this.FunctionDictionary.Add("ebav0225m", this.ebav0225m);
-            this.FunctionDictionary.Add("ebav0226m", this.ebav0226m);
-            this.FunctionDictionary.Add("ebav0227m", this.ebav0227m);
-            this.FunctionDictionary.Add("ebav0228m", this.ebav0228m);
-            this.FunctionDictionary.Add("ebav0229m", this.ebav0229m);
-            this.FunctionDictionary.Add("ebav0230m", this.ebav0230m);
-            this.FunctionDictionary.Add("ebav0231m", this.ebav0231m);
-            this.FunctionDictionary.Add("ebav0232m", this.ebav0232m);
-            this.FunctionDictionary.Add("ebav0233m", this.ebav0233m);
-            this.FunctionDictionary.Add("ebav0234m", this.ebav0234m);
-            this.FunctionDictionary.Add("ebav0235m", this.ebav0235m);
-            this.FunctionDictionary.Add("ebav0236m", this.ebav0236m);
-            this.FunctionDictionary.Add("ebav0237m", this.ebav0237m);
-            this.FunctionDictionary.Add("ebav0238m", this.ebav0238m);
-            this.FunctionDictionary.Add("ebav0239m", this.ebav0239m);
-            this.FunctionDictionary.Add("ebav0240m", this.ebav0240m);
-            this.FunctionDictionary.Add("ebav0241m", this.ebav0241m);
-            this.FunctionDictionary.Add("ebav0242m", this.ebav0242m);
-            this.FunctionDictionary.Add("ebav0243m", this.ebav0243m);
-            this.FunctionDictionary.Add("ebav0244m", this.ebav0244m);
-            this.FunctionDictionary.Add("ebav0245m", this.ebav0245m);
-            this.FunctionDictionary.Add("ebav0246m", this.ebav0246m);
-            this.FunctionDictionary.Add("ebav0247m", this.ebav0247m);
-            this.FunctionDictionary.Add("ebav0248m", this.ebav0248m);
-            this.FunctionDictionary.Add("ebav0249m", this.ebav0249m);
-            this.FunctionDictionary.Add("ebav0250m", this.ebav0250m);
-            this.FunctionDictionary.Add("ebav0251m", this.ebav0251m);
-            this.FunctionDictionary.Add("ebav2034s", this.ebav2034s);
-            this.FunctionDictionary.Add("ebav3688s", this.ebav3688s);
-            this.FunctionDictionary.Add("ebav0148h", this.ebav0148h);
-            this.FunctionDictionary.Add("ebav0172m", this.ebav0172m);
-            this.FunctionDictionary.Add("ebav0173m", this.ebav0173m);
-            this.FunctionDictionary.Add("ebav0174m", this.ebav0174m);
-            this.FunctionDictionary.Add("ebav0175m", this.ebav0175m);
-            this.FunctionDictionary.Add("ebav0176m", this.ebav0176m);
-            this.FunctionDictionary.Add("ebav0177m", this.ebav0177m);
-            this.FunctionDictionary.Add("ebav0178m", this.ebav0178m);
-            this.FunctionDictionary.Add("ebav0179m", this.ebav0179m);
-            this.FunctionDictionary.Add("ebav0180m", this.ebav0180m);
-            this.FunctionDictionary.Add("ebav0181m", this.ebav0181m);
-            this.FunctionDictionary.Add("ebav0182m", this.ebav0182m);
-            this.FunctionDictionary.Add("ebav0183m", this.ebav0183m);
-            this.FunctionDictionary.Add("ebav0184m", this.ebav0184m);
-            this.FunctionDictionary.Add("ebav0185m", this.ebav0185m);
-            this.FunctionDictionary.Add("ebav0186m", this.ebav0186m);
-            this.FunctionDictionary.Add("ebav0187m", this.ebav0187m);
-            this.FunctionDictionary.Add("ebav0188m", this.ebav0188m);
-            this.FunctionDictionary.Add("ebav1771h", this.ebav1771h);
-            this.FunctionDictionary.Add("ebav3685s", this.ebav3685s);
-            this.FunctionDictionary.Add("ebav0150h", this.ebav0150h);
-            this.FunctionDictionary.Add("ebav0204m", this.ebav0204m);
-            this.FunctionDictionary.Add("ebav0205m", this.ebav0205m);
-            this.FunctionDictionary.Add("ebav0206m", this.ebav0206m);
-            this.FunctionDictionary.Add("ebav0207m", this.ebav0207m);
-            this.FunctionDictionary.Add("ebav0208m", this.ebav0208m);
-            this.FunctionDictionary.Add("ebav0209m", this.ebav0209m);
-            this.FunctionDictionary.Add("ebav0210m", this.ebav0210m);
-            this.FunctionDictionary.Add("ebav0211m", this.ebav0211m);
-            this.FunctionDictionary.Add("ebav0212m", this.ebav0212m);
-            this.FunctionDictionary.Add("ebav0213m", this.ebav0213m);
-            this.FunctionDictionary.Add("ebav0214m", this.ebav0214m);
-            this.FunctionDictionary.Add("ebav0215m", this.ebav0215m);
-            this.FunctionDictionary.Add("ebav0216m", this.ebav0216m);
-            this.FunctionDictionary.Add("ebav0217m", this.ebav0217m);
-            this.FunctionDictionary.Add("ebav3686s", this.ebav3686s);
-            this.FunctionDictionary.Add("ebav0190m", this.ebav0190m);
-            this.FunctionDictionary.Add("ebav0197m", this.ebav0197m);
-            this.FunctionDictionary.Add("ebav0201m", this.ebav0201m);
-            this.FunctionDictionary.Add("ebav1772h", this.ebav1772h);
-            this.FunctionDictionary.Add("ebav1773h", this.ebav1773h);
-            this.FunctionDictionary.Add("ebav1774h", this.ebav1774h);
-            this.FunctionDictionary.Add("ebav0218m", this.ebav0218m);
-            this.FunctionDictionary.Add("ebav0219m", this.ebav0219m);
-            this.FunctionDictionary.Add("ebav0220m", this.ebav0220m);
-            this.FunctionDictionary.Add("ebav0221m", this.ebav0221m);
-            this.FunctionDictionary.Add("ebav0222m", this.ebav0222m);
-            this.FunctionDictionary.Add("ebav0223m", this.ebav0223m);
-            this.FunctionDictionary.Add("ebav0252m", this.ebav0252m);
-            this.FunctionDictionary.Add("ebav0253m", this.ebav0253m);
-            this.FunctionDictionary.Add("ebav0255m", this.ebav0255m);
-            this.FunctionDictionary.Add("ebav0256m", this.ebav0256m);
-            this.FunctionDictionary.Add("ebav0257m", this.ebav0257m);
-            this.FunctionDictionary.Add("ebav0258m", this.ebav0258m);
-            this.FunctionDictionary.Add("ebav0259m", this.ebav0259m);
-            this.FunctionDictionary.Add("ebav0260m", this.ebav0260m);
-            this.FunctionDictionary.Add("ebav0261m", this.ebav0261m);
-            this.FunctionDictionary.Add("ebav0262m", this.ebav0262m);
-            this.FunctionDictionary.Add("ebav0264m", this.ebav0264m);
-            this.FunctionDictionary.Add("ebav0265m", this.ebav0265m);
-            this.FunctionDictionary.Add("ebav0266m", this.ebav0266m);
-            this.FunctionDictionary.Add("ebav0267m", this.ebav0267m);
-            this.FunctionDictionary.Add("ebav0268m", this.ebav0268m);
-            this.FunctionDictionary.Add("ebav0269m", this.ebav0269m);
-            this.FunctionDictionary.Add("ebav0270m", this.ebav0270m);
-            this.FunctionDictionary.Add("ebav0271m", this.ebav0271m);
-            this.FunctionDictionary.Add("ebav1628m", this.ebav1628m);
-            this.FunctionDictionary.Add("ebav1629m", this.ebav1629m);
-            this.FunctionDictionary.Add("ebav1630m", this.ebav1630m);
-            this.FunctionDictionary.Add("ebav2000s", this.ebav2000s);
-            this.FunctionDictionary.Add("ebav2035s", this.ebav2035s);
-            this.FunctionDictionary.Add("ebav3689s", this.ebav3689s);
-            this.FunctionDictionary.Add("ebav3690s", this.ebav3690s);
-            this.FunctionDictionary.Add("ebav3691s", this.ebav3691s);
-            this.FunctionDictionary.Add("ebav0274m", this.ebav0274m);
-            this.FunctionDictionary.Add("ebav0275m", this.ebav0275m);
-            this.FunctionDictionary.Add("ebav0276m", this.ebav0276m);
-            this.FunctionDictionary.Add("ebav0309m", this.ebav0309m);
-            this.FunctionDictionary.Add("ebav0332m", this.ebav0332m);
-            this.FunctionDictionary.Add("ebav0335m", this.ebav0335m);
-            this.FunctionDictionary.Add("ebav0336m", this.ebav0336m);
-            this.FunctionDictionary.Add("ebav0338m", this.ebav0338m);
-            this.FunctionDictionary.Add("ebav1662m", this.ebav1662m);
-            this.FunctionDictionary.Add("ebav1663m", this.ebav1663m);
-            this.FunctionDictionary.Add("ebav2041s", this.ebav2041s);
-            this.FunctionDictionary.Add("ebav2042s", this.ebav2042s);
-            this.FunctionDictionary.Add("ebav3710s", this.ebav3710s);
-            this.FunctionDictionary.Add("ebav3711s", this.ebav3711s);
-            this.FunctionDictionary.Add("ebav3712s", this.ebav3712s);
-            this.FunctionDictionary.Add("ebav3713s", this.ebav3713s);
-            this.FunctionDictionary.Add("ebav3714s", this.ebav3714s);
-            this.FunctionDictionary.Add("ebav3715s", this.ebav3715s);
-            this.FunctionDictionary.Add("ebav0334m", this.ebav0334m);
-            this.FunctionDictionary.Add("ebav0342m", this.ebav0342m);
-            this.FunctionDictionary.Add("ebav0343m", this.ebav0343m);
-            this.FunctionDictionary.Add("ebav0344m", this.ebav0344m);
-            this.FunctionDictionary.Add("ebav0345m", this.ebav0345m);
-            this.FunctionDictionary.Add("ebav0346m", this.ebav0346m);
-            this.FunctionDictionary.Add("ebav0347m", this.ebav0347m);
-            this.FunctionDictionary.Add("ebav0348m", this.ebav0348m);
-            this.FunctionDictionary.Add("ebav1665m", this.ebav1665m);
-            this.FunctionDictionary.Add("ebav2049s", this.ebav2049s);
-            this.FunctionDictionary.Add("ebav3721s", this.ebav3721s);
-            this.FunctionDictionary.Add("ebav0350m", this.ebav0350m);
-            this.FunctionDictionary.Add("ebav0351m", this.ebav0351m);
-            this.FunctionDictionary.Add("ebav0352m", this.ebav0352m);
-            this.FunctionDictionary.Add("ebav0353m", this.ebav0353m);
-            this.FunctionDictionary.Add("ebav0354m", this.ebav0354m);
-            this.FunctionDictionary.Add("ebav0355m", this.ebav0355m);
-            this.FunctionDictionary.Add("ebav0356m", this.ebav0356m);
-            this.FunctionDictionary.Add("ebav0357m", this.ebav0357m);
-            this.FunctionDictionary.Add("ebav0358m", this.ebav0358m);
-            this.FunctionDictionary.Add("ebav0359m", this.ebav0359m);
-            this.FunctionDictionary.Add("ebav0360m", this.ebav0360m);
-            this.FunctionDictionary.Add("ebav0361m", this.ebav0361m);
-            this.FunctionDictionary.Add("ebav0362m", this.ebav0362m);
-            this.FunctionDictionary.Add("ebav0363m", this.ebav0363m);
-            this.FunctionDictionary.Add("ebav0364m", this.ebav0364m);
-            this.FunctionDictionary.Add("ebav0365m", this.ebav0365m);
-            this.FunctionDictionary.Add("ebav0366m", this.ebav0366m);
-            this.FunctionDictionary.Add("ebav0367m", this.ebav0367m);
-            this.FunctionDictionary.Add("ebav0368m", this.ebav0368m);
-            this.FunctionDictionary.Add("ebav0369m", this.ebav0369m);
-            this.FunctionDictionary.Add("ebav0370m", this.ebav0370m);
-            this.FunctionDictionary.Add("ebav0371m", this.ebav0371m);
-            this.FunctionDictionary.Add("ebav0372m", this.ebav0372m);
-            this.FunctionDictionary.Add("ebav0373m", this.ebav0373m);
-            this.FunctionDictionary.Add("ebav0374m", this.ebav0374m);
-            this.FunctionDictionary.Add("ebav0375m", this.ebav0375m);
-            this.FunctionDictionary.Add("ebav0376m", this.ebav0376m);
-            this.FunctionDictionary.Add("ebav0377m", this.ebav0377m);
-            this.FunctionDictionary.Add("ebav0378m", this.ebav0378m);
-            this.FunctionDictionary.Add("ebav0379m", this.ebav0379m);
-            this.FunctionDictionary.Add("ebav0380m", this.ebav0380m);
-            this.FunctionDictionary.Add("ebav0381m", this.ebav0381m);
-            this.FunctionDictionary.Add("ebav0382m", this.ebav0382m);
-            this.FunctionDictionary.Add("ebav0383m", this.ebav0383m);
-            this.FunctionDictionary.Add("ebav0384m", this.ebav0384m);
-            this.FunctionDictionary.Add("ebav0385m", this.ebav0385m);
-            this.FunctionDictionary.Add("ebav0386m", this.ebav0386m);
-            this.FunctionDictionary.Add("ebav0387m", this.ebav0387m);
-            this.FunctionDictionary.Add("ebav0388m", this.ebav0388m);
-            this.FunctionDictionary.Add("ebav0389m", this.ebav0389m);
-            this.FunctionDictionary.Add("ebav0390m", this.ebav0390m);
-            this.FunctionDictionary.Add("ebav0391m", this.ebav0391m);
-            this.FunctionDictionary.Add("ebav0392m", this.ebav0392m);
-            this.FunctionDictionary.Add("ebav0393m", this.ebav0393m);
-            this.FunctionDictionary.Add("ebav0394m", this.ebav0394m);
-            this.FunctionDictionary.Add("ebav0395m", this.ebav0395m);
-            this.FunctionDictionary.Add("ebav0396m", this.ebav0396m);
-            this.FunctionDictionary.Add("ebav0397m", this.ebav0397m);
-            this.FunctionDictionary.Add("ebav0398m", this.ebav0398m);
-            this.FunctionDictionary.Add("ebav0399m", this.ebav0399m);
-            this.FunctionDictionary.Add("ebav0400m", this.ebav0400m);
-            this.FunctionDictionary.Add("ebav0401m", this.ebav0401m);
-            this.FunctionDictionary.Add("ebav0402m", this.ebav0402m);
-            this.FunctionDictionary.Add("ebav0403m", this.ebav0403m);
-            this.FunctionDictionary.Add("ebav0404m", this.ebav0404m);
-            this.FunctionDictionary.Add("ebav0405m", this.ebav0405m);
-            this.FunctionDictionary.Add("ebav0406m", this.ebav0406m);
-            this.FunctionDictionary.Add("ebav1666m", this.ebav1666m);
-            this.FunctionDictionary.Add("ebav1667m", this.ebav1667m);
-            this.FunctionDictionary.Add("ebav1668m", this.ebav1668m);
-            this.FunctionDictionary.Add("ebav1669m", this.ebav1669m);
-            this.FunctionDictionary.Add("ebav1670m", this.ebav1670m);
-            this.FunctionDictionary.Add("ebav1671m", this.ebav1671m);
-            this.FunctionDictionary.Add("ebav0407m", this.ebav0407m);
-            this.FunctionDictionary.Add("ebav3722s", this.ebav3722s);
-            this.FunctionDictionary.Add("ebav3723s", this.ebav3723s);
-            this.FunctionDictionary.Add("ebav3724s", this.ebav3724s);
-            this.FunctionDictionary.Add("ebav0411m", this.ebav0411m);
-            this.FunctionDictionary.Add("ebav0412m", this.ebav0412m);
-            this.FunctionDictionary.Add("ebav0413m", this.ebav0413m);
-            this.FunctionDictionary.Add("ebav3725s", this.ebav3725s);
-            this.FunctionDictionary.Add("ebav0415m", this.ebav0415m);
-            this.FunctionDictionary.Add("ebav0416m", this.ebav0416m);
-            this.FunctionDictionary.Add("ebav0417m", this.ebav0417m);
-            this.FunctionDictionary.Add("ebav0418m", this.ebav0418m);
-            this.FunctionDictionary.Add("ebav0420m", this.ebav0420m);
-            this.FunctionDictionary.Add("ebav0421m", this.ebav0421m);
-            this.FunctionDictionary.Add("ebav0422m", this.ebav0422m);
-            this.FunctionDictionary.Add("ebav0423m", this.ebav0423m);
-            this.FunctionDictionary.Add("ebav0425m", this.ebav0425m);
-            this.FunctionDictionary.Add("ebav0426m", this.ebav0426m);
-            this.FunctionDictionary.Add("ebav0427m", this.ebav0427m);
-            this.FunctionDictionary.Add("ebav0428m", this.ebav0428m);
-            this.FunctionDictionary.Add("ebav0430m", this.ebav0430m);
-            this.FunctionDictionary.Add("ebav0431m", this.ebav0431m);
-            this.FunctionDictionary.Add("ebav0432m", this.ebav0432m);
-            this.FunctionDictionary.Add("ebav0433m", this.ebav0433m);
-            this.FunctionDictionary.Add("ebav0435m", this.ebav0435m);
-            this.FunctionDictionary.Add("ebav0436m", this.ebav0436m);
-            this.FunctionDictionary.Add("ebav0437m", this.ebav0437m);
-            this.FunctionDictionary.Add("ebav0438m", this.ebav0438m);
-            this.FunctionDictionary.Add("ebav0440m", this.ebav0440m);
-            this.FunctionDictionary.Add("ebav0441m", this.ebav0441m);
-            this.FunctionDictionary.Add("ebav0442m", this.ebav0442m);
-            this.FunctionDictionary.Add("ebav0443m", this.ebav0443m);
-            this.FunctionDictionary.Add("ebav0445m", this.ebav0445m);
-            this.FunctionDictionary.Add("ebav0446m", this.ebav0446m);
-            this.FunctionDictionary.Add("ebav0447m", this.ebav0447m);
-            this.FunctionDictionary.Add("ebav0448m", this.ebav0448m);
-            this.FunctionDictionary.Add("ebav0450m", this.ebav0450m);
-            this.FunctionDictionary.Add("ebav0451m", this.ebav0451m);
-            this.FunctionDictionary.Add("ebav0452m", this.ebav0452m);
-            this.FunctionDictionary.Add("ebav0453m", this.ebav0453m);
-            this.FunctionDictionary.Add("ebav0455m", this.ebav0455m);
-            this.FunctionDictionary.Add("ebav0456m", this.ebav0456m);
-            this.FunctionDictionary.Add("ebav0457m", this.ebav0457m);
-            this.FunctionDictionary.Add("ebav0458m", this.ebav0458m);
-            this.FunctionDictionary.Add("ebav0460m", this.ebav0460m);
-            this.FunctionDictionary.Add("ebav0461m", this.ebav0461m);
-            this.FunctionDictionary.Add("ebav0462m", this.ebav0462m);
-            this.FunctionDictionary.Add("ebav0463m", this.ebav0463m);
-            this.FunctionDictionary.Add("ebav0465m", this.ebav0465m);
-            this.FunctionDictionary.Add("ebav0466m", this.ebav0466m);
-            this.FunctionDictionary.Add("ebav0467m", this.ebav0467m);
-            this.FunctionDictionary.Add("ebav0468m", this.ebav0468m);
-            this.FunctionDictionary.Add("ebav0470m", this.ebav0470m);
-            this.FunctionDictionary.Add("ebav0471m", this.ebav0471m);
-            this.FunctionDictionary.Add("ebav0472m", this.ebav0472m);
-            this.FunctionDictionary.Add("ebav0473m", this.ebav0473m);
-            this.FunctionDictionary.Add("ebav0475m", this.ebav0475m);
-            this.FunctionDictionary.Add("ebav0476m", this.ebav0476m);
-            this.FunctionDictionary.Add("ebav0477m", this.ebav0477m);
-            this.FunctionDictionary.Add("ebav0478m", this.ebav0478m);
-            this.FunctionDictionary.Add("ebav1672m", this.ebav1672m);
-            this.FunctionDictionary.Add("ebav1673m", this.ebav1673m);
-            this.FunctionDictionary.Add("ebav1674m", this.ebav1674m);
-            this.FunctionDictionary.Add("ebav0480m", this.ebav0480m);
-            this.FunctionDictionary.Add("ebav0481m", this.ebav0481m);
-            this.FunctionDictionary.Add("ebav0483m", this.ebav0483m);
-            this.FunctionDictionary.Add("ebav0484m", this.ebav0484m);
-            this.FunctionDictionary.Add("ebav0485m", this.ebav0485m);
-            this.FunctionDictionary.Add("ebav0486m", this.ebav0486m);
-            this.FunctionDictionary.Add("ebav0487m", this.ebav0487m);
-            this.FunctionDictionary.Add("ebav0488m", this.ebav0488m);
-            this.FunctionDictionary.Add("ebav0489m", this.ebav0489m);
-            this.FunctionDictionary.Add("ebav1617m", this.ebav1617m);
-            this.FunctionDictionary.Add("ebav2051s", this.ebav2051s);
-            this.FunctionDictionary.Add("ebav3729s", this.ebav3729s);
-            this.FunctionDictionary.Add("ebav3730s", this.ebav3730s);
-            this.FunctionDictionary.Add("ebav3731s", this.ebav3731s);
-            this.FunctionDictionary.Add("ebav3732s", this.ebav3732s);
-            this.FunctionDictionary.Add("ebav0482m", this.ebav0482m);
-            this.FunctionDictionary.Add("ebav0493m", this.ebav0493m);
-            this.FunctionDictionary.Add("ebav1675m", this.ebav1675m);
-            this.FunctionDictionary.Add("ebav3733s", this.ebav3733s);
-            this.FunctionDictionary.Add("ebav0494m", this.ebav0494m);
-            this.FunctionDictionary.Add("ebav0495m", this.ebav0495m);
-            this.FunctionDictionary.Add("ebav0496m", this.ebav0496m);
-            this.FunctionDictionary.Add("ebav0497m", this.ebav0497m);
-            this.FunctionDictionary.Add("ebav0498m", this.ebav0498m);
-            this.FunctionDictionary.Add("ebav0499m", this.ebav0499m);
-            this.FunctionDictionary.Add("ebav0501m", this.ebav0501m);
-            this.FunctionDictionary.Add("ebav0503m", this.ebav0503m);
-            this.FunctionDictionary.Add("ebav3734s", this.ebav3734s);
-            this.FunctionDictionary.Add("ebav3735s", this.ebav3735s);
-            this.FunctionDictionary.Add("ebav0500m", this.ebav0500m);
-            this.FunctionDictionary.Add("ebav0502m", this.ebav0502m);
-            this.FunctionDictionary.Add("ebav0511m", this.ebav0511m);
-            this.FunctionDictionary.Add("ebav0529m", this.ebav0529m);
-            this.FunctionDictionary.Add("ebav0530m", this.ebav0530m);
-            this.FunctionDictionary.Add("ebav0531m", this.ebav0531m);
-            this.FunctionDictionary.Add("ebav0532m", this.ebav0532m);
-            this.FunctionDictionary.Add("ebav0533m", this.ebav0533m);
-            this.FunctionDictionary.Add("ebav0534m", this.ebav0534m);
-            this.FunctionDictionary.Add("ebav0536m", this.ebav0536m);
-            this.FunctionDictionary.Add("ebav0537m", this.ebav0537m);
-            this.FunctionDictionary.Add("ebav0538m", this.ebav0538m);
-            this.FunctionDictionary.Add("ebav0540m", this.ebav0540m);
-            this.FunctionDictionary.Add("ebav0541m", this.ebav0541m);
-            this.FunctionDictionary.Add("ebav0542m", this.ebav0542m);
-            this.FunctionDictionary.Add("ebav0543m", this.ebav0543m);
-            this.FunctionDictionary.Add("ebav0544m", this.ebav0544m);
-            this.FunctionDictionary.Add("ebav0545m", this.ebav0545m);
-            this.FunctionDictionary.Add("ebav0546m", this.ebav0546m);
-            this.FunctionDictionary.Add("ebav0547m", this.ebav0547m);
-            this.FunctionDictionary.Add("ebav0548m", this.ebav0548m);
-            this.FunctionDictionary.Add("ebav0549m", this.ebav0549m);
-            this.FunctionDictionary.Add("ebav0550m", this.ebav0550m);
-            this.FunctionDictionary.Add("ebav0551m", this.ebav0551m);
-            this.FunctionDictionary.Add("ebav0552m", this.ebav0552m);
-            this.FunctionDictionary.Add("ebav3745s", this.ebav3745s);
-            this.FunctionDictionary.Add("ebav3746s", this.ebav3746s);
-            this.FunctionDictionary.Add("ebav3747s", this.ebav3747s);
-            this.FunctionDictionary.Add("ebav3748s", this.ebav3748s);
-            this.FunctionDictionary.Add("ebav3749s", this.ebav3749s);
-            this.FunctionDictionary.Add("ebav3750s", this.ebav3750s);
-            this.FunctionDictionary.Add("ebav3751s", this.ebav3751s);
-            this.FunctionDictionary.Add("ebav3752s", this.ebav3752s);
-            this.FunctionDictionary.Add("ebav3753s", this.ebav3753s);
-            this.FunctionDictionary.Add("ebav3754s", this.ebav3754s);
-            this.FunctionDictionary.Add("ebav3755s", this.ebav3755s);
-            this.FunctionDictionary.Add("ebav4065m", this.ebav4065m);
-            this.FunctionDictionary.Add("ebav4066m", this.ebav4066m);
-            this.FunctionDictionary.Add("ebav4067m", this.ebav4067m);
-            this.FunctionDictionary.Add("ebav4068m", this.ebav4068m);
-            this.FunctionDictionary.Add("ebav4069m", this.ebav4069m);
-            this.FunctionDictionary.Add("ebav4070m", this.ebav4070m);
-            this.FunctionDictionary.Add("ebav4071m", this.ebav4071m);
-            this.FunctionDictionary.Add("ebav4072m", this.ebav4072m);
-            this.FunctionDictionary.Add("ebav4073m", this.ebav4073m);
-            this.FunctionDictionary.Add("ebav4074m", this.ebav4074m);
-            this.FunctionDictionary.Add("ebav4075m", this.ebav4075m);
-            this.FunctionDictionary.Add("ebav4078m", this.ebav4078m);
-            this.FunctionDictionary.Add("ebav4079m", this.ebav4079m);
-            this.FunctionDictionary.Add("ebav4080m", this.ebav4080m);
-            this.FunctionDictionary.Add("ebav4081m", this.ebav4081m);
-            this.FunctionDictionary.Add("ebav4082m", this.ebav4082m);
-            this.FunctionDictionary.Add("ebav4083m", this.ebav4083m);
-            this.FunctionDictionary.Add("ebav4084m", this.ebav4084m);
-            this.FunctionDictionary.Add("ebav4085m", this.ebav4085m);
-            this.FunctionDictionary.Add("ebav4086m", this.ebav4086m);
-            this.FunctionDictionary.Add("ebav4087m", this.ebav4087m);
-            this.FunctionDictionary.Add("ebav4088m", this.ebav4088m);
-            this.FunctionDictionary.Add("ebav4089m", this.ebav4089m);
-            this.FunctionDictionary.Add("ebav4090m", this.ebav4090m);
-            this.FunctionDictionary.Add("ebav4091m", this.ebav4091m);
-            this.FunctionDictionary.Add("ebav4092m", this.ebav4092m);
-            this.FunctionDictionary.Add("ebav4093m", this.ebav4093m);
-            this.FunctionDictionary.Add("ebav4094m", this.ebav4094m);
-            this.FunctionDictionary.Add("ebav4153m", this.ebav4153m);
-            this.FunctionDictionary.Add("ebav0535m", this.ebav0535m);
-            this.FunctionDictionary.Add("ebav0539m", this.ebav0539m);
-            this.FunctionDictionary.Add("ebav0553m", this.ebav0553m);
-            this.FunctionDictionary.Add("ebav2054s", this.ebav2054s);
-            this.FunctionDictionary.Add("ebav3756s", this.ebav3756s);
-            this.FunctionDictionary.Add("ebav4007a", this.ebav4007a);
-            this.FunctionDictionary.Add("ebav4010a", this.ebav4010a);
-            this.FunctionDictionary.Add("ebav4011a", this.ebav4011a);
-            this.FunctionDictionary.Add("ebav4014a", this.ebav4014a);
-            this.FunctionDictionary.Add("ebav4015a", this.ebav4015a);
-            this.FunctionDictionary.Add("ebav4018a", this.ebav4018a);
-            this.FunctionDictionary.Add("ebav4020a", this.ebav4020a);
-            this.FunctionDictionary.Add("ebav4021a", this.ebav4021a);
-            this.FunctionDictionary.Add("ebav4022a", this.ebav4022a);
-            this.FunctionDictionary.Add("ebav4024a", this.ebav4024a);
-            this.FunctionDictionary.Add("ebav0554m", this.ebav0554m);
-            this.FunctionDictionary.Add("ebav0555m", this.ebav0555m);
-            this.FunctionDictionary.Add("ebav0556m", this.ebav0556m);
-            this.FunctionDictionary.Add("ebav3757s", this.ebav3757s);
-            this.FunctionDictionary.Add("ebav0558m", this.ebav0558m);
-            this.FunctionDictionary.Add("ebav0560m", this.ebav0560m);
-            this.FunctionDictionary.Add("ebav0563m", this.ebav0563m);
-            this.FunctionDictionary.Add("ebav1141m", this.ebav1141m);
-            this.FunctionDictionary.Add("ebav3758s", this.ebav3758s);
-            this.FunctionDictionary.Add("ebav3759s", this.ebav3759s);
-            this.FunctionDictionary.Add("ebav0562m", this.ebav0562m);
-            this.FunctionDictionary.Add("ebav1142m", this.ebav1142m);
-            this.FunctionDictionary.Add("ebav1143m", this.ebav1143m);
-            this.FunctionDictionary.Add("ebav1144m", this.ebav1144m);
-            this.FunctionDictionary.Add("ebav2055s", this.ebav2055s);
-            this.FunctionDictionary.Add("ebav3760s", this.ebav3760s);
-            this.FunctionDictionary.Add("ebav0568m", this.ebav0568m);
-            this.FunctionDictionary.Add("ebav3762s", this.ebav3762s);
-            this.FunctionDictionary.Add("ebav0581m", this.ebav0581m);
-            this.FunctionDictionary.Add("ebav0582m", this.ebav0582m);
-            this.FunctionDictionary.Add("ebav0583m", this.ebav0583m);
-            this.FunctionDictionary.Add("ebav0589m", this.ebav0589m);
-            this.FunctionDictionary.Add("ebav0590m", this.ebav0590m);
-            this.FunctionDictionary.Add("ebav0592m", this.ebav0592m);
-            this.FunctionDictionary.Add("ebav0593m", this.ebav0593m);
-            this.FunctionDictionary.Add("ebav0594m", this.ebav0594m);
-            this.FunctionDictionary.Add("ebav0596m", this.ebav0596m);
-            this.FunctionDictionary.Add("ebav0597m", this.ebav0597m);
-            this.FunctionDictionary.Add("ebav0598m", this.ebav0598m);
-            this.FunctionDictionary.Add("ebav2056s", this.ebav2056s);
-            this.FunctionDictionary.Add("ebav3768s", this.ebav3768s);
-            this.FunctionDictionary.Add("ebav3769s", this.ebav3769s);
-            this.FunctionDictionary.Add("ebav3770s", this.ebav3770s);
-            this.FunctionDictionary.Add("ebav3771s", this.ebav3771s);
-            this.FunctionDictionary.Add("ebav3772s", this.ebav3772s);
-            this.FunctionDictionary.Add("ebav3773s", this.ebav3773s);
-            this.FunctionDictionary.Add("ebav4031m", this.ebav4031m);
-            this.FunctionDictionary.Add("ebav4032m", this.ebav4032m);
-            this.FunctionDictionary.Add("ebav4033m", this.ebav4033m);
-            this.FunctionDictionary.Add("ebav4034m", this.ebav4034m);
-            this.FunctionDictionary.Add("ebav4035m", this.ebav4035m);
-            this.FunctionDictionary.Add("ebav4036m", this.ebav4036m);
-            this.FunctionDictionary.Add("ebav4037m", this.ebav4037m);
-            this.FunctionDictionary.Add("ebav4038m", this.ebav4038m);
-            this.FunctionDictionary.Add("ebav4039m", this.ebav4039m);
-            this.FunctionDictionary.Add("ebav4040m", this.ebav4040m);
-            this.FunctionDictionary.Add("ebav4041m", this.ebav4041m);
-            this.FunctionDictionary.Add("ebav4042m", this.ebav4042m);
-            this.FunctionDictionary.Add("ebav4043m", this.ebav4043m);
-            this.FunctionDictionary.Add("ebav4044m", this.ebav4044m);
-            this.FunctionDictionary.Add("ebav4045m", this.ebav4045m);
-            this.FunctionDictionary.Add("ebav4046m", this.ebav4046m);
-            this.FunctionDictionary.Add("ebav0600m", this.ebav0600m);
-            this.FunctionDictionary.Add("ebav0602m", this.ebav0602m);
-            this.FunctionDictionary.Add("ebav0604m", this.ebav0604m);
-            this.FunctionDictionary.Add("ebav0605m", this.ebav0605m);
-            this.FunctionDictionary.Add("ebav0606m", this.ebav0606m);
-            this.FunctionDictionary.Add("ebav0607m", this.ebav0607m);
-            this.FunctionDictionary.Add("ebav0608m", this.ebav0608m);
-            this.FunctionDictionary.Add("ebav0609m", this.ebav0609m);
-            this.FunctionDictionary.Add("ebav0610m", this.ebav0610m);
-            this.FunctionDictionary.Add("ebav0611m", this.ebav0611m);
-            this.FunctionDictionary.Add("ebav0612m", this.ebav0612m);
-            this.FunctionDictionary.Add("ebav0613m", this.ebav0613m);
-            this.FunctionDictionary.Add("ebav0614m", this.ebav0614m);
-            this.FunctionDictionary.Add("ebav0615m", this.ebav0615m);
-            this.FunctionDictionary.Add("ebav0616m", this.ebav0616m);
-            this.FunctionDictionary.Add("ebav0617m", this.ebav0617m);
-            this.FunctionDictionary.Add("ebav2057s", this.ebav2057s);
-            this.FunctionDictionary.Add("ebav3774s", this.ebav3774s);
-            this.FunctionDictionary.Add("ebav3775s", this.ebav3775s);
-            this.FunctionDictionary.Add("ebav3776s", this.ebav3776s);
-            this.FunctionDictionary.Add("ebav3777s", this.ebav3777s);
-            this.FunctionDictionary.Add("ebav4095m", this.ebav4095m);
-            this.FunctionDictionary.Add("ebav4096m", this.ebav4096m);
-            this.FunctionDictionary.Add("ebav4097m", this.ebav4097m);
-            this.FunctionDictionary.Add("ebav4098m", this.ebav4098m);
-            this.FunctionDictionary.Add("ebav0629m", this.ebav0629m);
-            this.FunctionDictionary.Add("ebav0635m", this.ebav0635m);
-            this.FunctionDictionary.Add("ebav0636m", this.ebav0636m);
-            this.FunctionDictionary.Add("ebav0637m", this.ebav0637m);
-            this.FunctionDictionary.Add("ebav1906h", this.ebav1906h);
-            this.FunctionDictionary.Add("ebav1907h", this.ebav1907h);
-            this.FunctionDictionary.Add("ebav3792s", this.ebav3792s);
-            this.FunctionDictionary.Add("ebav3793s", this.ebav3793s);
-            this.FunctionDictionary.Add("ebav0639m", this.ebav0639m);
-            this.FunctionDictionary.Add("ebav0641m", this.ebav0641m);
-            this.FunctionDictionary.Add("ebav0642m", this.ebav0642m);
-            this.FunctionDictionary.Add("ebav3794s", this.ebav3794s);
-            this.FunctionDictionary.Add("ebav3795s", this.ebav3795s);
-            this.FunctionDictionary.Add("ebav3796s", this.ebav3796s);
-            this.FunctionDictionary.Add("ebav3797s", this.ebav3797s);
-            this.FunctionDictionary.Add("ebav0640m", this.ebav0640m);
-            this.FunctionDictionary.Add("ebav0643m", this.ebav0643m);
-            this.FunctionDictionary.Add("ebav0644m", this.ebav0644m);
-            this.FunctionDictionary.Add("ebav0645m", this.ebav0645m);
-            this.FunctionDictionary.Add("ebav0668m", this.ebav0668m);
-            this.FunctionDictionary.Add("ebav3810s", this.ebav3810s);
-            this.FunctionDictionary.Add("ebav3811s", this.ebav3811s);
-            this.FunctionDictionary.Add("ebav0670m", this.ebav0670m);
-            this.FunctionDictionary.Add("ebav0672m", this.ebav0672m);
-            this.FunctionDictionary.Add("ebav0673m", this.ebav0673m);
-            this.FunctionDictionary.Add("ebav0674m", this.ebav0674m);
-            this.FunctionDictionary.Add("ebav0675m", this.ebav0675m);
-            this.FunctionDictionary.Add("ebav0677m", this.ebav0677m);
-            this.FunctionDictionary.Add("ebav0678m", this.ebav0678m);
-            this.FunctionDictionary.Add("ebav0683m", this.ebav0683m);
-            this.FunctionDictionary.Add("ebav0684m", this.ebav0684m);
-            this.FunctionDictionary.Add("ebav3812s", this.ebav3812s);
-            this.FunctionDictionary.Add("ebav0700m", this.ebav0700m);
-            this.FunctionDictionary.Add("ebav0701m", this.ebav0701m);
-            this.FunctionDictionary.Add("ebav0702m", this.ebav0702m);
-            this.FunctionDictionary.Add("ebav0703m", this.ebav0703m);
-            this.FunctionDictionary.Add("ebav0704m", this.ebav0704m);
-            this.FunctionDictionary.Add("ebav0705m", this.ebav0705m);
-            this.FunctionDictionary.Add("ebav0706m", this.ebav0706m);
-            this.FunctionDictionary.Add("ebav0707m", this.ebav0707m);
-            this.FunctionDictionary.Add("ebav3813s", this.ebav3813s);
-            this.FunctionDictionary.Add("ebav0709m", this.ebav0709m);
-            this.FunctionDictionary.Add("ebav0710m", this.ebav0710m);
-            this.FunctionDictionary.Add("ebav0712m", this.ebav0712m);
-            this.FunctionDictionary.Add("ebav0713m", this.ebav0713m);
-            this.FunctionDictionary.Add("ebav0714m", this.ebav0714m);
-            this.FunctionDictionary.Add("ebav0715m", this.ebav0715m);
-            this.FunctionDictionary.Add("ebav0716m", this.ebav0716m);
-            this.FunctionDictionary.Add("ebav0717m", this.ebav0717m);
-            this.FunctionDictionary.Add("ebav0718m", this.ebav0718m);
-            this.FunctionDictionary.Add("ebav0719m", this.ebav0719m);
-            this.FunctionDictionary.Add("ebav3814s", this.ebav3814s);
-            this.FunctionDictionary.Add("ebav0721m", this.ebav0721m);
-            this.FunctionDictionary.Add("ebav0722m", this.ebav0722m);
-            this.FunctionDictionary.Add("ebav0726m", this.ebav0726m);
-            this.FunctionDictionary.Add("ebav0727m", this.ebav0727m);
-            this.FunctionDictionary.Add("ebav0728m", this.ebav0728m);
-            this.FunctionDictionary.Add("ebav0730m", this.ebav0730m);
-            this.FunctionDictionary.Add("ebav3815s", this.ebav3815s);
-            this.FunctionDictionary.Add("ebav1156m", this.ebav1156m);
-            this.FunctionDictionary.Add("ebav1157m", this.ebav1157m);
-            this.FunctionDictionary.Add("ebav3761s", this.ebav3761s);
-            this.FunctionDictionary.Add("ebav3687s", this.ebav3687s);
-            this.FunctionDictionary.Add("ebav3706s", this.ebav3706s);
-            this.FunctionDictionary.Add("ebav3716s", this.ebav3716s);
-            this.FunctionDictionary.Add("ebav3717s", this.ebav3717s);
-            this.FunctionDictionary.Add("ebav3718s", this.ebav3718s);
-            this.FunctionDictionary.Add("ebav3719s", this.ebav3719s);
-            this.FunctionDictionary.Add("ebav3720s", this.ebav3720s);
-            this.FunctionDictionary.Add("ebav3726s", this.ebav3726s);
-            this.FunctionDictionary.Add("ebav3727s", this.ebav3727s);
-            this.FunctionDictionary.Add("ebav3728s", this.ebav3728s);
-            this.FunctionDictionary.Add("ebav4002c", this.ebav4002c);
-            this.FunctionDictionary.Add("ebav4003c", this.ebav4003c);
-            this.FunctionDictionary.Add("ebav4008a", this.ebav4008a);
-            this.FunctionDictionary.Add("ebav4009a", this.ebav4009a);
-            this.FunctionDictionary.Add("ebav4016a", this.ebav4016a);
-            this.FunctionDictionary.Add("ebav4029a", this.ebav4029a);
-
-        }
-        public bool ebav0002h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0006h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0569m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
-        }
-
-        public bool ebav0571m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0572m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0574m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0578m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 0.08), p_b);
-        }
-
-        public bool ebav0579m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 0.12), p_b);
-        }
-
-        public bool ebav3763s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3764s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3765s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3766s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3767s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0004h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0619m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
-        }
-
-        public bool ebav0620m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0622m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0623m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 0.08), p_b);
-        }
-
-        public bool ebav3778s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3779s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3780s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3781s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3782s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0005h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0630m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
-        }
-
-        public bool ebav0631m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav3789s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3790s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3791s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0007h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0625m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
-        }
-
-        public bool ebav0626m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0627m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0628m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_LessEqual(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav3783s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3784s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3785s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3786s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3787s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3788s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0009h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0505m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0506m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0507m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0510m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0512m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0513m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0516m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0517m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0518m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0519m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0520m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0521m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0522m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0523m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0524m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0525m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0526m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0527m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(functions.abs(p_a), functions.abs(p_b));
-        }
-
-        public bool ebav2052s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3736s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3737s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3738s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3739s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3740s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3741s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3742s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3743s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3744s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav4047m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4048m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4049m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4050m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4051m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4052m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4053m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4054m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4055m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4056m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4057m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4058m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4059m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4060m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4061m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4062m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4063m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4064m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav0010h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0305m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0306m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0307m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0308m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(functions.N_Multiply(0.8, p_d)), functions.N_Unary_Minus(functions.N_Multiply(0.5, p_e))));
-        }
-
-        public bool ebav0310m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0311m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0312m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p));
-        }
-
-        public bool ebav0313m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o));
-        }
-
-        public bool ebav0314m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0315m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0316m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_Equals(p_a, 0);
-        }
-
-        public bool ebav0317m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_Equals(p_a, 0);
-        }
-
-        public bool ebav0318m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.02));
-        }
-
-        public bool ebav0319m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.1));
-        }
-
-        public bool ebav0320m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.2));
-        }
-
-        public bool ebav0321m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.35));
-        }
-
-        public bool ebav0322m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.5));
-        }
-
-        public bool ebav0323m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.7));
-        }
-
-        public bool ebav0324m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.75));
-        }
-
-        public bool ebav0325m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0326m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 1.5));
-        }
-
-        public bool ebav0327m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 2.5));
-        }
-
-        public bool ebav0328m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
-        }
-
-        public bool ebav1644m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1645m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1647m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1648m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1649m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav2037s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3697s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3698s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3699s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3700s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3701s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3702s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3703s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3704s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0011h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav1659m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(functions.N_Multiply(0.8, p_d)), functions.N_Unary_Minus(functions.N_Multiply(0.5, p_e))));
-        }
-
-        public bool ebav1784h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav3707s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3708s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav0012h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav1660m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1661m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(functions.N_Multiply(0.8, p_d)), functions.N_Unary_Minus(functions.N_Multiply(0.5, p_e))));
-        }
-
-        public bool ebav1785h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav2040s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3709s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0022h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0023h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0277m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0278m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav2036s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3694s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0101h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0102h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0132h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0657m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0658m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0659m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0660m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0661m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0662m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0663m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0664m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0665m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0666m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0667m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_LessEqual(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav1688m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, functions.N_Multiply(p_b, 0.1));
-        }
-
-        public bool ebav1689m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, functions.N_Multiply(p_b, 0.1));
-        }
-
-        public bool ebav1691m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav3803s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3804s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3805s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3806s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3807s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3808s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3809s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0108h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0128h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0224m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0225m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
-        }
-
-        public bool ebav0226m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0227m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0228m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0229m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0230m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0231m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0232m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0233m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0234m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0235m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0236m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0237m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0238m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0239m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0240m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0241m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0242m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0243m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0244m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0245m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0246m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0247m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0248m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0249m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0250m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0251m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
-        }
-
-        public bool ebav2034s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3688s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0148h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0172m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_aa = parameters.FirstOrDefault(i => i.Name == "aa").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_bb = parameters.FirstOrDefault(i => i.Name == "bb").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_cc = parameters.FirstOrDefault(i => i.Name == "cc").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
-            var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
-            var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
-            var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
-            var p_u = parameters.FirstOrDefault(i => i.Name == "u").DoubleValue;
-            var p_v = parameters.FirstOrDefault(i => i.Name == "v").DoubleValue;
-            var p_w = parameters.FirstOrDefault(i => i.Name == "w").DoubleValue;
-            var p_x = parameters.FirstOrDefault(i => i.Name == "x").DoubleValue;
-            var p_y = parameters.FirstOrDefault(i => i.Name == "y").DoubleValue;
-            var p_z = parameters.FirstOrDefault(i => i.Name == "z").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, p_r, p_s, p_t, p_u, p_v, p_w, p_x, p_y, p_z, p_aa, p_bb, p_cc));
-        }
-
-        public bool ebav0173m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0174m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0175m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0176m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0177m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0178m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0179m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0180m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0181m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Unary_Minus(p_b));
-        }
-
-        public bool ebav0182m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
-        }
-
-        public bool ebav0183m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0184m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0185m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Unary_Minus(p_b));
-        }
-
-        public bool ebav0186m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n));
-        }
-
-        public bool ebav0187m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0188m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav1771h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav3685s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav0150h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0204m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i));
-        }
-
-        public bool ebav0205m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0206m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0207m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q));
-        }
-
-        public bool ebav0208m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0209m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0210m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0211m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k));
-        }
-
-        public bool ebav0212m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0213m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0214m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0215m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0216m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0217m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav3686s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0190m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0197m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0201m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav1772h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav1773h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav1774h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0218m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, p_c));
-        }
-
-        public bool ebav0219m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(functions.N_Multiply(p_c, 0.045))));
-        }
-
-        public bool ebav0220m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, p_c));
-        }
-
-        public bool ebav0221m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(functions.N_Multiply(p_c, 0.06))));
-        }
-
-        public bool ebav0222m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, p_c));
-        }
-
-        public bool ebav0223m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(functions.N_Multiply(p_c, 0.08))));
-        }
-
-        public bool ebav0252m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0253m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
-        }
-
-        public bool ebav0255m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0256m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0257m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0258m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0259m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
-        }
-
-        public bool ebav0260m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0261m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0262m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0264m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0265m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0266m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l));
-        }
-
-        public bool ebav0267m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0268m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0269m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
-        }
-
-        public bool ebav0270m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0271m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav1628m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1629m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav1630m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav2000s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav2035s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3689s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3690s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3691s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0274m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0275m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0276m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0309m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0332m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0335m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0336m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0338m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav1662m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav1663m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav2041s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav2042s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3710s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3711s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3712s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3713s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3714s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3715s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0334m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0342m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0343m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0344m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0345m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0346m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0347m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0348m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav1665m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav2049s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3721s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0350m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0351m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0352m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0353m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0354m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0355m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0356m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0357m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0358m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0359m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0360m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0361m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0362m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0363m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0364m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0365m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0366m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0367m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0368m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0369m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0370m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0371m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0372m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0373m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0374m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0375m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0376m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0377m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0378m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0379m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0380m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0381m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0382m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0383m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0384m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0385m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0386m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0387m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0388m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0389m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0390m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0391m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0392m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0393m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0394m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0395m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0396m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0397m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0398m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0399m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0400m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0401m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0402m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0403m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0404m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0405m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0406m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1666m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1667m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1668m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1669m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1670m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1671m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0407m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav3722s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3723s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3724s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0411m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0412m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0413m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav3725s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0415m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0416m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0417m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0418m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0420m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0421m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0422m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0423m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0425m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0426m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0427m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0428m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0430m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0431m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0432m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0433m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0435m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0436m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0437m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0438m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0440m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0441m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0442m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0443m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0445m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0446m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0447m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0448m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0450m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0451m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0452m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0453m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0455m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0456m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0457m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0458m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0460m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0461m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0462m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0463m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0465m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0466m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0467m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0468m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0470m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0471m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0472m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0473m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0475m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0476m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0477m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0478m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1672m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav1673m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav1674m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a), p_b);
-        }
-
-        public bool ebav0480m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0481m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0.65);
-        }
-
-        public bool ebav0483m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0484m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 1.9));
-        }
-
-        public bool ebav0485m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.008));
-        }
-
-        public bool ebav0486m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 2.9));
-        }
-
-        public bool ebav0487m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.008));
-        }
-
-        public bool ebav0488m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 3.7));
-        }
-
-        public bool ebav0489m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.024));
-        }
-
-        public bool ebav1617m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 1);
-        }
-
-        public bool ebav2051s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3729s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3730s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3731s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3732s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0482m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0493m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0.65);
-        }
-
-        public bool ebav1675m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 1);
-        }
-
-        public bool ebav3733s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0494m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0));
-        }
-
-        public bool ebav0495m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 1));
-        }
-
-        public bool ebav0496m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.5));
-        }
-
-        public bool ebav0497m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.75));
-        }
-
-        public bool ebav0498m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 0.08));
-        }
-
-        public bool ebav0499m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
-        }
-
-        public bool ebav0501m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0503m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav3734s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3735s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0500m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0502m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0511m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0529m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0530m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0531m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_LessEqual(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0532m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q));
-        }
-
-        public bool ebav0533m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p));
-        }
-
-        public bool ebav0534m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0536m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0537m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0538m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
-        }
-
-        public bool ebav0540m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0541m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0542m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0543m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0544m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0545m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0546m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0547m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0548m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0549m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0550m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0551m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0552m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(functions.abs(p_a), functions.abs(p_b));
-        }
-
-        public bool ebav3745s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3746s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3747s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3748s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3749s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3750s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3751s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3752s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3753s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3754s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3755s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav4065m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4066m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4067m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4068m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4069m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4070m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4071m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4072m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4073m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4074m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4075m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4078m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4079m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4080m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4081m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4082m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4083m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4084m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4085m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4086m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4087m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4088m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4089m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4090m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4091m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4092m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4093m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4094m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g), functions.N_Multiply(p_h, p_i), functions.N_Multiply(p_j, p_k)), p_l));
-        }
-
-        public bool ebav4153m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n));
-        }
-
-        public bool ebav0535m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0539m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0553m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            return functions.N_Equals(functions.sum(p_a, p_b, p_c), functions.sum(p_d, p_e, p_f, p_g));
-        }
-
-        public bool ebav2054s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3756s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav4007a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_AP:x27"), functions.XS_QName("eba_AP:x42"), functions.XS_QName("eba_AP:x45"));
-        }
-
-        public bool ebav4010a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_ZZ:x6"), functions.XS_QName("eba_ZZ:x7"), functions.XS_QName("eba_ZZ:x8"), functions.XS_QName("eba_ZZ:x9"), functions.XS_QName("eba_ZZ:x10"), functions.XS_QName("eba_ZZ:x11"), functions.XS_QName("eba_ZZ:x12"), functions.XS_QName("eba_ZZ:x13"));
-        }
-
-        public bool ebav4011a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_GA:AL"), functions.XS_QName("eba_GA:AT"), functions.XS_QName("eba_GA:BE"), functions.XS_QName("eba_GA:BG"), functions.XS_QName("eba_GA:CY"), functions.XS_QName("eba_GA:CZ"), functions.XS_QName("eba_GA:DK"), functions.XS_QName("eba_GA:EE"), functions.XS_QName("eba_GA:FI"), functions.XS_QName("eba_GA:FR"), functions.XS_QName("eba_GA:DE"), functions.XS_QName("eba_GA:GR"), functions.XS_QName("eba_GA:HU"), functions.XS_QName("eba_GA:IE"), functions.XS_QName("eba_GA:IT"), functions.XS_QName("eba_GA:JP"), functions.XS_QName("eba_GA:LV"), functions.XS_QName("eba_GA:LT"), functions.XS_QName("eba_GA:LU"), functions.XS_QName("eba_GA:MK"), functions.XS_QName("eba_GA:MT"), functions.XS_QName("eba_GA:NL"), functions.XS_QName("eba_GA:NO"), functions.XS_QName("eba_GA:x28"), functions.XS_QName("eba_GA:PL"), functions.XS_QName("eba_GA:PT"), functions.XS_QName("eba_GA:RO"), functions.XS_QName("eba_GA:RU"), functions.XS_QName("eba_GA:RS"), functions.XS_QName("eba_GA:SK"), functions.XS_QName("eba_GA:SI"), functions.XS_QName("eba_GA:ES"), functions.XS_QName("eba_GA:SE"), functions.XS_QName("eba_GA:CH"), functions.XS_QName("eba_GA:TR"), functions.XS_QName("eba_GA:UA"), functions.XS_QName("eba_GA:GB"), functions.XS_QName("eba_GA:US"), functions.XS_QName("eba_GA:AF"), functions.XS_QName("eba_GA:AX"), functions.XS_QName("eba_GA:DZ"), functions.XS_QName("eba_GA:AS"), functions.XS_QName("eba_GA:AD"), functions.XS_QName("eba_GA:AO"), functions.XS_QName("eba_GA:AI"), functions.XS_QName("eba_GA:AQ"), functions.XS_QName("eba_GA:AG"), functions.XS_QName("eba_GA:AR"), functions.XS_QName("eba_GA:AM"), functions.XS_QName("eba_GA:AW"), functions.XS_QName("eba_GA:AU"), functions.XS_QName("eba_GA:AZ"), functions.XS_QName("eba_GA:BS"), functions.XS_QName("eba_GA:BH"), functions.XS_QName("eba_GA:BD"), functions.XS_QName("eba_GA:BB"), functions.XS_QName("eba_GA:BY"), functions.XS_QName("eba_GA:BZ"), functions.XS_QName("eba_GA:BJ"), functions.XS_QName("eba_GA:BM"), functions.XS_QName("eba_GA:BT"), functions.XS_QName("eba_GA:BO"), functions.XS_QName("eba_GA:BQ"), functions.XS_QName("eba_GA:BA"), functions.XS_QName("eba_GA:BW"), functions.XS_QName("eba_GA:BV"), functions.XS_QName("eba_GA:BR"), functions.XS_QName("eba_GA:IO"), functions.XS_QName("eba_GA:BN"), functions.XS_QName("eba_GA:BF"), functions.XS_QName("eba_GA:BI"), functions.XS_QName("eba_GA:KH"), functions.XS_QName("eba_GA:CM"), functions.XS_QName("eba_GA:CA"), functions.XS_QName("eba_GA:CV"), functions.XS_QName("eba_GA:KY"), functions.XS_QName("eba_GA:CF"), functions.XS_QName("eba_GA:TD"), functions.XS_QName("eba_GA:CL"), functions.XS_QName("eba_GA:CN"), functions.XS_QName("eba_GA:CX"), functions.XS_QName("eba_GA:CC"), functions.XS_QName("eba_GA:CO"), functions.XS_QName("eba_GA:KM"), functions.XS_QName("eba_GA:CG"), functions.XS_QName("eba_GA:CD"), functions.XS_QName("eba_GA:CK"), functions.XS_QName("eba_GA:CR"), functions.XS_QName("eba_GA:CI"), functions.XS_QName("eba_GA:HR"), functions.XS_QName("eba_GA:CU"), functions.XS_QName("eba_GA:CW"), functions.XS_QName("eba_GA:DJ"), functions.XS_QName("eba_GA:DM"), functions.XS_QName("eba_GA:DO"), functions.XS_QName("eba_GA:EC"), functions.XS_QName("eba_GA:EG"), functions.XS_QName("eba_GA:SV"), functions.XS_QName("eba_GA:GQ"), functions.XS_QName("eba_GA:ER"), functions.XS_QName("eba_GA:ET"), functions.XS_QName("eba_GA:FK"), functions.XS_QName("eba_GA:FO"), functions.XS_QName("eba_GA:FJ"), functions.XS_QName("eba_GA:GF"), functions.XS_QName("eba_GA:PF"), functions.XS_QName("eba_GA:TF"), functions.XS_QName("eba_GA:GA"), functions.XS_QName("eba_GA:GM"), functions.XS_QName("eba_GA:GE"), functions.XS_QName("eba_GA:GH"), functions.XS_QName("eba_GA:GI"), functions.XS_QName("eba_GA:GL"), functions.XS_QName("eba_GA:GD"), functions.XS_QName("eba_GA:GP"), functions.XS_QName("eba_GA:GU"), functions.XS_QName("eba_GA:GT"), functions.XS_QName("eba_GA:GG"), functions.XS_QName("eba_GA:GN"), functions.XS_QName("eba_GA:GW"), functions.XS_QName("eba_GA:GY"), functions.XS_QName("eba_GA:HT"), functions.XS_QName("eba_GA:HM"), functions.XS_QName("eba_GA:VA"), functions.XS_QName("eba_GA:HN"), functions.XS_QName("eba_GA:HK"), functions.XS_QName("eba_GA:IS"), functions.XS_QName("eba_GA:IN"), functions.XS_QName("eba_GA:ID"), functions.XS_QName("eba_GA:IR"), functions.XS_QName("eba_GA:IQ"), functions.XS_QName("eba_GA:IM"), functions.XS_QName("eba_GA:IL"), functions.XS_QName("eba_GA:JM"), functions.XS_QName("eba_GA:JE"), functions.XS_QName("eba_GA:JO"), functions.XS_QName("eba_GA:KZ"), functions.XS_QName("eba_GA:KE"), functions.XS_QName("eba_GA:KI"), functions.XS_QName("eba_GA:KP"), functions.XS_QName("eba_GA:KR"), functions.XS_QName("eba_GA:KW"), functions.XS_QName("eba_GA:KG"), functions.XS_QName("eba_GA:LA"), functions.XS_QName("eba_GA:LB"), functions.XS_QName("eba_GA:LS"), functions.XS_QName("eba_GA:LR"), functions.XS_QName("eba_GA:LY"), functions.XS_QName("eba_GA:LI"), functions.XS_QName("eba_GA:MO"), functions.XS_QName("eba_GA:MG"), functions.XS_QName("eba_GA:MW"), functions.XS_QName("eba_GA:MY"), functions.XS_QName("eba_GA:MV"), functions.XS_QName("eba_GA:ML"), functions.XS_QName("eba_GA:MH"), functions.XS_QName("eba_GA:MQ"), functions.XS_QName("eba_GA:MR"), functions.XS_QName("eba_GA:MU"), functions.XS_QName("eba_GA:YT"), functions.XS_QName("eba_GA:MX"), functions.XS_QName("eba_GA:FM"), functions.XS_QName("eba_GA:MD"), functions.XS_QName("eba_GA:MC"), functions.XS_QName("eba_GA:MN"), functions.XS_QName("eba_GA:ME"), functions.XS_QName("eba_GA:MS"), functions.XS_QName("eba_GA:MA"), functions.XS_QName("eba_GA:MZ"), functions.XS_QName("eba_GA:MM"), functions.XS_QName("eba_GA:NA"), functions.XS_QName("eba_GA:NR"), functions.XS_QName("eba_GA:NP"), functions.XS_QName("eba_GA:NC"), functions.XS_QName("eba_GA:NZ"), functions.XS_QName("eba_GA:NI"), functions.XS_QName("eba_GA:NE"), functions.XS_QName("eba_GA:NG"), functions.XS_QName("eba_GA:NU"), functions.XS_QName("eba_GA:NF"), functions.XS_QName("eba_GA:MP"), functions.XS_QName("eba_GA:OM"), functions.XS_QName("eba_GA:PK"), functions.XS_QName("eba_GA:PW"), functions.XS_QName("eba_GA:PS"), functions.XS_QName("eba_GA:PA"), functions.XS_QName("eba_GA:PG"), functions.XS_QName("eba_GA:PY"), functions.XS_QName("eba_GA:PE"), functions.XS_QName("eba_GA:PH"), functions.XS_QName("eba_GA:PN"), functions.XS_QName("eba_GA:PR"), functions.XS_QName("eba_GA:QA"), functions.XS_QName("eba_GA:RE"), functions.XS_QName("eba_GA:RW"), functions.XS_QName("eba_GA:BL"), functions.XS_QName("eba_GA:SH"), functions.XS_QName("eba_GA:KN"), functions.XS_QName("eba_GA:LC"), functions.XS_QName("eba_GA:MF"), functions.XS_QName("eba_GA:PM"), functions.XS_QName("eba_GA:VC"), functions.XS_QName("eba_GA:WS"), functions.XS_QName("eba_GA:SM"), functions.XS_QName("eba_GA:ST"), functions.XS_QName("eba_GA:SA"), functions.XS_QName("eba_GA:SN"), functions.XS_QName("eba_GA:SC"), functions.XS_QName("eba_GA:SL"), functions.XS_QName("eba_GA:SG"), functions.XS_QName("eba_GA:SX"), functions.XS_QName("eba_GA:SB"), functions.XS_QName("eba_GA:SO"), functions.XS_QName("eba_GA:ZA"), functions.XS_QName("eba_GA:GS"), functions.XS_QName("eba_GA:SS"), functions.XS_QName("eba_GA:LK"), functions.XS_QName("eba_GA:SD"), functions.XS_QName("eba_GA:SR"), functions.XS_QName("eba_GA:SJ"), functions.XS_QName("eba_GA:SZ"), functions.XS_QName("eba_GA:SY"), functions.XS_QName("eba_GA:TW"), functions.XS_QName("eba_GA:TJ"), functions.XS_QName("eba_GA:TZ"), functions.XS_QName("eba_GA:TH"), functions.XS_QName("eba_GA:TL"), functions.XS_QName("eba_GA:TG"), functions.XS_QName("eba_GA:TK"), functions.XS_QName("eba_GA:TO"), functions.XS_QName("eba_GA:TT"), functions.XS_QName("eba_GA:TN"), functions.XS_QName("eba_GA:TM"), functions.XS_QName("eba_GA:TC"), functions.XS_QName("eba_GA:TV"), functions.XS_QName("eba_GA:UG"), functions.XS_QName("eba_GA:AE"), functions.XS_QName("eba_GA:UM"), functions.XS_QName("eba_GA:UY"), functions.XS_QName("eba_GA:UZ"), functions.XS_QName("eba_GA:VU"), functions.XS_QName("eba_GA:VE"), functions.XS_QName("eba_GA:VN"), functions.XS_QName("eba_GA:VG"), functions.XS_QName("eba_GA:VI"), functions.XS_QName("eba_GA:WF"), functions.XS_QName("eba_GA:EH"), functions.XS_QName("eba_GA:YE"), functions.XS_QName("eba_GA:ZM"), functions.XS_QName("eba_GA:ZW"), functions.XS_QName("eba_GA:_1A"), functions.XS_QName("eba_GA:_1B"), functions.XS_QName("eba_GA:_1C"), functions.XS_QName("eba_GA:_1D"), functions.XS_QName("eba_GA:_1E"), functions.XS_QName("eba_GA:_1F"), functions.XS_QName("eba_GA:_1G"), functions.XS_QName("eba_GA:_1H"), functions.XS_QName("eba_GA:_1J"), functions.XS_QName("eba_GA:_1K"), functions.XS_QName("eba_GA:_1L"), functions.XS_QName("eba_GA:_1M"), functions.XS_QName("eba_GA:_1N"), functions.XS_QName("eba_GA:_1O"), functions.XS_QName("eba_GA:_1P"), functions.XS_QName("eba_GA:_1Q"), functions.XS_QName("eba_GA:_1R"), functions.XS_QName("eba_GA:_1S"), functions.XS_QName("eba_GA:_1T"), functions.XS_QName("eba_GA:_1Z"), functions.XS_QName("eba_GA:_4A"), functions.XS_QName("eba_GA:_4B"), functions.XS_QName("eba_GA:_4C"), functions.XS_QName("eba_GA:_4D"), functions.XS_QName("eba_GA:_4E"), functions.XS_QName("eba_GA:_4F"), functions.XS_QName("eba_GA:_4G"), functions.XS_QName("eba_GA:_4H"), functions.XS_QName("eba_GA:_4I"), functions.XS_QName("eba_GA:_4V"), functions.XS_QName("eba_GA:_4J"), functions.XS_QName("eba_GA:_4K"), functions.XS_QName("eba_GA:_4L"), functions.XS_QName("eba_GA:_4M"), functions.XS_QName("eba_GA:_4N"), functions.XS_QName("eba_GA:_4O"), functions.XS_QName("eba_GA:_4P"), functions.XS_QName("eba_GA:_4Q"), functions.XS_QName("eba_GA:_4R"), functions.XS_QName("eba_GA:_4S"), functions.XS_QName("eba_GA:_4T"), functions.XS_QName("eba_GA:_4W"), functions.XS_QName("eba_GA:_4X"), functions.XS_QName("eba_GA:_4Y"), functions.XS_QName("eba_GA:_4Z"), functions.XS_QName("eba_GA:_5A"), functions.XS_QName("eba_GA:_5B"), functions.XS_QName("eba_GA:_5C"), functions.XS_QName("eba_GA:_5D"), functions.XS_QName("eba_GA:_5E"), functions.XS_QName("eba_GA:_5F"), functions.XS_QName("eba_GA:_5G"), functions.XS_QName("eba_GA:_5H"), functions.XS_QName("eba_GA:_5I"), functions.XS_QName("eba_GA:_5J"), functions.XS_QName("eba_GA:_5K"), functions.XS_QName("eba_GA:_5L"), functions.XS_QName("eba_GA:_5M"), functions.XS_QName("eba_GA:_5N"), functions.XS_QName("eba_GA:_5O"), functions.XS_QName("eba_GA:_5P"), functions.XS_QName("eba_GA:_5Q"), functions.XS_QName("eba_GA:_5R"), functions.XS_QName("eba_GA:_5S"), functions.XS_QName("eba_GA:_5T"), functions.XS_QName("eba_GA:_5U"), functions.XS_QName("eba_GA:_5V"), functions.XS_QName("eba_GA:_5W"), functions.XS_QName("eba_GA:_5X"), functions.XS_QName("eba_GA:_5Y"), functions.XS_QName("eba_GA:_5Z"), functions.XS_QName("eba_GA:_6A"), functions.XS_QName("eba_GA:_6B"), functions.XS_QName("eba_GA:_6C"), functions.XS_QName("eba_GA:_6D"), functions.XS_QName("eba_GA:_6E"), functions.XS_QName("eba_GA:_6F"), functions.XS_QName("eba_GA:_6G"), functions.XS_QName("eba_GA:_6H"), functions.XS_QName("eba_GA:_6I"), functions.XS_QName("eba_GA:_6J"), functions.XS_QName("eba_GA:_6K"), functions.XS_QName("eba_GA:_6L"), functions.XS_QName("eba_GA:_6M"), functions.XS_QName("eba_GA:_6N"), functions.XS_QName("eba_GA:_6O"), functions.XS_QName("eba_GA:_6P"), functions.XS_QName("eba_GA:_6Q"), functions.XS_QName("eba_GA:_6R"), functions.XS_QName("eba_GA:_6S"), functions.XS_QName("eba_GA:_6T"), functions.XS_QName("eba_GA:_6U"), functions.XS_QName("eba_GA:_6Z"), functions.XS_QName("eba_GA:_7Z"), functions.XS_QName("eba_GA:_8A"), functions.XS_QName("eba_GA:_9B"));
-        }
-
-        public bool ebav4014a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_UE:x1"), functions.XS_QName("eba_UE:x2"), functions.XS_QName("eba_UE:x3"), functions.XS_QName("eba_UE:x4"), functions.XS_QName("eba_UE:x5"), functions.XS_QName("eba_UE:x6"), functions.XS_QName("eba_UE:x8"), functions.XS_QName("eba_UE:x9"), functions.XS_QName("eba_UE:x10"), functions.XS_QName("eba_UE:x12"));
-        }
-
-        public bool ebav4015a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_ZZ:x3"), functions.XS_QName("eba_ZZ:x4"), functions.XS_QName("eba_ZZ:x5"), functions.XS_QName("eba_ZZ:x6"));
-        }
-
-        public bool ebav4018a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_RS:x1"), functions.XS_QName("eba_RS:x2"), functions.XS_QName("eba_RS:x5"), functions.XS_QName("eba_RS:x6"));
-        }
-
-        public bool ebav4020a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_UE:x14"), functions.XS_QName("eba_UE:x15"));
-        }
-
-        public bool ebav4021a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_PL:x11"), functions.XS_QName("eba_PL:x51"), functions.XS_QName("eba_PL:x72"), functions.XS_QName("eba_PL:x78"));
-        }
-
-        public bool ebav4022a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_TP:x1"), functions.XS_QName("eba_TP:x2"));
-        }
-
-        public bool ebav4024a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_RT:x10"), functions.XS_QName("eba_RT:x11"));
-        }
-
-        public bool ebav0554m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0555m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0556m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav3757s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0558m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
-        }
-
-        public bool ebav0560m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
-        }
-
-        public bool ebav0563m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Greater(p_a, 0) | functions.N_Greater(p_b, 0) | functions.N_Greater(p_c, 0) ? functions.N_Greater(p_d, 0) : true;
-        }
-
-        public bool ebav1141m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_aa = parameters.FirstOrDefault(i => i.Name == "aa").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_bb = parameters.FirstOrDefault(i => i.Name == "bb").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_cc = parameters.FirstOrDefault(i => i.Name == "cc").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_dd = parameters.FirstOrDefault(i => i.Name == "dd").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_ee = parameters.FirstOrDefault(i => i.Name == "ee").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
-            var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
-            var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
-            var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
-            var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
-            var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
-            var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
-            var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
-            var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
-            var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
-            var p_u = parameters.FirstOrDefault(i => i.Name == "u").DoubleValue;
-            var p_v = parameters.FirstOrDefault(i => i.Name == "v").DoubleValue;
-            var p_w = parameters.FirstOrDefault(i => i.Name == "w").DoubleValue;
-            var p_x = parameters.FirstOrDefault(i => i.Name == "x").DoubleValue;
-            var p_y = parameters.FirstOrDefault(i => i.Name == "y").DoubleValue;
-            var p_z = parameters.FirstOrDefault(i => i.Name == "z").DoubleValue;
-            return functions.N_Greater(p_a, 0) ? functions.N_Greater(p_b, 0) | functions.N_Greater(p_c, 0) | functions.N_Greater(p_d, 0) | functions.N_Greater(p_e, 0) | functions.N_Greater(p_f, 0) | functions.N_Greater(p_g, 0) | functions.N_Greater(p_h, 0) | functions.N_Greater(p_i, 0) | functions.N_Greater(p_j, 0) | functions.N_Greater(p_k, 0) | functions.N_Greater(p_l, 0) | functions.N_Greater(p_m, 0) | functions.N_Greater(p_n, 0) | functions.N_Greater(p_o, 0) | functions.N_Greater(p_p, 0) | functions.N_Greater(p_q, 0) | functions.N_Greater(p_r, 0) | functions.N_Greater(p_s, 0) | functions.N_Greater(p_t, 0) | functions.N_Greater(p_u, 0) | functions.N_Greater(p_v, 0) | functions.N_Greater(p_w, 0) | functions.N_Greater(p_x, 0) | functions.N_Greater(p_y, 0) | functions.N_Greater(p_z, 0) | functions.N_Greater(p_aa, 0) | functions.N_Greater(p_bb, 0) | functions.N_Greater(p_cc, 0) | functions.N_Greater(p_dd, 0) | functions.N_Greater(p_ee, 0) : true;
-        }
-
-        public bool ebav3758s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3759s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0562m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(p_b, 12.5));
-        }
-
-        public bool ebav1142m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Greater(p_a, 0) ? functions.N_Greater(p_b, 0) | functions.N_Greater(p_c, 0) | functions.N_Greater(p_d, 0) : true;
-        }
-
-        public bool ebav1143m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(p_d), functions.N_Unary_Minus(p_e)));
-        }
-
-        public bool ebav1144m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav2055s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3760s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0568m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav3762s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0581m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0582m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0583m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0589m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0590m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0592m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0593m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0594m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0596m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0597m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0598m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav2056s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3768s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3769s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3770s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3771s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3772s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3773s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav4031m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4032m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4033m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4034m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4035m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4036m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4037m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4038m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4039m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4040m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4041m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4042m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4043m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4044m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4045m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav4046m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e)), p_f));
-        }
-
-        public bool ebav0600m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0602m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0604m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0605m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav0606m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav0607m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav0608m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav0609m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav0610m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0611m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
-        }
-
-        public bool ebav0612m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0613m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0614m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0615m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0616m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0617m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav2057s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3774s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3775s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3776s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3777s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav4095m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4096m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4097m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav4098m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Divide(functions.sum(functions.N_Multiply(p_b, p_c), functions.N_Multiply(p_d, p_e), functions.N_Multiply(p_f, p_g)), p_h));
-        }
-
-        public bool ebav0629m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0635m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.N_Multiply(functions.max(p_b, p_c), 0.08));
-        }
-
-        public bool ebav0636m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
-        }
-
-        public bool ebav0637m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(functions.max(p_b, p_c), functions.max(p_d, p_e), functions.max(p_f, p_g), functions.max(p_h, p_i, p_j)));
-        }
-
-        public bool ebav1906h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav1907h(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav3792s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3793s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0639m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(functions.N_Multiply(p_a, 12.5), p_b);
-        }
-
-        public bool ebav0641m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
-        }
-
-        public bool ebav0642m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(functions.max(p_b, p_c), functions.max(p_d, p_e)));
-        }
-
-        public bool ebav3794s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3795s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3796s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3797s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0640m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0643m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0644m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0645m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0668m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav3810s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3811s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0670m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0672m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0673m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0674m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0675m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.sum(p_c)));
-        }
-
-        public bool ebav0677m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0678m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
-        }
-
-        public bool ebav0683m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0684m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav3812s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0700m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0701m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0702m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0703m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0704m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0705m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0706m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0707m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav3813s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0709m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_LessEqual(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0710m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_LessEqual(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0712m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0713m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0714m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0715m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0716m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0717m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            return functions.N_Equals(p_a, functions.sum(p_b, p_c));
-        }
-
-        public bool ebav0718m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav0719m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_LessEqual(p_a, p_b);
-        }
-
-        public bool ebav3814s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav0721m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_Equals(p_a, p_b);
-        }
-
-        public bool ebav0722m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b));
-        }
-
-        public bool ebav0726m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValues;
-            return functions.N_Equals(p_a, functions.sum(p_b, functions.sum(p_c), functions.sum(p_d)));
-        }
-
-        public bool ebav0727m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValues;
-            return p_a != 0 & p_b != 0 & p_c != 0 ? functions.N_Equals(p_d, functions.N_Divide(functions.sum(p_e), 3)) : true;
-        }
-
-        public bool ebav0728m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            return functions.N_Equals(p_a, 0) & functions.N_Equals(p_b, 0) ? functions.N_Equals(p_c, p_d) : true;
-        }
-
-        public bool ebav0730m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            return functions.N_GreaterEqual(p_a, p_b);
-        }
-
-        public bool ebav3815s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav1156m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
-            var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
-            return functions.N_GreaterEqual(p_a, functions.max(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j));
-        }
-
-        public bool ebav1157m(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
-            var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
-            var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
-            var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
-            var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
-            var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
-            var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
-            return functions.N_GreaterEqual(p_a, functions.max(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
-        }
-
-        public bool ebav3761s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3687s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3706s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3716s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3717s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3718s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3719s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_LessEqual(p_a, 0);
-        }
-
-        public bool ebav3720s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3726s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3727s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav3728s(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
-            return functions.N_GreaterEqual(p_a, 0);
-        }
-
-        public bool ebav4002c(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
-            return p_ReportingLevel == "con" ? p_a == functions.XS_QName("eba_SC:x7") : true;
-        }
-
-        public bool ebav4003c(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            var p_ReportingLevel = parameters.FirstOrDefault(i => i.Name == "ReportingLevel").StringValue;
-            return p_ReportingLevel == "ind" ? p_a == functions.XS_QName("eba_SC:x6") : true;
-        }
-
-        public bool ebav4008a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_ZZ:x16"), functions.XS_QName("eba_ZZ:x17"), functions.XS_QName("eba_ZZ:x18"));
-        }
-
-        public bool ebav4009a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_ZZ:x25"), functions.XS_QName("eba_ZZ:x26"));
-        }
-
-        public bool ebav4016a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_ZZ:x21"), functions.XS_QName("eba_ZZ:x22"), functions.XS_QName("eba_ZZ:x23"), functions.XS_QName("eba_ZZ:x24"));
-        }
-
-        public bool ebav4029a(List<ValidationParameter> parameters)
-        {
-            var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
-            return p_a.In(functions.XS_QName("eba_AP:x38"), functions.XS_QName("eba_AP:x76"));
-        }
-
-
-    }
-}
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using LogicalModel.Expressions;
+//using LogicalModel.Base;
+//using LogicalModel.Validation;
+//using Utilities;
+//namespace LogicalModel.Validation
+//{
+//  public class ValidationsX: ValidationFunctionContainer
+//  {
+//      public ValidationsX()
+//      {
+//    this.FunctionDictionary.Add("ebav0050h", this.ebav0050h);
+//    this.FunctionDictionary.Add("ebav0067h", this.ebav0067h);
+//    this.FunctionDictionary.Add("ebav0069h", this.ebav0069h);
+//    this.FunctionDictionary.Add("ebav0071h", this.ebav0071h);
+//    this.FunctionDictionary.Add("ebav0763m", this.ebav0763m);
+//    this.FunctionDictionary.Add("ebav0764m", this.ebav0764m);
+//    this.FunctionDictionary.Add("ebav0765m", this.ebav0765m);
+//    this.FunctionDictionary.Add("ebav0766m", this.ebav0766m);
+//    this.FunctionDictionary.Add("ebav0767m", this.ebav0767m);
+//    this.FunctionDictionary.Add("ebav0768m", this.ebav0768m);
+//    this.FunctionDictionary.Add("ebav1694m", this.ebav1694m);
+//    this.FunctionDictionary.Add("ebav1695m", this.ebav1695m);
+//    this.FunctionDictionary.Add("ebav1696m", this.ebav1696m);
+//    this.FunctionDictionary.Add("ebav1697m", this.ebav1697m);
+//    this.FunctionDictionary.Add("ebav4030m", this.ebav4030m);
+//    this.FunctionDictionary.Add("ebav0057h", this.ebav0057h);
+//    this.FunctionDictionary.Add("ebav0058h", this.ebav0058h);
+//    this.FunctionDictionary.Add("ebav0059h", this.ebav0059h);
+//    this.FunctionDictionary.Add("ebav0129h", this.ebav0129h);
+//    this.FunctionDictionary.Add("ebav0130h", this.ebav0130h);
+//    this.FunctionDictionary.Add("ebav0145h", this.ebav0145h);
+//    this.FunctionDictionary.Add("ebav0779m", this.ebav0779m);
+//    this.FunctionDictionary.Add("ebav0780m", this.ebav0780m);
+//    this.FunctionDictionary.Add("ebav1920h", this.ebav1920h);
+//    this.FunctionDictionary.Add("ebav1921h", this.ebav1921h);
+//    this.FunctionDictionary.Add("ebav2060s", this.ebav2060s);
+//    this.FunctionDictionary.Add("ebav3899s", this.ebav3899s);
+//    this.FunctionDictionary.Add("ebav0136h", this.ebav0136h);
+//    this.FunctionDictionary.Add("ebav0138h", this.ebav0138h);
+//    this.FunctionDictionary.Add("ebav0141h", this.ebav0141h);
+//    this.FunctionDictionary.Add("ebav0143h", this.ebav0143h);
+//    this.FunctionDictionary.Add("ebav0144h", this.ebav0144h);
+//    this.FunctionDictionary.Add("ebav0787m", this.ebav0787m);
+//    this.FunctionDictionary.Add("ebav0788m", this.ebav0788m);
+//    this.FunctionDictionary.Add("ebav0789m", this.ebav0789m);
+//    this.FunctionDictionary.Add("ebav0790m", this.ebav0790m);
+//    this.FunctionDictionary.Add("ebav0791m", this.ebav0791m);
+//    this.FunctionDictionary.Add("ebav0792m", this.ebav0792m);
+//    this.FunctionDictionary.Add("ebav0793m", this.ebav0793m);
+//    this.FunctionDictionary.Add("ebav0794m", this.ebav0794m);
+//    this.FunctionDictionary.Add("ebav0795m", this.ebav0795m);
+//    this.FunctionDictionary.Add("ebav0798m", this.ebav0798m);
+//    this.FunctionDictionary.Add("ebav1699m", this.ebav1699m);
+//    this.FunctionDictionary.Add("ebav3900s", this.ebav3900s);
+//    this.FunctionDictionary.Add("ebav0769m", this.ebav0769m);
+//    this.FunctionDictionary.Add("ebav0770m", this.ebav0770m);
+//    this.FunctionDictionary.Add("ebav0771m", this.ebav0771m);
+//    this.FunctionDictionary.Add("ebav0772m", this.ebav0772m);
+//    this.FunctionDictionary.Add("ebav0773m", this.ebav0773m);
+//    this.FunctionDictionary.Add("ebav1698m", this.ebav1698m);
+//    this.FunctionDictionary.Add("ebav3898s", this.ebav3898s);
+//    this.FunctionDictionary.Add("ebav0775m", this.ebav0775m);
+//    this.FunctionDictionary.Add("ebav0785m", this.ebav0785m);
+//    this.FunctionDictionary.Add("ebav0777m", this.ebav0777m);
+//    this.FunctionDictionary.Add("ebav0856m", this.ebav0856m);
+//    this.FunctionDictionary.Add("ebav1703m", this.ebav1703m);
+//    this.FunctionDictionary.Add("ebav0783m", this.ebav0783m);
+//    this.FunctionDictionary.Add("ebav0784m", this.ebav0784m);
+//    this.FunctionDictionary.Add("ebav0786m", this.ebav0786m);
+//    this.FunctionDictionary.Add("ebav0799m", this.ebav0799m);
+//    this.FunctionDictionary.Add("ebav0800m", this.ebav0800m);
+//    this.FunctionDictionary.Add("ebav1219m", this.ebav1219m);
+//    this.FunctionDictionary.Add("ebav1908h", this.ebav1908h);
+//    this.FunctionDictionary.Add("ebav3901s", this.ebav3901s);
+//    this.FunctionDictionary.Add("ebav0801m", this.ebav0801m);
+//    this.FunctionDictionary.Add("ebav0802m", this.ebav0802m);
+//    this.FunctionDictionary.Add("ebav0803m", this.ebav0803m);
+//    this.FunctionDictionary.Add("ebav0804m", this.ebav0804m);
+//    this.FunctionDictionary.Add("ebav1220m", this.ebav1220m);
+//    this.FunctionDictionary.Add("ebav1909h", this.ebav1909h);
+//    this.FunctionDictionary.Add("ebav3902s", this.ebav3902s);
+//    this.FunctionDictionary.Add("ebav0805m", this.ebav0805m);
+//    this.FunctionDictionary.Add("ebav0806m", this.ebav0806m);
+//    this.FunctionDictionary.Add("ebav0807m", this.ebav0807m);
+//    this.FunctionDictionary.Add("ebav0808m", this.ebav0808m);
+//    this.FunctionDictionary.Add("ebav1221m", this.ebav1221m);
+//    this.FunctionDictionary.Add("ebav1930h", this.ebav1930h);
+//    this.FunctionDictionary.Add("ebav3903s", this.ebav3903s);
+//    this.FunctionDictionary.Add("ebav3904s", this.ebav3904s);
+//    this.FunctionDictionary.Add("ebav0809m", this.ebav0809m);
+//    this.FunctionDictionary.Add("ebav0810m", this.ebav0810m);
+//    this.FunctionDictionary.Add("ebav0811m", this.ebav0811m);
+//    this.FunctionDictionary.Add("ebav0812m", this.ebav0812m);
+//    this.FunctionDictionary.Add("ebav0813m", this.ebav0813m);
+//    this.FunctionDictionary.Add("ebav1931h", this.ebav1931h);
+//    this.FunctionDictionary.Add("ebav1932h", this.ebav1932h);
+//    this.FunctionDictionary.Add("ebav3905s", this.ebav3905s);
+//    this.FunctionDictionary.Add("ebav3906s", this.ebav3906s);
+//    this.FunctionDictionary.Add("ebav0817m", this.ebav0817m);
+//    this.FunctionDictionary.Add("ebav0818m", this.ebav0818m);
+//    this.FunctionDictionary.Add("ebav0819m", this.ebav0819m);
+//    this.FunctionDictionary.Add("ebav0820m", this.ebav0820m);
+//    this.FunctionDictionary.Add("ebav0821m", this.ebav0821m);
+//    this.FunctionDictionary.Add("ebav0822m", this.ebav0822m);
+//    this.FunctionDictionary.Add("ebav0823m", this.ebav0823m);
+//    this.FunctionDictionary.Add("ebav0824m", this.ebav0824m);
+//    this.FunctionDictionary.Add("ebav0825m", this.ebav0825m);
+//    this.FunctionDictionary.Add("ebav0826m", this.ebav0826m);
+//    this.FunctionDictionary.Add("ebav3917s", this.ebav3917s);
+//    this.FunctionDictionary.Add("ebav3918s", this.ebav3918s);
+//    this.FunctionDictionary.Add("ebav3919s", this.ebav3919s);
+//    this.FunctionDictionary.Add("ebav3920s", this.ebav3920s);
+//    this.FunctionDictionary.Add("ebav3921s", this.ebav3921s);
+//    this.FunctionDictionary.Add("ebav0827m", this.ebav0827m);
+//    this.FunctionDictionary.Add("ebav0828m", this.ebav0828m);
+//    this.FunctionDictionary.Add("ebav1942h", this.ebav1942h);
+//    this.FunctionDictionary.Add("ebav1943h", this.ebav1943h);
+//    this.FunctionDictionary.Add("ebav1944h", this.ebav1944h);
+//    this.FunctionDictionary.Add("ebav1945h", this.ebav1945h);
+//    this.FunctionDictionary.Add("ebav1946h", this.ebav1946h);
+//    this.FunctionDictionary.Add("ebav1947h", this.ebav1947h);
+//    this.FunctionDictionary.Add("ebav1948h", this.ebav1948h);
+//    this.FunctionDictionary.Add("ebav3922s", this.ebav3922s);
+//    this.FunctionDictionary.Add("ebav3923s", this.ebav3923s);
+//    this.FunctionDictionary.Add("ebav3924s", this.ebav3924s);
+//    this.FunctionDictionary.Add("ebav0829m", this.ebav0829m);
+//    this.FunctionDictionary.Add("ebav0830m", this.ebav0830m);
+//    this.FunctionDictionary.Add("ebav0831m", this.ebav0831m);
+//    this.FunctionDictionary.Add("ebav0835m", this.ebav0835m);
+//    this.FunctionDictionary.Add("ebav0837m", this.ebav0837m);
+//    this.FunctionDictionary.Add("ebav3133m", this.ebav3133m);
+//    this.FunctionDictionary.Add("ebav3134m", this.ebav3134m);
+//    this.FunctionDictionary.Add("ebav3135m", this.ebav3135m);
+//    this.FunctionDictionary.Add("ebav3927s", this.ebav3927s);
+//    this.FunctionDictionary.Add("ebav0839m", this.ebav0839m);
+//    this.FunctionDictionary.Add("ebav0840m", this.ebav0840m);
+//    this.FunctionDictionary.Add("ebav0841m", this.ebav0841m);
+//    this.FunctionDictionary.Add("ebav3928s", this.ebav3928s);
+//    this.FunctionDictionary.Add("ebav3929s", this.ebav3929s);
+//    this.FunctionDictionary.Add("ebav0842m", this.ebav0842m);
+//    this.FunctionDictionary.Add("ebav0843m", this.ebav0843m);
+//    this.FunctionDictionary.Add("ebav0844m", this.ebav0844m);
+//    this.FunctionDictionary.Add("ebav0845m", this.ebav0845m);
+//    this.FunctionDictionary.Add("ebav0846m", this.ebav0846m);
+//    this.FunctionDictionary.Add("ebav0847m", this.ebav0847m);
+//    this.FunctionDictionary.Add("ebav0848m", this.ebav0848m);
+//    this.FunctionDictionary.Add("ebav0849m", this.ebav0849m);
+//    this.FunctionDictionary.Add("ebav0850m", this.ebav0850m);
+//    this.FunctionDictionary.Add("ebav0851m", this.ebav0851m);
+//    this.FunctionDictionary.Add("ebav0852m", this.ebav0852m);
+//    this.FunctionDictionary.Add("ebav0854m", this.ebav0854m);
+//    this.FunctionDictionary.Add("ebav1950h", this.ebav1950h);
+//    this.FunctionDictionary.Add("ebav1951h", this.ebav1951h);
+//    this.FunctionDictionary.Add("ebav3930s", this.ebav3930s);
+//    this.FunctionDictionary.Add("ebav3931s", this.ebav3931s);
+//    this.FunctionDictionary.Add("ebav0855m", this.ebav0855m);
+//    this.FunctionDictionary.Add("ebav1702m", this.ebav1702m);
+//    this.FunctionDictionary.Add("ebav0857m", this.ebav0857m);
+//    this.FunctionDictionary.Add("ebav0858m", this.ebav0858m);
+//    this.FunctionDictionary.Add("ebav0859m", this.ebav0859m);
+//    this.FunctionDictionary.Add("ebav0860m", this.ebav0860m);
+//    this.FunctionDictionary.Add("ebav0862m", this.ebav0862m);
+//    this.FunctionDictionary.Add("ebav0863m", this.ebav0863m);
+//    this.FunctionDictionary.Add("ebav0864m", this.ebav0864m);
+//    this.FunctionDictionary.Add("ebav0865m", this.ebav0865m);
+//    this.FunctionDictionary.Add("ebav0867m", this.ebav0867m);
+//    this.FunctionDictionary.Add("ebav0869m", this.ebav0869m);
+//    this.FunctionDictionary.Add("ebav1952h", this.ebav1952h);
+//    this.FunctionDictionary.Add("ebav1953h", this.ebav1953h);
+//    this.FunctionDictionary.Add("ebav1954h", this.ebav1954h);
+//    this.FunctionDictionary.Add("ebav1955h", this.ebav1955h);
+//    this.FunctionDictionary.Add("ebav1956h", this.ebav1956h);
+//    this.FunctionDictionary.Add("ebav3932s", this.ebav3932s);
+//    this.FunctionDictionary.Add("ebav3933s", this.ebav3933s);
+//    this.FunctionDictionary.Add("ebav0874m", this.ebav0874m);
+//    this.FunctionDictionary.Add("ebav0875m", this.ebav0875m);
+//    this.FunctionDictionary.Add("ebav0876m", this.ebav0876m);
+//    this.FunctionDictionary.Add("ebav0877m", this.ebav0877m);
+//    this.FunctionDictionary.Add("ebav0878m", this.ebav0878m);
+//    this.FunctionDictionary.Add("ebav3912s", this.ebav3912s);
+//    this.FunctionDictionary.Add("ebav3913s", this.ebav3913s);
+//    this.FunctionDictionary.Add("ebav3914s", this.ebav3914s);
+//    this.FunctionDictionary.Add("ebav3915s", this.ebav3915s);
+//    this.FunctionDictionary.Add("ebav0879m", this.ebav0879m);
+//    this.FunctionDictionary.Add("ebav3132m", this.ebav3132m);
+//    this.FunctionDictionary.Add("ebav3142m", this.ebav3142m);
+//    this.FunctionDictionary.Add("ebav3916s", this.ebav3916s);
+//    this.FunctionDictionary.Add("ebav0880m", this.ebav0880m);
+//    this.FunctionDictionary.Add("ebav0881m", this.ebav0881m);
+//    this.FunctionDictionary.Add("ebav0882m", this.ebav0882m);
+//    this.FunctionDictionary.Add("ebav0884m", this.ebav0884m);
+//    this.FunctionDictionary.Add("ebav0885m", this.ebav0885m);
+//    this.FunctionDictionary.Add("ebav0886m", this.ebav0886m);
+//    this.FunctionDictionary.Add("ebav3953s", this.ebav3953s);
+//    this.FunctionDictionary.Add("ebav3954s", this.ebav3954s);
+//    this.FunctionDictionary.Add("ebav3955s", this.ebav3955s);
+//    this.FunctionDictionary.Add("ebav0887m", this.ebav0887m);
+//    this.FunctionDictionary.Add("ebav0888m", this.ebav0888m);
+//    this.FunctionDictionary.Add("ebav1713m", this.ebav1713m);
+//    this.FunctionDictionary.Add("ebav3956s", this.ebav3956s);
+//    this.FunctionDictionary.Add("ebav0890m", this.ebav0890m);
+//    this.FunctionDictionary.Add("ebav0891m", this.ebav0891m);
+//    this.FunctionDictionary.Add("ebav0892m", this.ebav0892m);
+//    this.FunctionDictionary.Add("ebav0893m", this.ebav0893m);
+//    this.FunctionDictionary.Add("ebav0894m", this.ebav0894m);
+//    this.FunctionDictionary.Add("ebav0895m", this.ebav0895m);
+//    this.FunctionDictionary.Add("ebav1959h", this.ebav1959h);
+//    this.FunctionDictionary.Add("ebav1960h", this.ebav1960h);
+//    this.FunctionDictionary.Add("ebav1961h", this.ebav1961h);
+//    this.FunctionDictionary.Add("ebav1962h", this.ebav1962h);
+//    this.FunctionDictionary.Add("ebav1963h", this.ebav1963h);
+//    this.FunctionDictionary.Add("ebav1964h", this.ebav1964h);
+//    this.FunctionDictionary.Add("ebav3936s", this.ebav3936s);
+//    this.FunctionDictionary.Add("ebav3937s", this.ebav3937s);
+//    this.FunctionDictionary.Add("ebav3938s", this.ebav3938s);
+//    this.FunctionDictionary.Add("ebav3939s", this.ebav3939s);
+//    this.FunctionDictionary.Add("ebav0896m", this.ebav0896m);
+//    this.FunctionDictionary.Add("ebav1188m", this.ebav1188m);
+//    this.FunctionDictionary.Add("ebav1189m", this.ebav1189m);
+//    this.FunctionDictionary.Add("ebav1190m", this.ebav1190m);
+//    this.FunctionDictionary.Add("ebav1191m", this.ebav1191m);
+//    this.FunctionDictionary.Add("ebav1192m", this.ebav1192m);
+//    this.FunctionDictionary.Add("ebav1193m", this.ebav1193m);
+//    this.FunctionDictionary.Add("ebav1194m", this.ebav1194m);
+//    this.FunctionDictionary.Add("ebav1195m", this.ebav1195m);
+//    this.FunctionDictionary.Add("ebav1196m", this.ebav1196m);
+//    this.FunctionDictionary.Add("ebav1197m", this.ebav1197m);
+//    this.FunctionDictionary.Add("ebav1200m", this.ebav1200m);
+//    this.FunctionDictionary.Add("ebav1201m", this.ebav1201m);
+//    this.FunctionDictionary.Add("ebav1202m", this.ebav1202m);
+//    this.FunctionDictionary.Add("ebav1203m", this.ebav1203m);
+//    this.FunctionDictionary.Add("ebav1204m", this.ebav1204m);
+//    this.FunctionDictionary.Add("ebav1206m", this.ebav1206m);
+//    this.FunctionDictionary.Add("ebav1965h", this.ebav1965h);
+//    this.FunctionDictionary.Add("ebav1966h", this.ebav1966h);
+//    this.FunctionDictionary.Add("ebav1967h", this.ebav1967h);
+//    this.FunctionDictionary.Add("ebav3944s", this.ebav3944s);
+//    this.FunctionDictionary.Add("ebav3945s", this.ebav3945s);
+//    this.FunctionDictionary.Add("ebav3946s", this.ebav3946s);
+//    this.FunctionDictionary.Add("ebav3947s", this.ebav3947s);
+//    this.FunctionDictionary.Add("ebav0897m", this.ebav0897m);
+//    this.FunctionDictionary.Add("ebav0898m", this.ebav0898m);
+//    this.FunctionDictionary.Add("ebav0899m", this.ebav0899m);
+//    this.FunctionDictionary.Add("ebav0900m", this.ebav0900m);
+//    this.FunctionDictionary.Add("ebav0901m", this.ebav0901m);
+//    this.FunctionDictionary.Add("ebav0902m", this.ebav0902m);
+//    this.FunctionDictionary.Add("ebav0903m", this.ebav0903m);
+//    this.FunctionDictionary.Add("ebav0904m", this.ebav0904m);
+//    this.FunctionDictionary.Add("ebav0905m", this.ebav0905m);
+//    this.FunctionDictionary.Add("ebav0906m", this.ebav0906m);
+//    this.FunctionDictionary.Add("ebav0907m", this.ebav0907m);
+//    this.FunctionDictionary.Add("ebav0908m", this.ebav0908m);
+//    this.FunctionDictionary.Add("ebav0909m", this.ebav0909m);
+//    this.FunctionDictionary.Add("ebav1714m", this.ebav1714m);
+//    this.FunctionDictionary.Add("ebav1715m", this.ebav1715m);
+//    this.FunctionDictionary.Add("ebav1716m", this.ebav1716m);
+//    this.FunctionDictionary.Add("ebav1717m", this.ebav1717m);
+//    this.FunctionDictionary.Add("ebav1718m", this.ebav1718m);
+//    this.FunctionDictionary.Add("ebav1719m", this.ebav1719m);
+//    this.FunctionDictionary.Add("ebav1720m", this.ebav1720m);
+//    this.FunctionDictionary.Add("ebav1721m", this.ebav1721m);
+//    this.FunctionDictionary.Add("ebav1722m", this.ebav1722m);
+//    this.FunctionDictionary.Add("ebav1723m", this.ebav1723m);
+//    this.FunctionDictionary.Add("ebav1724m", this.ebav1724m);
+//    this.FunctionDictionary.Add("ebav1725m", this.ebav1725m);
+//    this.FunctionDictionary.Add("ebav1726m", this.ebav1726m);
+//    this.FunctionDictionary.Add("ebav1727m", this.ebav1727m);
+//    this.FunctionDictionary.Add("ebav0911m", this.ebav0911m);
+//    this.FunctionDictionary.Add("ebav1207m", this.ebav1207m);
+//    this.FunctionDictionary.Add("ebav1208m", this.ebav1208m);
+//    this.FunctionDictionary.Add("ebav1209m", this.ebav1209m);
+//    this.FunctionDictionary.Add("ebav1211m", this.ebav1211m);
+//    this.FunctionDictionary.Add("ebav1212m", this.ebav1212m);
+//    this.FunctionDictionary.Add("ebav1213m", this.ebav1213m);
+//    this.FunctionDictionary.Add("ebav1214m", this.ebav1214m);
+//    this.FunctionDictionary.Add("ebav1215m", this.ebav1215m);
+//    this.FunctionDictionary.Add("ebav1216m", this.ebav1216m);
+//    this.FunctionDictionary.Add("ebav1218m", this.ebav1218m);
+//    this.FunctionDictionary.Add("ebav1968h", this.ebav1968h);
+//    this.FunctionDictionary.Add("ebav1969h", this.ebav1969h);
+//    this.FunctionDictionary.Add("ebav1970h", this.ebav1970h);
+//    this.FunctionDictionary.Add("ebav3948s", this.ebav3948s);
+//    this.FunctionDictionary.Add("ebav3949s", this.ebav3949s);
+//    this.FunctionDictionary.Add("ebav0912m", this.ebav0912m);
+//    this.FunctionDictionary.Add("ebav0914m", this.ebav0914m);
+//    this.FunctionDictionary.Add("ebav0915m", this.ebav0915m);
+//    this.FunctionDictionary.Add("ebav0916m", this.ebav0916m);
+//    this.FunctionDictionary.Add("ebav0917m", this.ebav0917m);
+//    this.FunctionDictionary.Add("ebav0918m", this.ebav0918m);
+//    this.FunctionDictionary.Add("ebav0919m", this.ebav0919m);
+//    this.FunctionDictionary.Add("ebav0920m", this.ebav0920m);
+//    this.FunctionDictionary.Add("ebav0921m", this.ebav0921m);
+//    this.FunctionDictionary.Add("ebav0922m", this.ebav0922m);
+//    this.FunctionDictionary.Add("ebav0923m", this.ebav0923m);
+//    this.FunctionDictionary.Add("ebav3943s", this.ebav3943s);
+//    this.FunctionDictionary.Add("ebav0924m", this.ebav0924m);
+//    this.FunctionDictionary.Add("ebav0925m", this.ebav0925m);
+//    this.FunctionDictionary.Add("ebav0926m", this.ebav0926m);
+//    this.FunctionDictionary.Add("ebav0927m", this.ebav0927m);
+//    this.FunctionDictionary.Add("ebav0928m", this.ebav0928m);
+//    this.FunctionDictionary.Add("ebav0929m", this.ebav0929m);
+//    this.FunctionDictionary.Add("ebav0930m", this.ebav0930m);
+//    this.FunctionDictionary.Add("ebav0931m", this.ebav0931m);
+//    this.FunctionDictionary.Add("ebav0932m", this.ebav0932m);
+//    this.FunctionDictionary.Add("ebav0933m", this.ebav0933m);
+//    this.FunctionDictionary.Add("ebav0934m", this.ebav0934m);
+//    this.FunctionDictionary.Add("ebav0935m", this.ebav0935m);
+//    this.FunctionDictionary.Add("ebav0936m", this.ebav0936m);
+//    this.FunctionDictionary.Add("ebav0937m", this.ebav0937m);
+//    this.FunctionDictionary.Add("ebav0938m", this.ebav0938m);
+//    this.FunctionDictionary.Add("ebav0939m", this.ebav0939m);
+//    this.FunctionDictionary.Add("ebav0940m", this.ebav0940m);
+//    this.FunctionDictionary.Add("ebav0941m", this.ebav0941m);
+//    this.FunctionDictionary.Add("ebav0942m", this.ebav0942m);
+//    this.FunctionDictionary.Add("ebav0943m", this.ebav0943m);
+//    this.FunctionDictionary.Add("ebav0944m", this.ebav0944m);
+//    this.FunctionDictionary.Add("ebav0945m", this.ebav0945m);
+//    this.FunctionDictionary.Add("ebav0946m", this.ebav0946m);
+//    this.FunctionDictionary.Add("ebav0947m", this.ebav0947m);
+//    this.FunctionDictionary.Add("ebav0948m", this.ebav0948m);
+//    this.FunctionDictionary.Add("ebav0949m", this.ebav0949m);
+//    this.FunctionDictionary.Add("ebav0950m", this.ebav0950m);
+//    this.FunctionDictionary.Add("ebav0951m", this.ebav0951m);
+//    this.FunctionDictionary.Add("ebav0952m", this.ebav0952m);
+//    this.FunctionDictionary.Add("ebav0953m", this.ebav0953m);
+//    this.FunctionDictionary.Add("ebav1728m", this.ebav1728m);
+//    this.FunctionDictionary.Add("ebav1729m", this.ebav1729m);
+//    this.FunctionDictionary.Add("ebav1730m", this.ebav1730m);
+//    this.FunctionDictionary.Add("ebav1731m", this.ebav1731m);
+//    this.FunctionDictionary.Add("ebav1978h", this.ebav1978h);
+//    this.FunctionDictionary.Add("ebav1979h", this.ebav1979h);
+//    this.FunctionDictionary.Add("ebav1980h", this.ebav1980h);
+//    this.FunctionDictionary.Add("ebav3960s", this.ebav3960s);
+//    this.FunctionDictionary.Add("ebav0954m", this.ebav0954m);
+//    this.FunctionDictionary.Add("ebav0955m", this.ebav0955m);
+//    this.FunctionDictionary.Add("ebav0956m", this.ebav0956m);
+//    this.FunctionDictionary.Add("ebav0957m", this.ebav0957m);
+//    this.FunctionDictionary.Add("ebav3961s", this.ebav3961s);
+//    this.FunctionDictionary.Add("ebav0958m", this.ebav0958m);
+//    this.FunctionDictionary.Add("ebav0959m", this.ebav0959m);
+//    this.FunctionDictionary.Add("ebav0960m", this.ebav0960m);
+//    this.FunctionDictionary.Add("ebav0961m", this.ebav0961m);
+//    this.FunctionDictionary.Add("ebav0962m", this.ebav0962m);
+//    this.FunctionDictionary.Add("ebav0963m", this.ebav0963m);
+//    this.FunctionDictionary.Add("ebav0964m", this.ebav0964m);
+//    this.FunctionDictionary.Add("ebav0965m", this.ebav0965m);
+//    this.FunctionDictionary.Add("ebav0966m", this.ebav0966m);
+//    this.FunctionDictionary.Add("ebav0967m", this.ebav0967m);
+//    this.FunctionDictionary.Add("ebav0968m", this.ebav0968m);
+//    this.FunctionDictionary.Add("ebav0969m", this.ebav0969m);
+//    this.FunctionDictionary.Add("ebav0970m", this.ebav0970m);
+//    this.FunctionDictionary.Add("ebav0971m", this.ebav0971m);
+//    this.FunctionDictionary.Add("ebav0972m", this.ebav0972m);
+//    this.FunctionDictionary.Add("ebav0973m", this.ebav0973m);
+//    this.FunctionDictionary.Add("ebav0974m", this.ebav0974m);
+//    this.FunctionDictionary.Add("ebav0975m", this.ebav0975m);
+//    this.FunctionDictionary.Add("ebav0976m", this.ebav0976m);
+//    this.FunctionDictionary.Add("ebav0977m", this.ebav0977m);
+//    this.FunctionDictionary.Add("ebav0978m", this.ebav0978m);
+//    this.FunctionDictionary.Add("ebav0979m", this.ebav0979m);
+//    this.FunctionDictionary.Add("ebav0980m", this.ebav0980m);
+//    this.FunctionDictionary.Add("ebav1732m", this.ebav1732m);
+//    this.FunctionDictionary.Add("ebav1981h", this.ebav1981h);
+//    this.FunctionDictionary.Add("ebav1982h", this.ebav1982h);
+//    this.FunctionDictionary.Add("ebav3962s", this.ebav3962s);
+//    this.FunctionDictionary.Add("ebav0985m", this.ebav0985m);
+//    this.FunctionDictionary.Add("ebav0986m", this.ebav0986m);
+//    this.FunctionDictionary.Add("ebav0987m", this.ebav0987m);
+//    this.FunctionDictionary.Add("ebav0988m", this.ebav0988m);
+//    this.FunctionDictionary.Add("ebav3136m", this.ebav3136m);
+//    this.FunctionDictionary.Add("ebav3137m", this.ebav3137m);
+//    this.FunctionDictionary.Add("ebav3149m", this.ebav3149m);
+//    this.FunctionDictionary.Add("ebav3150m", this.ebav3150m);
+//    this.FunctionDictionary.Add("ebav3151m", this.ebav3151m);
+//    this.FunctionDictionary.Add("ebav3152m", this.ebav3152m);
+//    this.FunctionDictionary.Add("ebav3964s", this.ebav3964s);
+//    this.FunctionDictionary.Add("ebav0993m", this.ebav0993m);
+//    this.FunctionDictionary.Add("ebav0994m", this.ebav0994m);
+//    this.FunctionDictionary.Add("ebav0995m", this.ebav0995m);
+//    this.FunctionDictionary.Add("ebav3967s", this.ebav3967s);
+//    this.FunctionDictionary.Add("ebav0996m", this.ebav0996m);
+//    this.FunctionDictionary.Add("ebav0997m", this.ebav0997m);
+//    this.FunctionDictionary.Add("ebav0998m", this.ebav0998m);
+//    this.FunctionDictionary.Add("ebav3972s", this.ebav3972s);
+//    this.FunctionDictionary.Add("ebav0999m", this.ebav0999m);
+//    this.FunctionDictionary.Add("ebav1001m", this.ebav1001m);
+//    this.FunctionDictionary.Add("ebav3141m", this.ebav3141m);
+//    this.FunctionDictionary.Add("ebav3154m", this.ebav3154m);
+//    this.FunctionDictionary.Add("ebav3155m", this.ebav3155m);
+//    this.FunctionDictionary.Add("ebav3973s", this.ebav3973s);
+//    this.FunctionDictionary.Add("ebav1003m", this.ebav1003m);
+//    this.FunctionDictionary.Add("ebav1004m", this.ebav1004m);
+//    this.FunctionDictionary.Add("ebav1005m", this.ebav1005m);
+//    this.FunctionDictionary.Add("ebav1006m", this.ebav1006m);
+//    this.FunctionDictionary.Add("ebav1007m", this.ebav1007m);
+//    this.FunctionDictionary.Add("ebav1008m", this.ebav1008m);
+//    this.FunctionDictionary.Add("ebav1009m", this.ebav1009m);
+//    this.FunctionDictionary.Add("ebav1010m", this.ebav1010m);
+//    this.FunctionDictionary.Add("ebav1014m", this.ebav1014m);
+//    this.FunctionDictionary.Add("ebav1015m", this.ebav1015m);
+//    this.FunctionDictionary.Add("ebav3145m", this.ebav3145m);
+//    this.FunctionDictionary.Add("ebav1017m", this.ebav1017m);
+//    this.FunctionDictionary.Add("ebav1018m", this.ebav1018m);
+//    this.FunctionDictionary.Add("ebav1019m", this.ebav1019m);
+//    this.FunctionDictionary.Add("ebav1020m", this.ebav1020m);
+//    this.FunctionDictionary.Add("ebav1021m", this.ebav1021m);
+//    this.FunctionDictionary.Add("ebav1022m", this.ebav1022m);
+//    this.FunctionDictionary.Add("ebav1024m", this.ebav1024m);
+//    this.FunctionDictionary.Add("ebav1025m", this.ebav1025m);
+//    this.FunctionDictionary.Add("ebav1992h", this.ebav1992h);
+//    this.FunctionDictionary.Add("ebav3974s", this.ebav3974s);
+//    this.FunctionDictionary.Add("ebav1026m", this.ebav1026m);
+//    this.FunctionDictionary.Add("ebav1028m", this.ebav1028m);
+//    this.FunctionDictionary.Add("ebav1029m", this.ebav1029m);
+//    this.FunctionDictionary.Add("ebav1027m", this.ebav1027m);
+//    this.FunctionDictionary.Add("ebav1030m", this.ebav1030m);
+//    this.FunctionDictionary.Add("ebav1032m", this.ebav1032m);
+//    this.FunctionDictionary.Add("ebav1033m", this.ebav1033m);
+//    this.FunctionDictionary.Add("ebav1034m", this.ebav1034m);
+//    this.FunctionDictionary.Add("ebav1036m", this.ebav1036m);
+//    this.FunctionDictionary.Add("ebav1038m", this.ebav1038m);
+//    this.FunctionDictionary.Add("ebav1039m", this.ebav1039m);
+//    this.FunctionDictionary.Add("ebav1040m", this.ebav1040m);
+//    this.FunctionDictionary.Add("ebav3950s", this.ebav3950s);
+//    this.FunctionDictionary.Add("ebav3951s", this.ebav3951s);
+//    this.FunctionDictionary.Add("ebav1041m", this.ebav1041m);
+//    this.FunctionDictionary.Add("ebav1042m", this.ebav1042m);
+//    this.FunctionDictionary.Add("ebav1043m", this.ebav1043m);
+//    this.FunctionDictionary.Add("ebav1044m", this.ebav1044m);
+//    this.FunctionDictionary.Add("ebav1045m", this.ebav1045m);
+//    this.FunctionDictionary.Add("ebav1046m", this.ebav1046m);
+//    this.FunctionDictionary.Add("ebav1971h", this.ebav1971h);
+//    this.FunctionDictionary.Add("ebav1047m", this.ebav1047m);
+//    this.FunctionDictionary.Add("ebav1048m", this.ebav1048m);
+//    this.FunctionDictionary.Add("ebav1985h", this.ebav1985h);
+//    this.FunctionDictionary.Add("ebav1986h", this.ebav1986h);
+//    this.FunctionDictionary.Add("ebav1987h", this.ebav1987h);
+//    this.FunctionDictionary.Add("ebav3970s", this.ebav3970s);
+//    this.FunctionDictionary.Add("ebav1049m", this.ebav1049m);
+//    this.FunctionDictionary.Add("ebav1050m", this.ebav1050m);
+//    this.FunctionDictionary.Add("ebav1051m", this.ebav1051m);
+//    this.FunctionDictionary.Add("ebav1052m", this.ebav1052m);
+//    this.FunctionDictionary.Add("ebav1053m", this.ebav1053m);
+//    this.FunctionDictionary.Add("ebav1054m", this.ebav1054m);
+//    this.FunctionDictionary.Add("ebav1055m", this.ebav1055m);
+//    this.FunctionDictionary.Add("ebav1056m", this.ebav1056m);
+//    this.FunctionDictionary.Add("ebav1058m", this.ebav1058m);
+//    this.FunctionDictionary.Add("ebav1059m", this.ebav1059m);
+//    this.FunctionDictionary.Add("ebav1060m", this.ebav1060m);
+//    this.FunctionDictionary.Add("ebav1061m", this.ebav1061m);
+//    this.FunctionDictionary.Add("ebav1062m", this.ebav1062m);
+//    this.FunctionDictionary.Add("ebav1063m", this.ebav1063m);
+//    this.FunctionDictionary.Add("ebav1064m", this.ebav1064m);
+//    this.FunctionDictionary.Add("ebav1065m", this.ebav1065m);
+//    this.FunctionDictionary.Add("ebav1066m", this.ebav1066m);
+//    this.FunctionDictionary.Add("ebav1067m", this.ebav1067m);
+//    this.FunctionDictionary.Add("ebav1225m", this.ebav1225m);
+//    this.FunctionDictionary.Add("ebav1749m", this.ebav1749m);
+//    this.FunctionDictionary.Add("ebav1750m", this.ebav1750m);
+//    this.FunctionDictionary.Add("ebav1751m", this.ebav1751m);
+//    this.FunctionDictionary.Add("ebav1752m", this.ebav1752m);
+//    this.FunctionDictionary.Add("ebav1754m", this.ebav1754m);
+//    this.FunctionDictionary.Add("ebav1756m", this.ebav1756m);
+//    this.FunctionDictionary.Add("ebav1757m", this.ebav1757m);
+//    this.FunctionDictionary.Add("ebav1758m", this.ebav1758m);
+//    this.FunctionDictionary.Add("ebav1759m", this.ebav1759m);
+//    this.FunctionDictionary.Add("ebav1760m", this.ebav1760m);
+//    this.FunctionDictionary.Add("ebav1761m", this.ebav1761m);
+//    this.FunctionDictionary.Add("ebav1762m", this.ebav1762m);
+//    this.FunctionDictionary.Add("ebav1763m", this.ebav1763m);
+//    this.FunctionDictionary.Add("ebav1998h", this.ebav1998h);
+//    this.FunctionDictionary.Add("ebav2027s", this.ebav2027s);
+//    this.FunctionDictionary.Add("ebav2028s", this.ebav2028s);
+//    this.FunctionDictionary.Add("ebav2062s", this.ebav2062s);
+//    this.FunctionDictionary.Add("ebav3990s", this.ebav3990s);
+//    this.FunctionDictionary.Add("ebav1068m", this.ebav1068m);
+//    this.FunctionDictionary.Add("ebav3940s", this.ebav3940s);
+//    this.FunctionDictionary.Add("ebav1069m", this.ebav1069m);
+//    this.FunctionDictionary.Add("ebav1070m", this.ebav1070m);
+//    this.FunctionDictionary.Add("ebav1071m", this.ebav1071m);
+//    this.FunctionDictionary.Add("ebav1072m", this.ebav1072m);
+//    this.FunctionDictionary.Add("ebav1073m", this.ebav1073m);
+//    this.FunctionDictionary.Add("ebav1074m", this.ebav1074m);
+//    this.FunctionDictionary.Add("ebav1075m", this.ebav1075m);
+//    this.FunctionDictionary.Add("ebav1078m", this.ebav1078m);
+//    this.FunctionDictionary.Add("ebav1081m", this.ebav1081m);
+//    this.FunctionDictionary.Add("ebav1084m", this.ebav1084m);
+//    this.FunctionDictionary.Add("ebav1086m", this.ebav1086m);
+//    this.FunctionDictionary.Add("ebav1087m", this.ebav1087m);
+//    this.FunctionDictionary.Add("ebav3941s", this.ebav3941s);
+//    this.FunctionDictionary.Add("ebav1088m", this.ebav1088m);
+//    this.FunctionDictionary.Add("ebav1093m", this.ebav1093m);
+//    this.FunctionDictionary.Add("ebav1094m", this.ebav1094m);
+//    this.FunctionDictionary.Add("ebav1095m", this.ebav1095m);
+//    this.FunctionDictionary.Add("ebav1996h", this.ebav1996h);
+//    this.FunctionDictionary.Add("ebav1997h", this.ebav1997h);
+//    this.FunctionDictionary.Add("ebav3978s", this.ebav3978s);
+//    this.FunctionDictionary.Add("ebav1096m", this.ebav1096m);
+//    this.FunctionDictionary.Add("ebav1097m", this.ebav1097m);
+//    this.FunctionDictionary.Add("ebav1098m", this.ebav1098m);
+//    this.FunctionDictionary.Add("ebav3979s", this.ebav3979s);
+//    this.FunctionDictionary.Add("ebav3980s", this.ebav3980s);
+//    this.FunctionDictionary.Add("ebav1099m", this.ebav1099m);
+//    this.FunctionDictionary.Add("ebav3982s", this.ebav3982s);
+//    this.FunctionDictionary.Add("ebav1103m", this.ebav1103m);
+//    this.FunctionDictionary.Add("ebav1983h", this.ebav1983h);
+//    this.FunctionDictionary.Add("ebav1984h", this.ebav1984h);
+//    this.FunctionDictionary.Add("ebav3969s", this.ebav3969s);
+//    this.FunctionDictionary.Add("ebav1104m", this.ebav1104m);
+//    this.FunctionDictionary.Add("ebav1105m", this.ebav1105m);
+//    this.FunctionDictionary.Add("ebav1106m", this.ebav1106m);
+//    this.FunctionDictionary.Add("ebav1107m", this.ebav1107m);
+//    this.FunctionDictionary.Add("ebav1108m", this.ebav1108m);
+//    this.FunctionDictionary.Add("ebav1109m", this.ebav1109m);
+//    this.FunctionDictionary.Add("ebav1110m", this.ebav1110m);
+//    this.FunctionDictionary.Add("ebav1111m", this.ebav1111m);
+//    this.FunctionDictionary.Add("ebav1112m", this.ebav1112m);
+//    this.FunctionDictionary.Add("ebav1113m", this.ebav1113m);
+//    this.FunctionDictionary.Add("ebav1114m", this.ebav1114m);
+//    this.FunctionDictionary.Add("ebav1115m", this.ebav1115m);
+//    this.FunctionDictionary.Add("ebav1116m", this.ebav1116m);
+//    this.FunctionDictionary.Add("ebav1764m", this.ebav1764m);
+//    this.FunctionDictionary.Add("ebav3983s", this.ebav3983s);
+//    this.FunctionDictionary.Add("ebav3984s", this.ebav3984s);
+//    this.FunctionDictionary.Add("ebav1117m", this.ebav1117m);
+//    this.FunctionDictionary.Add("ebav1118m", this.ebav1118m);
+//    this.FunctionDictionary.Add("ebav3985s", this.ebav3985s);
+//    this.FunctionDictionary.Add("ebav1121m", this.ebav1121m);
+//    this.FunctionDictionary.Add("ebav3986s", this.ebav3986s);
+//    this.FunctionDictionary.Add("ebav3987s", this.ebav3987s);
+//    this.FunctionDictionary.Add("ebav1122m", this.ebav1122m);
+//    this.FunctionDictionary.Add("ebav1123m", this.ebav1123m);
+//    this.FunctionDictionary.Add("ebav3316h", this.ebav3316h);
+//    this.FunctionDictionary.Add("ebav1124m", this.ebav1124m);
+//    this.FunctionDictionary.Add("ebav1125m", this.ebav1125m);
+//    this.FunctionDictionary.Add("ebav1126m", this.ebav1126m);
+//    this.FunctionDictionary.Add("ebav1127m", this.ebav1127m);
+//    this.FunctionDictionary.Add("ebav1128m", this.ebav1128m);
+//    this.FunctionDictionary.Add("ebav1765m", this.ebav1765m);
+//    this.FunctionDictionary.Add("ebav1766m", this.ebav1766m);
+//    this.FunctionDictionary.Add("ebav1767m", this.ebav1767m);
+//    this.FunctionDictionary.Add("ebav1768m", this.ebav1768m);
+//    this.FunctionDictionary.Add("ebav1972h", this.ebav1972h);
+//    this.FunctionDictionary.Add("ebav1973h", this.ebav1973h);
+//    this.FunctionDictionary.Add("ebav1974h", this.ebav1974h);
+//    this.FunctionDictionary.Add("ebav1975h", this.ebav1975h);
+//    this.FunctionDictionary.Add("ebav1976h", this.ebav1976h);
+//    this.FunctionDictionary.Add("ebav3957s", this.ebav3957s);
+//    this.FunctionDictionary.Add("ebav1129m", this.ebav1129m);
+//    this.FunctionDictionary.Add("ebav3958s", this.ebav3958s);
+//    this.FunctionDictionary.Add("ebav1130m", this.ebav1130m);
+//    this.FunctionDictionary.Add("ebav1131m", this.ebav1131m);
+//    this.FunctionDictionary.Add("ebav1132m", this.ebav1132m);
+//    this.FunctionDictionary.Add("ebav1133m", this.ebav1133m);
+//    this.FunctionDictionary.Add("ebav1134m", this.ebav1134m);
+//    this.FunctionDictionary.Add("ebav1135m", this.ebav1135m);
+//    this.FunctionDictionary.Add("ebav1769m", this.ebav1769m);
+//    this.FunctionDictionary.Add("ebav1770m", this.ebav1770m);
+//    this.FunctionDictionary.Add("ebav1977h", this.ebav1977h);
+//    this.FunctionDictionary.Add("ebav2061s", this.ebav2061s);
+//    this.FunctionDictionary.Add("ebav3959s", this.ebav3959s);
+//    this.FunctionDictionary.Add("ebav1137m", this.ebav1137m);
+//    this.FunctionDictionary.Add("ebav1139m", this.ebav1139m);
+//    this.FunctionDictionary.Add("ebav1140m", this.ebav1140m);
+//    this.FunctionDictionary.Add("ebav3989s", this.ebav3989s);
+//    this.FunctionDictionary.Add("ebav1160m", this.ebav1160m);
+//    this.FunctionDictionary.Add("ebav3143m", this.ebav3143m);
+//    this.FunctionDictionary.Add("ebav3144m", this.ebav3144m);
+//    this.FunctionDictionary.Add("ebav1241m", this.ebav1241m);
+//    this.FunctionDictionary.Add("ebav1242m", this.ebav1242m);
+//    this.FunctionDictionary.Add("ebav1995h", this.ebav1995h);
+//    this.FunctionDictionary.Add("ebav3976s", this.ebav3976s);
+//    this.FunctionDictionary.Add("ebav4027a", this.ebav4027a);
+//    this.FunctionDictionary.Add("ebav1243m", this.ebav1243m);
+//    this.FunctionDictionary.Add("ebav3977s", this.ebav3977s);
+//    this.FunctionDictionary.Add("ebav1251m", this.ebav1251m);
+//    this.FunctionDictionary.Add("ebav1252m", this.ebav1252m);
+//    this.FunctionDictionary.Add("ebav1253m", this.ebav1253m);
+//    this.FunctionDictionary.Add("ebav1254m", this.ebav1254m);
+//    this.FunctionDictionary.Add("ebav1255m", this.ebav1255m);
+//    this.FunctionDictionary.Add("ebav1256m", this.ebav1256m);
+//    this.FunctionDictionary.Add("ebav1257m", this.ebav1257m);
+//    this.FunctionDictionary.Add("ebav1258m", this.ebav1258m);
+//    this.FunctionDictionary.Add("ebav1259m", this.ebav1259m);
+//    this.FunctionDictionary.Add("ebav1260m", this.ebav1260m);
+//    this.FunctionDictionary.Add("ebav1261m", this.ebav1261m);
+//    this.FunctionDictionary.Add("ebav1262m", this.ebav1262m);
+//    this.FunctionDictionary.Add("ebav1263m", this.ebav1263m);
+//    this.FunctionDictionary.Add("ebav1264m", this.ebav1264m);
+//    this.FunctionDictionary.Add("ebav1265m", this.ebav1265m);
+//    this.FunctionDictionary.Add("ebav1266m", this.ebav1266m);
+//    this.FunctionDictionary.Add("ebav1267m", this.ebav1267m);
+//    this.FunctionDictionary.Add("ebav1268m", this.ebav1268m);
+//    this.FunctionDictionary.Add("ebav1269m", this.ebav1269m);
+//    this.FunctionDictionary.Add("ebav1270m", this.ebav1270m);
+//    this.FunctionDictionary.Add("ebav1271m", this.ebav1271m);
+//    this.FunctionDictionary.Add("ebav1272m", this.ebav1272m);
+//    this.FunctionDictionary.Add("ebav1273m", this.ebav1273m);
+//    this.FunctionDictionary.Add("ebav1274m", this.ebav1274m);
+//    this.FunctionDictionary.Add("ebav1275m", this.ebav1275m);
+//    this.FunctionDictionary.Add("ebav1276m", this.ebav1276m);
+//    this.FunctionDictionary.Add("ebav1277m", this.ebav1277m);
+//    this.FunctionDictionary.Add("ebav1278m", this.ebav1278m);
+//    this.FunctionDictionary.Add("ebav1279m", this.ebav1279m);
+//    this.FunctionDictionary.Add("ebav1280m", this.ebav1280m);
+//    this.FunctionDictionary.Add("ebav1281m", this.ebav1281m);
+//    this.FunctionDictionary.Add("ebav1282m", this.ebav1282m);
+//    this.FunctionDictionary.Add("ebav1283m", this.ebav1283m);
+//    this.FunctionDictionary.Add("ebav1284m", this.ebav1284m);
+//    this.FunctionDictionary.Add("ebav1285m", this.ebav1285m);
+//    this.FunctionDictionary.Add("ebav1286m", this.ebav1286m);
+//    this.FunctionDictionary.Add("ebav1287m", this.ebav1287m);
+//    this.FunctionDictionary.Add("ebav1288m", this.ebav1288m);
+//    this.FunctionDictionary.Add("ebav1289m", this.ebav1289m);
+//    this.FunctionDictionary.Add("ebav1290m", this.ebav1290m);
+//    this.FunctionDictionary.Add("ebav1291m", this.ebav1291m);
+//    this.FunctionDictionary.Add("ebav1292m", this.ebav1292m);
+//    this.FunctionDictionary.Add("ebav1293m", this.ebav1293m);
+//    this.FunctionDictionary.Add("ebav1294m", this.ebav1294m);
+//    this.FunctionDictionary.Add("ebav1295m", this.ebav1295m);
+//    this.FunctionDictionary.Add("ebav1296m", this.ebav1296m);
+//    this.FunctionDictionary.Add("ebav1297m", this.ebav1297m);
+//    this.FunctionDictionary.Add("ebav1298m", this.ebav1298m);
+//    this.FunctionDictionary.Add("ebav1299m", this.ebav1299m);
+//    this.FunctionDictionary.Add("ebav1300m", this.ebav1300m);
+//    this.FunctionDictionary.Add("ebav1301m", this.ebav1301m);
+//    this.FunctionDictionary.Add("ebav1302m", this.ebav1302m);
+//    this.FunctionDictionary.Add("ebav1303m", this.ebav1303m);
+//    this.FunctionDictionary.Add("ebav1304m", this.ebav1304m);
+//    this.FunctionDictionary.Add("ebav1305m", this.ebav1305m);
+//    this.FunctionDictionary.Add("ebav1306m", this.ebav1306m);
+//    this.FunctionDictionary.Add("ebav1307m", this.ebav1307m);
+//    this.FunctionDictionary.Add("ebav1308m", this.ebav1308m);
+//    this.FunctionDictionary.Add("ebav1309m", this.ebav1309m);
+//    this.FunctionDictionary.Add("ebav1310m", this.ebav1310m);
+//    this.FunctionDictionary.Add("ebav1311m", this.ebav1311m);
+//    this.FunctionDictionary.Add("ebav1312m", this.ebav1312m);
+//    this.FunctionDictionary.Add("ebav1329m", this.ebav1329m);
+//    this.FunctionDictionary.Add("ebav1330m", this.ebav1330m);
+//    this.FunctionDictionary.Add("ebav1331m", this.ebav1331m);
+//    this.FunctionDictionary.Add("ebav1332m", this.ebav1332m);
+//    this.FunctionDictionary.Add("ebav1333m", this.ebav1333m);
+//    this.FunctionDictionary.Add("ebav1334m", this.ebav1334m);
+//    this.FunctionDictionary.Add("ebav1335m", this.ebav1335m);
+//    this.FunctionDictionary.Add("ebav1925h", this.ebav1925h);
+//    this.FunctionDictionary.Add("ebav1926h", this.ebav1926h);
+//    this.FunctionDictionary.Add("ebav1927h", this.ebav1927h);
+//    this.FunctionDictionary.Add("ebav1928h", this.ebav1928h);
+//    this.FunctionDictionary.Add("ebav1337m", this.ebav1337m);
+//    this.FunctionDictionary.Add("ebav1338m", this.ebav1338m);
+//    this.FunctionDictionary.Add("ebav1339m", this.ebav1339m);
+//    this.FunctionDictionary.Add("ebav1340m", this.ebav1340m);
+//    this.FunctionDictionary.Add("ebav1341m", this.ebav1341m);
+//    this.FunctionDictionary.Add("ebav1342m", this.ebav1342m);
+//    this.FunctionDictionary.Add("ebav1343m", this.ebav1343m);
+//    this.FunctionDictionary.Add("ebav1344m", this.ebav1344m);
+//    this.FunctionDictionary.Add("ebav1345m", this.ebav1345m);
+//    this.FunctionDictionary.Add("ebav1346m", this.ebav1346m);
+//    this.FunctionDictionary.Add("ebav1347m", this.ebav1347m);
+//    this.FunctionDictionary.Add("ebav1348m", this.ebav1348m);
+//    this.FunctionDictionary.Add("ebav1349m", this.ebav1349m);
+//    this.FunctionDictionary.Add("ebav1350m", this.ebav1350m);
+//    this.FunctionDictionary.Add("ebav1351m", this.ebav1351m);
+//    this.FunctionDictionary.Add("ebav1352m", this.ebav1352m);
+//    this.FunctionDictionary.Add("ebav1353m", this.ebav1353m);
+//    this.FunctionDictionary.Add("ebav1354m", this.ebav1354m);
+//    this.FunctionDictionary.Add("ebav1355m", this.ebav1355m);
+//    this.FunctionDictionary.Add("ebav1356m", this.ebav1356m);
+//    this.FunctionDictionary.Add("ebav1357m", this.ebav1357m);
+//    this.FunctionDictionary.Add("ebav1358m", this.ebav1358m);
+//    this.FunctionDictionary.Add("ebav1359m", this.ebav1359m);
+//    this.FunctionDictionary.Add("ebav1360m", this.ebav1360m);
+//    this.FunctionDictionary.Add("ebav1361m", this.ebav1361m);
+//    this.FunctionDictionary.Add("ebav1362m", this.ebav1362m);
+//    this.FunctionDictionary.Add("ebav1363m", this.ebav1363m);
+//    this.FunctionDictionary.Add("ebav1364m", this.ebav1364m);
+//    this.FunctionDictionary.Add("ebav1365m", this.ebav1365m);
+//    this.FunctionDictionary.Add("ebav1366m", this.ebav1366m);
+//    this.FunctionDictionary.Add("ebav1367m", this.ebav1367m);
+//    this.FunctionDictionary.Add("ebav1368m", this.ebav1368m);
+//    this.FunctionDictionary.Add("ebav1369m", this.ebav1369m);
+//    this.FunctionDictionary.Add("ebav1370m", this.ebav1370m);
+//    this.FunctionDictionary.Add("ebav1371m", this.ebav1371m);
+//    this.FunctionDictionary.Add("ebav1372m", this.ebav1372m);
+//    this.FunctionDictionary.Add("ebav1373m", this.ebav1373m);
+//    this.FunctionDictionary.Add("ebav1374m", this.ebav1374m);
+//    this.FunctionDictionary.Add("ebav1375m", this.ebav1375m);
+//    this.FunctionDictionary.Add("ebav1376m", this.ebav1376m);
+//    this.FunctionDictionary.Add("ebav1383m", this.ebav1383m);
+//    this.FunctionDictionary.Add("ebav1384m", this.ebav1384m);
+//    this.FunctionDictionary.Add("ebav1385m", this.ebav1385m);
+//    this.FunctionDictionary.Add("ebav1386m", this.ebav1386m);
+//    this.FunctionDictionary.Add("ebav1734m", this.ebav1734m);
+//    this.FunctionDictionary.Add("ebav1736m", this.ebav1736m);
+//    this.FunctionDictionary.Add("ebav1738m", this.ebav1738m);
+//    this.FunctionDictionary.Add("ebav3146m", this.ebav3146m);
+//    this.FunctionDictionary.Add("ebav3147m", this.ebav3147m);
+//    this.FunctionDictionary.Add("ebav3148m", this.ebav3148m);
+//    this.FunctionDictionary.Add("ebav1742m", this.ebav1742m);
+//    this.FunctionDictionary.Add("ebav1743m", this.ebav1743m);
+//    this.FunctionDictionary.Add("ebav1744m", this.ebav1744m);
+//    this.FunctionDictionary.Add("ebav1745m", this.ebav1745m);
+//    this.FunctionDictionary.Add("ebav1746m", this.ebav1746m);
+//    this.FunctionDictionary.Add("ebav1747m", this.ebav1747m);
+//    this.FunctionDictionary.Add("ebav1748m", this.ebav1748m);
+//    this.FunctionDictionary.Add("ebav1911h", this.ebav1911h);
+//    this.FunctionDictionary.Add("ebav1912h", this.ebav1912h);
+//    this.FunctionDictionary.Add("ebav1913h", this.ebav1913h);
+//    this.FunctionDictionary.Add("ebav1914h", this.ebav1914h);
+//    this.FunctionDictionary.Add("ebav1915h", this.ebav1915h);
+//    this.FunctionDictionary.Add("ebav1916h", this.ebav1916h);
+//    this.FunctionDictionary.Add("ebav1917h", this.ebav1917h);
+//    this.FunctionDictionary.Add("ebav1918h", this.ebav1918h);
+//    this.FunctionDictionary.Add("ebav1919h", this.ebav1919h);
+//    this.FunctionDictionary.Add("ebav1922h", this.ebav1922h);
+//    this.FunctionDictionary.Add("ebav1923h", this.ebav1923h);
+//    this.FunctionDictionary.Add("ebav1924h", this.ebav1924h);
+//    this.FunctionDictionary.Add("ebav1933h", this.ebav1933h);
+//    this.FunctionDictionary.Add("ebav3907s", this.ebav3907s);
+//    this.FunctionDictionary.Add("ebav1935h", this.ebav1935h);
+//    this.FunctionDictionary.Add("ebav1936h", this.ebav1936h);
+//    this.FunctionDictionary.Add("ebav1937h", this.ebav1937h);
+//    this.FunctionDictionary.Add("ebav1938h", this.ebav1938h);
+//    this.FunctionDictionary.Add("ebav1939h", this.ebav1939h);
+//    this.FunctionDictionary.Add("ebav1940h", this.ebav1940h);
+//    this.FunctionDictionary.Add("ebav1941h", this.ebav1941h);
+//    this.FunctionDictionary.Add("ebav1949h", this.ebav1949h);
+//    this.FunctionDictionary.Add("ebav3926s", this.ebav3926s);
+//    this.FunctionDictionary.Add("ebav1988h", this.ebav1988h);
+//    this.FunctionDictionary.Add("ebav1989h", this.ebav1989h);
+//    this.FunctionDictionary.Add("ebav1990h", this.ebav1990h);
+//    this.FunctionDictionary.Add("ebav1991h", this.ebav1991h);
+//    this.FunctionDictionary.Add("ebav3971s", this.ebav3971s);
+//    this.FunctionDictionary.Add("ebav2701m", this.ebav2701m);
+//    this.FunctionDictionary.Add("ebav2702m", this.ebav2702m);
+//    this.FunctionDictionary.Add("ebav2703m", this.ebav2703m);
+//    this.FunctionDictionary.Add("ebav2706m", this.ebav2706m);
+//    this.FunctionDictionary.Add("ebav2707m", this.ebav2707m);
+//    this.FunctionDictionary.Add("ebav2709m", this.ebav2709m);
+//    this.FunctionDictionary.Add("ebav2712m", this.ebav2712m);
+//    this.FunctionDictionary.Add("ebav2715m", this.ebav2715m);
+//    this.FunctionDictionary.Add("ebav2718m", this.ebav2718m);
+//    this.FunctionDictionary.Add("ebav2721m", this.ebav2721m);
+//    this.FunctionDictionary.Add("ebav2724m", this.ebav2724m);
+//    this.FunctionDictionary.Add("ebav2727m", this.ebav2727m);
+//    this.FunctionDictionary.Add("ebav2730m", this.ebav2730m);
+//    this.FunctionDictionary.Add("ebav2733m", this.ebav2733m);
+//    this.FunctionDictionary.Add("ebav2736m", this.ebav2736m);
+//    this.FunctionDictionary.Add("ebav2739m", this.ebav2739m);
+//    this.FunctionDictionary.Add("ebav2742m", this.ebav2742m);
+//    this.FunctionDictionary.Add("ebav2744m", this.ebav2744m);
+//    this.FunctionDictionary.Add("ebav2746m", this.ebav2746m);
+//    this.FunctionDictionary.Add("ebav2748m", this.ebav2748m);
+//    this.FunctionDictionary.Add("ebav2704m", this.ebav2704m);
+//    this.FunctionDictionary.Add("ebav2705m", this.ebav2705m);
+//    this.FunctionDictionary.Add("ebav2710m", this.ebav2710m);
+//    this.FunctionDictionary.Add("ebav2713m", this.ebav2713m);
+//    this.FunctionDictionary.Add("ebav2716m", this.ebav2716m);
+//    this.FunctionDictionary.Add("ebav2719m", this.ebav2719m);
+//    this.FunctionDictionary.Add("ebav2722m", this.ebav2722m);
+//    this.FunctionDictionary.Add("ebav2725m", this.ebav2725m);
+//    this.FunctionDictionary.Add("ebav2728m", this.ebav2728m);
+//    this.FunctionDictionary.Add("ebav2731m", this.ebav2731m);
+//    this.FunctionDictionary.Add("ebav2734m", this.ebav2734m);
+//    this.FunctionDictionary.Add("ebav2737m", this.ebav2737m);
+//    this.FunctionDictionary.Add("ebav2740m", this.ebav2740m);
+//    this.FunctionDictionary.Add("ebav2750m", this.ebav2750m);
+//    this.FunctionDictionary.Add("ebav2751m", this.ebav2751m);
+//    this.FunctionDictionary.Add("ebav2752m", this.ebav2752m);
+//    this.FunctionDictionary.Add("ebav2753m", this.ebav2753m);
+//    this.FunctionDictionary.Add("ebav4154m", this.ebav4154m);
+//    this.FunctionDictionary.Add("ebav4155m", this.ebav4155m);
+//    this.FunctionDictionary.Add("ebav2711m", this.ebav2711m);
+//    this.FunctionDictionary.Add("ebav2714m", this.ebav2714m);
+//    this.FunctionDictionary.Add("ebav2717m", this.ebav2717m);
+//    this.FunctionDictionary.Add("ebav2720m", this.ebav2720m);
+//    this.FunctionDictionary.Add("ebav2723m", this.ebav2723m);
+//    this.FunctionDictionary.Add("ebav2726m", this.ebav2726m);
+//    this.FunctionDictionary.Add("ebav2729m", this.ebav2729m);
+//    this.FunctionDictionary.Add("ebav2732m", this.ebav2732m);
+//    this.FunctionDictionary.Add("ebav2735m", this.ebav2735m);
+//    this.FunctionDictionary.Add("ebav2738m", this.ebav2738m);
+//    this.FunctionDictionary.Add("ebav2741m", this.ebav2741m);
+//    this.FunctionDictionary.Add("ebav2743m", this.ebav2743m);
+//    this.FunctionDictionary.Add("ebav2745m", this.ebav2745m);
+//    this.FunctionDictionary.Add("ebav2747m", this.ebav2747m);
+//    this.FunctionDictionary.Add("ebav2749m", this.ebav2749m);
+//    this.FunctionDictionary.Add("ebav2781m", this.ebav2781m);
+//    this.FunctionDictionary.Add("ebav2782m", this.ebav2782m);
+//    this.FunctionDictionary.Add("ebav2783m", this.ebav2783m);
+//    this.FunctionDictionary.Add("ebav2784m", this.ebav2784m);
+//    this.FunctionDictionary.Add("ebav2785m", this.ebav2785m);
+//    this.FunctionDictionary.Add("ebav2786m", this.ebav2786m);
+//    this.FunctionDictionary.Add("ebav2787m", this.ebav2787m);
+//    this.FunctionDictionary.Add("ebav2788m", this.ebav2788m);
+//    this.FunctionDictionary.Add("ebav2789m", this.ebav2789m);
+//    this.FunctionDictionary.Add("ebav2790m", this.ebav2790m);
+//    this.FunctionDictionary.Add("ebav2791m", this.ebav2791m);
+//    this.FunctionDictionary.Add("ebav2792m", this.ebav2792m);
+//    this.FunctionDictionary.Add("ebav2793m", this.ebav2793m);
+//    this.FunctionDictionary.Add("ebav2794m", this.ebav2794m);
+//    this.FunctionDictionary.Add("ebav2795m", this.ebav2795m);
+//    this.FunctionDictionary.Add("ebav2796m", this.ebav2796m);
+//    this.FunctionDictionary.Add("ebav2797m", this.ebav2797m);
+//    this.FunctionDictionary.Add("ebav2798m", this.ebav2798m);
+//    this.FunctionDictionary.Add("ebav2799m", this.ebav2799m);
+//    this.FunctionDictionary.Add("ebav2800m", this.ebav2800m);
+//    this.FunctionDictionary.Add("ebav3018m", this.ebav3018m);
+//    this.FunctionDictionary.Add("ebav3019m", this.ebav3019m);
+//    this.FunctionDictionary.Add("ebav3020m", this.ebav3020m);
+//    this.FunctionDictionary.Add("ebav3021m", this.ebav3021m);
+//    this.FunctionDictionary.Add("ebav3078m", this.ebav3078m);
+//    this.FunctionDictionary.Add("ebav3079m", this.ebav3079m);
+//    this.FunctionDictionary.Add("ebav3080m", this.ebav3080m);
+//    this.FunctionDictionary.Add("ebav3081m", this.ebav3081m);
+//    this.FunctionDictionary.Add("ebav3082m", this.ebav3082m);
+//    this.FunctionDictionary.Add("ebav3083m", this.ebav3083m);
+//    this.FunctionDictionary.Add("ebav3084m", this.ebav3084m);
+//    this.FunctionDictionary.Add("ebav3085m", this.ebav3085m);
+//    this.FunctionDictionary.Add("ebav3086m", this.ebav3086m);
+//    this.FunctionDictionary.Add("ebav3089m", this.ebav3089m);
+//    this.FunctionDictionary.Add("ebav3090m", this.ebav3090m);
+//    this.FunctionDictionary.Add("ebav3092m", this.ebav3092m);
+//    this.FunctionDictionary.Add("ebav3095m", this.ebav3095m);
+//    this.FunctionDictionary.Add("ebav3098m", this.ebav3098m);
+//    this.FunctionDictionary.Add("ebav3101m", this.ebav3101m);
+//    this.FunctionDictionary.Add("ebav3104m", this.ebav3104m);
+//    this.FunctionDictionary.Add("ebav3107m", this.ebav3107m);
+//    this.FunctionDictionary.Add("ebav3110m", this.ebav3110m);
+//    this.FunctionDictionary.Add("ebav3113m", this.ebav3113m);
+//    this.FunctionDictionary.Add("ebav3115m", this.ebav3115m);
+//    this.FunctionDictionary.Add("ebav3117m", this.ebav3117m);
+//    this.FunctionDictionary.Add("ebav3119m", this.ebav3119m);
+//    this.FunctionDictionary.Add("ebav3087m", this.ebav3087m);
+//    this.FunctionDictionary.Add("ebav3088m", this.ebav3088m);
+//    this.FunctionDictionary.Add("ebav3093m", this.ebav3093m);
+//    this.FunctionDictionary.Add("ebav3096m", this.ebav3096m);
+//    this.FunctionDictionary.Add("ebav3099m", this.ebav3099m);
+//    this.FunctionDictionary.Add("ebav3102m", this.ebav3102m);
+//    this.FunctionDictionary.Add("ebav3105m", this.ebav3105m);
+//    this.FunctionDictionary.Add("ebav3108m", this.ebav3108m);
+//    this.FunctionDictionary.Add("ebav3111m", this.ebav3111m);
+//    this.FunctionDictionary.Add("ebav3121m", this.ebav3121m);
+//    this.FunctionDictionary.Add("ebav3122m", this.ebav3122m);
+//    this.FunctionDictionary.Add("ebav3123m", this.ebav3123m);
+//    this.FunctionDictionary.Add("ebav3124m", this.ebav3124m);
+//    this.FunctionDictionary.Add("ebav4156m", this.ebav4156m);
+//    this.FunctionDictionary.Add("ebav4157m", this.ebav4157m);
+//    this.FunctionDictionary.Add("ebav3094m", this.ebav3094m);
+//    this.FunctionDictionary.Add("ebav3097m", this.ebav3097m);
+//    this.FunctionDictionary.Add("ebav3100m", this.ebav3100m);
+//    this.FunctionDictionary.Add("ebav3103m", this.ebav3103m);
+//    this.FunctionDictionary.Add("ebav3106m", this.ebav3106m);
+//    this.FunctionDictionary.Add("ebav3109m", this.ebav3109m);
+//    this.FunctionDictionary.Add("ebav3112m", this.ebav3112m);
+//    this.FunctionDictionary.Add("ebav3114m", this.ebav3114m);
+//    this.FunctionDictionary.Add("ebav3116m", this.ebav3116m);
+//    this.FunctionDictionary.Add("ebav3118m", this.ebav3118m);
+//    this.FunctionDictionary.Add("ebav3120m", this.ebav3120m);
+//    this.FunctionDictionary.Add("ebav3125m", this.ebav3125m);
+//    this.FunctionDictionary.Add("ebav3126m", this.ebav3126m);
+//    this.FunctionDictionary.Add("ebav3127m", this.ebav3127m);
+//    this.FunctionDictionary.Add("ebav3128m", this.ebav3128m);
+//    this.FunctionDictionary.Add("ebav3129m", this.ebav3129m);
+//    this.FunctionDictionary.Add("ebav3130m", this.ebav3130m);
+//    this.FunctionDictionary.Add("ebav3131m", this.ebav3131m);
+//    this.FunctionDictionary.Add("ebav3138m", this.ebav3138m);
+//    this.FunctionDictionary.Add("ebav3139m", this.ebav3139m);
+//    this.FunctionDictionary.Add("ebav3965s", this.ebav3965s);
+//    this.FunctionDictionary.Add("ebav3153m", this.ebav3153m);
+//    this.FunctionDictionary.Add("ebav3968s", this.ebav3968s);
+//    this.FunctionDictionary.Add("ebav3925s", this.ebav3925s);
+//    this.FunctionDictionary.Add("ebav3942s", this.ebav3942s);
+//    this.FunctionDictionary.Add("ebav3952s", this.ebav3952s);
+//    this.FunctionDictionary.Add("ebav3966s", this.ebav3966s);
+//    this.FunctionDictionary.Add("ebav3975s", this.ebav3975s);
+//    this.FunctionDictionary.Add("ebav3981s", this.ebav3981s);
+//    this.FunctionDictionary.Add("ebav3988s", this.ebav3988s);
+//    this.FunctionDictionary.Add("ebav4004c", this.ebav4004c);
+//    this.FunctionDictionary.Add("ebav4005c", this.ebav4005c);
+//    this.FunctionDictionary.Add("ebav4006c", this.ebav4006c);
+
+//      }
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0050h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0067h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0069h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0071h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0763m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0764m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0765m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0766m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0767m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t)))
+//      public bool ebav0768m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
+//         var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, p_r, p_s, p_t));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1694m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1695m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1696m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1697m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav4030m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0057h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav0058h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav0059h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0129h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0130h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0145h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0779m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o)))
+//      public bool ebav0780m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1920h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1921h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav2060s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3899s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0136h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c))))
+//      public bool ebav0138h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0141h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c))))
+//      public bool ebav0143h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c))))
+//      public bool ebav0144h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0787m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0788m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0789m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0790m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0791m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0792m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0793m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0794m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c), iaf:numeric-unary-minus($d), $e, $f, iaf:numeric-unary-minus($g), $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, iaf:numeric-unary-minus($r), iaf:numeric-unary-minus($s), iaf:numeric-unary-minus($t), iaf:numeric-unary-minus($u), iaf:numeric-unary-minus($v), iaf:numeric-unary-minus($w), iaf:numeric-unary-minus($x), iaf:numeric-unary-minus($y), $z, $aa, $bb)))
+//      public bool ebav0795m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_aa = parameters.FirstOrDefault(i => i.Name == "aa").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_bb = parameters.FirstOrDefault(i => i.Name == "bb").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
+//         var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
+//         var p_u = parameters.FirstOrDefault(i => i.Name == "u").DoubleValue;
+//         var p_v = parameters.FirstOrDefault(i => i.Name == "v").DoubleValue;
+//         var p_w = parameters.FirstOrDefault(i => i.Name == "w").DoubleValue;
+//         var p_x = parameters.FirstOrDefault(i => i.Name == "x").DoubleValue;
+//         var p_y = parameters.FirstOrDefault(i => i.Name == "y").DoubleValue;
+//         var p_z = parameters.FirstOrDefault(i => i.Name == "z").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(p_d), p_e, p_f, functions.N_Unary_Minus(p_g), p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, functions.N_Unary_Minus(p_r), functions.N_Unary_Minus(p_s), functions.N_Unary_Minus(p_t), functions.N_Unary_Minus(p_u), functions.N_Unary_Minus(p_v), functions.N_Unary_Minus(p_w), functions.N_Unary_Minus(p_x), functions.N_Unary_Minus(p_y), p_z, p_aa, p_bb));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0798m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c), iaf:numeric-unary-minus($d), $e, $f, iaf:numeric-unary-minus($g), $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, iaf:numeric-unary-minus($r))))
+//      public bool ebav1699m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(p_d), p_e, p_f, functions.N_Unary_Minus(p_g), p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, functions.N_Unary_Minus(p_r)));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3900s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0769m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav0770m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0771m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0772m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h)))
+//      public bool ebav0773m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, iaf:sum($k))))
+//      public bool ebav1698m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, functions.sum(p_k)));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3898s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum((iaf:sum($b), $c)))
+//      public bool ebav0775m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(functions.sum(p_b), p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0785m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0777m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0856m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1703m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0783m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0784m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0786m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0799m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0800m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav1219m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1908h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3901s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0801m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0802m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0803m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0804m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav1220m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1909h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3902s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0805m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0806m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0807m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0808m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav1221m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1930h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3903s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3904s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav0809m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0810m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0811m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0812m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0813m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1931h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1932h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3905s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3906s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav0817m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0818m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0819m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0820m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0821m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav0822m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0823m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0824m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0825m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0826m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3917s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3918s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3919s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3920s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3921s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0827m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav0828m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1942h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1943h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1944h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1945h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1946h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1947h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1948h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3922s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3923s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3924s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0829m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0830m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0831m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0835m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0837m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3133m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3134m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3135m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3927s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0839m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0840m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0841m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3928s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3929s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0842m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0843m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0844m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0845m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0846m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0847m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0848m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0849m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0850m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0851m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0852m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0854m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1950h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1951h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3930s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3931s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0855m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1702m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0857m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0858m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0859m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0860m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav0862m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0863m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0864m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0865m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav0867m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0869m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1952h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1953h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1954h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1955h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1956h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3932s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3933s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0874m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0875m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav0876m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0877m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0878m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3912s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3913s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3914s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3915s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0879m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3132m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3142m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3916s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0880m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0881m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0882m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0884m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0885m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0886m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3953s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3954s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3955s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav0887m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0888m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1713m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3956s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0890m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0891m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0892m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0893m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav0894m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h)))
+//      public bool ebav0895m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1959h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1960h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1961h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1962h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1963h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1964h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3936s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3937s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3938s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3939s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum(($a, $b)), $c)
+//      public bool ebav0896m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1188m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1189m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1190m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1191m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1192m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1193m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1194m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1195m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1196m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1197m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1200m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1201m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1202m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1203m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k)))
+//      public bool ebav1204m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1206m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1965h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1966h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1967h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3944s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3945s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3946s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3947s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0897m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0898m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0899m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0900m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0901m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0902m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0903m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0904m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0905m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0906m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0907m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0908m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav0909m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1714m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1715m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1716m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1717m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1718m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1719m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1720m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1721m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1722m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1723m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1724m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1725m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1726m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1727m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum(($a, $b)), $c)
+//      public bool ebav0911m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1207m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1208m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1209m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1211m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1212m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1213m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1214m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1215m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k)))
+//      public bool ebav1216m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1218m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1968h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1969h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1970h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3948s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3949s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, iaf:sum($b))
+//      public bool ebav0912m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0914m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0915m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0916m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0917m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0918m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0919m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0920m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0921m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav0922m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0923m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3943s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0924m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0925m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0926m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0927m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0928m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0929m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0930m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0931m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0932m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0933m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0934m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0935m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0936m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0937m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0938m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0939m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0940m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0941m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0942m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0943m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0944m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0945m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0946m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0947m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav0948m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0949m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0950m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0951m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0952m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t)))
+//      public bool ebav0953m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
+//         var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, p_r, p_s, p_t));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1728m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1729m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1730m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1731m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1978h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1979h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1980h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3960s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav0954m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0955m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav0956m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m)))
+//      public bool ebav0957m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3961s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0958m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0959m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0960m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0961m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0962m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0963m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0964m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0965m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0966m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0967m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0968m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0969m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0970m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0971m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0972m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0973m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0974m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0975m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0976m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0977m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0978m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum(($a, $b)), $c)
+//      public bool ebav0979m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a, p_b), p_c);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c), iaf:numeric-unary-minus($d), $e, $f, iaf:numeric-unary-minus($g), $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, iaf:numeric-unary-minus($r), iaf:numeric-unary-minus($s), iaf:numeric-unary-minus($t), iaf:numeric-unary-minus($u), iaf:numeric-unary-minus($v), iaf:numeric-unary-minus($w), iaf:numeric-unary-minus($x), iaf:numeric-unary-minus($y), $z, $aa, $bb)))
+//      public bool ebav0980m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_aa = parameters.FirstOrDefault(i => i.Name == "aa").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_bb = parameters.FirstOrDefault(i => i.Name == "bb").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
+//         var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
+//         var p_u = parameters.FirstOrDefault(i => i.Name == "u").DoubleValue;
+//         var p_v = parameters.FirstOrDefault(i => i.Name == "v").DoubleValue;
+//         var p_w = parameters.FirstOrDefault(i => i.Name == "w").DoubleValue;
+//         var p_x = parameters.FirstOrDefault(i => i.Name == "x").DoubleValue;
+//         var p_y = parameters.FirstOrDefault(i => i.Name == "y").DoubleValue;
+//         var p_z = parameters.FirstOrDefault(i => i.Name == "z").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(p_d), p_e, p_f, functions.N_Unary_Minus(p_g), p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, functions.N_Unary_Minus(p_r), functions.N_Unary_Minus(p_s), functions.N_Unary_Minus(p_t), functions.N_Unary_Minus(p_u), functions.N_Unary_Minus(p_v), functions.N_Unary_Minus(p_w), functions.N_Unary_Minus(p_x), functions.N_Unary_Minus(p_y), p_z, p_aa, p_bb));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c), iaf:numeric-unary-minus($d), $e, $f, iaf:numeric-unary-minus($g), $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, iaf:numeric-unary-minus($r))))
+//      public bool ebav1732m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c), functions.N_Unary_Minus(p_d), p_e, p_f, functions.N_Unary_Minus(p_g), p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, functions.N_Unary_Minus(p_r)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, iaf:numeric-unary-minus($c))))
+//      public bool ebav1981h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, functions.N_Unary_Minus(p_c)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav1982h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3962s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0985m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0986m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0987m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav0988m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3136m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3137m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3149m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3150m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3151m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3152m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3964s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0993m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav0994m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0995m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3967s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0996m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav0997m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //if ($a != 0) then ($b != 0) else (true())
+//      public bool ebav0998m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return p_a!=0 ? p_b!=0 : true;
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3972s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav0999m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1001m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3141m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3154m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3155m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3973s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1003m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1004m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1005m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1006m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1007m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1008m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1009m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1010m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1014m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1015m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav3145m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1017m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1018m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1019m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1020m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1021m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1022m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1024m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //if (iaf:numeric-greater-than(iaf:sum($a), 0)) then (iaf:numeric-greater-than($b, 0)) else (true())
+//      public bool ebav1025m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Greater(functions.sum(p_a), 0) ? functions.N_Greater(p_b, 0) : true;
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1992h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3974s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1026m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1028m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1029m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1027m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1030m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum((iaf:sum($b), iaf:numeric-unary-minus(iaf:sum($c)), iaf:numeric-unary-minus(iaf:sum($d)))))
+//      public bool ebav1032m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(functions.sum(p_b), functions.N_Unary_Minus(functions.sum(p_c)), functions.N_Unary_Minus(functions.sum(p_d))));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1033m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1034m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum((iaf:sum($b), iaf:sum($c), iaf:sum($d))))
+//      public bool ebav1036m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(functions.sum(p_b), functions.sum(p_c), functions.sum(p_d)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1038m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1039m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1040m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3950s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3951s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1041m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1042m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1043m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1044m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1045m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1046m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1971h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1047m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1048m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav1985h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1986h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav1987h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3970s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum((iaf:sum($b), iaf:sum($c))))
+//      public bool ebav1049m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(functions.sum(p_b), functions.sum(p_c)));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1050m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1051m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1052m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1053m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1054m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1055m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1056m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o)))
+//      public bool ebav1058m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k)))
+//      public bool ebav1059m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j)))
+//      public bool ebav1060m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i)))
+//      public bool ebav1061m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1062m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1063m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1064m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1065m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l)))
+//      public bool ebav1066m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1067m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1225m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1749m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h)))
+//      public bool ebav1750m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i)))
+//      public bool ebav1751m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1752m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j)))
+//      public bool ebav1754m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l)))
+//      public bool ebav1756m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h)))
+//      public bool ebav1757m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1758m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l)))
+//      public bool ebav1759m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m)))
+//      public bool ebav1760m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1761m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m)))
+//      public bool ebav1762m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i)))
+//      public bool ebav1763m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav1998h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav2027s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav2028s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav2062s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3990s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1068m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3940s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1069m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1070m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1071m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1072m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1073m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1074m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1075m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1078m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1081m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1084m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, iaf:sum($b))
+//      public bool ebav1086m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_LessEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1087m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3941s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1088m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1093m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1094m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1095m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1996h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1997h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3978s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1096m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1097m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1098m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3979s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3980s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1099m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3982s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1103m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1983h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1984h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3969s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1104m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1105m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1106m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1107m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1108m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1109m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1110m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1111m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1112m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1113m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1114m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1115m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1116m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1764m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3983s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3984s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1117m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1118m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3985s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1121m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3986s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav3987s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1122m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1123m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum(($b, $c)))
+//      public bool ebav3316h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1124m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1125m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1126m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1127m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u)))
+//      public bool ebav1128m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         var p_o = parameters.FirstOrDefault(i => i.Name == "o").DoubleValue;
+//         var p_p = parameters.FirstOrDefault(i => i.Name == "p").DoubleValue;
+//         var p_q = parameters.FirstOrDefault(i => i.Name == "q").DoubleValue;
+//         var p_r = parameters.FirstOrDefault(i => i.Name == "r").DoubleValue;
+//         var p_s = parameters.FirstOrDefault(i => i.Name == "s").DoubleValue;
+//         var p_t = parameters.FirstOrDefault(i => i.Name == "t").DoubleValue;
+//         var p_u = parameters.FirstOrDefault(i => i.Name == "u").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n, p_o, p_p, p_q, p_r, p_s, p_t, p_u));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1765m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1766m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1767m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1768m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1972h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1973h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1974h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1975h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1976h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3957s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1129m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3958s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1130m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1131m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1132m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n)))
+//      public bool ebav1133m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         var p_h = parameters.FirstOrDefault(i => i.Name == "h").DoubleValue;
+//         var p_i = parameters.FirstOrDefault(i => i.Name == "i").DoubleValue;
+//         var p_j = parameters.FirstOrDefault(i => i.Name == "j").DoubleValue;
+//         var p_k = parameters.FirstOrDefault(i => i.Name == "k").DoubleValue;
+//         var p_l = parameters.FirstOrDefault(i => i.Name == "l").DoubleValue;
+//         var p_m = parameters.FirstOrDefault(i => i.Name == "m").DoubleValue;
+//         var p_n = parameters.FirstOrDefault(i => i.Name == "n").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g, p_h, p_i, p_j, p_k, p_l, p_m, p_n));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1134m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1135m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1769m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1770m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1977h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav2061s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3959s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1137m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1139m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1140m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3989s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1160m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3143m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3144m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 1)
+//      public bool ebav1241m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 1);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 1)
+//      public bool ebav1242m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 1);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1995h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3976s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //$a = (xs:QName('eba_RP:x11'), xs:QName('eba_RP:x3'), xs:QName('eba_RP:x1'))
+//      public bool ebav4027a(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
+//         return $a=(functions.XS_QName("eba_RP:x11"), functions.XS_QName("eba_RP:x3"), functions.XS_QName("eba_RP:x1"));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 1)
+//      public bool ebav1243m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 1);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3977s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1251m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1252m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1253m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1254m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1255m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1256m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1257m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1258m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1259m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1260m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1261m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1262m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1263m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1264m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1265m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1266m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1267m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1268m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1269m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1270m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1271m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1272m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1273m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1274m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1275m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1276m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1277m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1278m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1279m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1280m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1281m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1282m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1283m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1284m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1285m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1286m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1287m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1288m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1289m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1290m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1291m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1292m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1293m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1294m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1295m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1296m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1297m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1298m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1299m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1300m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1301m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1302m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1303m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1304m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1305m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1306m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1307m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1308m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1309m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1310m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1311m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav1312m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1329m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1330m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1331m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1332m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1333m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1334m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1335m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1925h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1926h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1927h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1928h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1337m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1338m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1339m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1340m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1341m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1342m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1343m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1344m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1345m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1346m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1347m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1348m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1349m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1350m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1351m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1352m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1353m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1354m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1355m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1356m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1357m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1358m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1359m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1360m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1361m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1362m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1363m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1364m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1365m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1366m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1367m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1368m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1369m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1370m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1371m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1372m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1373m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1374m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1375m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav1376m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav1383m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1384m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1385m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav1386m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1734m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1736m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav1738m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav3146m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav3147m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), $b)
+//      public bool ebav3148m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1742m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1743m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1744m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1745m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1746m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1747m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal(iaf:sum($a), iaf:sum($b))
+//      public bool ebav1748m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(functions.sum(p_a), functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1911h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1912h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1913h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1914h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1915h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1916h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1917h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1918h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f)))
+//      public bool ebav1919h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1922h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1923h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1924h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1933h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3907s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1935h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1936h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1937h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1938h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1939h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1940h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e, $f, $g)))
+//      public bool ebav1941h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         var p_f = parameters.FirstOrDefault(i => i.Name == "f").DoubleValue;
+//         var p_g = parameters.FirstOrDefault(i => i.Name == "g").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e, p_f, p_g));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1949h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3926s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d, $e)))
+//      public bool ebav1988h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         var p_e = parameters.FirstOrDefault(i => i.Name == "e").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d, p_e));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav1989h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav1990h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav1991h(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3971s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2701m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2702m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2703m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2706m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2707m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2709m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2712m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2715m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2718m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2721m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2724m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2727m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2730m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2733m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2736m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav2739m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2742m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2744m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2746m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2748m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2704m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2705m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2710m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2713m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2716m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2719m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2722m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2725m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2728m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2731m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2734m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2737m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav2740m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav2750m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav2751m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav2752m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav2753m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav4154m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav4155m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2711m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2714m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2717m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2720m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2723m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2726m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav2729m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2732m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2735m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav2738m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c, $d)))
+//      public bool ebav2741m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         var p_d = parameters.FirstOrDefault(i => i.Name == "d").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c, p_d));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2743m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2745m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2747m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav2749m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2781m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2782m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2783m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2784m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2785m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2786m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2787m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2788m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2789m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2790m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2791m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2792m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2793m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2794m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2795m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2796m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2797m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2798m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2799m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav2800m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav3018m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav3019m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav3020m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, $b)
+//      public bool ebav3021m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_Equals(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav3078m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav3079m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, iaf:sum($b))
+//      public bool ebav3080m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_GreaterEqual(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3081m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3082m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3083m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3084m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3085m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3086m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3089m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3090m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3092m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3095m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3098m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3101m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3104m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3107m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3110m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3113m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3115m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3117m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3119m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3087m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3088m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3093m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3096m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3099m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3102m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3105m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3108m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3111m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3121m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3122m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3123m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, $b)
+//      public bool ebav3124m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, 0)
+//      public bool ebav4156m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_LessEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav4157m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3094m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3097m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3100m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3103m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3106m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3109m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum(($b, $c)))
+//      public bool ebav3112m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         var p_c = parameters.FirstOrDefault(i => i.Name == "c").DoubleValue;
+//         return functions.N_Equals(p_a, functions.sum(p_b, p_c));
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3114m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3116m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3118m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3120m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3125m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3126m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3127m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3128m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3129m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav3130m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than(iaf:sum($a), $b)
+//      public bool ebav3131m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValues;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(functions.sum(p_a), p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3138m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-less-equal-than($a, $b)
+//      public bool ebav3139m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValue;
+//         return functions.N_LessEqual(p_a, p_b);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3965s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-equal($a, iaf:sum($b))
+//      public bool ebav3153m(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         var p_b = parameters.FirstOrDefault(i => i.Name == "b").DoubleValues;
+//         return functions.N_Equals(p_a, functions.sum(p_b));
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3968s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3925s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3942s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3952s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3966s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3975s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3981s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //iaf:numeric-greater-equal-than($a, 0)
+//      public bool ebav3988s(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").DoubleValue;
+//         return functions.N_GreaterEqual(p_a, 0);
+//      }
+
+//       //if ($AccountingStandard = 'IFRS') then ($a = xs:QName('eba_AS:x2')) else (true())
+//      public bool ebav4004c(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
+//         var p_AccountingStandard = parameters.FirstOrDefault(i => i.Name == "AccountingStandard").StringValue;
+//         return p_AccountingStandard='IFRS' ? $a=xs:QName("eba_AS:x2") : true;
+//      }
+
+//       //if ($AccountingStandard = 'GAAP') then ($a = xs:QName('eba_AS:x1')) else (true())
+//      public bool ebav4005c(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
+//         var p_AccountingStandard = parameters.FirstOrDefault(i => i.Name == "AccountingStandard").StringValue;
+//         return p_AccountingStandard='GAAP' ? $a=xs:QName("eba_AS:x1") : true;
+//      }
+
+//       //$a = xs:QName('eba_SC:x7')
+//      public bool ebav4006c(List<ValidationParameter> parameters)
+//      {
+//         var p_a = parameters.FirstOrDefault(i => i.Name == "a").StringValue;
+//         return $a=xs:QName("eba_SC:x7");
+//      }
+
+
+//  }
+//}

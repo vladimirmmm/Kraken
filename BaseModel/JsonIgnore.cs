@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BaseModel
 {
-    class JsonIgnoreAttribute : Attribute
-    {
-    }
+    //class JsonIgnoreAttribute : Attribute
+    //{
+    //}
 }

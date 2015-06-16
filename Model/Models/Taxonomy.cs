@@ -2,9 +2,11 @@
 using LogicalModel.Base;
 using LogicalModel.Helpers;
 using LogicalModel.Validation;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -44,6 +46,25 @@ namespace LogicalModel
 
         private List<ValidationRule> _ValidationRules = new List<ValidationRule>();
         public List<ValidationRule> ValidationRules { get { return _ValidationRules; } set { _ValidationRules = value; } }
+
+        private List<SimpleValidationRule> _SimpleValidationRules = new List<SimpleValidationRule>();
+        [JsonIgnore]
+        public List<SimpleValidationRule> SimpleValidationRules
+        {
+            get
+            {
+                if (_SimpleValidationRules.Count == 0) 
+                {
+                    foreach (var rule in ValidationRules)
+                    {
+                        _SimpleValidationRules.Add(new SimpleValidationRule(rule));
+                    }
+                }
+                return _SimpleValidationRules; 
+            }
+            set { _SimpleValidationRules = value; }
+        }
+        
         //public static Action<string> Console = null;
 
         public ValidationFunctionContainer ValidationFunctionContainer = null;
@@ -115,12 +136,12 @@ namespace LogicalModel
 
         public string CurrentInstancePath
         {
-            get { return ModuleFolder + "currentinstance.js"; }
+            get { return TaxonomyLayoutFolder + "currentinstance.js"; }
         }
 
         public string CurrentInstanceValidationResultPath
         {
-            get { return ModuleFolder + "validationresult.js"; }
+            get { return TaxonomyLayoutFolder + "validationresult.js"; }
         }
 
         public string TaxonomyLayoutFolder
@@ -128,6 +149,7 @@ namespace LogicalModel
             get { return ModuleFolder + "Layout\\"; }
         }
 
+        public List<string> TaxFiles = new List<string>();
 
         public Taxonomy(string entrypath) 
         {
@@ -306,13 +328,76 @@ namespace LogicalModel
             }
 
             ManageUIFile(@"Scripts\jquery-2.1.3.js");
+            ManageUIFile(@"Scripts\jquery-ui-1.11.4.js");
+
             ManageUIFile(@"Scripts\Linq.js");
+            ManageUIFile(@"Scripts\AppItems.js");
             ManageUIFile(@"Scripts\Instance.js");
             ManageUIFile(@"Scripts\Models.js");
             ManageUIFile(@"Scripts\Table.js");
             ManageUIFile(@"Scripts\Utils.js");
-            ManageUIFile(@"Table.css");           
-            
+            ManageUIFile(@"Scripts\Taxonomy.js");
+            ManageUIFile(@"Table.css");
+            ManageUIFile(@"InstanceTemplate.html");
+            //TaxonomyToUI();
+        }
+
+        public void TaxonomyToUI()
+        {
+            TaxFiles.Clear();
+            //TaxFiles.Add(JsonFileToJsVarible(TaxonomyFactsPath, "", "tax_facts"));
+            TaxFiles.Add(JsonFileToJsVarible(TaxonomyHierarchyPath, "", "tax_hierarchies"));
+            TaxFiles.Add(JsonFileToJsVarible(TaxonomyConceptPath, "", "tax_concepts"));
+            var jsonsimplifiedvalidation = "";
+            if (this.SimpleValidationRules.Count > 0) 
+            {
+                jsonsimplifiedvalidation = Utilities.Converters.ToJson(this.SimpleValidationRules);
+            }
+            TaxFiles.Add(JsonToJsVarible(jsonsimplifiedvalidation, "tax_validations"));
+            TaxFiles.Add(JsonFileToJsVarible(TaxonomyLabelPath, "", "tax_labels"));
+        }
+
+        public string JsonFileToJsVarible(string path, string jsonvalue, string variablename, bool overwrite = false) 
+        {
+            var filename = Utilities.Strings.GetFileName(path);
+            if (String.IsNullOrEmpty(variablename))
+            {
+                variablename = Utilities.Strings.AlfaNumericOnly(filename.Remove(filename.LastIndexOf(".")));
+            }
+            var jsfilename = variablename+".js";
+            var jsfilepath = this.TaxonomyLayoutFolder + jsfilename;
+            if (!System.IO.File.Exists(jsfilepath) || overwrite)
+            {
+                if (System.IO.File.Exists(path))
+                {
+                    if (String.IsNullOrEmpty(jsonvalue))
+                    {
+                        jsonvalue = System.IO.File.ReadAllText(path);
+                    }
+                    var sb = new StringBuilder();
+                    sb.Append(String.Format("var {0} = {1};", variablename, jsonvalue));
+                    Utilities.FS.WriteAllText(jsfilepath, sb.ToString());
+                }
+            }
+            return jsfilename;
+        }
+
+        public string JsonToJsVarible(string jsonvalue, string variablename, bool overwrite = false)
+        {
+
+            var jsfilename = variablename + ".js";
+            var jsfilepath = this.TaxonomyLayoutFolder + jsfilename;
+            if (!System.IO.File.Exists(jsfilepath) || overwrite)
+            {
+
+                if (!String.IsNullOrEmpty(jsonvalue))
+                {
+                    var sb = new StringBuilder();
+                    sb.Append(String.Format("var {0} = {1};", variablename, jsonvalue));
+                    Utilities.FS.WriteAllText(jsfilepath, sb.ToString());
+                }
+            }
+            return jsfilename;
         }
 
         public virtual void LoadHierarchy() 
@@ -320,7 +405,22 @@ namespace LogicalModel
 
         }
 
-        public virtual void LoadValidations() { }
+        public virtual void LoadValidations() {
+            if (this.ValidationFunctionContainer == null)
+            {
+                var assembly = Assembly.LoadFile(this.TaxonomyValidationDotNetLibPath);
+                var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));
+                if (type != null)
+                {
+                    ValidationFunctionContainer vfc = (ValidationFunctionContainer)Activator.CreateInstance(type);
+                    this.ValidationFunctionContainer = vfc;
+                }
+                else 
+                {
+                    Console.WriteLine(String.Format("There is no {0} in assembly {1}", typeof(ValidationFunctionContainer).Name, this.TaxonomyValidationDotNetLibPath));
+                }
+            }
+        }
         
         public virtual void LoadSchemaElements()
         {
@@ -424,17 +524,13 @@ namespace LogicalModel
             Clear_Labels();
             Clear_SchemaElements();
             Clear_Facts();
+            Clear_Validations();
+
         }
         public void Clear_All()
         {
-            Clear_Concepts();
-            Clear_Hierarchies();
             Clear_Structure();
-            Clear_Tables();
-            Clear_Layout();
-            Clear_Labels();
-            Clear_SchemaElements();
-            Clear_Facts();
+            Clear_All_But_Structure();
         }
         public void Clear_Facts()
         {

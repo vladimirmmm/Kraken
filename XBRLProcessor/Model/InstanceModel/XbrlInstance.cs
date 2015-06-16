@@ -128,6 +128,7 @@ namespace Model.InstanceModel
                     factlist.Add(logicalfact);
                 }
             }
+
         }
 
         public override List<LogicalModel.Validation.ValidationRuleResult> Validate()
@@ -147,6 +148,11 @@ namespace Model.InstanceModel
             //this.XmlDocument.Validate(OnValidated);
 
             results.AddRange(base.Validate());
+
+            var json_validationresults = Utilities.Converters.ToJson(results);
+            Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, "var currentvalidationresults = " + json_validationresults + ";");
+
+
             Console.WriteLine("Validating Instance finished");
 
             return results;
@@ -165,6 +171,11 @@ namespace Model.InstanceModel
             instance.Load();
 
             int z = 0;
+        }
+
+        public override void SetTaxonomy(Taxonomy xbrlTaxonomy)
+        {
+            base.SetTaxonomy(xbrlTaxonomy);
         }
     }
 }

@@ -322,7 +322,7 @@ namespace Utilities
             return rs;
         }
 
-        public static string ArrayToString(double[] arr)
+        public static string ArrayToString(decimal[] arr)
         {
             string rs = "";
             var delimiter = ", ";

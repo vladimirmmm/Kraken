@@ -19,7 +19,6 @@ namespace BaseModel
         
 
         private  Hierarchy<TClass> _Parent = null;
-        [JsonIgnore]
         public Hierarchy<TClass> Parent 
         {
             get { return _Parent; }
@@ -141,6 +140,15 @@ namespace BaseModel
                 }
             }
             return results;
+        }
+
+        public void Remove(Hierarchy<TClass> item)
+        {
+            var existing = this.Where(i => i.Children.Contains(item)).FirstOrDefault();
+            if (existing != null) 
+            {
+                existing.Children.Remove(item);
+            }
         }
 
         public static Hierarchy<TClass> GetHierarchy<TArc>(List<TArc> Arcs, List<Hierarchy<TClass>> Items,

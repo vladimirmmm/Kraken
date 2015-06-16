@@ -138,6 +138,8 @@ namespace XBRLProcessor.Model
             var sb = new StringBuilder();
             var sequence = parameter.BindAsSequence ? "Sequence" : "";
             sb.AppendLine("parameter: " + parameter.Name + " " + sequence);
+            var c_sb = new StringBuilder();
+            var log = false;
             foreach (var factgroup in parameter.FactGroups) 
             {
                 foreach (var fact in factgroup.Facts)
@@ -157,7 +159,10 @@ namespace XBRLProcessor.Model
                         }
                         if (cells.Count == 0)
                         {
-                            Console.WriteLine(this.ID + " fact found but no cells! " + factkey);
+                            if (log)
+                            {
+                                c_sb.AppendLine(this.ID + " fact found but no cells! " + factkey);
+                            }
                         }
                     }
                     else
@@ -188,8 +193,10 @@ namespace XBRLProcessor.Model
                                 var cells = Taxonomy.Facts[s_fact];
                                 if (cells.Count == 0)
                                 {
-                                    Console.WriteLine(this.ID + " for parameter " + parameter.Name + " no cells were found! " + s_fact);
-
+                                    if (log)
+                                    {
+                                        c_sb.AppendLine(this.ID + " for parameter " + parameter.Name + " no cells were found! " + s_fact);
+                                    }
                                 }
                                 if (this.ID.Contains("0602"))
                                 {
@@ -203,8 +210,10 @@ namespace XBRLProcessor.Model
                         }
                         else
                         {
-                            Console.WriteLine(this.ID + " fact for parameter " + parameter.Name + " not found! " + factkey);
-
+                            if (log)
+                            {
+                                c_sb.AppendLine(this.ID + " fact for parameter " + parameter.Name + " not found! " + factkey);
+                            }
                         }
 
                     }
@@ -230,7 +239,14 @@ namespace XBRLProcessor.Model
             }
             if (!cellfound)
             {
-                Console.WriteLine("None of the Fact Groups can be found for " + this.ID + " - " + parameter.Name);
+                if (log)
+                {
+                    c_sb.AppendLine("None of the Fact Groups can be found for " + this.ID + " - " + parameter.Name);
+                }
+            }
+            if (c_sb.Length > 0)
+            {
+                Console.WriteLine(c_sb.ToString());
             }
             return sb.ToString();
         }

@@ -23,6 +23,7 @@ namespace LogicalModel.Expressions
             this.Syntax.ParameterSeparator = ",";
             this.Syntax.CodeItemSeparator = " ";
             this.Syntax.StringDelimiter = "\"";
+            this.Syntax.Spacing = " ";
             this.Syntax.If = "if";
             this.Syntax.Then = "";
             this.Syntax.Else = "else";
@@ -38,11 +39,11 @@ namespace LogicalModel.Expressions
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " && ");
             this.Syntax.Operators.AddItem(OperatorEnum.Division, " / ");
             this.Syntax.Operators.AddItem(OperatorEnum.Equals, " == ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Greater, " > ");
             this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, " >= ");
+            this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, " <= ");
+            this.Syntax.Operators.AddItem(OperatorEnum.Greater, " > ");
             this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, " / ");
             this.Syntax.Operators.AddItem(OperatorEnum.Less, " < ");
-            this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, " <= ");
             this.Syntax.Operators.AddItem(OperatorEnum.Modulo, " \\ ");
             this.Syntax.Operators.AddItem(OperatorEnum.Multiplication, " * ");
             this.Syntax.Operators.AddItem(OperatorEnum.Not, "!");

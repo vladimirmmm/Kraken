@@ -15,7 +15,7 @@ namespace LogicalModel
         public string ColSpan = "";
         private Table _Table = null;
         public int Order = 0;
-
+        public bool IsDynamic = false;
         private string _Axis = "";
         public string Axis { get { return _Axis; } set { _Axis = value; } }
 

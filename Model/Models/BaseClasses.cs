@@ -83,16 +83,18 @@ namespace LogicalModel.Base
         private List<Dimension> _Dimensions = new List<Dimension>();
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
 
+        public string FactString = "";
+
         public string GetFactString() 
         {
             var sb = new StringBuilder();
             if (Concept != null)
             {
-                sb.Append(Concept + ">");
+                sb.Append(Concept + ",");//>
             }
             foreach (var dimension in Dimensions)
             {
-                sb.Append(dimension.DomainMemberFullName + "|");
+                sb.Append(dimension.DomainMemberFullName + ",");//|
             }
             return sb.ToString();
         }
@@ -106,13 +108,14 @@ namespace LogicalModel.Base
             }
             foreach (var dimension in Dimensions)
             {
-                sb.Append(dimension.DomainMemberFullName + ",");
+                sb.Append(dimension.ToStringForKey() + ",");
             }
             return sb.ToString();
         }
 
         public void SetFromString(string item) 
         {
+            this.Dimensions.Clear();
             var cix = item.IndexOf(">");
             if (cix > -1)
             {
@@ -122,20 +125,42 @@ namespace LogicalModel.Base
                 this.Concept = concept;
 
             }
-            var dimparts = item.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var toskip = 0;
+            if (parts.Length > 0) 
+            {
+                if (parts[0].StartsWith("eba_met")) 
+                {
+                    toskip = 1;
+                    var concept = new Concept();
+                    concept.Content = parts[0];
+                    this.Concept = concept;
+                }
+            }
+            var dimparts = parts.Skip(toskip).ToList();
             foreach (var dimpart in dimparts)
             {
                 var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
                 var domainpart = dimpart.Substring(dimitem.Length + 2);
                 var domain = domainpart;
                 var member = "";
+                var dim = new Dimension();
+
                 if (domainpart.Contains(":"))
                 {
                     var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                    domain = domainparts[0];
-                    member = domainparts[1];
+                    if (domainparts.Length == 2)
+                    {
+                        domain = domainparts[0];
+                        member = domainparts[1];
+                    }
+                    if (domainparts.Length == 3)
+                    {
+                        domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                        member = domainparts[2];
+                        dim.IsTyped = true;
+                    }
                 }
-                var dim = new Dimension();
                 dim.DimensionItem = dimitem;
                 dim.Domain = domain;
                 dim.DomainMember = member;
@@ -153,6 +178,7 @@ namespace LogicalModel.Base
     {
         private List<FactBase> _Facts = new List<FactBase>();
         public List<FactBase> Facts { get { return _Facts; } set { _Facts = value; } }
+
 
         public FactGroup Copy() 
         {
@@ -304,5 +330,17 @@ namespace LogicalModel.Base
         {
             return String.Format("{0}", this.Content);
         }
+
+        public void testc()
+        {
+            var files = System.IO.Directory.GetFiles(@"C:\My\Tasks\97532\20150606_19");
+            foreach (var file in files) 
+            {
+                var content = System.IO.File.ReadAllText(file);
+                System.IO.File.WriteAllText(file, content);
+            }
+        }
     }
+
+
 }
