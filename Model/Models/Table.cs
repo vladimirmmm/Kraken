@@ -323,7 +323,7 @@ namespace LogicalModel
                     sb_fact.AppendLine();
                 }
             }
-            Console.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
+            //Console.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
             //var factpath = HtmlPath.Replace(".html", "-facts.txt");
             //var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
             //Utilities.FS.WriteAllText(FactPath, sb_fact.ToString());
@@ -359,14 +359,10 @@ namespace LogicalModel
                                 dim.DomainMember = dm.Name;
                                 li.Dimensions.Add(dim);
                                 li.LabelID = dm.ID;
-                                var labelkey = Label.GetKey(dim.Domain, dm.ID);
+                                var domainfolder = dim.Domain.StartsWith(Taxonomy.Prefix) ? dim.Domain.Substring(Taxonomy.Prefix.Length) : dim.Domain;
+                                var labelkey = Label.GetKey(domainfolder, dm.ID);
                                 li.Label = this.Taxonomy.FindLabel(labelkey);
-                                if (li.Label == null)
-                                {
-                                    labelkey = Label.GetKey(dim.Domain.Replace("eba_", ""), dm.ID);
-                                    li.Label = this.Taxonomy.FindLabel(labelkey);
-                                }
-                                //li.LoadLabel(this.Taxonomy);
+                           
                                 extensions.Add(li);
                             }
                         }
@@ -390,12 +386,14 @@ namespace LogicalModel
         {
             var nodes = LayoutRoot.Where(i => String.Equals(i.Item.Axis, axis, StringComparison.InvariantCultureIgnoreCase)).OrderBy(i => i.Order).ToList();
             var axislayoutitem = new LayoutItem();
+            axislayoutitem.IsVisible = false;
             axislayoutitem.ID = String.Format("Axis {0}", axis);
             axislayoutitem.IsAbstract = true;
             var axisnode = new Hierarchy<LayoutItem>(axislayoutitem);
             foreach (var node in nodes) 
             {
                 axisnode.Children.Add(node);
+                node.Item.IsVisible = false;
             }
             return axisnode;
      
@@ -463,7 +461,7 @@ namespace LogicalModel
 
             Columns = columnsnode.GetLeafs();//.Where(i => !i.Item.IsAbstract);
             //SetDimensions(Columns);
-            Rows = rowsnode.ToHierarchy().ToList();
+            Rows = rowsnode.ToHierarchy().Where(i => i.Item.IsVisible).ToList();
             //SetDimensions(Rows);
 
 
@@ -651,21 +649,22 @@ namespace LogicalModel
                     sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", ylevelcount + 1, xlevelcount + 1, rowsnode.Item.LabelContent));
 
                 }
+      
+    
                 foreach (var item in lvl.Value)
                 {
-                    /*
-                    var tc = item.GetLeafCount(null);
-                    var sublevelcount = item.GetSubLevelCount(null);
-                    var colspan = tc > 0 ? String.Format(" colspan=\"{0}\"", tc + 1) : "";
-                    var levelx = xlevelcount - lvl.Key;
-                    var rowspan = levelx > 0 ? String.Format(" rowspan=\"{0}\"", levelx) : "";
-                    if (sublevelcount != 0)
-                    {
-                        rowspan = "";
+                    var cssclass = "class=\"\"";
+
+                    if (item.Children.Count > 0) {
+                        cssclass = cssclass.Replace("=\"", "=\"haschild ");
+
                     }
-                    */
-                    sb.AppendLine(String.Format("<th {0} {1} factid=\"{3}\" title=\"{4}\">{2}</th>",
-                        item.Item.ColSpan, item.Item.RowSpan, item.Item.LabelContent, item.Item.FactString, item.Item.FactString));
+                    if (item.Item.IsPlaceholder) 
+                    {
+                        cssclass = cssclass.Replace("=\"", "=\"placeholder ");
+                    }
+                    sb.AppendLine(String.Format("<th {0} {1} {5} factid=\"{3}\" title=\"{4}\">{2}</th>",
+                        item.Item.ColSpan, item.Item.RowSpan, item.Item.LabelContent, item.Item.FactString, item.Item.FactString, cssclass));
                 }
                 sb.AppendLine("</tr>");
 
@@ -751,9 +750,9 @@ namespace LogicalModel
             {
                 MergeDimensions(cell.Dimensions, currentrow.Item.Dimensions);
 
-                if (currentrow.Item.Concept == null || currentrow.Item.Concept.Content == cell.Concept.Content)
-                {
-                }
+                //if (currentrow.Item.Concept == null || currentrow.Item.Concept.Content == cell.Concept.Content)
+                //{
+                //}
 
                 currentrow = currentrow.Parent;
             }
@@ -762,9 +761,9 @@ namespace LogicalModel
             {
                 MergeDimensions(cell.Dimensions, currentcol.Item.Dimensions);
 
-                if (currentcol.Item.Concept == null || currentcol.Item.Concept.Content == cell.Concept.Content)
-                {
-                }
+                //if (currentcol.Item.Concept == null || currentcol.Item.Concept.Content == cell.Concept.Content)
+                //{
+                //}
 
                 currentcol = currentcol.Parent;
             }

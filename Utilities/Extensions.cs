@@ -17,6 +17,17 @@ namespace Utilities
             }
             return false;
         }
+
+        public static bool In<T>(this T obj, params String[] values)
+        {
+            var stringval = String.Format("{0}", obj);
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (String.Equals(stringval, values[i]))
+                    return true;
+            }
+            return false;
+        }
         public static bool IsAllNull<T>(this List<T> obj)
         {
             return IsAllNull(obj.ToArray());

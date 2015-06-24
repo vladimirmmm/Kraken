@@ -1,4 +1,5 @@
 ﻿using LogicalModel.Base;
+using LogicalModel.Validation;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,48 +10,86 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
-    //[JsonObject(MemberSerialization=MemberSerialization.]
-    public class InstanceFact:FactBase
+    [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
+    public class InstanceFact : FactBase //, IValueWithTreshold
     {
 
-        private String _FactString= "";
-        public String FactString { get { return _FactString; } set { _FactString = value; } }
-
         private String _FactKey = "";
+        [JsonProperty]
         public String FactKey { get { return _FactKey; } set { _FactKey = value; } }
 
-        public int Decimals { get; set; }
-
-        private String _Concept= "";
-        public String Concept { get { return _Concept; } set { _Concept = value; } }
+        public string Decimals { get; set; }
 
         private String _Value = "";
+        [JsonProperty]
         public String Value { get { return _Value; } set { _Value = value; } }
 
         private List<String> _Cells = new List<string>();
+        [JsonProperty]
         public List<String> Cells { get { return _Cells; } set { _Cells = value; } }
 
-        public float Value_F { 
+        public decimal Value_F { 
             get
             {
                 if (String.IsNullOrEmpty(_Value)) { return 0; }
-                return float.Parse(_Value, CultureInfo.InvariantCulture);
+                if (_Value.Length > 29 || !Utilities.Strings.IsDigitsOnly(_Value, '.', '-'))
+                {
+                    Console.WriteLine(String.Format("Invalid Value Detected: {0}", _Value));
+                }
+                else 
+                {
+                    return decimal.Parse(_Value);
+                }
+                return decimal.MaxValue;
             }
-            //set {
-            //    _Value = String.Format("{0:0.##}", value); 
-            //}
         }
 
+        [JsonProperty]
         public String ContextID { get; set; }
 
 
+        [JsonProperty]
         public Entity Entity { get; set; }
+        [JsonProperty]
         public Unit Unit { get; set; }
+        [JsonProperty]
         public String UnitID { get; set; }
 
         public override string ToString()
         {
             return String.Format("Value: {0}; FactString: {1};", Value, FactString);
         }
+        /*
+        [JsonIgnore]
+        public decimal DecimalValue
+        {
+            get
+            {
+                return Value_F;
+            }
+            set
+            {
+                Value = String.Format("{0.0}", value);
+            }
+        }
+
+        [JsonIgnore]
+        private decimal _Treshold = -9999;
+        public decimal Treshold
+        {
+            get
+            {
+                if (_Treshold == -9999)
+                {
+                    _Treshold = Functions.FactTreshold(this);
+                }
+                return _Treshold;
+            }
+            set
+            {
+                _Treshold = value;
+            }
+        }
+        */
     }
 }

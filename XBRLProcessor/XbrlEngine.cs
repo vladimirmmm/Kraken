@@ -26,66 +26,84 @@ namespace XBRLProcessor
             }
         }
 
-        public override void LoadTaxonomy(string filepath) 
+        public override bool LoadTaxonomy(string filepath) 
         {
+            if (CurrentTaxonomy != null) 
+            {
+                Utilities.Xml.NamespaceDictionary.Clear();
+                CurrentTaxonomy.ClearObjects();
+            }
+            var isloaded = false;
             Console.WriteLine("Loading Taxonomy ");
-            CurrentTaxonomy = new XbrlTaxonomy(filepath);
-            CurrentTaxonomy.TaxonomyToUI();
-            CurrentTaxonomy.LoadAllReferences();
-            CurrentTaxonomy.LoadLabels();
-            CurrentTaxonomy.LoadSchemaElements();
-            CurrentTaxonomy.LoadConcepts();
-            CurrentTaxonomy.LoadTables();
-            CurrentTaxonomy.LoadFacts();
-            CurrentTaxonomy.LoadValidations();
-            CurrentTaxonomy.LoadHierarchy();
-            CurrentTaxonomy.TaxonomyToUI();
-           
+            var taxonomydocument = new XbrlTaxonomyDocument();
+            if (taxonomydocument.LoadTaxonomyDocument(filepath, null))
+            {
 
-            Console.WriteLine("Loading Taxonomy finished");
-            base.LoadTaxonomy(filepath);
+                CurrentTaxonomy = new XbrlTaxonomy(filepath);
+                CurrentTaxonomy.TaxonomyToUI();
+                CurrentTaxonomy.LoadAllReferences();
+
+                CheckMapping();
+
+                var metdoc = CurrentTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "met.xsd");
+                CurrentTaxonomy.ConceptNameSpace = metdoc.TargetNamespace;
+                CurrentTaxonomy.Prefix = CurrentTaxonomy.ConceptNameSpace.Remove(CurrentTaxonomy.ConceptNameSpace.LastIndexOf("_")) + "_";
+
+                CurrentTaxonomy.LoadLabels();
+                CurrentTaxonomy.LoadSchemaElements();
+                CurrentTaxonomy.LoadConcepts();
+                CurrentTaxonomy.LoadTables();
+                CurrentTaxonomy.LoadFacts();
+                CurrentTaxonomy.LoadValidations();
+                CurrentTaxonomy.LoadHierarchy();
+                CurrentTaxonomy.TaxonomyToUI();
+                isloaded = true;
+                Console.WriteLine("Loading Taxonomy finished");
+                base.LoadTaxonomy(filepath);
+            }
+            else 
+            {
+                Console.WriteLine("Can't Load Taxonomy");
+            }
+            return isloaded;
         }
-        public override void LoadInstance(string filepath)
+
+        protected void CheckMapping()
+        {
+            var mapdict = new Dictionary<string, string>();
+            var tagsmapped = XBRLProcessor.Mapping.Mappings.GetTagsCovered();
+            var sb = new StringBuilder();
+
+
+            foreach (var doc in CurrentTaxonomy.TaxonomyDocuments) 
+            {
+                foreach (var tagname in doc.TagNames) 
+                {
+                    var decoratedtagname = String.Format("<{0}>", tagname);
+                    if (!mapdict.ContainsKey(decoratedtagname)) 
+                    {
+                        if (!tagsmapped.Contains(decoratedtagname)) 
+                        {
+                            mapdict.Add(decoratedtagname, doc.LocalPath);
+                            sb.AppendLine(String.Format("{0} - {1}", decoratedtagname, doc.LocalPath));
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Tags not mapped: ");
+            Console.WriteLine(sb.ToString());
+        }
+
+        public override bool LoadInstance(string filepath)
         {
             Console.WriteLine("Loading Instance started");
             CurrentInstance = new XbrlInstance(filepath);
-            CurrentInstance.Load();
+            CurrentInstance.LoadSimple();
             base.LoadInstance(filepath);
+            CurrentInstance.LoadComplex();
             
             Console.WriteLine("Loading Instance finished");
-            //var taxonomyloadneeded = true;
-            //if (CurrentTaxonomy != null)
-            //{
-            //    var localmoduleentry = Utilities.Strings.GetLocalPath(CurrentTaxonomy.LocalFolder, CurrentInstance.SchemaRef.Href);
-            //    taxonomyloadneeded = CurrentTaxonomy.EntryDocument.LocalPath != localmoduleentry;
-            //}
-            //if (taxonomyloadneeded)
-            //{
-            //    LoadTaxonomy(CurrentInstance.SchemaRef.Href);
-
-            //}
-            //CurrentInstance.Taxonomy = CurrentTaxonomy;
-            //CurrentInstance.ModulePath = Utilities.Strings.GetLocalPath(CurrentTaxonomy.LocalFolder, CurrentInstance.TaxonomyModuleReference);
-            //CurrentInstance.HtmlPath = CurrentTaxonomy.TaxonomyLayoutFolder + "Instance.html";
-            //var html = System.IO.File.ReadAllText(CurrentTaxonomy.TaxonomyLayoutFolder + "InstanceTemplate.html");
-            //var taxscriptincludes = "";
-            //foreach (var taxfile in CurrentTaxonomy.TaxFiles)
-            //{
-            //    taxscriptincludes += String.Format("<script src=\"{0}\" type=\"text/javascript\" ></script>\r\n", taxfile);
-            //}
-            //html = html.Replace("#TaxScripts#", taxscriptincludes);
-            //Utilities.FS.WriteAllText(CurrentInstance.HtmlPath, html);
-
-            //foreach (var fact in CurrentInstance.Facts) 
-            //{
-            //    if (CurrentTaxonomy.Facts.ContainsKey(fact.FactKey))
-            //    {
-            //        fact.Cells = CurrentTaxonomy.Facts[fact.FactKey];
-            //    }
-            //}
-            //var json_instance = Utilities.Converters.ToJson(CurrentInstance);
-            //Utilities.FS.WriteAllText(CurrentTaxonomy.CurrentInstancePath, "var currentinstance = " + json_instance + ";");
-
+            return true;
         }
 
         public void LoadLabels()

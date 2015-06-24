@@ -7,16 +7,102 @@ using System.Threading.Tasks;
 
 namespace LogicalModel.Validation
 {
-    public class Functions
+    public interface IValueWithTreshold 
     {
-        public Expression Find(string name) 
+        object ObjectValue { get; set; }
+        decimal DecimalValue { get; set; }
+        decimal Treshold { get; set; }
+    }
+    public class ValueWithTreshold :IValueWithTreshold
+    {
+        private object _ObjectValue;
+        public object ObjectValue
         {
-            if (this.ExpressionDictionary.ContainsKey(name)) 
+            get
             {
-                return this.ExpressionDictionary[name];
+                return _ObjectValue;
             }
-            return null;
+            set
+            {
+                _ObjectValue = value;
+            }
         }
+
+        private decimal _DecimalValue;
+        private decimal _Treshold;
+        public decimal DecimalValue
+        {
+            get
+            {
+                return _DecimalValue;
+            }
+            set
+            {
+                _DecimalValue = value;
+            }
+        }
+
+        public decimal Treshold
+        {
+            get
+            {
+                return _Treshold;
+            }
+            set
+            {
+                _Treshold = value;
+            }
+        }
+
+        public ValueWithTreshold()
+        {
+
+        }
+        public ValueWithTreshold(decimal Value)
+        {
+            _DecimalValue = Value;
+        }
+        public ValueWithTreshold(decimal Value, decimal Treshold)
+        {
+            _DecimalValue = Value;
+            _Treshold = Treshold;
+
+        }
+        public static bool operator ==(ValueWithTreshold lhs, decimal rhs)
+        {
+            return Equals(lhs.DecimalValue, rhs);
+        }
+        public static bool operator !=(ValueWithTreshold lhs, decimal rhs)
+        {
+            return !Equals(lhs.DecimalValue, rhs);
+        }
+        public static bool operator ==(decimal lhs, ValueWithTreshold rhs)
+        {
+            return Equals(lhs, rhs.DecimalValue);
+        }
+        public static bool operator !=(decimal lhs, ValueWithTreshold rhs)
+        {
+            return !Equals(lhs, rhs.DecimalValue);
+        }
+
+        public static bool operator ==(ValueWithTreshold lhs, IValueWithTreshold rhs)
+        {
+            //return !Equals(lhs.DecimalValue, rhs.DecimalValue) || !Equals(lhs.Treshold, rhs.Treshold);
+            return Equals(lhs.DecimalValue, rhs.DecimalValue);
+        }
+        public static bool operator !=(ValueWithTreshold lhs, IValueWithTreshold rhs)
+        {
+            //return !Equals(lhs.DecimalValue, rhs.DecimalValue) || !Equals(lhs.Treshold, rhs.Treshold);
+            return !Equals(lhs.DecimalValue, rhs.DecimalValue);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0}", ObjectValue);
+        }
+    }
+    public partial class Functions
+    {
 
         public Dictionary<string, Expression> ExpressionDictionary = new Dictionary<string, Expression>();
         public Dictionary<string, string> FunctionMap = new Dictionary<string, string>();
@@ -25,27 +111,14 @@ namespace LogicalModel.Validation
         {
 
 
-            AddFunction("iaf:numeric-equal", (decimal a, decimal b) => a == b);
-            AddFunction("iaf:numeric-less-than", (decimal a, decimal b) => a < b);
-            AddFunction("iaf:numeric-less-equal-than", (decimal a, decimal b) => a <= b);
-            AddFunction("iaf:numeric-greater-than", (decimal a, decimal b) => a > b);
-            AddFunction("iaf:numeric-greater-equal-than", (decimal a, decimal b) => a >= b);
+        }
+       
+        
 
-            AddFunction("iaf:numeric-equal-treshold", (decimal a, decimal b) => a == b);
-            AddFunction("iaf:numeric-less-than-treshold", (decimal a, decimal b) => a < b);
-            AddFunction("iaf:numeric-less-equal-than-treshold", (decimal a, decimal b) => a <= b);
-            AddFunction("iaf:numeric-greater-than-treshold", (decimal a, decimal b) => a > b);
-            AddFunction("iaf:numeric-greater-equal-than-treshold", (decimal a, decimal b) => a >= b);
 
-            AddFunction("iaf:numeric-subtract", (decimal a, decimal b) => a - b);
-            AddFunction("iaf:numeric-divide", (decimal a, decimal b) => a / b);
-            AddFunction("iaf:numeric-multiply", (decimal a, decimal b) => a * b);
-            AddFunction("xs:qname", (String a) => a);
-            AddFunction("not", (Boolean a) => !a);
-            AddFunction("empty", (Object a) => a == null);
-            AddFunction("abs", (decimal a) => a < 0 ? -a : a);
-            AddFunction("sum", (decimal[] a) => sum(a));
-
+        public decimal N_Add(params decimal[] parameters)
+        {
+            return parameters.Sum();
         }
         public bool N_Equals(decimal a, decimal b) 
         {
@@ -139,43 +212,8 @@ namespace LogicalModel.Validation
         {
             return -a;
         }
-        public void AddFunction<TOutput>(String Name, Expression<Func<Functions, TOutput>> expr)
-        {
-            this.FunctionMap.Add(Name, "functions."+Utilities.Linq.GetPropertyName(expr));
-        }
-        public void AddFunction<TParam, TOutput>(String Name, Expression<Func<TParam, TOutput>> expr)
-        {
-            this.ExpressionDictionary.Add(Name, expr);
-        }
-        public void AddFunction<TParam1, TParam2, TOutput>(String Name, Expression<Func<TParam1, TParam2, TOutput>> expr)
-        {
-            AddExpression(Name, expr);
-        }
-        public void AddFunction<TParam1, TParam2, TParam3, TOutput>(String Name, Expression<Func<TParam1, TParam2, TParam3, TOutput>> expr)
-        {
-            AddExpression(Name, expr);
-        }
-        public void AddFunction<TParam1, TParam2, TParam3, TParam4, TOutput>(String Name, Expression<Func<TParam1, TParam2, TParam3, TParam4, TOutput>> expr)
-        {
-            AddExpression(Name, expr);
-            var item = expr.Compile();
-
-        }
-
-        public void AddExpression(String Name, Expression expr) 
-        {
-            this.ExpressionDictionary.Add(Name, expr);
         
-        }
-      
 
-        private void Test() 
-        {
-            foreach (var f in ExpressionDictionary.Values) 
-            {
-                var s = f.ToString();
 
-            }
-        }
     }
 }

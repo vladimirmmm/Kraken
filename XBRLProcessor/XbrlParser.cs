@@ -167,6 +167,8 @@ namespace XBRLProcessor
                         var itemexpression = GetSimpleExpression(parameterstring);
                         itemexpression.PlaceHolderIndex = GetSubExpressionIndex(itemexpression.StringValue);
                         func.Items.Add(itemexpression);
+                        //TODO t1
+                        //func.SubExpressions.Add(itemexpression);
 
                     }
                     //TODO add the Expression<Func here
@@ -185,6 +187,9 @@ namespace XBRLProcessor
                         var itemexpression = GetSimpleExpression(pm);
                         itemexpression.PlaceHolderIndex = GetSubExpressionIndex(itemexpression.StringValue);
                         listexpression.Items.Add(itemexpression);
+                        
+                        //TODO t1
+                        //listexpression.SubExpressions.Add(itemexpression);
                     }
                     result = listexpression;
                 }
@@ -230,14 +235,24 @@ namespace XBRLProcessor
         }
 
         #endregion
+        public void Test2()
+        {
+            var xbrlparser = new XbrlFormulaParser();
+            var csparser = new CSharpParser();
+            var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum((iaf:max((iaf:sum((iaf:numeric-multiply($b, 0.18), iaf:numeric-multiply($c, 0.18), iaf:numeric-multiply($d, 0.12), iaf:numeric-multiply((iaf:sum(($e, $f, iaf:numeric-multiply($g, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($h, $i, iaf:numeric-multiply($j, 0.035)))), 0.12), iaf:numeric-multiply($k, 0.18), iaf:numeric-multiply($l, 0.15), iaf:numeric-multiply($m, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($n, 0.18), iaf:numeric-multiply($o, 0.18), iaf:numeric-multiply($p, 0.12), iaf:numeric-multiply((iaf:sum(($q, $r, iaf:numeric-multiply($s, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($t, $u, iaf:numeric-multiply($v, 0.035)))), 0.12), iaf:numeric-multiply($w, 0.18), iaf:numeric-multiply($x, 0.15), iaf:numeric-multiply($y, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($z, 0.18), iaf:numeric-multiply($aa, 0.18), iaf:numeric-multiply($bb, 0.12), iaf:numeric-multiply((iaf:sum(($cc, $dd, iaf:numeric-multiply($ee, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($ff, $gg, iaf:numeric-multiply($hh, 0.035)))), 0.12), iaf:numeric-multiply($ii, 0.18), iaf:numeric-multiply($jj, 0.15), iaf:numeric-multiply($kk, 0.12))), 0))))), 3))");
 
+            var item3_xbrl = xbrlparser.Translate(expr3);
+
+        }
         public void Test()
         {
             var xbrlparser = new XbrlFormulaParser();
             var csparser = new CSharpParser();
             var expr1 = this.ParseExpression("if ($AccountingStandard = 'IFRS') then ($a = xs:QName('eba_AS:x2')) else (true())");
             var expr2 = this.ParseExpression("if ($ReportingLevel = 'con') then ($a = xs:QName('eba_SC:x7')) else (true())");
-            var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum(((iaf:numeric-multiply($b, $c)), (iaf:numeric-multiply($d, $e)), (iaf:numeric-multiply($f, $g))))), $h))");
+            var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum((iaf:max((iaf:sum((iaf:numeric-multiply($b, 0.18), iaf:numeric-multiply($c, 0.18), iaf:numeric-multiply($d, 0.12), iaf:numeric-multiply((iaf:sum(($e, $f, iaf:numeric-multiply($g, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($h, $i, iaf:numeric-multiply($j, 0.035)))), 0.12), iaf:numeric-multiply($k, 0.18), iaf:numeric-multiply($l, 0.15), iaf:numeric-multiply($m, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($n, 0.18), iaf:numeric-multiply($o, 0.18), iaf:numeric-multiply($p, 0.12), iaf:numeric-multiply((iaf:sum(($q, $r, iaf:numeric-multiply($s, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($t, $u, iaf:numeric-multiply($v, 0.035)))), 0.12), iaf:numeric-multiply($w, 0.18), iaf:numeric-multiply($x, 0.15), iaf:numeric-multiply($y, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($z, 0.18), iaf:numeric-multiply($aa, 0.18), iaf:numeric-multiply($bb, 0.12), iaf:numeric-multiply((iaf:sum(($cc, $dd, iaf:numeric-multiply($ee, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($ff, $gg, iaf:numeric-multiply($hh, 0.035)))), 0.12), iaf:numeric-multiply($ii, 0.18), iaf:numeric-multiply($jj, 0.15), iaf:numeric-multiply($kk, 0.12))), 0))))), 3))");
+
+  
 
             var prs1 = GetParameters(expr1);
             var prs2 = GetParameters(expr2);

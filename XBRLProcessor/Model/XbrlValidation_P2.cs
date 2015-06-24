@@ -16,6 +16,27 @@ namespace XBRLProcessor.Model
         {
             var rule_conceptfilters = this.ValidationRoot.Children.Where(i => i.Item is ConceptFilter).Select(s => s.Item as ConceptFilter).ToList();
             var rule_dimensionfilters = this.ValidationRoot.Children.Where(i => i.Item is DimensionFilter).Select(s => s.Item as DimensionFilter).ToList();
+            
+            var rule_orfilters = this.ValidationRoot.Children.Where(i => i.Item is OrFilter).ToList();
+            var rule_andfilters = this.ValidationRoot.Children.Where(i => i.Item is AndFilter).ToList();
+            //TODO
+            if (rule_orfilters.Count > 0)
+            {
+                var rule_orfilteritems = this.ValidationRoot.Children.Where(i => i.Item is OrFilter).ToList();
+
+                var mainorfilter = new Hierarchy<XbrlIdentifiable>();
+                mainorfilter.Children.AddRange(rule_orfilteritems);
+                var facts = GetFacts(mainorfilter);
+                if (facts.Count > 0)
+                {
+
+                }
+            }
+            if (rule_andfilters.Count > 0)
+            {
+
+            }
+
             rule_dimensionfilters = rule_dimensionfilters.Where(i => i.Complement == false).ToList();
 
             var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
@@ -43,7 +64,50 @@ namespace XBRLProcessor.Model
                 factgroup.Concept = concept;
 
             }
-   
+
+            var rule_orfactgroups = new List<LogicalModel.Base.FactGroup>();
+            foreach (var rule_orfilter in rule_orfilters) 
+            {
+                var rulefacts = new List<LogicalModel.Base.FactBase>();
+
+                foreach (var child in rule_orfilter.Children)
+                {
+                    var f_and = child.Item as AndFilter;
+                    if (f_and != null) 
+                    {
+                        var fact = new LogicalModel.Base.FactBase();
+                        var concepts = GetConcepts(child);
+               
+                        if (concepts.Count == 1)
+                        {
+                            fact.Concept = concepts.FirstOrDefault();
+                        }
+
+                        var dimensions = GetDimensions(child).SelectMany(i => i).ToList();
+                        dimensions = dimensions.Where(i => !i.IsDefaultMemeber).ToList();
+                        fact.Dimensions.AddRange(dimensions);
+                        rulefacts.Add(fact);
+                    }
+                }
+                var allfactgroups = new List<LogicalModel.Base.FactGroup>();
+                foreach (var rulefact in rulefacts)
+                {
+                    var orrule_fg = new LogicalModel.Base.FactGroup();
+                    orrule_fg.Concept = rulefact.Concept;
+                    orrule_fg.Dimensions = rulefact.Dimensions;
+                    foreach (var mainfactgroup in factgroups)
+                    {
+                        var x_fg = new LogicalModel.Base.FactGroup();
+                        x_fg.Concept = mainfactgroup.Concept == null ? orrule_fg.Concept : mainfactgroup.Concept;
+                        x_fg.Dimensions.AddRange(mainfactgroup.Dimensions);
+                        MergeDimensions(x_fg.Dimensions, orrule_fg.Dimensions);
+                        allfactgroups.Add(x_fg);
+                        
+                    }
+                }
+                return allfactgroups;
+            }
+
             return factgroups;
         }
 
@@ -84,7 +148,35 @@ namespace XBRLProcessor.Model
                 }
 
             }
+            if (or_filters.Count == 0)
+            {
+                facts.Add(new LogicalModel.Base.FactBase());
+            }
+            var paramfacts = GetRootParamLevelFacts(fv);
+            if (paramfacts.Count > 1) 
+            {
 
+            }
+            //var firstparamfact = paramfacts.FirstOrDefault();
+            var multipliedfacts = new List<LogicalModel.Base.FactBase>();
+            foreach (var fact in facts) 
+            {
+                foreach (var paramfact in paramfacts)
+                {
+                    var itemfact = new LogicalModel.Base.FactBase();
+                    itemfact.Dimensions.AddRange(fact.Dimensions);
+                    itemfact.Concept = fact.Concept;
+                    multipliedfacts.Add(itemfact);
+
+                    if (itemfact.Concept == null)
+                    {
+                        itemfact.Concept = paramfact.Concept;
+                    }
+                    MergeDimensions(itemfact.Dimensions, paramfact.Dimensions);
+                }
+
+            }
+            /*
             if (or_filters.Count == 0)
             {
 
@@ -129,6 +221,63 @@ namespace XBRLProcessor.Model
             {
                 FixDomains(fact.Dimensions);
             }
+            return facts
+            */
+            foreach (var fact in multipliedfacts) 
+            {
+                FixDomains(fact.Dimensions);
+            }
+            return multipliedfacts;
+        }
+
+        protected List<LogicalModel.Base.FactBase> GetRootParamLevelFacts(Hierarchy<XbrlIdentifiable> fv) 
+        {
+            var facts = new List<LogicalModel.Base.FactBase>();
+            var orfilters = fv.Children.Where(i => i.Item is OrFilter).ToList();
+            for (int i = 0; i < orfilters.Count;i++ )
+            {
+                fv.Children.Remove(orfilters[i]);
+            }
+
+
+            var param_concepts = GetConcepts(fv);
+            var param_dimensions = GetDimensions(fv).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
+            var groups = param_dimensions.GroupBy(i => i.DimensionItemWithDomain);
+
+            var simpledimensions = groups.Where(i => i.Count() == 1).SelectMany(i => i).ToList();
+            var dimensionsets = new List<IEnumerable<LogicalModel.Dimension>>();
+
+            var multigroups = groups.Where(i => i.Count() > 1).ToList();
+
+            var multidimensions = new List<List<LogicalModel.Dimension>>();
+            foreach (var group in multigroups)
+            {
+                multidimensions.Add(group.ToList());
+
+            }
+
+            if (multidimensions.Count > 0)
+            {
+                dimensionsets.AddRange(Utilities.MathX.CartesianProduct(multidimensions));
+
+            }
+            else
+            {
+                dimensionsets.Add(new List<LogicalModel.Dimension>());
+
+            }
+            foreach (var dimensionset in dimensionsets)
+            {
+                var fact = new LogicalModel.Base.FactBase();
+                fact.Concept = param_concepts.Count == 1 ? param_concepts.FirstOrDefault() : null;
+                fact.Dimensions.AddRange(dimensionset);
+                fact.Dimensions.AddRange(simpledimensions);
+                facts.Add(fact);
+            }
+            foreach (var orfilter in orfilters)
+            {
+                fv.Children.Add(orfilter);
+            }
             return facts;
         }
 
@@ -171,7 +320,7 @@ namespace XBRLProcessor.Model
                         var s_facts = Taxonomy.Facts.Keys.AsEnumerable();
                         if (fact.Concept != null)
                         {
-                            s_facts = s_facts.Where(i => i.StartsWith(fact.Concept.Content));
+                            //s_facts = s_facts.Where(i => i.StartsWith(fact.Concept.Content));
                             if (Taxonomy.FactsOfConcepts.ContainsKey(fact.Concept.Content))
                             {
                                 s_facts = Taxonomy.FactsOfConcepts[fact.Concept.Content];
@@ -185,30 +334,31 @@ namespace XBRLProcessor.Model
                         {
                             s_facts = s_facts.Where(i => i.Contains(dimension.DomainMemberFullName));
                         }
-                        var s_factlist = s_facts.ToList();
-                        if (s_factlist.Count > 0)
+                       // var s_factlist = s_facts.ToList();
+                        var hasanyfact = false;
+
+                        foreach (var s_fact in s_facts)
                         {
-                            foreach (var s_fact in s_factlist)
+                            hasanyfact = true;
+                            var cells = Taxonomy.Facts[s_fact];
+                            if (cells.Count == 0)
                             {
-                                var cells = Taxonomy.Facts[s_fact];
-                                if (cells.Count == 0)
+                                if (log)
                                 {
-                                    if (log)
-                                    {
-                                        c_sb.AppendLine(this.ID + " for parameter " + parameter.Name + " no cells were found! " + s_fact);
-                                    }
-                                }
-                                if (this.ID.Contains("0602"))
-                                {
-                                    cellslist.Add(cells.Select(i => i + " {" + factkey + "} ").ToList());
-                                }
-                                else
-                                {
-                                    cellslist.Add(cells);
+                                    c_sb.AppendLine(this.ID + " for parameter " + parameter.Name + " no cells were found! " + s_fact);
                                 }
                             }
+                            if (this.ID.Contains("0602"))
+                            {
+                                cellslist.Add(cells.Select(i => i + " {" + factkey + "} ").ToList());
+                            }
+                            else
+                            {
+                                cellslist.Add(cells);
+                            }
                         }
-                        else
+                       
+                        if (!hasanyfact)
                         {
                             if (log)
                             {

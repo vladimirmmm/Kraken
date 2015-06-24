@@ -166,9 +166,9 @@ namespace XBRLProcessor.Models
                 if (dimensionitem.Contains(":"))
                 {
                     var items = dimensionitem.Split(':');
-                    if (!items[1].StartsWith("eba_"))
+                    if (!items[1].StartsWith(Prefix))
                     {
-                        items[1] = "eba_" + items[1];
+                        items[1] = Prefix + items[1];
                     }
                     ebadimensionkey = String.Format("{0}:{1}", items[0], items[1]);
                 }
@@ -285,6 +285,9 @@ namespace XBRLProcessor.Models
                 var sb = new StringBuilder();
                 foreach (var hier in hierarchies)
                 {
+                    var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == hier.Item.Namespace);
+                    var foldername = Utilities.Strings.GetFolderName(nsdoc.LocalPath);
+                    hier.Item.NamespaceFolder = foldername;
                     this.Hierarchies.Add(hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem));
                 }
 
@@ -327,15 +330,17 @@ namespace XBRLProcessor.Models
                     Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
                     if (validation.ValueAssertion != null)
                     {
-                        validation.LoadValidationHierarchy();
-                        if (validation.ID.Contains("0998")) 
-                        { 
+                        if (validation.ID.Contains("0148"))
+                        {
 
                         }
+                        validation.LoadValidationHierarchy();
+                      
                         var logicalrule = validation.GetLogicalRule();
                         validations.Add(validation);
                         logicalrule.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
-                        logicalrule.FunctionString = csparser.GetFunction(logicalrule);
+                        var translated = csparser.GetFunction(logicalrule);
+                        logicalrule.FunctionString = translated;
                         this.ValidationRules.Add(logicalrule);
                         /*
                         var obj = parser.ParseExpression(validation.ValueAssertion.Test);
@@ -392,9 +397,12 @@ namespace XBRLProcessor.Models
                 var tab = "  ";
                 foreach (var val in ValidationRules)
                 {
-                    sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
-                    sb_functions.AppendLine("       //"+val.OriginalExpression);
-                    sb_functions.AppendLine(val.FunctionString);
+                    if (!string.IsNullOrEmpty(val.FunctionString))
+                    {
+                        sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
+                        sb_functions.AppendLine("       //" + val.OriginalExpression);
+                        sb_functions.AppendLine(val.FunctionString);
+                    }
 
                 }
                 sb_cs.AppendLine("using System;");
@@ -592,7 +600,7 @@ namespace XBRLProcessor.Models
                             var localhref = locator.Href;
                             if (!Utilities.Strings.IsRelativePath(localhref))
                             {
-                                localhref = Utilities.Strings.GetLocalPath(this.LocalFolder, locator.Href);
+                                localhref = Utilities.Strings.GetLocalPath(LogicalModel.Taxonomy.LocalFolder, locator.Href);
                             }
                             var path = Utilities.Strings.ResolveRelativePath(definitiondocument.LocalFolder, localhref);
                             var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
@@ -690,5 +698,20 @@ namespace XBRLProcessor.Models
         }
 
         #endregion
+
+        internal void ClearObjects()
+        {
+            this.Facts.Clear();
+            this.ValidationRules.Clear();
+            this.Tables.Clear();
+            this.TaxonomyDocumentDictionary.Clear();
+            this.TaxFiles.Clear();
+            this.SchemaElements.Clear();
+            this.SchemaElementDictionary.Clear();
+            this.TaxonomyLabels.Clear();
+            this.TaxonomyLabelDictionary.Clear();
+            this.ValidationFunctionContainer = null;
+            GC.Collect();
+        }
     }
 }

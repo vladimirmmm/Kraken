@@ -83,6 +83,9 @@ namespace XBRLProcessor.Model.Base
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
 
+        public string NamespaceFolder = "";
+
+
         public override string ToString()
         {
             return String.Format("{0}", ID);

@@ -78,12 +78,32 @@ namespace LogicalModel.Base
     public class FactBase 
     {
 
+        [JsonIgnore]
         public Concept Concept { get; set; }
 
         private List<Dimension> _Dimensions = new List<Dimension>();
+        [JsonIgnore]
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
 
-        public string FactString = "";
+        private string _FactString = "";
+        
+        [JsonProperty]
+        public string FactString
+        {
+            get 
+            {
+                if (String.IsNullOrEmpty(_FactString))
+                {
+                    _FactString = GetFactString();
+                }
+                return _FactString;
+            }
+            set
+            {
+                _FactString = value;
+                SetFromString(value);
+            }
+        }
 
         public string GetFactString() 
         {
@@ -116,20 +136,21 @@ namespace LogicalModel.Base
         public void SetFromString(string item) 
         {
             this.Dimensions.Clear();
-            var cix = item.IndexOf(">");
-            if (cix > -1)
-            {
-                var concept = new Concept();
-                concept.Content = item.Remove(cix);
-                item = item.Substring(cix + 1);
-                this.Concept = concept;
+            this.Concept = null;
+            //var cix = item.IndexOf(">");
+            //if (cix > -1)
+            //{
+            //    var concept = new Concept();
+            //    concept.Content = item.Remove(cix);
+            //    item = item.Substring(cix + 1);
+            //    this.Concept = concept;
 
-            }
+            //}
             var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
             var toskip = 0;
             if (parts.Length > 0) 
             {
-                if (parts[0].StartsWith("eba_met")) 
+                if (parts[0].IndexOf("[")==-1) 
                 {
                     toskip = 1;
                     var concept = new Concept();
@@ -262,10 +283,11 @@ namespace LogicalModel.Base
         public string Key { get { return String.Format("{0}:{1}",this.Namespace,this.ID); } }
 
     }
-
+    [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
     public class QualifiedName:Identifiable
     {
         private string _Content = "";
+        [JsonProperty]
         public string Content
         {
             get { return _Content; }
@@ -282,6 +304,7 @@ namespace LogicalModel.Base
         }
 
         private string _Namespace = "";
+        [JsonIgnore]
         public string Namespace
         {
             get { return _Namespace; }
@@ -293,6 +316,7 @@ namespace LogicalModel.Base
         }
 
         private string _Name = "";
+        [JsonIgnore]
         public string Name
         {
             get { return _Name; }

@@ -191,6 +191,6 @@
        
         <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch"/>
 
-        <TextBox Grid.Row="2" Name="TB_Console" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto" />
+        <TextBox Grid.Row="2" Name="TB_Console" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
     </Grid>
 </Window>

@@ -3,9 +3,10 @@ function ErrorHandler(errorMsg, url, lineNumber) {
     Notify(errortext);
     return true;
 }
-if (typeof console === "undefined") {
-    window.onerror = ErrorHandler;
-}
+//Notify("typeof console " + typeof console);
+//if (typeof console === "undefined") {
+window.onerror = ErrorHandler;
+//}
 function Notify(notification) {
     if ('Notify' in window.external) {
         window.external.Notify(notification);
@@ -989,17 +990,8 @@ function Bind(target, data, parent) {
                 var itemstoadd = [];
                 var bindattributeselector = "[" + bindattribute + "]";
                 firstvalue.forEach(function (childitem) {
-                    //var newelement = $(elementtemplate).clone(true, true);
-                    //newelement.removeAttr("binding-type");
-                    /*
-                    $(bindattributeselector, newelementX).each(function (ix, binded) {
-                        NoCheck.push(binded);
-                    });
-                    */
                     fBind(newelementX, childitem, firstvalue);
                     itemstoadd.push(OuterHtml(newelementX));
-                    //newelementX.appendTo($(item));
-                    //$(item).append(OuterHtml(newelementX));
                 });
                 //newelement.appendTo($(item));
                 $(item).append(itemstoadd.join('\n'));

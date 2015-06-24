@@ -42,7 +42,7 @@ namespace LogicalModel.Expressions
     public abstract class Parser
     {
         public LanguageSyntax Syntax = null;
-
+        public static string FunctionNotFound = "!!!FunctionNotFound!!!";
         public Parser() 
         {
 
@@ -156,6 +156,7 @@ namespace LogicalModel.Expressions
         public virtual Expression ParseExpression(string expressionstring)
         {
             var tree = GetTreeString(expressionstring);
+            var ts = tree.ToHierarchyString(i => i);
             var expr = ParseHierarchy(null, tree);
             ManagePlaceHolders(expr);
             return expr;
@@ -174,9 +175,13 @@ namespace LogicalModel.Expressions
             {
                 var subexpr = ParseHierarchy(parentexpression, item);
                 var exprplaceholder = expr.GetExpressionForPlaceHolder(ix);
-                if (exprplaceholder != null) 
+                if (exprplaceholder != null)
                 {
                     exprplaceholder.SubExpressions.Add(subexpr);
+                }
+                else 
+                {
+
                 }
                 //expr.SubExpressions.Add(subexpr);
                 ix++;

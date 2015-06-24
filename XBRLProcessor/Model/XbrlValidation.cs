@@ -78,7 +78,13 @@ namespace XBRLProcessor.Model
                         var filter = i.Item as Filter;
                         var arc = a as ComplementArc;
                         filter.Complement = arc.Complement;
-                    } 
+                    }
+                    if (a is VariableArc) 
+                    {
+                        var varc = a as VariableArc;
+                        var variable = i.Item as Variable;
+                        variable.Name = varc.Name;
+                    }
                 });
 
             int z = 0;
@@ -98,17 +104,18 @@ namespace XBRLProcessor.Model
             sb.AppendLine(this.ValueAssertion.Test);
 
             var factgroups = GetGroups();
-            
+            if (this.ID.Contains("0671"))
+            {
+            }
             foreach (var fv in factvariables) 
             {
                 var factvariable = fv.Item as FactVariable;
-                var name = fv.Item.ID.Substring(fv.Item.ID.LastIndexOf(".") + 1);
+                //var name = fv.Item.ID.Substring(fv.Item.ID.LastIndexOf(".") + 1);
+                var name = factvariable.Name;
                 var parameter = new LogicalModel.Validation.ValidationParameter(name);
                 parameter.BindAsSequence = factvariable.BindAsSequence;
                 parameter.FallBackValue = factvariable.FallbackValue;
-                if (this.ID.Contains("3763"))
-                {
-                }
+             
             
                 //TODO
                 foreach (var factgroup in factgroups) 
@@ -118,6 +125,14 @@ namespace XBRLProcessor.Model
                     var facts = GetFacts(fv);
                     parameterfactgroup.Facts = facts;
                     SetFacts(parameterfactgroup);
+                    var xfirstfact = parameterfactgroup.Facts.FirstOrDefault();
+                    if (xfirstfact != null) 
+                    {
+                        if (xfirstfact.Dimensions.Count == 0 && xfirstfact.Concept == null) 
+                        {
+
+                        }
+                    }
                 }
 
 
@@ -125,6 +140,7 @@ namespace XBRLProcessor.Model
                 var firstfact = parameter.FactGroups.FirstOrDefault().Facts.FirstOrDefault();
                 if (firstfact != null && firstfact.Concept != null)
                 {
+                    //if (firstfact.Concept.ID.StartsWith("ei"))
                     if (firstfact.Concept.ID.StartsWith("ei"))
                     {
                         type = LogicalModel.Validation.TypeEnum.String;

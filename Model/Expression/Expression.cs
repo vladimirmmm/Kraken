@@ -155,11 +155,11 @@ namespace LogicalModel.Expressions
                 if (expr != null) { return expr; }
             }
      
-            foreach (var subexpr in this.SubExpressions)
-            {
-                var expr = subexpr.GetExpressionForPlaceHolder(ix);
-                if (expr != null) { return expr; }
-            }
+            //foreach (var subexpr in this.SubExpressions)
+            //{
+            //    var expr = subexpr.GetExpressionForPlaceHolder(ix);
+            //    if (expr != null) { return expr; }
+            //}
             return null;
         }
 

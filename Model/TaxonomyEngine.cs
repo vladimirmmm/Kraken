@@ -12,16 +12,22 @@ namespace LogicalModel
         public event TaxonomyEventHandler TaxonomyLoaded;
         public event TaxonomyEventHandler InstanceLoaded;
         
-        public virtual void LoadTaxonomy(string filepath)
+        public virtual bool LoadTaxonomy(string filepath)
         {
             if (TaxonomyLoaded != null)
+            {
                 TaxonomyLoaded(this, new EventArgs());
+            }
+            return true;
         }
 
-        public virtual void LoadInstance(string filepath)
+        public virtual bool LoadInstance(string filepath)
         {
             if (InstanceLoaded != null)
+            {
                 InstanceLoaded(this, new EventArgs());
+            }
+            return true;
         }
     }
 }

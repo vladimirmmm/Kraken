@@ -10,7 +10,7 @@ namespace Model.InstanceModel
     public class XbrlFact
     {
         public String Concept { get; set; }
-        public int Decimals { get; set; }
+        public String Decimals { get; set; }
         public String ContextRef { get; set; }
         public String UnitRef { get; set; }
         private String _Value = "";

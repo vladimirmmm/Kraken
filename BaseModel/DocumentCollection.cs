@@ -8,7 +8,7 @@ namespace BaseModel
 {
     public class DocumentCollection
     {
-        public string LocalFolder = @"c:\my\taxonomies\testtaxonomy\";
+        public static string LocalFolder = @"c:\my\taxonomies\testtaxonomy\";
         
         public Document EntryDocument { get; set; }
 

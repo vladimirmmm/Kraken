@@ -119,8 +119,15 @@ namespace Utilities
 
         public static String LocalToLocalPath(string localrootfolder, string sourcepath) 
         {
-            sourcepath = sourcepath.Substring(sourcepath.IndexOf("www."));
-            sourcepath = localrootfolder + sourcepath;
+            var w3index = sourcepath.IndexOf("www.");
+            if (w3index > -1)
+            {
+                sourcepath = sourcepath.Substring(w3index);
+            }
+            if (!sourcepath.StartsWith(localrootfolder))
+            {
+                sourcepath = localrootfolder + sourcepath;
+            }
             return sourcepath;
         }
 
@@ -305,6 +312,32 @@ namespace Utilities
             int distance = GetLevensteinDistance(firstString, secondString);
             double percent = distance / (double)longestLenght;
             return 1 - percent;
+        }
+        public static bool IsDigitsOnly(string str)
+        {
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool IsDigitsOnly(string str,params char[] except)
+        {
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                {
+                    if (!except.Contains(c))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public static string ArrayToString(string[] arr)

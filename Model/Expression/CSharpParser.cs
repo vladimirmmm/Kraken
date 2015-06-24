@@ -52,6 +52,7 @@ namespace LogicalModel.Expressions
             this.Syntax.Operators.AddItem(OperatorEnum.OrAlso, " || ");
             this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
 
+            this.Syntax.AddFunction("iaf:numeric-add", (Functions i) => i.N_Add(0));
             this.Syntax.AddFunction("iaf:numeric-equal", (Functions i) => i.N_Equals(1, 1));
             this.Syntax.AddFunction("iaf:numeric-less-than", (Functions i) => i.N_Less(1, 1));
             this.Syntax.AddFunction("iaf:numeric-less-equal-than", (Functions i) => i.N_LessEqual(1,1));
@@ -87,6 +88,15 @@ namespace LogicalModel.Expressions
                         return Translate(expr.SubExpressions[0]) + ".In"+Syntax.ExpressionContainer_Left + Translate(expr.SubExpressions[1])+Syntax.ExpressionContainer_Right;
                     }
                 }
+
+                if (expr.SubExpressions.Count == 0) 
+                {
+                    if (!expr.IsParameter && !expr.IsString) 
+                    {
+                        //this is for decimal;
+                        return expr.StringValue + "m";
+                    }
+                }
             }
             return base.Translate(expr);
         }
@@ -111,6 +121,11 @@ namespace LogicalModel.Expressions
                     if (Syntax.FunctionMap.ContainsKey(fname.ToLower()))
                     {
                         fname = Syntax.FunctionMap[fname.ToLower()];
+                    }
+                    else 
+                    {
+                        fname = String.Format("{0}-{1}", FunctionNotFound, expression.Name);
+
                     }
                     sb.Append(String.Format("{0}({1})", fname, Translate(expression as ListExpression)));
                 }
@@ -137,9 +152,13 @@ namespace LogicalModel.Expressions
             foreach (var pm in rule.Parameters) 
             {
 
-                sb.AppendFormat("{0}{0}{0}var {3}{1} = parameters.FirstOrDefault(i => i.Name == \"{1}\").{2};\r\n", tab, pm.Name, pm.TypeString,Syntax.ParameterSpecifier);
+                sb.AppendFormat("{0}{0}{0}var {3}{1} = parameters.FirstOrDefault(i => i.Name == \"{1}\").{2};\r\n", tab, pm.Name, pm.TypeString, Syntax.ParameterSpecifier);
             }
-
+            if (body.Contains(Parser.FunctionNotFound)) 
+            {
+                Console.WriteLine(String.Format("Rule {0} contains unimplemented function(s)!", rule.ID));
+                body = "true";
+            }
             sb.AppendLine(tab + tab + tab + "return " + body + Syntax.StatementEnd);
             sb.AppendLine(tab + tab + Syntax.BlockContainer_Right);
 

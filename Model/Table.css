@@ -24,6 +24,10 @@ h1 {
 {
     background:#808080;
 }
+th.pad {
+    border-left-width:0px;
+    border-right-width:0px;
+}
 td.data {
 text-align:right;
 }
@@ -56,12 +60,16 @@ ul>li {
     position:absolute;
     z-index: 1;
 }
+#factcontainer {
+    position:absolute;
+    max-height:600px;
+	overflow : auto;
+
+}
 #factlist {
     margin-left:0px;
-    position:absolute;
     z-index: 1;
-    max-height:800px;
-	overflow : auto;
+    max-width:400px;
 }
 .highlight
 {
@@ -80,7 +88,51 @@ h2
     margin:0px;
     font-size:14pt;
 }
-
+li 
+{
+    clear:both;
+}
 .selected {
     background: #9cd3fa;
+}
+    .selected .editing {
+        background:#ffffff;
+    }
+.placeholder 
+{
+    border-top-width:0px;
+}
+.haschild {
+    border-bottom-width:0px;
+
+}
+
+.pagination {
+            font-size: 80%;
+        }
+        
+.pagination a {
+    text-decoration: none;
+	border: solid 1px #AAE;
+	color: #15B;
+}
+
+.pagination a, .pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+.pagination .current {
+    background: #26B;
+    color: #fff;
+	border: solid 1px #AAE;
+}
+
+.pagination .current.prev, .pagination .current.next{
+	color:#999;
+	border-color:#999;
+	background:#fff;
 }

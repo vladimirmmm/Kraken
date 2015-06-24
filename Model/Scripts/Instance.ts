@@ -5,7 +5,9 @@
         public Taxonomy: Model.Taxonomy = null;
         public ValidationResults: Model.ValidationRuleResult[] = [];
         public ValidationErrors: Model.ValidationRule[] = [];
-
+        public FactsNr: number = 0;
+        public Page: number = 0;
+        public PageSize: number = 20;
         constructor() {
  
         }
@@ -22,12 +24,89 @@
 
         public LoadToUI()
         {
+            var me = this;
             //this.SetExternals();
             this.ShowContent("#Facts");
             console.log("Loading validationlist" + new Date());
-            BindX($("#factlist"), this.Instance.Facts );
+            var facts: Model.FactBase[] = [];
+            var dict = this.Instance.FactDictionary;
+            if (IsNull(this.Instance.Facts))
+            {       
+                this.Instance.Facts = [];
+            }
+            for (var key in dict)
+            {
+                if (dict.hasOwnProperty(key)) {
+                    var factlist = <Model.InstanceFact[]>dict[key];
+                    for (var i = 0; i < factlist.length; i++)
+                    {
+                        var fact = factlist[i];
+                        var parts = fact.FactString.split(',');
+                        if (parts.length > 0) {
+                            var conceptstring = parts[0].indexOf("[") == -1 ? parts[0] : "";
+                            fact.Concept = new Model.Concept();
+                            fact.Concept.FullName = conceptstring;
+                        }
+                        this.Instance.Facts.push(fact);
+                    }
+                }
+            }
+            me.FactsNr = this.Instance.Facts.length;
+            $("#factpager").pagination(me.FactsNr,
+                {
+                    items_per_page: me.PageSize,
+                    current_page: me.Page ? me.Page : 0,
+                    //link_to: "#/Article/Index?page=__id__",
+                    prev_text: "Prev",
+                    next_text: "Next",
+                    ellipse_text: "...",
+                    prev_show_always: true,
+                    next_show_always: true,
+                    callback: function (pageix) {
+                        me.LoadPage("facts", me.Instance.Facts, pageix,me.PageSize);
+                    },
+                });
+
+            $("#validationerrorpager").pagination(me.ValidationErrors.length,
+                {
+                    items_per_page: me.PageSize,
+                    current_page: me.Page ? me.Page : 0,
+                    //link_to: "#/Article/Index?page=__id__",
+                    prev_text: "Prev",
+                    next_text: "Next",
+                    ellipse_text: "...",
+                    prev_show_always: true,
+                    next_show_always: true,
+                    callback: function (pageix) {
+                        me.LoadPage("validations", me.ValidationErrors,  pageix,me.PageSize);
+                    },
+                });
+      
+
+            me.LoadPage("facts", me.Instance.Facts, 0,  me.PageSize);
             console.log(new Date());
 
+        }
+
+        public LoadPage(specifier: string,items:any[], page: number, pagesize: number)
+        {
+            var me = this;
+            var startix = pagesize * page;
+            var endix = startix + pagesize;
+            var itemspart = items.slice(startix, endix);
+
+            if (specifier == "facts") {
+                BindX($("#factlist"), itemspart);
+            }
+            if (specifier == "validations")
+            {
+                BindX($("#validationlist"), itemspart);
+
+            }
+            if (specifier == "validationruleresults")
+            {
+                BindX($("#validationruleresults"), itemspart);
+            }
         }
 
         public ShowDetails(factkey:string, factstring:string)
@@ -69,8 +148,8 @@
                 }
                 
             });
+            me.LoadPage("validations", me.ValidationErrors, 0, me.PageSize);
             //console.log("Loading validationlist" + new Date());
-            BindX($("#validationlist"), this.ValidationErrors);
             //console.log(new Date());
 
         }
@@ -79,6 +158,37 @@
         {
             $("#Contents>div").hide();
             $(selector).show();
+
+        }
+
+        public ShowRuleDetail(ruleid: string)
+        {
+            var me = this;
+            var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
+            //BindX($("#validationdetail"), rule);
+
+            $("#validationddetailpager").pagination(rule.Results.length,
+                {
+                    items_per_page: 1,
+                    current_page: me.Page ? me.Page : 0,
+                    //link_to: "#/Article/Index?page=__id__",
+                    prev_text: "Prev",
+                    next_text: "Next",
+                    ellipse_text: "...",
+                    prev_show_always: true,
+                    next_show_always: true,
+                    callback: function (pageix) {
+                        me.LoadPage("validationruleresults", rule.Results, pageix,1);
+                    },
+                });
+            me.LoadPage("validationruleresults", rule.Results, 0, 1);
+
+            $("#validationrule_results_" + ruleid).append($("#validationdetail"));
+            $("#validationdetail").show();
+        }
+        public CloseRuleDetail()
+        {
+            $("#validationdetail").hide();
 
         }
         public HashChanged()

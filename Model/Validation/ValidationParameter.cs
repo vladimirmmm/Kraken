@@ -17,7 +17,20 @@ namespace LogicalModel.Validation
         public TypeEnum Type { get { return _Type; } set { _Type = value; } }
         public bool BindAsSequence { get; set; }
 
-        public List<FactBase> CurrentFacts = new List<FactBase>();
+        public List<String> CurrentCells = new List<String>();
+        public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
+        public InstanceFact[] Facts
+        {
+            get { return CurrentFacts.ToArray();  }
+        }
+        public InstanceFact FirstFact 
+        {
+            get 
+            {
+                return CurrentFacts.FirstOrDefault();
+            }
+
+        }
 
         public string TypeString
         {
@@ -30,11 +43,11 @@ namespace LogicalModel.Validation
                 }
                 if (this.Type == TypeEnum.Numeric && !BindAsSequence)
                 {
-                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DecimalValue);
+                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.ValueWithTreshold);
                 }
                 if (this.Type == TypeEnum.Numeric && BindAsSequence)
                 {
-                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.DecimalValues);
+                    typestring = Utilities.Linq.GetPropertyName((ValidationParameter i) => i.ValuesWithTresholds);
                 }
                 if (this.Type == TypeEnum.Date && !BindAsSequence)
                 {
@@ -84,6 +97,41 @@ namespace LogicalModel.Validation
         }
 
         public bool IsGeneral { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("Parameter {0}: {1}", this.Name, this.StringValue);
+
+        }
+
+        public string[] Decimals = new string[] { };
+
+        public ValueWithTreshold[] ValuesWithTresholds 
+        {
+            get {
+                var trs =new List<ValueWithTreshold>();
+                foreach (var fact in CurrentFacts) 
+                {
+                    var tr = Functions.GetValueWithTreshold(fact, this.FallBackValue);
+                    trs.Add(tr);
+
+                }
+                return trs.ToArray();
+            }
+        }
+
+
+        public ValueWithTreshold ValueWithTreshold
+        {
+            get
+            {
+                if (this.CurrentFacts.Count == 0) 
+                {
+                    return new ValueWithTreshold(this.DecimalValue, 0);
+                }
+                return ValuesWithTresholds.FirstOrDefault();
+            }
+        }
     }
 
     public class ValidationParameter<T> : ValidationParameter

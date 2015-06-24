@@ -24,7 +24,7 @@ namespace Model.InstanceModel
             get { return _Contexts; }
             set { _Contexts = value; }
         }
-
+      
         private List<XbrlFact> _XbrlFacts = new List<XbrlFact>();
         public List<XbrlFact> XbrlFacts
         {
@@ -61,12 +61,32 @@ namespace Model.InstanceModel
         {
             this.FullPath = filepath;
         }
-
-        public void Load() 
+        public void LoadSimple()
         {
-            Mappings.CurrentMapping.Map<XbrlInstance>(XmlDocument.DocumentElement, this);
+            var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
 
-            var factnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.StartsWith("eba_met:")).ToList();
+            Mappings.CurrentMapping.Map<XbrlInstance>(xbrlnode, this);
+            this.TaxonomyModuleReference = this.SchemaRef.Href;
+
+        }
+        public void LoadComplex() 
+        {
+            /* //*[ local-name() = 'xbrl'*/
+
+            /* //*[contains(name(), 's2md_met:')]" */
+            /* get all namespaces*/
+
+            /*
+            var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
+
+            Mappings.CurrentMapping.Map<XbrlInstance>(xbrlnode, this);
+
+            this.ModulePath = Utilities.Strings.GetLocalPath(this.Taxonomy.LocalFolder, this.TaxonomyModuleReference);
+            */
+
+            //if (XBRLProcessor.XbrlEngine.CurrentEngine.CurrentTaxonomy==null || XBRLProcessor.XbrlEngine.CurrentEngine.CurrentTaxonomy.)
+
+            var factnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.StartsWith(this.Taxonomy.ConceptNameSpace+":")).ToList();
             foreach (var factnode in factnodes) 
             {
                 var item = new XbrlFact();
@@ -99,12 +119,14 @@ namespace Model.InstanceModel
                 var logicalfact = new InstanceFact();
                 logicalfact.UnitID = xbrlfact.UnitRef;
                 logicalfact.ContextID = xbrlfact.ContextRef;
+                logicalfact.Decimals = xbrlfact.Decimals;
                 logicalfact.Unit = this.Units.FirstOrDefault(i => i.ID == xbrlfact.UnitRef);
                 
                 var factstring = "";
                 factstring = String.Format("{0},",xbrlfact.Concept);
                 var factkey = factstring;
-                logicalfact.Concept = xbrlfact.Concept;
+                logicalfact.Concept = new Concept();
+                logicalfact.Concept.Content = xbrlfact.Concept;
                 var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
                 foreach (var dimension in dimensions) 
                 {
@@ -128,33 +150,57 @@ namespace Model.InstanceModel
                     factlist.Add(logicalfact);
                 }
             }
+            SetCells();
 
+            SaveToJson();
         }
 
-        public override List<LogicalModel.Validation.ValidationRuleResult> Validate()
+        public override List<LogicalModel.Validation.ValidationRuleResult> Validate(List<String> messages)
         {
             var results = new List<LogicalModel.Validation.ValidationRuleResult>();
 
-            Console.WriteLine("Validating Instance started");
-
-            var schemaset = new XmlSchemaSet();
-            var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
-            IDictionary<string, string> dic = nsmanager.GetNamespacesInScope(XmlNamespaceScope.All);
-            foreach (var dicitem in dic) 
+            if (Taxonomy != null)
             {
-                //schemaset.Add(dicitem.Key, dicitem.Value);
-                //this.XmlDocument.Schemas.Add(dicitem.Key, dicitem.Value);
+                messages = messages == null ? new List<String>() : messages;
+                Console.WriteLine("Validating Instance started");
+                messages.Add(String.Format("Validation started at {0:" + Utilities.Converters.DateTimeFormat + "}", DateTime.Now));
+                var schemaset = new XmlSchemaSet();
+                var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
+                IDictionary<string, string> dic = nsmanager.GetNamespacesInScope(XmlNamespaceScope.All);
+                foreach (var dicitem in dic)
+                {
+                    //schemaset.Add(dicitem.Key, dicitem.Value);
+                    //this.XmlDocument.Schemas.Add(dicitem.Key, dicitem.Value);
+                }
+                //this.XmlDocument.Validate(OnValidated);
+
+                results.AddRange(base.Validate(messages));
+
+                messages.Add(String.Format("Validation finished at {0:" + Utilities.Converters.DateTimeFormat + "}", DateTime.Now));
+
+                var json_validationresults = Utilities.Converters.ToJson(results);
+                Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, "var currentvalidationresults = " + json_validationresults + ";");
+
+                var validationresultfilepath = this.FullPath.Remove(this.FullPath.LastIndexOf("."));
+                validationresultfilepath = validationresultfilepath + ".ValidationResults.txt";
+                var sb = new StringBuilder();
+                foreach (var message in messages)
+                {
+                    sb.AppendLine(message);
+                }
+                sb.AppendLine();
+                sb.AppendLine();
+                sb.AppendLine("Validation Errors JSON:");
+                sb.AppendLine(json_validationresults);
+                Utilities.FS.WriteAllText(validationresultfilepath, sb.ToString());
+
+
+                Console.WriteLine("Validating Instance finished");
             }
-            //this.XmlDocument.Validate(OnValidated);
-
-            results.AddRange(base.Validate());
-
-            var json_validationresults = Utilities.Converters.ToJson(results);
-            Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, "var currentvalidationresults = " + json_validationresults + ";");
-
-
-            Console.WriteLine("Validating Instance finished");
-
+            else
+            {
+                messages.Add(String.Format("Can't load Taxonomy {0}", this.SchemaRef));
+            }
             return results;
         }
 
@@ -168,7 +214,8 @@ namespace Model.InstanceModel
         {
             var instancepath = @"C:\Users\vladimir.balacescu\Desktop\Delivery\C08 reports_10_28_2014.xbrl";
             var instance = new XbrlInstance(instancepath);
-            instance.Load();
+            instance.LoadSimple();
+            instance.LoadComplex();
 
             int z = 0;
         }

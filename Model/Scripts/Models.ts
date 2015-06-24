@@ -69,6 +69,15 @@
             }
             return Format("{0}:{1}", this.Namespace, this.Name);
         }
+
+        public set FullName(value:string) {
+            var parts = value.split(':');
+            if (parts.length == 2)
+            {
+                this.Name = parts[1];
+                this.Namespace = parts[0];
+            }
+        }
     }
 
     export class QualifiedItem extends QualifiedName

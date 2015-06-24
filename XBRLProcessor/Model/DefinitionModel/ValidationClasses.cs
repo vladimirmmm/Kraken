@@ -22,6 +22,7 @@ namespace XBRLProcessor.Model.DefinitionModel
     }
     public class Variable : XbrlIdentifiable
     {
+        public String Name { get; set; }
         public Boolean BindAsSequence { get; set; }
 
         private string _FallbackValue = "";

@@ -81,8 +81,9 @@ namespace XBRLProcessor.Models
          
         }
 
-        public void LoadTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent) 
+        public bool LoadTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent) 
         {
+            var result = true;
             MarkupPath = filepath;
             var sourcepath = filepath;
             if (parent != null)
@@ -93,7 +94,7 @@ namespace XBRLProcessor.Models
                 }
             }
 
-            var localpath = Utilities.Strings.GetLocalPath(Taxonomy.LocalFolder, sourcepath);
+            var localpath = Utilities.Strings.GetLocalPath(BaseModel.DocumentCollection.LocalFolder, sourcepath);
 
             SetLocalPath(localpath);
             SetSourcePath(sourcepath);
@@ -106,11 +107,13 @@ namespace XBRLProcessor.Models
             catch (Exception ex) 
             {
                 Console.WriteLine(String.Format("Can't get source file {0}. Error: {1}", sourcepath, ex));
+                result = false;
             }
 
             structurehandlers.Add(new XmlNodeHandler(Tags.Links, LoadLink));
 
             structurehandlers.Add(new XmlNodeHandler(Tags.Imports, LoadImport));
+            return result;
         }
 
         public override void LoadReferences()
@@ -174,7 +177,7 @@ namespace XBRLProcessor.Models
                 {
                     sourcepath = Utilities.Strings.ResolveRelativePath(SourceFolder, path);
                 }
-                var localpath = Utilities.Strings.GetLocalPath(Taxonomy.LocalFolder, sourcepath);
+                var localpath = Utilities.Strings.GetLocalPath(BaseModel.DocumentCollection.LocalFolder, sourcepath);
                 //Console.WriteLine(localpath);
 
                 var taxonomydocument = Taxonomy.FindDocument(localpath);

@@ -127,6 +127,9 @@ namespace LogicalModel.Validation
         
         public List<ValidationRuleResult> Validate(Instance instance) 
         {
+            if (this.ID.Contains("0312"))
+            {
+            }
             Setinstance(instance);
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().FactGroups;
@@ -157,18 +160,24 @@ namespace LogicalModel.Validation
                 var firstfact =factgroup.Facts.FirstOrDefault(); 
                 if (factgroup.Facts.Count == 1 && firstfact.Dimensions.Count == 0) 
                 {
-                    var factsofconcept = instance.Facts.Where(i => i.Concept == firstfact.Concept.Content).ToList();
-                    foreach (var instancefact in factsofconcept)
+                    if (firstfact.Concept == null) { 
+
+                    }
+                    else
                     {
-                        var fg = new FactGroup();
-                        if (instancefact.Dimensions.Count == 0)
+                        var factsofconcept = instance.Facts.Where(i => i.Concept.Content == firstfact.Concept.Content).ToList();
+                        foreach (var instancefact in factsofconcept)
                         {
-                            instancefact.SetFromString(instancefact.FactString);
+                            var fg = new FactGroup();
+                            if (instancefact.Dimensions.Count == 0)
+                            {
+                                instancefact.SetFromString(instancefact.FactString);
+                            }
+                            fg.Dimensions.AddRange(instancefact.Dimensions);
+                            fg.Concept = factgroup.Concept;
+                            fg.Facts.Add(instancefact);
+                            factgroups.Add(fg);
                         }
-                        fg.Dimensions.AddRange(instancefact.Dimensions);
-                        fg.Concept = factgroup.Concept;
-                        fg.Facts.Add(instancefact);
-                        factgroups.Add(fg);
                     }
                 }
 
@@ -177,15 +186,14 @@ namespace LogicalModel.Validation
             //
 
             //var allinstancefacts = 
-            if (this.ID.Contains("4012"))
-            {
-            }
+         
             foreach (var factgroup in factgroups) 
             {
                 //var firstfact = factgroup.Facts.FirstOrDefault();
                 factgroup.FactString = factgroup.GetFactString();
 
                 var HasAtLeastOneValue = false;
+                var HasMissingValue = false;
                 foreach (var p in Parameters)
                 {
                     if (p.IsGeneral) 
@@ -202,6 +210,20 @@ namespace LogicalModel.Validation
                     {
                         var parameterfactgroup = p.FactGroups.FirstOrDefault();//i => i.GetFactString() == factgroup.GetFactKey());
                         var instancefacts = GetInstanceFacts(parameterfactgroup.Facts);
+                        //set the cells
+                        var cells = new List<String>();
+                        p.CurrentCells.Clear();
+                        foreach (var tax_fact in parameterfactgroup.Facts) 
+                        {
+                            var taxfactkey = tax_fact.GetFactKey();
+                            if (Taxonomy.Facts.ContainsKey(taxfactkey))
+                            {
+                                cells.AddRange(Taxonomy.Facts[taxfactkey]);
+                            }
+                        }
+                        p.CurrentCells.AddRange(cells);
+                        //
+
                         foreach (var instancefact in instancefacts) 
                         {
                             instancefact.SetFromString(instancefact.FactString);
@@ -211,8 +233,9 @@ namespace LogicalModel.Validation
                             instancefacts = instancefacts.Where(i => i.Dimensions.Any(j => j.DomainMemberFullName == dimension.DomainMemberFullName)).ToList();
                         }
 
-                        p.CurrentFacts = instancefacts.Cast<FactBase>().ToList();
+                        p.CurrentFacts = instancefacts;
                         var stringvalues = instancefacts.Select(i => i.Value);
+                        var decimals = instancefacts.Select(i => i.Decimals).ToArray();
                         if (p.Type == TypeEnum.String)
                         {
                             p.StringValues = stringvalues.ToArray(); //GetValues(parameterfactgroup.Facts).ToArray();
@@ -222,13 +245,14 @@ namespace LogicalModel.Validation
                         {
                             p.DecimalValues = stringvalues.Select(i => decimal.Parse(i)).ToArray();// GetValues(parameterfactgroup.Facts).Select(i => double.Parse(i)).ToArray();
                             p.StringValue = Utilities.Strings.ArrayToString(p.DecimalValues);
+                            p.Decimals = decimals;
+
 
                         }
                     }
                     else 
                     {
                         var parameterfactgroup = p.FactGroups.Count == 1 ? p.FactGroups.FirstOrDefault() : p.FactGroups.FirstOrDefault(i => i.GetFactString() == fg_factstring);
-                        p.CurrentFacts = parameterfactgroup.Facts;
                         if (parameterfactgroup.Facts.Count > 1)
                         {
                             Console.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
@@ -236,7 +260,19 @@ namespace LogicalModel.Validation
                         else 
                         {
                             var fact = parameterfactgroup.Facts.FirstOrDefault();
-                            var instancefacts = instance.GetFacts(fact.GetFactKey());
+                            var factkey = fact.GetFactKey();
+
+                            //set the cells
+                            var cells = new List<String>();
+                            p.CurrentCells.Clear();
+                            if (Taxonomy.Facts.ContainsKey(factkey))
+                            {
+                                cells.AddRange(Taxonomy.Facts[factkey]);
+                            }                 
+                            p.CurrentCells.AddRange(cells);
+                            //
+
+                            var instancefacts = instance.GetFacts(factkey);
                             foreach (var instancefact in instancefacts)
                             {
                                 instancefact.SetFromString(instancefact.FactString);
@@ -247,12 +283,15 @@ namespace LogicalModel.Validation
                             }
                             else
                             {
+                                p.CurrentFacts = instancefacts;
+
                                 HasAtLeastOneValue = true;
                                 InstanceFact realfact = null;
                                 if (instancefacts.Count == 1)
                                 {
                                     realfact = instancefacts.FirstOrDefault();
                                     p.StringValue = realfact.Value;
+                                    p.Decimals = new string[] { realfact.Decimals };
                                 }
                                 else
                                 {
@@ -263,20 +302,33 @@ namespace LogicalModel.Validation
                                         instancefacts = instancefacts.Where(i => i.Dimensions.Any(j => j.DomainMemberFullName == dimension.DomainMemberFullName)).ToList();
                                     }
                                     realfact = instancefacts.FirstOrDefault();
+                                    p.CurrentFacts = instancefacts;
+
                                     if (realfact != null)
                                     {
                                         p.StringValue = realfact.Value;
                                     }
                                 }
+
+                                //		Decimal.MaxValue	79228162514264337593543950335	decimal
+                                if (p.Type == TypeEnum.Numeric) 
+                                {
+                                    if (p.StringValue.Length>29 ||!Utilities.Strings.IsDigitsOnly(p.StringValue,'.','-')) 
+                                    {
+                                        Console.WriteLine(String.Format("Invalid Value Detected: {0}", p.StringValue));
+                                        p.StringValue = "";
+                                    }
+                                }
                             }
                         }
                     }
+                    if (String.IsNullOrEmpty(p.StringValue.Trim())) { HasMissingValue = true; }
                     //var skiprule = (Parameters.Any(i => String.IsNullOrEmpty(i.FallBackValue) && String.IsNullOrEmpty(i.StringValue))) ;
-                    
-                  
+     
+                 
                 }
-            
-                if (HasAtLeastOneValue)
+
+                if (HasAtLeastOneValue && !HasMissingValue)
                 {
                     var partialresult = Function(Parameters);
                     if (!partialresult)
@@ -288,13 +340,12 @@ namespace LogicalModel.Validation
                             var sp = new SimlpeValidationParameter();
                             sp.Name = item.Name;
                             sp.Value = item.StringValue;
-                            sp.Facts = item.CurrentFacts.Select(i => i.GetFactKey()).ToList();
-                            foreach (var f in sp.Facts)
+                            //sp.Facts = item.CurrentFacts.Select(i => i.GetFactKey()).ToList();
+                            sp.Facts = item.CurrentFacts.Select(i => i.GetFactString()).ToList();
+                            sp.Cells.AddRange(item.CurrentCells);
+                            if (sp.Cells.Count == 0)
                             {
-                                if (Taxonomy.Facts.ContainsKey(f))
-                                {
-                                    sp.Cells.AddRange(Taxonomy.Facts[f]);
-                                }
+
                             }
                             v.Parameters.Add(sp);
                         }
@@ -305,25 +356,13 @@ namespace LogicalModel.Validation
                     }
                 }
             }
-            if (results.Count > 0)
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine(String.Format("Error: {0}", this.DisplayText));
-                sb.AppendLine(String.Format("Test : {0}", this.OriginalExpression));
-
-                foreach (var result in results)
-                {
-                    sb.AppendLine(result.GetDetails());
-
-                }
-                sb.AppendLine();
-                Console.WriteLine(sb.ToString());
-                Console.WriteLine("");
-            }
             return results;
         }
 
-     
+        public override string ToString()
+        {
+            return String.Format("ValidationRule {0}",this.ID);
+        }
 
 
     }

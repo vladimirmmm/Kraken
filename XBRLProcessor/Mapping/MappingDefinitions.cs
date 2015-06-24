@@ -110,6 +110,10 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("axis", (TableBreakDownArc i) => i.Axis)
                  ),
 
+                Mappings.Map<AspectNodeFilterArc>("<table:aspectNodeFilterArc>", 
+                    Mappings.PropertyMap("complement", (AspectNodeFilterArc i) => i.Complement)
+                 ),
+
                 Mappings.Map<BreakdownTreeArc>("<table:breakdownTreeArc>"
                 ),
 
@@ -130,6 +134,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<table:breakdown>", (XbrlTable i) => i.BreakDowns),
                     Mappings.PropertyMap("<table:breakdownTreeArc>", (XbrlTable i) => i.BreakdownTrees),
                     Mappings.PropertyMap("<table:tableBreakdownArc>", (XbrlTable i) => i.TableBreakDowns),
+                    Mappings.PropertyMap("<table:aspectNodeFilterArc>", (XbrlTable i) => i.AspectNodeFilters),
                     Mappings.PropertyMap("<table:definitionNodeSubtreeArc>", (XbrlTable i) => i.DefinitionNodeSubTrees),
                     Mappings.PropertyMap("<table:ruleNode>", (XbrlTable i) => i.RuleNodes),                    
                     Mappings.PropertyMap("<table:aspectNode>", (XbrlTable i) => i.AspectNodes),                    
@@ -358,7 +363,9 @@ namespace XBRLProcessor.Mapping
             toitem.LabelID = item.LabelID;
             toitem.ID = item.ID;
             toitem.Role = item.Role;
-            toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(LogicalModel.Label.GetKey(toitem.Namespace, toitem.ID));
+            toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(
+                LogicalModel.Label.GetKey(item.NamespaceFolder, toitem.ID)
+                );
             return toitem;
         }
         

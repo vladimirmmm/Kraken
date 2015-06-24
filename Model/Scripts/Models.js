@@ -73,6 +73,13 @@ var Model;
                 }
                 return Format("{0}:{1}", this.Namespace, this.Name);
             },
+            set: function (value) {
+                var parts = value.split(':');
+                if (parts.length == 2) {
+                    this.Name = parts[1];
+                    this.Namespace = parts[0];
+                }
+            },
             enumerable: true,
             configurable: true
         });

@@ -28,8 +28,42 @@ namespace Utilities
 
         public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
         private static Object DictionaryLocker = new Object();
-        
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
+        {
+            XmlNamespaceManager manager = null;
+
+            if (!NamespaceDictionary.ContainsKey(doc))
+            {
+                lock (DictionaryLocker)
+                {
+                    if (!NamespaceDictionary.ContainsKey(doc))
+                    {
+                        manager = new XmlNamespaceManager(doc.NameTable);
+                        manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
+                        //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
+                        var linkbasenode = doc.DocumentElement;
+                        var content = XmlToString(doc);
+                        var nss = Utilities.Strings.TextsBetween(content, "xmlns:", "\" ");
+                        foreach (var ns in nss) 
+                        {
+                            var parts = ns.Split(new string[] {"="," ","\"" }, StringSplitOptions.RemoveEmptyEntries);
+                            var name = parts[0].Trim();
+                            var uri = parts[1].Trim();
+                            manager.AddNamespace(name, uri);
+
+                        }
+                        
+                        NamespaceDictionary.Add(doc, manager);
+                    }
+                }
+            }
+            else
+            {
+                manager = NamespaceDictionary[doc];
+            }
+            return manager;
+        }
+        public static XmlNamespaceManager GetTaxonomyNamespaceManagerx(XmlDocument doc)
         {
             XmlNamespaceManager manager = null;
             
@@ -43,12 +77,28 @@ namespace Utilities
                         manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
                         //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
                         var linkbasenode = doc.DocumentElement;
+
+                        //var namespaces = doc.SelectNodes("/*/namespace::*[name()='']");
+                        var hasnamespace = false;
+
+
                         foreach (XmlAttribute attr in linkbasenode.Attributes)
                         {
                             if (attr.Prefix.ToLower() == "xmlns")
                             {
                                 manager.AddNamespace(attr.LocalName, attr.Value);
-
+                                hasnamespace = true;
+                            }
+                        }
+                        if (!hasnamespace && linkbasenode.ChildNodes.Count>0)
+                        {
+                            foreach (XmlAttribute attr in linkbasenode.ChildNodes[0].Attributes)
+                            {
+                                if (attr.Prefix.ToLower() == "xmlns")
+                                {
+                                    manager.AddNamespace(attr.LocalName, attr.Value);
+                                    hasnamespace = true;
+                                }
                             }
                         }
                         NamespaceDictionary.Add(doc, manager);
@@ -136,7 +186,7 @@ namespace Utilities
                     //return node.OwnerDocument.SelectNodes("xffgh");
                 }
             }
-            var nodes = node.SelectNodes(XPath, manager);
+            var nodes = node.SelectNodes(XPath, manager); //.SelectNodes(XPath, manager);
             foreach (XmlNode xnode in nodes) 
             {
                 if (xnode.ParentNode == node) 

@@ -35,7 +35,7 @@ namespace LogicalModel
             set
             {
                 _LocalID = value;
-                _LabelID = labelprefix + _LocalID;
+                _LabelID = _LocalID.StartsWith(labelprefix)? _LocalID: labelprefix + _LocalID;
             }
         }
         
@@ -67,18 +67,27 @@ namespace LogicalModel
                 return String.Format("{0}[{1}]{2}", _FileName, _Lang, _LabelID).ToLower();
             }
         }
+        public static string GetKeyByDomain(string domain, string localID)
+        {
+            var l = new Label();
+            l.FileName = domain;
+            l.Lang = "en";
+            l.LocalID = localID;
+            return l.Key;
 
+        }
+        public static string GetKeyByNamespace(string ns, string localID)
+        {
+            var l = new Label();
+            l.FileName = ns;
+            l.Lang = "en";
+            l.LocalID = localID;
+            return l.Key;
+
+        }
         public static string GetKey(string fileid, string localID)
         {
             var l = new Label();
-            if (fileid.Contains("eba_exp"))
-            {
-                fileid = fileid.Replace("eba_exp", "dom");
-            }
-            if (fileid.Contains("eba_")) 
-            {
-                fileid = fileid.Replace("eba_", "");
-            }
          
             l.FileName = fileid;
             l.Lang = "en";

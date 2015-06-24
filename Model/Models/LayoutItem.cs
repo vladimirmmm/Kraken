@@ -16,6 +16,7 @@ namespace LogicalModel
         private Table _Table = null;
         public int Order = 0;
         public bool IsDynamic = false;
+        public bool IsVisible = true;
         private string _Axis = "";
         public string Axis { get { return _Axis; } set { _Axis = value; } }
 
@@ -28,7 +29,7 @@ namespace LogicalModel
         private bool _IsAbstract = false;
         public bool IsAbstract { get { return _IsAbstract; } set { _IsAbstract = value; } }
 
-        public bool IsPlaceholder = false;
+        public bool IsPlaceholder { get; set; }
         //private bool _IsAbstract = false;
         //public bool IsAbstract { get { return _IsAbstract; } set { _IsAbstract = value; } }
 

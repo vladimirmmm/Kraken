@@ -93,14 +93,14 @@ var UI;
                 var $target = $(item);
                 var factitems = $target.attr("factstring").split(",");
                 var concept = "";
-                if (factitems[0].indexOf("eba_met:") > -1) {
+                if (factitems[0].indexOf("[") == -1) {
                     concept = factitems[0];
                 }
                 if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
                     $target.click(function () {
                         if (!$target.hasClass(Editor.editclass)) {
                             var editor = null;
-                            if (factitems[0].indexOf("eba_met:ei") == 0) {
+                            if (factitems[0].indexOf(":ei") > -1) {
                                 editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)), function (i) { return i.val(); }, function (i, val) {
                                     i.val(val);
                                 });

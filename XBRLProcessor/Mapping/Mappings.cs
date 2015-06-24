@@ -26,6 +26,25 @@ namespace XBRLProcessor.Mapping
                 return _CurrentMapping;
             }
         }
+
+        public static List<String> GetTagsCovered() 
+        {
+            var tags = new List<String>();
+            foreach (var mapping in CurrentMapping.MappingCollection) 
+            {
+                tags.Add(mapping.XmlSelector);
+                foreach (var pm in mapping.PropertyMappings) 
+                {
+                    if (pm.XmlSelector.StartsWith("<")) 
+                    {
+                        tags.Add(pm.XmlSelector);
+
+                    }
+                }
+            }
+            return tags.Distinct().ToList();
+        }
+
         public List<ClassMapping> MappingCollection = new List<ClassMapping>();
 
         public T Map<T>(XmlNode node, T target) where T : class
@@ -416,7 +435,8 @@ namespace XBRLProcessor.Mapping
                 var stringval = "";
                 if (!String.IsNullOrEmpty(tagname) && !IsComplexType)
                 {
-                    var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
+                    //var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
+                    var childnode = Utilities.Xml.SelectChildNode(node, tagname);
                     if (childnode != null)
                     {
                         stringval = Utilities.Xml.Attr(childnode, "@content");

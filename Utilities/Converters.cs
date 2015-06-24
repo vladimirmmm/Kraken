@@ -23,14 +23,16 @@ namespace Utilities
                 //return fields
                 //    .Concat(objectType.GetProperties(flags).Where(propInfo => propInfo.CanWrite))
                 //    .ToList();
-                return objectType.GetProperties(flags).Cast<MemberInfo>().ToList();
+                var members = objectType.GetProperties(flags).Cast<MemberInfo>().ToList();
+                return members;
             }
 
             protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
             {
 
                 IList<JsonProperty> props = base.CreateProperties(type, memberSerialization);
-                return props.Where(p => p.Writable).ToList();
+                props = props.Where(p => p.Writable && p.PropertyName != "Parent").ToList();
+                return props;
 
             }
         }
@@ -38,13 +40,32 @@ namespace Utilities
 
         public static String ToJson(object obj) 
         {
-            var settings = new JsonSerializerSettings(){  ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
+            var settings = new JsonSerializerSettings(){  
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore 
+
+            };
             //Newtonsoft.Json.Serialization.DefaultContractResolver dcr = new Newtonsoft.Json.Serialization.DefaultContractResolver();
             //dcr.DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic;
             //jss.ContractResolver = dcr;
             settings.ContractResolver = new PublicContractResolver();
      
             return Newtonsoft.Json.JsonConvert.SerializeObject(obj, Formatting.Indented, settings
+                );
+        }
+
+        public static String ToJson<T>(object obj)
+        {
+            var settings = new JsonSerializerSettings() { 
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore 
+            };
+            //Newtonsoft.Json.Serialization.DefaultContractResolver dcr = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+            //dcr.DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic;
+            //jss.ContractResolver = dcr;
+            settings.ContractResolver = new PublicContractResolver();
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(obj, typeof(T), Formatting.Indented, settings
                 );
         }
 
@@ -103,6 +124,7 @@ namespace Utilities
             CultureInfo ci = new CultureInfo("en-US");
             return String.Format(ci, format, dt);
         }
+        public static string DateTimeFormat = "yyyy-MM-dd hh:mm:ss";
         public static DateTime StringToDateTime(String dt, string format)
         {
             DateTime result = DateTime.Now.AddYears(-200);

@@ -22,6 +22,9 @@ namespace LogicalModel
             get { return (TaxonomyDocument)base.EntryDocument; }
             set { base.EntryDocument=value;}
         }
+        public string ConceptNameSpace = "";
+        public string Prefix = "";
+
         public List<Table> Tables = new List<Table>();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
@@ -326,7 +329,7 @@ namespace LogicalModel
             {
                 System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
             }
-
+            /*
             ManageUIFile(@"Scripts\jquery-2.1.3.js");
             ManageUIFile(@"Scripts\jquery-ui-1.11.4.js");
 
@@ -337,6 +340,14 @@ namespace LogicalModel
             ManageUIFile(@"Scripts\Table.js");
             ManageUIFile(@"Scripts\Utils.js");
             ManageUIFile(@"Scripts\Taxonomy.js");
+            */
+            var scriptfiles = System.IO.Directory.GetFiles("Scripts");
+            foreach (var scriptfile in scriptfiles)
+            {
+                var scriptpath = scriptfile.Substring(scriptfile.IndexOf("\\Scripts") + 1);
+                ManageUIFile(scriptpath);
+            }
+
             ManageUIFile(@"Table.css");
             ManageUIFile(@"InstanceTemplate.html");
             //TaxonomyToUI();
@@ -408,16 +419,19 @@ namespace LogicalModel
         public virtual void LoadValidations() {
             if (this.ValidationFunctionContainer == null)
             {
-                var assembly = Assembly.LoadFile(this.TaxonomyValidationDotNetLibPath);
-                var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));
-                if (type != null)
+                if (System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath))
                 {
-                    ValidationFunctionContainer vfc = (ValidationFunctionContainer)Activator.CreateInstance(type);
-                    this.ValidationFunctionContainer = vfc;
-                }
-                else 
-                {
-                    Console.WriteLine(String.Format("There is no {0} in assembly {1}", typeof(ValidationFunctionContainer).Name, this.TaxonomyValidationDotNetLibPath));
+                    var assembly = Assembly.LoadFile(this.TaxonomyValidationDotNetLibPath);
+                    var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));
+                    if (type != null)
+                    {
+                        ValidationFunctionContainer vfc = (ValidationFunctionContainer)Activator.CreateInstance(type);
+                        this.ValidationFunctionContainer = vfc;
+                    }
+                    else
+                    {
+                        Console.WriteLine(String.Format("There is no {0} in assembly {1}", typeof(ValidationFunctionContainer).Name, this.TaxonomyValidationDotNetLibPath));
+                    }
                 }
             }
         }
@@ -469,7 +483,7 @@ namespace LogicalModel
             if (!System.IO.File.Exists(TaxonomyConceptPath))
             {
 
-                var conceptelements = SchemaElements.Where(i => i.Namespace == "eba_met").ToList();
+                var conceptelements = SchemaElements.Where(i => i.Namespace == ConceptNameSpace).ToList();
                 foreach (var conceptelement in conceptelements) 
                 {
                     var concept = new Concept();

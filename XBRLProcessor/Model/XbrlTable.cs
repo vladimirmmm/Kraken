@@ -191,9 +191,10 @@ namespace XBRLProcessor.Model
             }
 
             logicaltable.LayoutRoot = Hierarchy<LogicalModel.LayoutItem>.GetHierarchy(Arcs, logicaltable.LayoutItems,
-                (i, a) => i.Item.ID == a.From, (i, a) => i.Item.ID == a.To,
+                (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
+                /*(i, a) => i.Item.ID == a.From, (i, a) => i.Item.ID == a.To,*/
                 (i, a) => { i.Item.Order = a.Order; i.Item.Axis = a is TableBreakDownArc ? ((TableBreakDownArc)a).Axis.ToString() : ""; });
-            logicaltable.ID = logicaltable.LayoutRoot.Item.LabelCode;
+            logicaltable.ID = logicaltable.LayoutRoot.Item.LabelContent;
             logicaltable.SetHtmlPath();
 
         }
@@ -205,7 +206,7 @@ namespace XBRLProcessor.Model
             rootlocator.ID = "Root";
             var rootNode = new Hierarchy<Locator>(rootlocator);
             DefinitionItems.Add(rootNode);
-            Console.WriteLine(this.XsdPath);
+            //Console.WriteLine(this.XsdPath);
 
          
             foreach (var definitionlink in DefinitionLinks)

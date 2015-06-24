@@ -74,6 +74,7 @@
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\XbrlValue.cs" />
     <Compile Include="TaxonomyEngine.cs" />
+    <Compile Include="Validation\FactFunctions.cs" />
     <Compile Include="Validation\Functions.cs" />
     <Compile Include="Validation\Test.cs" />
     <Compile Include="Validation\ValidationParameter.cs" />
@@ -126,6 +127,9 @@
     <Content Include="Scripts\jquery-2.1.3.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.pagination.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Linq.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
