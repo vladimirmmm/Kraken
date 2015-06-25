@@ -63,7 +63,7 @@
                     prev_show_always: true,
                     next_show_always: true,
                     callback: function (pageix) {
-                        me.LoadPage("facts", me.Instance.Facts, pageix,me.PageSize);
+                        me.LoadPage($("#factlist"), me.Instance.Facts, pageix,me.PageSize);
                     },
                 });
 
@@ -78,35 +78,37 @@
                     prev_show_always: true,
                     next_show_always: true,
                     callback: function (pageix) {
-                        me.LoadPage("validations", me.ValidationErrors,  pageix,me.PageSize);
+                        me.LoadPage($("#validationlist"), me.ValidationErrors,  pageix,me.PageSize);
                     },
                 });
       
 
-            me.LoadPage("facts", me.Instance.Facts, 0,  me.PageSize);
+            me.LoadPage($("#factlist"), me.Instance.Facts, 0,  me.PageSize);
             console.log(new Date());
 
         }
 
-        public LoadPage(specifier: string,items:any[], page: number, pagesize: number)
+        public LoadPage($bindtarget: JQuery, items:any[], page: number, pagesize: number)
         {
             var me = this;
             var startix = pagesize * page;
             var endix = startix + pagesize;
             var itemspart = items.slice(startix, endix);
-
-            if (specifier == "facts") {
+            BindX($bindtarget, itemspart);
+            /*
+            if ($bindtarget == "facts") {
                 BindX($("#factlist"), itemspart);
             }
-            if (specifier == "validations")
+            if ($bindtarget == "validations")
             {
                 BindX($("#validationlist"), itemspart);
 
             }
-            if (specifier == "validationruleresults")
+            if ($bindtarget == "validationruleresults")
             {
                 BindX($("#validationruleresults"), itemspart);
             }
+            */
         }
 
         public ShowDetails(factkey:string, factstring:string)
@@ -148,7 +150,7 @@
                 }
                 
             });
-            me.LoadPage("validations", me.ValidationErrors, 0, me.PageSize);
+            me.LoadPage($("#validationlist"), me.ValidationErrors, 0, me.PageSize);
             //console.log("Loading validationlist" + new Date());
             //console.log(new Date());
 
@@ -159,6 +161,30 @@
             $("#Contents>div").hide();
             $(selector).show();
 
+        }
+
+        public LoadContentToUI(contentid: string)
+        {
+            var me = this;
+            if (contentid == "Facts"){
+                me.ShowContent('#Facts');
+                me.LoadPage($("#factlist"), me.Instance.Facts, 0, me.PageSize);
+
+            }
+            if (contentid == "InvalidFacts") {
+                me.ShowContent('#Facts');
+                var invalidfacts = me.Instance.Facts.AsLinq<Model.InstanceFact>().Where(i=> i.Cells.length == 0).ToArray();
+                me.LoadPage($("#factlist"), me.Instance.Facts, 0, me.PageSize);
+
+            }
+            if (contentid == "ValidationErrors") {
+                me.ShowContent('#Validation');
+                instancecontainer.ShowValidationResults()
+            }
+            if (contentid == "ValidationRules") {
+                me.ShowContent('#Validation');
+
+            }
         }
 
         public ShowRuleDetail(ruleid: string)
@@ -178,23 +204,26 @@
                     prev_show_always: true,
                     next_show_always: true,
                     callback: function (pageix) {
-                        me.LoadPage("validationruleresults", rule.Results, pageix,1);
+                        me.LoadPage($("#validationruleresults"), rule.Results, pageix,1);
                     },
                 });
-            me.LoadPage("validationruleresults", rule.Results, 0, 1);
+            me.LoadPage($("#validationruleresults"), rule.Results, 0, 1);
 
             $("#validationrule_results_" + ruleid).append($("#validationdetail"));
             $("#validationdetail").show();
         }
+
         public CloseRuleDetail()
         {
             $("#validationdetail").hide();
 
         }
+
         public HashChanged()
         {
        
         }
+
         public Test()
         {
             this.ShowValidationResults();

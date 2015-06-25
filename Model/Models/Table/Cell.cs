@@ -87,7 +87,23 @@ namespace LogicalModel
                 return sb.ToString();
             }
         }
-        
+        public Cell() 
+        {
+
+        }
+        public void SetFromCellID(string CellID)
+        {
+            var reportpart = CellID.Remove(CellID.IndexOf("<"));
+            var cellpart = Utilities.Strings.TextBetween(CellID, "<", ">");
+            var cellparts = cellpart.Split(new string[] { "|" }, StringSplitOptions.None);
+            if (cellparts.Length == 3) 
+            {
+                this.Report = reportpart;
+                this.Extension = cellparts[0];
+                this.Row = cellparts[1];
+                this.Column = cellparts[2];
+            }
+        }
         public override string ToString()
         {
             return String.Format("{0} - R{1}|C{2}",Report, Row, Column);

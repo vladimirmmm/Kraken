@@ -35,22 +35,31 @@ var UI;
             this.SetCellEditors();
             $(".highlight").removeClass("highlight");
             var hash = window.location.hash;
-            if (!IsNull(hash)) {
-                this.HighlightCell();
-            }
-            else {
-                this.SetExtension(null);
-            }
+            //if (!IsNull(hash)) {
+            //    this.HighlightCell();
+            //}
+            //else
+            //{
+            //    this.SetExtension(null);          
+            //}
             if (!IsNull(this.Instance)) {
                 this.LoadInstance(this.Instance);
+            }
+            if (!IsNull(hash)) {
+                Notify("Navigation: " + hash);
+                this.HighlightCell();
             }
         };
         Table.prototype.HighlightCell = function () {
             var hash = window.location.hash;
             var cellid = TextBetween(hash, "cell=", ";");
             var extcode = TextBetween(hash, "ext=", ";");
+            if (extcode == "000") {
+                extcode = "001";
+            }
             this.SetExtensionByCode(extcode);
             cellid = cellid.replace("_", "\\|");
+            //cellid = cellid.replace("|", "\\|");
             $("#" + cellid).addClass("highlight");
             $("#" + cellid).focus();
         };

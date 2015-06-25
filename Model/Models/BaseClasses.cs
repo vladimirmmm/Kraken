@@ -137,15 +137,6 @@ namespace LogicalModel.Base
         {
             this.Dimensions.Clear();
             this.Concept = null;
-            //var cix = item.IndexOf(">");
-            //if (cix > -1)
-            //{
-            //    var concept = new Concept();
-            //    concept.Content = item.Remove(cix);
-            //    item = item.Substring(cix + 1);
-            //    this.Concept = concept;
-
-            //}
             var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
             var toskip = 0;
             if (parts.Length > 0) 
@@ -187,6 +178,18 @@ namespace LogicalModel.Base
                 dim.DomainMember = member;
                 this.Dimensions.Add(dim);
             }
+        }
+
+        public bool HasTypedDimension() 
+        {
+            foreach (var dimension in Dimensions) 
+            {
+                if (dimension.IsTyped) 
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public override string ToString()

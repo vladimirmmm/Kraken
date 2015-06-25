@@ -287,7 +287,7 @@ namespace LogicalModel.Validation
 
                                 HasAtLeastOneValue = true;
                                 InstanceFact realfact = null;
-                                if (instancefacts.Count == 1)
+                                if (instancefacts.Count == 1 && !instancefacts.FirstOrDefault().HasTypedDimension())
                                 {
                                     realfact = instancefacts.FirstOrDefault();
                                     p.StringValue = realfact.Value;
@@ -303,9 +303,14 @@ namespace LogicalModel.Validation
                                     }
                                     realfact = instancefacts.FirstOrDefault();
                                     p.CurrentFacts = instancefacts;
-
+    
                                     if (realfact != null)
                                     {
+                                        for (int i = 0; i < p.CurrentCells.Count; i++)
+                                        {
+                                            p.CurrentCells[i] = instance.GetDynamicCellID(p.CurrentCells[i], realfact);
+
+                                        }
                                         p.StringValue = realfact.Value;
                                     }
                                 }

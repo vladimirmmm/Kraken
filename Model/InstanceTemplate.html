@@ -40,6 +40,7 @@
     </script>
     <div id="Commands">
         <a href="javascript:void(0)" onclick="instancecontainer.ShowContent('#Facts')">Facts</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.ShowContent('#Facts'); instancecontainer.ShowValidationResults();">Invalid Facts</a>
         <a href="javascript:void(0)" onclick="instancecontainer.ShowContent('#Validation'); instancecontainer.ShowValidationResults();">Validations</a>
     </div>
     <div id="Contents">
@@ -80,8 +81,12 @@
         <div id="Validation">
             <ul id="validationlist">
                 <li binding-type="template">
-                    <h2>bind[DisplayText]</h2><br />
-                    <span>bind[OriginalExpression]</span><br />
+                    <div class="hmax30">
+                        <h2>bind[DisplayText]</h2><br />
+                    </div>
+                    <div class="hmax30">
+                        <span>bind[OriginalExpression]</span>
+                    </div>
                     <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowRuleDetail('{ID}')]" class="icon close">Details...</a>
 
                     <div id="bind[validationrule_results_{ID}]">

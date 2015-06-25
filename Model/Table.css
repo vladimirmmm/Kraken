@@ -136,3 +136,9 @@ li
 	border-color:#999;
 	background:#fff;
 }
+.hmax30 {
+    max-height: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    margin: 5px;
+}
