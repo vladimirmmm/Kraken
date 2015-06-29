@@ -39,9 +39,9 @@
         });
     </script>
     <div id="Commands">
-        <a href="javascript:void(0)" onclick="instancecontainer.ShowContent('#Facts')">Facts</a>
-        <a href="javascript:void(0)" onclick="instancecontainer.ShowContent('#Facts'); instancecontainer.ShowValidationResults();">Invalid Facts</a>
-        <a href="javascript:void(0)" onclick="instancecontainer.ShowContent('#Validation'); instancecontainer.ShowValidationResults();">Validations</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Facts')">Facts</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('InvalidFacts');">Invalid Facts</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('ValidationErrors');">Validations</a>
     </div>
     <div id="Contents">
         <div id="Facts">
@@ -58,19 +58,22 @@
                 </div>
             </div>
             <div id="factdetail">
-                FactKey: <span binding="FactKey"></span><br />
+                FactKey: <span>bind[{FactKey}]</span><br />
+                Concept: <span>bind[{Concept.FullName}]</span><br />
                 Dimensions:
-                <table binding="Dimensions">
+                <table binding-items="Dimensions">
                     <tr binding-type="template">
-                        <td binding="this"></td>
+                        <td>
+                            bind[{DomainMemberFullName}]
+                        </td>
                         <td></td>
                     </tr>
                 </table>
                 Cells:
-                <ul id="celllist" binding="Cells">
+                <ul id="celllist" binding-items="Cells">
                     <li binding-type="template">
-                        <a href="javascript:void(0)" binding="onclick=>instancecontainer.NavigateToCell('{this}')">
-                            <span binding="{this}"></span>
+                        <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateToCell('{this}')]">
+                            <span>bind[{this}]</span>
                         </a>
 
                     </li>
@@ -92,28 +95,7 @@
                     <div id="bind[validationrule_results_{ID}]">
 
                     </div>
-                    <!--<ul id="celllist" binding-items="Results">
-                        <li binding-type="template">
-                            <table binding-items="Parameters">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Value</th>
-                                    <th>Cells</th>
-                                </tr>
-                                <tr binding-type="template">
-                                    <td>bind[{Name}]</td>
-                                    <td class="right">bind[{Value}]</td>
-                                    <td binding-items="Cells">
-                                        <a binding-type="template" href="javascript:void(0)" onclick="bind[instancecontainer.NavigateToCell('{this}')]">
-                                            bind[this]
-                                        </a>
-                                    </td>
-
-                                </tr>
-                            </table>
-
-                        </li>
-                    </ul>-->
+                   
                 </li>
             </ul>
             <div id="validationerrorpager" class="pagination">

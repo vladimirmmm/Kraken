@@ -25,7 +25,7 @@
         public LoadToUI()
         {
             var me = this;
-            //this.SetExternals();
+            $("#factdetail").hide();
             this.ShowContent("#Facts");
             console.log("Loading validationlist" + new Date());
             var facts: Model.FactBase[] = [];
@@ -52,63 +52,38 @@
                 }
             }
             me.FactsNr = this.Instance.Facts.length;
-            $("#factpager").pagination(me.FactsNr,
-                {
-                    items_per_page: me.PageSize,
-                    current_page: me.Page ? me.Page : 0,
-                    //link_to: "#/Article/Index?page=__id__",
-                    prev_text: "Prev",
-                    next_text: "Next",
-                    ellipse_text: "...",
-                    prev_show_always: true,
-                    next_show_always: true,
-                    callback: function (pageix) {
-                        me.LoadPage($("#factlist"), me.Instance.Facts, pageix,me.PageSize);
-                    },
-                });
+            me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
 
-            $("#validationerrorpager").pagination(me.ValidationErrors.length,
-                {
-                    items_per_page: me.PageSize,
-                    current_page: me.Page ? me.Page : 0,
-                    //link_to: "#/Article/Index?page=__id__",
-                    prev_text: "Prev",
-                    next_text: "Next",
-                    ellipse_text: "...",
-                    prev_show_always: true,
-                    next_show_always: true,
-                    callback: function (pageix) {
-                        me.LoadPage($("#validationlist"), me.ValidationErrors,  pageix,me.PageSize);
-                    },
-                });
-      
-
-            me.LoadPage($("#factlist"), me.Instance.Facts, 0,  me.PageSize);
             console.log(new Date());
 
         }
 
-        public LoadPage($bindtarget: JQuery, items:any[], page: number, pagesize: number)
+        public LoadPage($bindtarget: JQuery, $pager:JQuery, items:any[], page: number, pagesize: number)
         {
             var me = this;
             var startix = pagesize * page;
             var endix = startix + pagesize;
             var itemspart = items.slice(startix, endix);
             BindX($bindtarget, itemspart);
-            /*
-            if ($bindtarget == "facts") {
-                BindX($("#factlist"), itemspart);
-            }
-            if ($bindtarget == "validations")
+            if ($pager.length == 0 || 1==1)
             {
-                BindX($("#validationlist"), itemspart);
-
+                $pager.pagination(items.length,
+                    {
+                        items_per_page: pagesize,
+                        current_page: page ? page : 0,
+                        //link_to: "#/Article/Index?page=__id__",
+                        link_to: "",
+                        prev_text: "Prev",
+                        next_text: "Next",
+                        ellipse_text: "...",
+                        prev_show_always: true,
+                        next_show_always: true,
+                        callback: function (pageix) {
+                            me.LoadPage($bindtarget, $pager, items, pageix, pagesize);
+                        },
+                    });
             }
-            if ($bindtarget == "validationruleresults")
-            {
-                BindX($("#validationruleresults"), itemspart);
-            }
-            */
+        
         }
 
         public ShowDetails(factkey:string, factstring:string)
@@ -119,9 +94,10 @@
             {
            
                 var fact = facts[0];
-                //fact.Cells = this.Taxonomy.FactMap[factkey];
-                Bind("#factdetail", fact);
-
+                Model.FactBase.LoadFromFactString(fact);
+                var $factdetail = $("#factdetail");
+                BindX($factdetail, fact);
+                $factdetail.show();
             }
 
         }
@@ -145,12 +121,11 @@
                     rule.Results.push(v);
                     v.Parameters.forEach(function (p) {
                         var fact = p.Facts[0];
-                        //p.Cells = me.Taxonomy.FactMap[fact];
                     });
                 }
                 
             });
-            me.LoadPage($("#validationlist"), me.ValidationErrors, 0, me.PageSize);
+            me.LoadPage($("#validationlist"), $("#validationerrorpager"), me.ValidationErrors, 0, me.PageSize);
             //console.log("Loading validationlist" + new Date());
             //console.log(new Date());
 
@@ -168,13 +143,13 @@
             var me = this;
             if (contentid == "Facts"){
                 me.ShowContent('#Facts');
-                me.LoadPage($("#factlist"), me.Instance.Facts, 0, me.PageSize);
+                me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
 
             }
             if (contentid == "InvalidFacts") {
                 me.ShowContent('#Facts');
                 var invalidfacts = me.Instance.Facts.AsLinq<Model.InstanceFact>().Where(i=> i.Cells.length == 0).ToArray();
-                me.LoadPage($("#factlist"), me.Instance.Facts, 0, me.PageSize);
+                me.LoadPage($("#factlist"), $("#factpager"), invalidfacts, 0, me.PageSize);
 
             }
             if (contentid == "ValidationErrors") {
@@ -191,23 +166,8 @@
         {
             var me = this;
             var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
-            //BindX($("#validationdetail"), rule);
 
-            $("#validationddetailpager").pagination(rule.Results.length,
-                {
-                    items_per_page: 1,
-                    current_page: me.Page ? me.Page : 0,
-                    //link_to: "#/Article/Index?page=__id__",
-                    prev_text: "Prev",
-                    next_text: "Next",
-                    ellipse_text: "...",
-                    prev_show_always: true,
-                    next_show_always: true,
-                    callback: function (pageix) {
-                        me.LoadPage($("#validationruleresults"), rule.Results, pageix,1);
-                    },
-                });
-            me.LoadPage($("#validationruleresults"), rule.Results, 0, 1);
+            me.LoadPage($("#validationruleresults"), $("#validationddetailpager"), rule.Results, 0, 1);
 
             $("#validationrule_results_" + ruleid).append($("#validationdetail"));
             $("#validationdetail").show();

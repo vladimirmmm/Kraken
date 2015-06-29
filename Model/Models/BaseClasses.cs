@@ -301,7 +301,10 @@ namespace LogicalModel.Base
                 if (six > -1)
                 {
                     _Namespace = _Content.Remove(six);
-                    ID = _Content.Substring(six + 1);
+                    _Name = _Content.Substring(six + 1);
+                    ID = _Name;
+                    SetFullName();
+
                 }
             }
         }

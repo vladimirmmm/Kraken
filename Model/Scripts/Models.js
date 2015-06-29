@@ -148,6 +148,46 @@ var Model;
             enumerable: true,
             configurable: true
         });
+        FactBase.LoadFromFactString = function (fact) {
+            var me = fact;
+            me.Dimensions = [];
+            me.Concept = null;
+            var item = me.FactString;
+            var parts = Split(item, ",", true);
+            var toskip = 0;
+            if (parts.length > 0) {
+                if (parts[0].indexOf("[") == -1) {
+                    toskip = 1;
+                    var concept = QualifiedName.Create(parts[0]);
+                    me.Concept = concept;
+                }
+            }
+            var dimparts = parts;
+            dimparts.splice(0, toskip);
+            dimparts.forEach(function (dimpart) {
+                var dimitem = TextBetween(dimpart, "[", "]");
+                var domainpart = dimpart.substring(dimitem.length + 2);
+                var domain = domainpart;
+                var member = "";
+                var dim = new Dimension();
+                if (domainpart.indexOf(":") > -1) {
+                    var domainparts = Split(domainpart, ":", true);
+                    if (domainparts.length == 2) {
+                        domain = domainparts[0];
+                        member = domainparts[1];
+                    }
+                    if (domainparts.length == 3) {
+                        domain = Format("{0}:{1}", domainparts[0], domainparts[1]);
+                        member = domainparts[2];
+                        dim.IsTyped = true;
+                    }
+                }
+                dim.DimensionItem = dimitem;
+                dim.Domain = domain;
+                dim.DomainMember = member;
+                me.Dimensions.push(dim);
+            });
+        };
         return FactBase;
     })();
     Model.FactBase = FactBase;
