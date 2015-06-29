@@ -42,13 +42,17 @@
         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Facts')">Facts</a>
         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('InvalidFacts');">Invalid Facts</a>
         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('ValidationErrors');">Validations</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Contexts');">Contexts</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Units');">Units</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('FilingIndicators');">Filing Indicators</a>
+        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('General');">General</a>
     </div>
     <div id="Contents">
         <div id="Facts">
             <div id="factcontainer">
                 <ul id="factlist">
                     <li binding-type="template">
-                        <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowDetails('{FactKey}', '{FactString}')]">
+                        <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[instancecontainer.ShowDetails('{FactKey}', '{FactString}')]">
                             <span>bind[<strong>{Concept.FullName}-{ContextID}:</strong> {Value}]></span>
                         </a>
 
@@ -58,27 +62,45 @@
                 </div>
             </div>
             <div id="factdetail">
-                FactKey: <span>bind[{FactKey}]</span><br />
-                Concept: <span>bind[{Concept.FullName}]</span><br />
-                Dimensions:
-                <table binding-items="Dimensions">
-                    <tr binding-type="template">
-                        <td>
-                            bind[{DomainMemberFullName}]
-                        </td>
-                        <td></td>
-                    </tr>
-                </table>
-                Cells:
-                <ul id="celllist" binding-items="Cells">
-                    <li binding-type="template">
-                        <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateToCell('{this}')]">
-                            <span>bind[{this}]</span>
-                        </a>
+                <p>
+                    <strong>FactKey:</strong> <span>bind[FactKey]</span>
+                </p>
+                <p>
+                    <strong>FactString:</strong>  <span>bind[FactString]</span>
+                </p>
+                <p>
+                    <strong>Context & Unit:</strong>  <span>bind[Context ID: {ContextID}; Unit ID: {UnitID}]</span>
+                </p>
+                <p>
+                    <strong>Value:</strong>  <span>bind[Value]</span>
+                </p>
+                <p>
+                    <strong>Concept:</strong>  <span>bind[Concept.FullName]</span>
+                </p>
+                <p>
+                    <strong>Dimensions:</strong>
+                    <table binding-items="Dimensions">
+                        <tr binding-type="template">
+                            <td>
+                                bind[{DomainMemberFullName}]
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </p>
+                <p>
+                    <strong>Cells:</strong>
+                    <ul id="celllist" binding-items="Cells">
+                        <li binding-type="template">
+                            <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateToCell('{this}')]">
+                                <span>bind[{this}]</span>
+                            </a>
 
-                    </li>
-                </ul>
-            </div>
+                        </li>
+                    </ul>
+                </p>
+
+</div>
         </div>
 
         <div id="Validation">

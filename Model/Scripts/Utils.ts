@@ -1171,7 +1171,7 @@ class BindingTemplate
     public ID: string = "";
     public ChildID: string = "";
     public Children: BindingTemplate[] = [];
-    public Child: BindingTemplate = null;
+    //public Child: BindingTemplate = null;
     public Parent: BindingTemplate = null;
     public Content: string;
     public ChildPlaceholder: string = "@children@";
@@ -1183,7 +1183,17 @@ class BindingTemplate
         var result_html: string = "";
         var me = this;
         result_html = BindLevel(this.Content, data);
-        var childitems = "";
+        me.Children.forEach(function (child) {
+            var items = Access(data, child.AccessorExpression);
+            var childitems = "";
+            items.forEach(function (item) {
+                childitems += child.Bind(item);
+
+
+            });
+            result_html = Replace(result_html, child.ID, childitems);
+        });
+        /*
         if (me.Child != null) {
             var items = Access(data, me.Child.AccessorExpression);
 
@@ -1194,21 +1204,22 @@ class BindingTemplate
             });
             result_html = Replace(result_html, me.Child.ID, childitems);
         }
-    
+    */
         return result_html;
 
     }
 
     public ToHierarchyString(tab:string):string
     {
+        var me = this;
         var result = "";
         tab = IsNull(tab) ? "    " : tab;
         result += Format("{0} {1} {2}\n", tab, this.ID, this.AccessorExpression);
-        if (this.Child != null)
-        {
-            result += this.Child.ToHierarchyString(tab + tab);
+        me.Children.forEach(function (child) {
+            result += child.ToHierarchyString(tab + tab);
 
-        }
+        });
+   
         return result;
     }
     
@@ -1273,7 +1284,7 @@ function GetBindingTemplate(target:JQuery)
             if (IsNull(item.AccessorExpression)) {
                 item.AccessorExpression = parenttemplate.AccessorExpression;
             }
-            parenttemplate.Child = item;
+            parenttemplate.Children.push(item);
         }
         else
         {

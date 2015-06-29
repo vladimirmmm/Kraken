@@ -128,6 +128,18 @@ var Control;
             if (contentid == "ValidationRules") {
                 me.ShowContent('#Validation');
             }
+            if (contentid == "Contexts") {
+                me.ShowContent('#Context');
+            }
+            if (contentid == "Units") {
+                me.ShowContent('#Unit');
+            }
+            if (contentid == "FilingIndicators") {
+                me.ShowContent('#FilingIndicator');
+            }
+            if (contentid == "General") {
+                me.ShowContent('#General');
+            }
         };
         InstanceContainer.prototype.ShowRuleDetail = function (ruleid) {
             var me = this;
