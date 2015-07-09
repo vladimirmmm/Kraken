@@ -12,6 +12,7 @@ namespace LogicalModel.Base
     public class QualifiedItem : QualifiedName, ILabeled 
     {
         private Label _Label = null;
+        [JsonProperty]
         public Label Label
         {
             get
@@ -241,6 +242,32 @@ namespace LogicalModel.Base
         string LabelCode { get; }
         string LabelID { get; set; }
     }
+
+    public class IdentifiablewithLabel : Identifiable, ILabeled 
+    {
+
+        private Label _Label;
+        public Label Label { get { return _Label; } set { _Label = value; } }
+
+
+        public string LabelContent
+        {
+            get { return _Label != null ? _Label.Content : ""; }
+        }
+
+        public string LabelCode
+        {
+            get { return _Label != null ? _Label.Code : ""; }
+        }
+
+        public string _LabelID = "";
+        public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
+
+        public override string ToString()
+        {
+            return String.Format("{0}: {1} - {2}",this.GetType().Name, this.ID,this.LabelID);
+        }
+    }
     
     public class Element
     {
@@ -336,6 +363,7 @@ namespace LogicalModel.Base
         private void SetFullName() 
         {
             _FullName = String.Format("{0}:{1}", _Namespace, _Name);
+            _Content = _FullName;
         }
         private string _FullName = "";
         public virtual string FullName 

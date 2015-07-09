@@ -178,9 +178,6 @@ namespace XBRLProcessor.Model
 
                         }
                     }
-                    //logicaldimension.Domain = aspect.DimensionAspect.Domain;
-                    //logicaldimension.DomainMember = aspect.DimensionAspect.Value;
-
 
                     li.Dimensions.Add(logicaldimension);
 
@@ -192,9 +189,9 @@ namespace XBRLProcessor.Model
 
             logicaltable.LayoutRoot = Hierarchy<LogicalModel.LayoutItem>.GetHierarchy(Arcs, logicaltable.LayoutItems,
                 (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
-                /*(i, a) => i.Item.ID == a.From, (i, a) => i.Item.ID == a.To,*/
                 (i, a) => { i.Item.Order = a.Order; i.Item.Axis = a is TableBreakDownArc ? ((TableBreakDownArc)a).Axis.ToString() : ""; });
-            logicaltable.ID = logicaltable.LayoutRoot.Item.LabelContent;
+            logicaltable.ID = logicaltable.LayoutRoot.Item.ID;
+            logicaltable.Name = logicaltable.LayoutRoot.Item.LabelContent;
             logicaltable.SetHtmlPath();
 
         }
@@ -206,7 +203,6 @@ namespace XBRLProcessor.Model
             rootlocator.ID = "Root";
             var rootNode = new Hierarchy<Locator>(rootlocator);
             DefinitionItems.Add(rootNode);
-            //Console.WriteLine(this.XsdPath);
 
          
             foreach (var definitionlink in DefinitionLinks)
@@ -228,13 +224,11 @@ namespace XBRLProcessor.Model
                 var hascube = definitionlink.DefinitionArcs.Any(i => i.RoleType == ArcRoleType.hypercube_dimension);
                 if (hascube)
                 {
-                    //definitionlink.LoadHierarchy();
 
                     if (definitionlink.DefinitionRoot.Find(i => i.Item.RoleType == ArcRoleType.domain_member) != null)
                     {
                         rootNode.Children.Add(definitionlink.DefinitionRoot);
                         definitionlink.DefinitionRoot.Parent = rootNode;
-                        //DefinitionItems.AddRange(definitionlink.DefinitionItems);
 
                     }
                     else
@@ -281,10 +275,14 @@ namespace XBRLProcessor.Model
                 foreach (var hypercubeitem in hypercubeitems) 
                 {
                     var logicalhypercubeitem = new LogicalModel.Dimensions.DimensionItem();
-                    logicalhypercubeitem.Content = hypercubeitem.Item.Element.Key;
+                    //logicalhypercubeitem.Content = hypercubeitem.Item.Element.Key;
                     logicalhypercubeitem.Name = hypercubeitem.Item.Element.Name;
+                    logicalhypercubeitem.Namespace = hypercubeitem.Item.Element.Namespace;
                     logicalhypercubeitem.LabelID = hypercubeitem.Item.LabelID;
+                    if (logicalhypercubeitem.Name.Contains("RCP")) 
+                    {
 
+                    }
                     if (hypercubeitem.Children.Count == 0) 
                     {
                         var domainref = hypercubeitem.Item.Element.TypedDomainRef;
@@ -304,7 +302,7 @@ namespace XBRLProcessor.Model
                                 logicaldomain.Content = se_domain_key;
                                 logicaldomain.Name = se_domain.Name;
                                 logicaldomain.DimensionItem = logicalhypercubeitem;
-                                logicaldomain.LabelID = se_domain.ID;        
+                                logicaldomain.LabelID = se_domain.ID;
                                 logicalhypercubeitem.Domains.Add(logicaldomain);
 
                                 var logicalmember = new LogicalModel.Dimensions.TypedDimensionMember();
@@ -318,6 +316,9 @@ namespace XBRLProcessor.Model
                                 hypercube.DimensionItems.Add(logicalhypercubeitem);
 
                             }
+                            else 
+                            {
+                            }
                         }
                         //var xs = Taxonomy.SchemaElementDictionary[hypercubeitem.Item.]
                     }
@@ -326,6 +327,10 @@ namespace XBRLProcessor.Model
                     if (completedomains.Count > 0)
                     {
                         hypercube.DimensionItems.Add(logicalhypercubeitem);
+                    }
+                    else 
+                    {
+
                     }
 
                     foreach (var domain in completedomains) 

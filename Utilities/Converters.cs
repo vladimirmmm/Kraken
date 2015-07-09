@@ -19,10 +19,6 @@ namespace Utilities
             protected override List<MemberInfo> GetSerializableMembers(Type objectType)
             {
                 var flags = BindingFlags.Instance | BindingFlags.Public;
-                //MemberInfo[] fields = objectType.GetProperties(flags);
-                //return fields
-                //    .Concat(objectType.GetProperties(flags).Where(propInfo => propInfo.CanWrite))
-                //    .ToList();
                 var members = objectType.GetProperties(flags).Cast<MemberInfo>().ToList();
                 return members;
             }

@@ -87,7 +87,7 @@ namespace UI
 
         private bool HtmlDocumentClickEventHandler(mshtml.IHTMLEventObj pEvtObj)
         {
-            int z = 0;
+    
             return true;
         }
 

@@ -1,9 +1,11 @@
 ﻿using BaseModel;
 using LogicalModel.Base;
 using LogicalModel.Helpers;
+using LogicalModel;
 using LogicalModel.Validation;
 using Newtonsoft.Json;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +28,7 @@ namespace LogicalModel
         public string Prefix = "";
 
         public List<Table> Tables = new List<Table>();
+        public List<TableGroup> TableGroups = new List<TableGroup>();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
         public List<Concept> Concepts = new List<Concept>();
@@ -102,6 +105,10 @@ namespace LogicalModel
         public string TaxonomyConceptPath
         {
             get { return ModuleFolder + "Concept.json"; }
+        }
+        public string TaxonomyTableGroupPath
+        {
+            get { return ModuleFolder + "TableGroup.json"; }
         }
         public string TaxonomyHyperCuberPath
         {
@@ -182,7 +189,7 @@ namespace LogicalModel
             Console.WriteLine("Load Labels");
 
             //Save
-            if (!System.IO.File.Exists(TaxonomyLabelPath))
+            if (!System.IO.File.Exists(TaxonomyLabelPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
 
                 LabelHandler.HandleTaxonomy(this);
@@ -201,6 +208,7 @@ namespace LogicalModel
         }
 
         public virtual void LoadLabelDictionary() { }
+      
         public virtual void LoadFactDictionary() { }
 
         public virtual void LoadFacts()
@@ -210,7 +218,7 @@ namespace LogicalModel
             ManageUIFiles();
             //
 
-            if (!System.IO.File.Exists(TaxonomyFactsPath))
+            if (!System.IO.File.Exists(TaxonomyFactsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 foreach (var table in Tables)
                 {
@@ -262,7 +270,7 @@ namespace LogicalModel
             ManageUIFiles();
             //
 
-            if (!System.IO.File.Exists(TaxonomyTablesPath))
+            if (!System.IO.File.Exists(TaxonomyTablesPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 TableHandler.HandleTaxonomy(this);
 
@@ -411,12 +419,128 @@ namespace LogicalModel
             return jsfilename;
         }
 
+        public void GenerateValidationFunctions() 
+        {
+            GenerateCSFile();
+            CompileCSFile();
+        }
+
+        private void GenerateCSFile()
+        {
+            if (!System.IO.File.Exists(this.TaxonomyValidationCsPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+                var sb_functions = new StringBuilder();
+                var sb_dictionary = new StringBuilder();
+                var sb_cs = new StringBuilder();
+                var tab = "  ";
+                foreach (var val in ValidationRules)
+                {
+                    if (!string.IsNullOrEmpty(val.FunctionString))
+                    {
+                        sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
+                        sb_functions.AppendLine("       //" + val.OriginalExpression);
+                        sb_functions.AppendLine(val.FunctionString);
+                    }
+
+                }
+                sb_cs.AppendLine("using System;");
+                sb_cs.AppendLine("using System.Collections.Generic;");
+                sb_cs.AppendLine("using System.Linq;");
+                sb_cs.AppendLine("using System.Text;");
+                sb_cs.AppendLine("using LogicalModel.Expressions;");
+                sb_cs.AppendLine("using LogicalModel.Base;");
+                sb_cs.AppendLine("using LogicalModel.Validation;");
+                sb_cs.AppendLine("using Utilities;");
+
+                sb_cs.AppendLine("namespace LogicalModel.Validation");
+                sb_cs.AppendLine("{");
+
+                sb_cs.AppendLine("  public class ValidationsX: ValidationFunctionContainer");
+                sb_cs.AppendLine("  {");
+
+                sb_cs.AppendLine("      public ValidationsX()");
+                sb_cs.AppendLine("      {");
+
+                sb_cs.AppendLine(sb_dictionary.ToString());
+
+                sb_cs.AppendLine("      }");
+
+                sb_cs.AppendLine(sb_functions.ToString());
+
+                sb_cs.AppendLine("  }");
+                sb_cs.AppendLine("}");
+
+
+
+
+                Utilities.FS.WriteAllText(this.TaxonomyValidationCsPath, sb_cs.ToString());
+            }
+        }
+
+        private void CompileCSFile()
+        {
+            if (!System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+                var content = System.IO.File.ReadAllText(this.TaxonomyValidationCsPath);
+
+                CodeDomProvider codeProvider = CodeDomProvider.CreateProvider("CSharp");
+                string Output = this.TaxonomyValidationDotNetLibPath;
+
+                System.CodeDom.Compiler.CompilerParameters parameters = new CompilerParameters();
+                //Make sure we generate an EXE, not a DLL
+                parameters.GenerateExecutable = false;
+                parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
+                parameters.IncludeDebugInformation = true;
+                parameters.TempFiles = new TempFileCollection(".", true);
+                var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
+                var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
+                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                parameters.ReferencedAssemblies.Add(logicalmodelassembly.Location);
+
+                foreach (var assemblyname in logicalreferences)
+                {
+                    Assembly asm = assemblies.FirstOrDefault(i => i.GetName().Name == assemblyname.Name);
+                    if (asm != null)
+                    {
+                        parameters.ReferencedAssemblies.Add(asm.Location);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Assembly " + assemblyname.Name + " was not found!");
+                    }
+                }
+
+                CompilerResults results = codeProvider.CompileAssemblyFromSource(parameters, content);
+
+                if (results.Errors.Count > 0)
+                {
+                    foreach (CompilerError CompErr in results.Errors)
+                    {
+                        var error = "Line number " + CompErr.Line +
+                                    ", Error Number: " + CompErr.ErrorNumber +
+                                    ", '" + CompErr.ErrorText + ";" +
+                                    Environment.NewLine + Environment.NewLine;
+                        Console.WriteLine(error);
+                    }
+                }
+                else
+                {
+                    //Successful Compile
+                    Console.WriteLine(String.Format("File {0} was successfully compiled to {1}",
+                        this.TaxonomyValidationCsPath, this.TaxonomyValidationDotNetLibPath));
+
+                }
+
+            }
+        }
+        
+
         public virtual void LoadHierarchy() 
         {
 
         }
 
-        public virtual void LoadValidations() {
+        public virtual void LoadValidationFunctions() {
             if (this.ValidationFunctionContainer == null)
             {
                 if (System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath))
@@ -440,7 +564,7 @@ namespace LogicalModel
         {
             Console.WriteLine("Load Elements");
 
-            if (!System.IO.File.Exists(TaxonomySchemaElementsPath))
+            if (!System.IO.File.Exists(TaxonomySchemaElementsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 ElementHandler.HandleTaxonomy(this);
 
@@ -480,7 +604,7 @@ namespace LogicalModel
         {
             Console.WriteLine("Load Concepts");
 
-            if (!System.IO.File.Exists(TaxonomyConceptPath))
+            if (!System.IO.File.Exists(TaxonomyConceptPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
 
                 var conceptelements = SchemaElements.Where(i => i.Namespace == ConceptNameSpace).ToList();
@@ -514,11 +638,35 @@ namespace LogicalModel
             Console.WriteLine("Load Concepts completed");
         }
 
+        public virtual void PopulateTableGroups() 
+        {
+
+        }
+        public virtual void LoadTableGroups()
+        {
+            Console.WriteLine("Load TableGroups");
+
+            if (!System.IO.File.Exists(TaxonomyTableGroupPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+                PopulateTableGroups();
+                var jsoncontent = Utilities.Converters.ToJson(this.TableGroups);
+                Utilities.FS.WriteAllText(TaxonomyTableGroupPath, jsoncontent);
+            }
+            else
+            {
+
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyTableGroupPath);
+                this.TableGroups = Utilities.Converters.JsonTo<List<TableGroup>>(jsoncontent);
+
+            }
+            Console.WriteLine("Load TableGroups completed");
+        }
+
+
         public virtual void LoadInstance(string filepath)
         {
 
         }
-
 
         public virtual void AfterRefrencesLoadedFromCache()
         {
@@ -529,6 +677,9 @@ namespace LogicalModel
         {
 
         }
+
+        #region Clear
+
         public void Clear_All_But_Structure()
         {
             Clear_Concepts();
@@ -541,27 +692,33 @@ namespace LogicalModel
             Clear_Validations();
 
         }
+        
         public void Clear_All()
         {
             Clear_Structure();
             Clear_All_But_Structure();
         }
+        
         public void Clear_Facts()
         {
             Utilities.FS.DeleteFile(TaxonomyFactsPath);
         }
+       
         public void Clear_Structure() 
         {
             Utilities.FS.DeleteFile(TaxonomyStructurePath);
         }
+        
         public void Clear_Concepts()
         {
             Utilities.FS.DeleteFile(TaxonomyConceptPath);
         }
+        
         public void Clear_Hierarchies()
         {
             Utilities.FS.DeleteFile(TaxonomyHierarchyPath);
         }
+        
         public void Clear_Tables()
         {
             Utilities.FS.DeleteFile(TaxonomyTablesPath);
@@ -571,10 +728,12 @@ namespace LogicalModel
         {
             Utilities.FS.DeleteFolder(TaxonomyLayoutFolder);
         }
+        
         public void Clear_Labels()
         {
             Utilities.FS.DeleteFile(TaxonomyLabelPath);
         }
+        
         public void Clear_SchemaElements()
         {
             Utilities.FS.DeleteFile(TaxonomySchemaElementsPath);
@@ -586,5 +745,7 @@ namespace LogicalModel
             Utilities.FS.DeleteFile(TaxonomyValidationCsPath);
             Utilities.FS.DeleteFile(TaxonomyValidationDotNetLibPath);
         }
+        
+        #endregion
     }
 }

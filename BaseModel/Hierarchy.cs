@@ -169,7 +169,7 @@ namespace BaseModel
                     new Hierarchy<TClass>(childtemplate);
                 if (parents.ToList().Count > 1 || children.ToList().Count > 1)
                 {
-                    int x = 0;
+             
                 }
                 foreach (var parent in parents)
                 {
@@ -221,7 +221,7 @@ namespace BaseModel
                 */
                 if (parents.ToList().Count > 1 || children.ToList().Count > 1)
                 {
-                    int x = 0;
+       
                 }
                 foreach (var parent in parents)
                 {

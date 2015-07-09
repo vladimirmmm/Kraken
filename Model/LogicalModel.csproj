@@ -59,6 +59,7 @@
     </Compile>
     <Compile Include="Models\HyperCube.cs" />
     <Compile Include="Models\Instance\Instance.cs" />
+    <Compile Include="Models\TableGroup.cs" />
     <Compile Include="Models\Table\Cell.cs" />
     <Compile Include="Models\Taxonomy.cs" />
     <Compile Include="Models\TaxonomyDocument.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Models\Table.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\XbrlValue.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="TaxonomyEngine.cs" />
     <Compile Include="Validation\FactFunctions.cs" />
     <Compile Include="Validation\Functions.cs" />

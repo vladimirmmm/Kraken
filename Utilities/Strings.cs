@@ -27,11 +27,11 @@ namespace Utilities
         {
             if (!String.IsNullOrEmpty(FilePath))
             {
-                if (FilePath.Contains("\\"))
+                if (FilePath.Contains("\\") && !FilePath.EndsWith("\\"))
                 {
                     return FilePath.Remove(FilePath.LastIndexOf("\\") + 1);
                 }
-                if (FilePath.Contains("/"))
+                if (FilePath.Contains("/") && !FilePath.EndsWith("/"))
                 {
                     return FilePath.Remove(FilePath.LastIndexOf("/") + 1);
                 }

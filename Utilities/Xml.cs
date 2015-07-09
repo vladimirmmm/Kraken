@@ -134,12 +134,23 @@ namespace Utilities
             if (node.Attributes != null)
             {
                 var attributes = node.Attributes.Cast<XmlAttribute>();
-
-                //var attr = node.Attributes[Name];
-                var attr = attributes.FirstOrDefault(i=>i.Name.Equals(lowername,StringComparison.OrdinalIgnoreCase) );
-                if (attr != null)
+                if (lowername.StartsWith("*:"))
                 {
-                    return attr.Value;
+                    var localname = lowername.Substring(2);
+                    var attr = attributes.FirstOrDefault(i => i.LocalName.Equals(localname, StringComparison.OrdinalIgnoreCase));
+                    if (attr != null)
+                    {
+                        return attr.Value;
+                    }
+                }
+                else
+                {
+                    //var attr = node.Attributes[Name];
+                    var attr = attributes.FirstOrDefault(i => i.Name.Equals(lowername, StringComparison.OrdinalIgnoreCase));
+                    if (attr != null)
+                    {
+                        return attr.Value;
+                    }
                 }
             }
             return "";

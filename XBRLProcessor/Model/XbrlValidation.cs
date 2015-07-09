@@ -87,7 +87,7 @@ namespace XBRLProcessor.Model
                     }
                 });
 
-            int z = 0;
+           
         }
 
         public LogicalModel.Validation.ValidationRule GetLogicalRule() 
@@ -151,9 +151,10 @@ namespace XBRLProcessor.Model
                 var sequence = parameter.BindAsSequence ? "Sequence":"";
                 sb.AppendLine("parameter: " + name + " " + sequence);
 
-
-                sb.AppendLine(CheckCells(parameter));
-     
+                if (LogicalModel.Settings.Current.CheckValidationCells)
+                {
+                    sb.AppendLine(CheckCells(parameter));
+                }
                 logicalrule.Parameters.Add(parameter);
               
             }

@@ -104,6 +104,10 @@
                                     </DataTemplate>
                                     <HierarchicalDataTemplate DataType="{x:Type xbrlmodel:Table}" 
                                                     ItemsSource="{Binding Extensions}" >
+                                        <TextBlock Text="{Binding Name}" Foreground="Blue" MouseDown="Table_Tree_Node_MouseLeftButtonUp"></TextBlock>
+                                    </HierarchicalDataTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type xbrlmodel:TableGroup}" 
+                                                    ItemsSource="{Binding Extensions}" >
                                         <TextBlock Text="{Binding ID}" Foreground="Blue" MouseDown="Table_Tree_Node_MouseLeftButtonUp"></TextBlock>
                                     </HierarchicalDataTemplate>
                                 </TreeView.Resources>

@@ -82,23 +82,6 @@ namespace LogicalModel
         private List<Dimension> _Dimensions = new List<Dimension>();
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
         
-        public String DimensionString 
-        {
-            get 
-            {
-                var sb = new StringBuilder();
-                for (int i = 0; i < Dimensions.Count;i++ )
-                {
-                    sb.Append(Dimensions[i]);
-                    if (i < Dimensions.Count - 1) 
-                    {
-                        sb.Append("|");
-                    }
-                }
-                return sb.ToString();
-            }
-        }
-
         public String _Concept = "";
         public Concept Concept { get; set; }
 

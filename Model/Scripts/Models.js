@@ -54,6 +54,11 @@ var Model;
         function QualifiedName() {
             _super.apply(this, arguments);
         }
+        QualifiedName.Set = function (qn) {
+            var qname = QualifiedName.Create(qn.Content);
+            qn.Name = qname.Name;
+            qn.Namespace = qname.Namespace;
+        };
         QualifiedName.Create = function (content) {
             var result = new QualifiedName();
             var parts = content.split(":");

@@ -40,7 +40,7 @@ namespace LogicalModel
 
         private string _FactString = "";
         [JsonProperty]
-        public string FactString
+        public new string FactString
         {
             get
             {

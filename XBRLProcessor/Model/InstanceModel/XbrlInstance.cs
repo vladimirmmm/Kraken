@@ -1,4 +1,5 @@
 ﻿using LogicalModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace Model.InstanceModel
 
 
         private List<Context> _Contexts = new List<Context>();
+        [JsonProperty]
         public List<Context> Contexts
         {
             get { return _Contexts; }
@@ -71,20 +73,6 @@ namespace Model.InstanceModel
         }
         public void LoadComplex() 
         {
-            /* //*[ local-name() = 'xbrl'*/
-
-            /* //*[contains(name(), 's2md_met:')]" */
-            /* get all namespaces*/
-
-            /*
-            var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
-
-            Mappings.CurrentMapping.Map<XbrlInstance>(xbrlnode, this);
-
-            this.ModulePath = Utilities.Strings.GetLocalPath(this.Taxonomy.LocalFolder, this.TaxonomyModuleReference);
-            */
-
-            //if (XBRLProcessor.XbrlEngine.CurrentEngine.CurrentTaxonomy==null || XBRLProcessor.XbrlEngine.CurrentEngine.CurrentTaxonomy.)
 
             var factnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.StartsWith(this.Taxonomy.ConceptNameSpace+":")).ToList();
             foreach (var factnode in factnodes) 
@@ -158,10 +146,10 @@ namespace Model.InstanceModel
         public override List<LogicalModel.Validation.ValidationRuleResult> Validate(List<String> messages)
         {
             var results = new List<LogicalModel.Validation.ValidationRuleResult>();
+            messages = messages == null ? new List<String>() : messages;
 
             if (Taxonomy != null)
             {
-                messages = messages == null ? new List<String>() : messages;
                 Console.WriteLine("Validating Instance started");
                 messages.Add(String.Format("Validation started at {0:" + Utilities.Converters.DateTimeFormat + "}", DateTime.Now));
                 var schemaset = new XmlSchemaSet();
@@ -217,7 +205,6 @@ namespace Model.InstanceModel
             instance.LoadSimple();
             instance.LoadComplex();
 
-            int z = 0;
         }
 
         public override void SetTaxonomy(Taxonomy xbrlTaxonomy)

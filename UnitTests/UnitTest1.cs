@@ -18,7 +18,7 @@ namespace UnitTests
             engine.LoadTaxonomy(taxonomyentry);
             //xsd.ReadXml(taxonomyentry, XmlReadMode.IgnoreSchema);
 
-            var x = 0;
+ 
         }
     }
 }

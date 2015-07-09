@@ -308,7 +308,6 @@ namespace XBRLProcessor.Mapping
         {
             var instance = Activator.CreateInstance<TClass>();
             var basepropertymappings = new List<PropertyMapping>();
-            var ok = true;
             
             foreach (var pm in PropertyMappings)
             {

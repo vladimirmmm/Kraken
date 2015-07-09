@@ -11,7 +11,7 @@ namespace XBRLProcessor.Model.Base
     {
         private string _Type = "";
         [JsonIgnore]
-        public string Type { get { return _Type; } set { _Type = value; } }
+        public string XType { get { return _Type; } set { _Type = value; } }
         private string _Role = "";
         [JsonIgnore]
         public string Role { get { return _Role; } set { _Role = value; } }

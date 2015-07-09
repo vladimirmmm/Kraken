@@ -50,7 +50,7 @@ namespace LogicalModel
 
         [JsonProperty]
         public Entity Entity { get; set; }
-        [JsonProperty]
+        [JsonIgnore]
         public Unit Unit { get; set; }
         [JsonProperty]
         public String UnitID { get; set; }
@@ -59,37 +59,6 @@ namespace LogicalModel
         {
             return String.Format("Value: {0}; FactString: {1};", Value, FactString);
         }
-        /*
-        [JsonIgnore]
-        public decimal DecimalValue
-        {
-            get
-            {
-                return Value_F;
-            }
-            set
-            {
-                Value = String.Format("{0.0}", value);
-            }
-        }
-
-        [JsonIgnore]
-        private decimal _Treshold = -9999;
-        public decimal Treshold
-        {
-            get
-            {
-                if (_Treshold == -9999)
-                {
-                    _Treshold = Functions.FactTreshold(this);
-                }
-                return _Treshold;
-            }
-            set
-            {
-                _Treshold = value;
-            }
-        }
-        */
+        
     }
 }

@@ -67,7 +67,12 @@ var UI;
             var me = this;
             me.ConceptValues = [];
             var htemp = new Model.Hierarchy();
+            me.Hierarchies.forEach(function (hierarchy) {
+                Model.QualifiedItem.Set(hierarchy.Item);
+            });
             me.Concepts.forEach(function (concept) {
+                Model.QualifiedName.Set(concept);
+                Model.QualifiedName.Set(concept.Domain);
                 concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
                 var hier = me.Hierarchies.AsLinq().FirstOrDefault(function (i) { return i.Item.Name == concept.Domain.Name && i.Item.Namespace == concept.Domain.Namespace && i.Item.Role == concept.HierarchyRole; });
                 if (hier != null) {
@@ -78,6 +83,7 @@ var UI;
                     items.forEach(function (item, index) {
                         if (index > 0) {
                             var v = {};
+                            Model.QualifiedItem.Set(item);
                             var id = Format("{0}:{1}", item.Namespace, item.Name);
                             clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
                         }

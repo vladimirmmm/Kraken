@@ -50,7 +50,13 @@
     export class QualifiedName extends Identifiable {
         public Namespace: string;
         public Name: string;
-
+        public Content: string;
+        static Set(qn: QualifiedName)
+        {
+            var qname = QualifiedName.Create(qn.Content);
+            qn.Name = qname.Name;
+            qn.Namespace = qname.Namespace;
+        }
         static Create(content: string): QualifiedName {
             var result = new QualifiedName();
             var parts = content.split(":");

@@ -12,12 +12,14 @@ using Utilities;
 
 namespace LogicalModel
 {
-    public class Table : Identifiable
+    public class Table : Identifiable,ILabeled
     {
         private int datacellminwidth = 100;
         private int cellpadding = 15;
         private int titlecellminwidth = 300; 
         private string _HtmlPath = "";
+        public string Name { get; set; }
+        public string FilingIndicator { get; set; }
         public string HtmlPath 
         {
             get { return _HtmlPath; }
@@ -55,9 +57,6 @@ namespace LogicalModel
         private List<Dimension> _Dimensions = new List<Dimension>();
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
 
-        //private List<Fact> _Fact = new List<Fact>();
-        //public List<Fact> Fact { get { return _Fact; } set { _Fact = value; } }
-
        
         public Hierarchy<LayoutItem> LayoutRoot { get; set; }
         [JsonIgnore]
@@ -65,9 +64,6 @@ namespace LogicalModel
 
         private List<HyperCube> _HyperCubes = new List<HyperCube>();
         public List<HyperCube> HyperCubes { get { return _HyperCubes; } set { _HyperCubes = value; } }
-
-
-        public string FilingIndicator;
 
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> X_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Y_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
@@ -104,7 +100,7 @@ namespace LogicalModel
 
         public override string ToString()
         {
-            return base.ToString();
+            return String.Format("{0}: {1} - {2}", this.GetType().Name, this.ID, this.Name);
         }
 
         public void BuildLevels(List<KeyValue<int, List<Hierarchy<LayoutItem>>>> AxisLevels, Hierarchy<LayoutItem> item, bool childfirst = false, int level = 0)
@@ -338,9 +334,11 @@ namespace LogicalModel
                 BuildLevels(Z_Axis, extensionnode);
                 var leafs = extensionnode.GetLeafs();
                 var extensions = new List<LayoutItem>();
-                if (leafs.Count == 1)
+                //if (leafs.Count == 1)
+                if (extensionnode.Children.Count == 1)
                 {
-                    var extension = leafs.FirstOrDefault();
+                    //var extension = leafs.FirstOrDefault();
+                    var extension = extensionnode.Children.FirstOrDefault();
                     if (extension.Item.IsAspect)
                     {
                         var dimension = extension.Item.Dimensions.FirstOrDefault();
@@ -380,7 +378,6 @@ namespace LogicalModel
                 this.Extensions = extensions;
             }
         }
-
 
         private Hierarchy<LayoutItem> GetAxisNode(string axis) 
         {
@@ -425,7 +422,6 @@ namespace LogicalModel
             var ix=0;
             var columnAxisnode = columnsnode.Where(i => !String.IsNullOrEmpty(i.Item.Axis)).FirstOrDefault();
             var aspect_row_dimension = new List<Dimension>();
-            var aspect_row_concept = "";
             foreach (var aspect in aspects)
             {
                 aspect.Item.LabelID = aspect.Parent.Item.LabelID;
@@ -444,8 +440,7 @@ namespace LogicalModel
                 dynrow_li.Dimensions = aspect_row_dimension;
                 var dyn_h = new Hierarchy<LayoutItem>(dynrow_li);
                 rowsnode = dyn_h;
-                //rowsnode.Children.Add(dyn_h);
-                //dyn_h.Parent = rowsnode;
+
             }
 
             extensionnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "z", StringComparison.InvariantCultureIgnoreCase)); //TODO Axis should be used
@@ -459,18 +454,25 @@ namespace LogicalModel
             BuildLevels(X_Axis, columnsnode);
             BuildLevels(Y_Axis, rowsnode);
 
-            Columns = columnsnode.GetLeafs();//.Where(i => !i.Item.IsAbstract);
-            //SetDimensions(Columns);
+            Columns = columnsnode.GetLeafs();
+    
             Rows = rowsnode.ToHierarchy().Where(i => i.Item.IsVisible).ToList();
-            //SetDimensions(Rows);
 
 
-            SetExtensions();
-
+            if (Extensions.Count == 0)
+            {
+                SetExtensions();
+            }
+            else 
+            {
+                foreach (var Extension in Extensions)
+                {
+                    Extension.Table = this;
+                }
+            }
             var factdeflist = new List<String>();
             var blocked = new Dictionary<string, bool>();
-            //var sb = new StringBuilder();
-            //LayoutCells.Clear();
+  
             if (LayoutCells.Count == 0)
             {
                 var exts = Extensions.ToList();
@@ -507,12 +509,10 @@ namespace LogicalModel
                                 cell.Dimensions.AddRange(row.Item.Dimensions);
                                 cell.Dimensions.AddRange(col.Item.Dimensions);
                                 SetDimensions(cell);
-                                //cell.Dimensions = cell.Dimensions.Distinct().OrderBy(i => i.DomainMemberFullName).ToList();
 
                                 LayoutCells.Add(cell);
 
                             }
-                            //var cubes = GetHyperCubes(row.Item, col.Item, sb);
                             var xcell = new Cell();
                             xcell.Report = cell.Report;
                             xcell.Row = cell.Row;
@@ -555,7 +555,6 @@ namespace LogicalModel
                                     if (!blocked.ContainsKey(cell.ToString()))
                                     {
                                         blocked.Add(cell.ToString(), true);
-                                        //sb.AppendLine(String.Format("Cell {0} - {1} is blocked! ", cell, cell.FactString));
                                     }
                                 }
                             }
@@ -743,16 +742,13 @@ namespace LogicalModel
             return sb.ToString();
 
         }
+        
         private void SetDimensions(Cell cell)
         {
             var currentrow = cell.LayoutRow.Parent;
             while (currentrow != null)
             {
                 MergeDimensions(cell.Dimensions, currentrow.Item.Dimensions);
-
-                //if (currentrow.Item.Concept == null || currentrow.Item.Concept.Content == cell.Concept.Content)
-                //{
-                //}
 
                 currentrow = currentrow.Parent;
             }
@@ -761,15 +757,12 @@ namespace LogicalModel
             {
                 MergeDimensions(cell.Dimensions, currentcol.Item.Dimensions);
 
-                //if (currentcol.Item.Concept == null || currentcol.Item.Concept.Content == cell.Concept.Content)
-                //{
-                //}
-
                 currentcol = currentcol.Parent;
             }
             cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMemeber).OrderBy(i=>i.DomainMemberFullName).ToList();
             cell.Dimensions = cell.Dimensions.Distinct().ToList();
         }
+        
         private void SetDimensions(List<Hierarchy<LayoutItem>> items)
         {
             foreach (var item in items)
@@ -874,6 +867,23 @@ namespace LogicalModel
         }
      
         #endregion
+
+
+        private Label _Label;
+        public Label Label { get { return _Label; } set { _Label = value; } }
+
+        public string LabelContent
+        {
+            get { return _Label != null ? _Label.Content : ""; }
+        }
+
+        public string LabelCode
+        {
+            get { return _Label != null ? _Label.Code : ""; }
+        }
+
+        public string _LabelID = "";
+        public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
 
     }
 

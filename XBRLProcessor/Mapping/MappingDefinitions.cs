@@ -38,11 +38,14 @@ namespace XBRLProcessor.Mapping
                 ),
 
                 Mappings.Map<Link>("<xlink>",
-                    Mappings.PropertyMap("xlink:type", (Link i) => i.Type),
+                    Mappings.PropertyMap("xlink:type", (Link i) => i.XType),
                     Mappings.PropertyMap("xlink:role", (Link i) => i.Role),
                     Mappings.PropertyMap("xlink:href", (Link i) => i.Href)
                 ),
-                
+                Mappings.Map<Label>("<label>", 
+                    Mappings.PropertyMap("xlink:label", (Label i) => i.LabelID),
+                    Mappings.PropertyMap("@content", (Label i) => i.Content)
+                ),
                 Mappings.Map<XbrlIdentifiable>("<identifiable>", 
                     Mappings.PropertyMap("xlink:label", (XbrlIdentifiable i) => i.LabelID),
                     Mappings.PropertyMap("id", (XbrlIdentifiable i) => i.ID)
@@ -221,11 +224,15 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                 ),
                  //Instance
+                Mappings.Map<LogicalModel.Base.QualifiedName>("<xbrli:measure>",
+                    Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
+                 ),
                  Mappings.Map<Unit>("<xbrli:unit>",
                     Mappings.PropertyMap("<xbrli:measure>", (Unit i) => i.Measure)
                  ),
                  Mappings.Map<Entity>("<xbrli:entity>",
-                    Mappings.PropertyMap("scheme", (Entity i) => i.Scheme)
+                    Mappings.PropertyMap("/scheme", (Entity i) => i.Scheme),
+                    Mappings.PropertyMap("/@content", (Entity i) => i.ID)
                  ),
                  Mappings.Map<Period>("<xbrli:period>",
                     Mappings.PropertyMap("<xbrli:instant>", (Period i) => i.Instant),
@@ -255,7 +262,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@content", (XbrlFact i) => i.Value)
                  ),
                  Mappings.Map<Link>("<link:schemaRef>",  
-                    Mappings.PropertyMap("xlink:type", (Link i) => i.Type),
+                    Mappings.PropertyMap("xlink:type", (Link i) => i.XType),
                     Mappings.PropertyMap("xlink:role", (Link i) => i.Role),
                     Mappings.PropertyMap("xlink:href", (Link i) => i.Href)
                  ),
@@ -363,6 +370,10 @@ namespace XBRLProcessor.Mapping
             toitem.LabelID = item.LabelID;
             toitem.ID = item.ID;
             toitem.Role = item.Role;
+            if (String.IsNullOrEmpty(item.NamespaceFolder))
+            {
+                item.NamespaceFolder = item.Namespace.Replace(XbrlEngine.CurrentEngine.CurrentTaxonomy.Prefix, "");
+            }
             toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(
                 LogicalModel.Label.GetKey(item.NamespaceFolder, toitem.ID)
                 );
