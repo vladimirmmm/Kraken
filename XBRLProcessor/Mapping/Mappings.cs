@@ -436,6 +436,10 @@ namespace XBRLProcessor.Mapping
                 {
                     //var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
                     var childnode = Utilities.Xml.SelectChildNode(node, tagname);
+                    if (childnode == null)
+                    {
+                        childnode = Utilities.Xml.SelectChildNode(node, String.Format("ns:{0}",tagname));
+                    }
                     if (childnode != null)
                     {
                         stringval = Utilities.Xml.Attr(childnode, "@content");

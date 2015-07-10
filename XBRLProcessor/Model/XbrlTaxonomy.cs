@@ -237,6 +237,55 @@ namespace XBRLProcessor.Models
 
         }
 
+        public override void LoadUnits()
+        {
+            Console.WriteLine("Load Units started");
+
+            if (!System.IO.File.Exists(TaxonomyUnitPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+                this.Units.Clear();
+                var docs = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("unit")).ToList();
+                var utrpath = "www.xbrl.org/utr/utr.xml";
+                if (docs.FirstOrDefault(i => i.SourcePath == utrpath) == null) 
+                {
+                    var utrdoc = new XbrlTaxonomyDocument(this, utrpath);
+                    docs.Add(utrdoc);
+                }
+
+                var selector = "//*[local-name()='unit']";
+                var items = new List<XbrlUnit>();
+                foreach (var doc in docs)
+                {
+                    var ns = GetTargetNamespace(doc.XmlDocument);
+
+                    var nodes = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, selector);
+                    foreach (var node in nodes) 
+                    {
+                        var xbrlunit = new XbrlUnit();
+                        Mappings.CurrentMapping.Map<XbrlUnit>(node, xbrlunit);
+                        var logicalunit = Mappings.ToLogical(xbrlunit);
+                        this.Units.Add(logicalunit);
+
+                    }
+
+                }
+
+               
+
+                var jsoncontent = Utilities.Converters.ToJson(this.Units);
+                Utilities.FS.WriteAllText(TaxonomyUnitPath, jsoncontent);
+
+            }
+            else
+            {
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyUnitPath);
+                this.Units = Utilities.Converters.JsonTo<List<LogicalModel.Unit>>(jsoncontent);
+            }
+
+            Console.WriteLine("Load Units completed");
+
+        }
+
         public override void LoadHierarchy()
         {
             Console.WriteLine("Load Hierarchies");

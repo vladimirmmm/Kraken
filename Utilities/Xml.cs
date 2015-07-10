@@ -52,7 +52,9 @@ namespace Utilities
                             manager.AddNamespace(name, uri);
 
                         }
-                        
+                        string s = doc.DocumentElement.GetNamespaceOfPrefix("");
+                        manager.AddNamespace("ns", s);
+                        //manager.AsQueryable().
                         NamespaceDictionary.Add(doc, manager);
                     }
                 }

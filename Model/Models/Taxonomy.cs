@@ -38,6 +38,8 @@ namespace LogicalModel
 
         public List<Hierarchy<QualifiedItem>> Hierarchies = new List<Hierarchy<QualifiedItem>>();
 
+        public List<Unit> Units = new List<Unit>();
+
         public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
 
         private Dictionary<string, List<String>> _Facts = new Dictionary<string, List<String>>();
@@ -117,6 +119,10 @@ namespace LogicalModel
         public string TaxonomyHierarchyPath
         {
             get { return ModuleFolder + "Hierarchy.json"; }
+        }
+        public string TaxonomyUnitPath
+        {
+            get { return ModuleFolder + "Unit.json"; }
         }
         public string TaxonomyLabelPath
         {
@@ -536,6 +542,12 @@ namespace LogicalModel
         
 
         public virtual void LoadHierarchy() 
+        {
+
+        }
+
+
+        public virtual void LoadUnits()
         {
 
         }

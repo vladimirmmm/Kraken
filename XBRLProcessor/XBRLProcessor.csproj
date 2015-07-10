@@ -58,6 +58,7 @@
     <Compile Include="Model\InstanceModel\Scenario.cs" />
     <Compile Include="Model\InstanceModel\XbrlInstance.cs" />
     <Compile Include="Model\XbrlHierarchy.cs" />
+    <Compile Include="Model\XbrlUnit.cs" />
     <Compile Include="Model\XbrlValidation.cs" />
     <Compile Include="Model\XbrlValidation_P2.cs" />
     <Compile Include="XbrlEngine.cs" />

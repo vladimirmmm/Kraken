@@ -36,7 +36,13 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("model:creationDate", (Element i) => i.CreationDate),
                     Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef)
                 ),
-
+                Mappings.Map<XbrlUnit>("<unit>",
+                    Mappings.PropertyMap("<unitId>", (XbrlUnit i) => i.UnitID),
+                    Mappings.PropertyMap("<unitName>", (XbrlUnit i) => i.UnitName),
+                    Mappings.PropertyMap("<nsUnit>", (XbrlUnit i) => i.NsUnit),
+                    Mappings.PropertyMap("<itemType>", (XbrlUnit i) => i.ItemType),
+                    Mappings.PropertyMap("<baseStandard>", (XbrlUnit i) => i.BaseStandard)
+                ),
                 Mappings.Map<Link>("<xlink>",
                     Mappings.PropertyMap("xlink:type", (Link i) => i.XType),
                     Mappings.PropertyMap("xlink:role", (Link i) => i.Role),
@@ -334,6 +340,18 @@ namespace XBRLProcessor.Mapping
             }
             return toitem;
         }
+
+        public static LogicalModel.Unit ToLogical(XbrlUnit item)
+        {
+            var toitem = new LogicalModel.Unit();
+            toitem.Measure = new LogicalModel.Base.QualifiedName(String.Format("{0}:{1}", item.BaseStandard, item.UnitID));
+            toitem.ID = item.ID;
+            toitem.Name = item.UnitName;
+            toitem.NSLink = item.NsUnit;
+            toitem.ItemType = item.ItemType;
+            return toitem;
+        }
+
 
         public static List<LogicalModel.Dimension> ToLogicalDimensions(DimensionFilter item)
         {

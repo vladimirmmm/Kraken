@@ -11,9 +11,14 @@ namespace LogicalModel
     {
         public QualifiedName Measure { get; set; }
 
+        public String ItemType { get; set; }
+        public String Name { get; set; }
+
         public override string ToString()
         {
             return String.Format("{0} - Measure: ", base.ToString(), Measure);
         }
+
+        public string NSLink { get; set; }
     }
 }

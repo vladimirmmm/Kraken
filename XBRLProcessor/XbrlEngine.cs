@@ -139,6 +139,7 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadFacts();
                 CurrentTaxonomy.LoadValidationFunctions();
                 CurrentTaxonomy.LoadHierarchy();
+                CurrentTaxonomy.LoadUnits();
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
                 Console.WriteLine("Loading Taxonomy finished");
