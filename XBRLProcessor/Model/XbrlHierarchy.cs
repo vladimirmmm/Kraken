@@ -42,13 +42,21 @@ namespace XBRLProcessor.Model
 
         public Hierarchy<TClass> GetHierarchy() 
         {
+            //DefinitionRoot = Hierarchy<TClass>.GetHierarchy(Arcs, Items,
+            //                  (i, a) => i.Item.ID == a.From || i.Item.LabelID == a.From,
+            //                  (i, a) => i.Item.ID == a.To || i.Item.LabelID == a.To,
+            //                  (i, a) =>
+            //                  {
+            //                      i.Order = a.Order;
+            //                  });
+
             DefinitionRoot = Hierarchy<TClass>.GetHierarchy(Arcs, Items,
-                              (i, a) => i.Item.ID == a.From || i.Item.LabelID == a.From,
-                              (i, a) => i.Item.ID == a.To || i.Item.LabelID == a.To,
-                              (i, a) =>
-                              {
-                                  i.Order = a.Order;
-                              });
+                         (i, a) => i.Item.LabelID == a.From || i.Item.LabelID == a.From,
+                         (i, a) => i.Item.LabelID == a.To || i.Item.LabelID == a.To,
+                         (i, a) =>
+                         {
+                             i.Order = a.Order;
+                         });
 
             return DefinitionRoot;
         }

@@ -233,16 +233,33 @@ namespace BaseModel
 
                     }
                 }
-                if (parents.Count == 0) 
-                {
-                    root = child;
+                //if (parents.Count == 0) 
+                //{
+                //    root = child;
 
+                //}
+                //root = hierarchylist.FirstOrDefault(i => i.Parent == null);
+               
+            }
+            var roots = hierarchylist.Where(i => i.Parent == null).ToList();
+            if (roots.Count > 1)
+            {
+                root = new Hierarchy<TClass>();
+                root.Children.AddRange(roots);
+                foreach (var subroot in roots) 
+                {
+                    subroot.Parent = root;
                 }
-                root = hierarchylist.FirstOrDefault(i => i.Parent == null);
+            }
+            else 
+            {
+                root = roots.FirstOrDefault();
 
             }
+
             if (root == null)
             {
+                Console.WriteLine("No root was found!");
             }
 
             return root;

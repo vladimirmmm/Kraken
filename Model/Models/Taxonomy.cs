@@ -808,6 +808,7 @@ namespace LogicalModel
         public void Clear_Tables()
         {
             Utilities.FS.DeleteFile(TaxonomyTablesPath);
+            Utilities.FS.DeleteFile(TaxonomyTableGroupPath);
         }
 
         public void Clear_Layout()
