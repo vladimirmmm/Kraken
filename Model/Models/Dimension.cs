@@ -115,6 +115,26 @@ namespace LogicalModel
         {
             return this.DomainMemberFullName.GetHashCode();
         }
+
+        public string ToXmlString()
+        {
+            var sb = new StringBuilder();
+            if (!this.IsTyped)
+            {
+                //<xbrldi:explicitMember dimension="eba_dim:LIQ">eba_LQ:x72</xbrldi:explicitMember>
+                sb.AppendLine(String.Format("<xbrldi:explicitMember dimension=\"{0}\">{1}:{2}</xbrldi:explicitMember>",
+                    this.DimensionItemFullName, this.Domain, this.DomainMember));
+            }
+            else 
+            {
+                /*   <xbrldi:typedMember dimension="eba_dim:INC">
+                        <eba_typ:CC>LEI-E57ODZWZ7FF32TWEFA76</eba_typ:CC>
+                      </xbrldi:typedMember>*/
+                sb.AppendLine(String.Format("<xbrldi:typedMember dimension=\"{0}\"><{1}>{2}</{1}></xbrldi:typedMember>",
+                 this.DimensionItemFullName, this.Domain, this.DomainMember));
+            }
+            return sb.ToString();
+        }
     }
 
     //public class TypeDimension : Dimension

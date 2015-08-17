@@ -94,6 +94,7 @@ namespace LogicalModel.Validation
             this.StringValue = "";
             this.StringValues = new string[] { };
             this.DecimalValues = new decimal[] { };
+            this.CurrentFacts.Clear();
         }
 
         public bool IsGeneral { get; set; }
@@ -161,10 +162,5 @@ namespace LogicalModel.Validation
     }
 
 
-    public enum TypeEnum
-    {
-        Numeric,
-        String,
-        Date,
-    }
+
 }

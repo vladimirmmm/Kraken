@@ -334,8 +334,8 @@ namespace LogicalModel
                 BuildLevels(Z_Axis, extensionnode);
                 var leafs = extensionnode.GetLeafs();
                 var extensions = new List<LayoutItem>();
-                //if (leafs.Count == 1)
-                if (extensionnode.Children.Count == 1)
+                if (leafs.Count == 1)
+                //if (extensionnode.Children.Count == 1)
                 {
                     //var extension = leafs.FirstOrDefault();
                     var extension = extensionnode.Children.FirstOrDefault();
@@ -402,18 +402,7 @@ namespace LogicalModel
             X_Axis.Clear();
             Y_Axis.Clear();
             Z_Axis.Clear();
-            /*
-            rowsnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "y", StringComparison.InvariantCultureIgnoreCase));
-            if (rowsnode.Children.Count == 1)
-            {
-                rowsnode = rowsnode.Children.FirstOrDefault();
-            }
-            columnsnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "x", StringComparison.InvariantCultureIgnoreCase)); //LayoutRoot.Find(i => i.Item.LabelContent.ToLower() == "columns"); //TODO Axis should be used
-            if (columnsnode.Children.Count == 1)
-            {
-                columnsnode = columnsnode.Children.FirstOrDefault();
-            }
-            */
+  
             rowsnode = GetAxisNode("y");
             columnsnode = GetAxisNode("x");
             var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();

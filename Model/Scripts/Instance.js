@@ -48,6 +48,18 @@ var Control;
             me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
             console.log(new Date());
         };
+        InstanceContainer.prototype.FilterItems = function () {
+            var me = this;
+            var f_concept = $("#FactFilter #F_Concept").val();
+            var f_context = $("#FactFilter #F_Context").val();
+            var f_value = $("#FactFilter #F_Value").val();
+            var context_id = "";
+            var context_xml = "";
+            if (f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1) {
+            }
+            //var context_id = f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1 ? "" : f_context.trim();
+            me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
+        };
         InstanceContainer.prototype.LoadPage = function ($bindtarget, $pager, items, page, pagesize) {
             var me = this;
             var startix = pagesize * page;
@@ -58,7 +70,6 @@ var Control;
                 $pager.pagination(items.length, {
                     items_per_page: pagesize,
                     current_page: page ? page : 0,
-                    //link_to: "#/Article/Index?page=__id__",
                     link_to: "",
                     prev_text: "Prev",
                     next_text: "Next",
@@ -103,6 +114,14 @@ var Control;
                 }
             });
             me.LoadPage($("#validationlist"), $("#validationerrorpager"), me.ValidationErrors, 0, me.PageSize);
+            $(".trimmed").click(function () {
+                if ($(this).hasClass("hmax30")) {
+                    $(this).removeClass("hmax30");
+                }
+                else {
+                    $(this).addClass("hmax30");
+                }
+            });
             //console.log("Loading validationlist" + new Date());
             //console.log(new Date());
         };
@@ -138,7 +157,9 @@ var Control;
                 me.ShowContent('#FilingIndicator');
             }
             if (contentid == "General") {
-                me.ShowContent('#General');
+                var $target = $("#Details");
+                BindX($target, me.Instance);
+                me.ShowContent('#Details');
             }
         };
         InstanceContainer.prototype.ShowRuleDetail = function (ruleid) {

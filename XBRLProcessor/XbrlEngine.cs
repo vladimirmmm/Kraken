@@ -62,6 +62,10 @@ namespace XBRLProcessor
                 LoadTaxonomy(CurrentInstance.SchemaRef.Href);
                 //LoadTaxonomy();
             }
+            else 
+            {
+                Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
+            }
          
         }
 
@@ -140,6 +144,7 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadValidationFunctions();
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
+                CurrentTaxonomy.LoadGeneral();
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
                 Console.WriteLine("Loading Taxonomy finished");

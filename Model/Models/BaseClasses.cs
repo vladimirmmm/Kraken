@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LogicalModel.Base
 {
-
+ 
     public class QualifiedItem : QualifiedName, ILabeled 
     {
         private Label _Label = null;
@@ -63,6 +63,7 @@ namespace LogicalModel.Base
         }
 
         private string _Role = "";
+        [JsonProperty]
         public string Role
         {
             get
@@ -306,9 +307,10 @@ namespace LogicalModel.Base
         public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
 
 
-        public DateTime FromDate { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
 
-        public DateTime CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         public string Key { get { return String.Format("{0}:{1}",this.Namespace,this.ID); } }
 

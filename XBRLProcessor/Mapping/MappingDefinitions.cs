@@ -33,6 +33,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("model:domain", (Element i) => i.Domain),
                     Mappings.PropertyMap("model:hierarchy", (Element i) => i.Hierarchy),
                     Mappings.PropertyMap("model:fromDate", (Element i) => i.FromDate),
+                    Mappings.PropertyMap("model:toDate", (Element i) => i.ToDate),
                     Mappings.PropertyMap("model:creationDate", (Element i) => i.CreationDate),
                     Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef)
                 ),
@@ -251,7 +252,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<xbrldi:typedMember>", (Scenario i) => i.Dimensions)
                  ),
                  Mappings.Map<FilingIndicator>("<find:filingIndicator>",
-                    Mappings.PropertyMap("contextRef", (FilingIndicator i) => i.ContextRef),
+                    Mappings.PropertyMap("contextRef", (FilingIndicator i) => i.ContextID),
                     Mappings.PropertyMap("@content", (FilingIndicator i) => i.Value)
                  ),
                  Mappings.Map<Context>("<xbrli:context>",
@@ -310,6 +311,7 @@ namespace XBRLProcessor.Mapping
             toitem.CreationDate = item.CreationDate;
             toitem.Domain = item.Domain;
             toitem.FromDate = item.FromDate;
+            toitem.ToDate = item.ToDate;
             toitem.Hierarchy = item.Hierarchy;
             toitem.ID = item.ID;
             toitem.Name = item.Name;

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums.cs" />
     <Compile Include="Expression\CSharpParser.cs" />
     <Compile Include="Expression\Expression.cs" />
     <Compile Include="Expression\Parser.cs" />

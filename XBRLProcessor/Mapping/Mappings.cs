@@ -385,6 +385,10 @@ namespace XBRLProcessor.Mapping
             {
                 IsComplexType=true;
             }
+            if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                propertyTypeName = prop.PropertyType.GetGenericArguments()[0].Name;
+            }
             object existingvalue = Getter(instance as TClass);
             var node = nodes.FirstOrDefault();
 
@@ -436,7 +440,7 @@ namespace XBRLProcessor.Mapping
                 {
                     //var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
                     var childnode = Utilities.Xml.SelectChildNode(node, tagname);
-                    if (childnode == null)
+                    if (childnode == null && tagname.IndexOf(":")==-1)
                     {
                         childnode = Utilities.Xml.SelectChildNode(node, String.Format("ns:{0}",tagname));
                     }
@@ -508,7 +512,14 @@ namespace XBRLProcessor.Mapping
                 
                 if (value != null)
                 {
-                    Setter(instance as TClass, (PropertyType)value);
+                    try
+                    {
+                        Setter(instance as TClass, (PropertyType)value);
+                    }
+                    catch (Exception ex) 
+                    {
+                        Console.WriteLine("Mapping: " + ex.Message);
+                    }
                 }
                 //prop.SetValue(instance, value, null);
 

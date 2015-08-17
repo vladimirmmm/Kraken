@@ -302,10 +302,10 @@
     {
         public Facts: InstanceFact[] = [];
         public FilingIndicators: string[] = [];
-        public Reporting: Date;
+        public ReportingDate: Date;
         public ReportingCurrency: string;
         public Entity: Entity;
-
+        public TaxonomyModuleReference: string;
         public FactDictionary:Object = null;
     }   
 

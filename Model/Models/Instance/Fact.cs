@@ -38,7 +38,8 @@ namespace LogicalModel
                 }
                 else 
                 {
-                    return decimal.Parse(_Value);
+                    //decimal.Parse("500,85", new NumberFormatInfo() { NumberDecimalSeparator = "," });
+                    return decimal.Parse(_Value, new NumberFormatInfo() { NumberDecimalSeparator = "." });
                 }
                 return decimal.MaxValue;
             }
@@ -58,6 +59,27 @@ namespace LogicalModel
         public override string ToString()
         {
             return String.Format("Value: {0}; FactString: {1};", Value, FactString);
+        }
+
+        public string ToXmlString()
+        {
+            var sb = new StringBuilder();
+            /*
+           <eba_met:mi53 decimals="0" contextRef="CT_85" unitRef="U_1">0.00</eba_met:mi53>
+	
+             */
+            var decimalformat = "decimals=\"{0}\"";
+            var decimals = String.Format(decimalformat, this.Decimals);
+
+            var unitref = "";
+            if (!String.IsNullOrEmpty(UnitID))
+            {
+                unitref = String.Format("unitRef=\"{0}\"", UnitID);
+            }
+            sb.AppendLine(String.Format("<{0} {2} contextRef=\"{3}\" {4}>{1}<{0}>",
+                this.Concept.Content, this.Value, decimals, ContextID, unitref));
+
+            return sb.ToString();
         }
         
     }

@@ -35,13 +35,6 @@ var UI;
             this.SetCellEditors();
             $(".highlight").removeClass("highlight");
             var hash = window.location.hash;
-            //if (!IsNull(hash)) {
-            //    this.HighlightCell();
-            //}
-            //else
-            //{
-            //    this.SetExtension(null);          
-            //}
             if (!IsNull(this.Instance)) {
                 this.LoadInstance(this.Instance);
             }
@@ -52,14 +45,16 @@ var UI;
         };
         Table.prototype.HighlightCell = function () {
             var hash = window.location.hash;
+            if (hash[hash.length - 1] != ";") {
+                hash = hash + ";";
+            }
             var cellid = TextBetween(hash, "cell=", ";");
             var extcode = TextBetween(hash, "ext=", ";");
             if (extcode == "000") {
                 extcode = "001";
             }
             this.SetExtensionByCode(extcode);
-            cellid = cellid.replace("_", "\\|");
-            //cellid = cellid.replace("|", "\\|");
+            cellid = cellid.replace(/_/g, "\\|").toUpperCase();
             $("#" + cellid).addClass("highlight");
             $("#" + cellid).focus();
         };
@@ -74,7 +69,8 @@ var UI;
                 Model.QualifiedName.Set(concept);
                 Model.QualifiedName.Set(concept.Domain);
                 concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
-                var hier = me.Hierarchies.AsLinq().FirstOrDefault(function (i) { return i.Item.Name == concept.Domain.Name && i.Item.Namespace == concept.Domain.Namespace && i.Item.Role == concept.HierarchyRole; });
+                var hiers = me.Hierarchies.AsLinq().Where(function (i) { return i.Item.Name == concept.Domain.Name && i.Item.Namespace == concept.Domain.Namespace && i.Item.Role == concept.HierarchyRole; });
+                var hier = hiers.FirstOrDefault();
                 if (hier != null) {
                     var clkp = new Model.ConceptLookUp();
                     clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
@@ -125,55 +121,64 @@ var UI;
                             }
                             editor.Load($target, function () { return $target.html(); }, function () {
                                 $target.html(editor.ValueGetter(editor.$Me));
-                                me.AddNewRowIfNeeded();
+                                me.ManageRows();
                             });
                         }
                     });
                 }
             });
         };
-        Table.prototype.AddNewRowIfNeeded = function () {
+        Table.prototype.ManageRows = function () {
             var me = this;
             if (!IsNull(me.$TemplateRow)) {
-                var $lastrow = me.$TemplateRow.parent().find("tr:last");
-                var $selectedrow = me.$TemplateRow.parent().find("tr.selected");
-                if ($selectedrow.length > 0) {
-                    var $cells = $("td", $selectedrow);
-                    var isallnull = true;
-                    $cells.each(function (ix, cell) {
-                        if (!IsNull($(cell).html().trim())) {
-                            isallnull = false;
-                        }
-                    });
-                    if (isallnull && $lastrow != $selectedrow) {
+                var $parentrow = me.$TemplateRow.parent();
+                var $lastrow = $parentrow.find("tr:last");
+                var $selectedrow = $parentrow.find("tr.selected");
+                if ($selectedrow.length > 0 && $lastrow.length) {
+                    if (me.IsAllNull($selectedrow) && $lastrow[0] != $selectedrow[0]) {
                         $selectedrow.remove();
+                    }
+                    if (!me.IsAllNull($lastrow)) {
+                        var $newrow = me.AddRow("newrow", false, 0);
+                        me.SetCellEditors();
                     }
                 }
             }
+        };
+        Table.prototype.IsAllNull = function ($row) {
+            var $cells = $("td", $row);
+            var isallnull = true;
+            $cells.each(function (ix, cell) {
+                if (!IsNull($(cell).html().trim())) {
+                    isallnull = false;
+                }
+            });
+            return isallnull;
         };
         Table.prototype.LoadCellsFromHtml = function () {
             var me = this;
             var s_ix = 1;
             me.Cells = [];
             $(".data").each(function (index, item) {
-                var layoutid = $(item).attr("id");
+                var $cell = $(item);
+                var layoutid = $cell.attr("id");
                 var row = layoutid.split("|")[0];
                 var col = layoutid.split("|")[1];
                 row = row.substring(1);
                 col = col.substring(1);
                 var cell = new Model.Cell();
-                cell.IsBlocked = $(item).hasClass("blocked");
+                cell.IsBlocked = $cell.hasClass("blocked");
                 if (!cell.IsBlocked) {
                     cell.Row = row;
                     cell.Column = col;
                     me.Cells.push(cell);
                 }
+                $cell.attr("title", layoutid + "\r\n" + $cell.attr("factstring"));
             });
             var templaterow = $(".dynamic");
             if (templaterow.length > 0) {
                 me.$TemplateRow = $(templaterow[0]);
-                //me.GetDynamicRowID(null);
-                me.AddRowX("newrow", false, 0);
+                me.AddRow("newrow", false, 0);
             }
         };
         Table.prototype.LoadCells = function (cells) {
@@ -270,7 +275,7 @@ var UI;
             }
             if (newrowneeded) {
                 //var id = Format("R{0}", rownum);
-                var $newrow = me.AddRowX("", true, rownum);
+                var $newrow = me.AddRow("", true, rownum);
                 $row = $newrow; //.prev();
             }
             if (fact != null) {
@@ -291,7 +296,7 @@ var UI;
             }
             return $row.attr("id");
         };
-        Table.prototype.AddRowX = function (rowclass, beforelast, rownum) {
+        Table.prototype.AddRow = function (rowclass, beforelast, rownum) {
             var me = this;
             var id = Format("R{0}", rownum);
             var $newrow = me.$TemplateRow.clone();
@@ -331,42 +336,6 @@ var UI;
                 $cell.attr("title", cellid);
             });
         };
-        /*
-        public AddRow(rowclass:string, beforelast:boolean, idvalue: string):JQuery
-        {
-            var me = this;
-            var $newrow = me.$TemplateRow.clone();
-            me.$TemplateRow.find("td").html("");
-            var lastrow = me.$TemplateRow.parent().find("tr:last");
-            if (beforelast) {
-                $(lastrow).before($newrow);
-            }
-            else
-            {
-                $(lastrow).after($newrow);
-
-            }
-            $newrow.attr("id", Format("R{0}", idvalue));
-            $newrow.addClass(rowclass);
-            $newrow.removeClass("dynamic");
-
-            $("td", $newrow).each(function (index, td) {
-                var $td = $(td);
-                var cellid = $td.attr("id");
-                var r_ix = cellid.indexOf("R");
-                if (r_ix > -1) {
-                    cellid = cellid.replace("R", "R" + idvalue);
-                    $td.attr("id", cellid);
-                }
-            });
-            $newrow.find(".code").html(idvalue);
-            if (IsNull(idvalue.trim()))
-            {
-                $newrow.find(".title").html("new row");
-            }
-            return $newrow;
-        }
-        */
         Table.prototype.SetExtensionByCode = function (code) {
             if (!IsNull(code)) {
                 var ext = this.Extensions.AsLinq().FirstOrDefault(function (i) { return i.LabelCode == code; });

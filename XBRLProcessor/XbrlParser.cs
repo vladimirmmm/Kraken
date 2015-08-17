@@ -264,7 +264,7 @@ namespace XBRLProcessor
             foreach (var p in prs1) 
             {
                 var pm = new LogicalModel.Validation.ValidationParameter(p);
-                pm.Type = LogicalModel.Validation.TypeEnum.Numeric;
+                pm.Type = LogicalModel.TypeEnum.Numeric;
                 v1.Parameters.Add(pm);
 
             }
@@ -275,7 +275,7 @@ namespace XBRLProcessor
             foreach (var p in prs2)
             {
                 var pm = new LogicalModel.Validation.ValidationParameter(p);
-                pm.Type = LogicalModel.Validation.TypeEnum.Numeric;
+                pm.Type = LogicalModel.TypeEnum.Numeric;
                 v2.Parameters.Add(pm);
 
             }
@@ -286,7 +286,7 @@ namespace XBRLProcessor
             foreach (var p in prs3)
             {
                 var pm = new LogicalModel.Validation.ValidationParameter(p);
-                pm.Type = LogicalModel.Validation.TypeEnum.Numeric;
+                pm.Type = LogicalModel.TypeEnum.Numeric;
                 v3.Parameters.Add(pm);
 
             }

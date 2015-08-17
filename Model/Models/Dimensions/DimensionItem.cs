@@ -1,4 +1,5 @@
 ﻿using LogicalModel.Base;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace LogicalModel.Dimensions
         public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
 
         private List<DimensionDomain> _Domains = new List<DimensionDomain>();
+        [JsonProperty]
         public List<DimensionDomain> Domains 
         {
             get { return _Domains; }

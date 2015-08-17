@@ -27,6 +27,7 @@ namespace Utilities
         }
 
         public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
+        public static Dictionary<String, String> Namespaces = new Dictionary<String,String>();
         private static Object DictionaryLocker = new Object();
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
         {
@@ -50,7 +51,10 @@ namespace Utilities
                             var name = parts[0].Trim();
                             var uri = parts[1].Trim();
                             manager.AddNamespace(name, uri);
-
+                            if (!Namespaces.ContainsKey(name)) 
+                            {
+                                Namespaces.Add(name, uri);
+                            }
                         }
                         string s = doc.DocumentElement.GetNamespaceOfPrefix("");
                         manager.AddNamespace("ns", s);
@@ -112,6 +116,17 @@ namespace Utilities
                 manager = NamespaceDictionary[doc];
             }
             return manager;
+        }
+
+        public static XmlDocument GetXmlDocumentFromString(string xml)
+        {
+            var doc = new XmlDocument();
+
+            using (var sr = new StringReader(xml))
+            using (var xtr = new XmlTextReader(sr) { Namespaces = false })
+                doc.Load(xtr);
+
+            return doc;
         }
 
         public static string Attr(XmlNode node, string Name)

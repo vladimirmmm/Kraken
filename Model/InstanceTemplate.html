@@ -49,6 +49,18 @@
     </div>
     <div id="Contents">
         <div id="Facts">
+            <div id="FactFilter">
+                <p>
+                    <label>Concept: </label><input type="text" id="F_Concept"/>
+                </p>
+                <p>
+                    <label>Context: </label><textarea type="text" id="F_Context" ></textarea>
+                </p>
+                <p>
+                    <label>Value: </label><input type="text" id="F_Value"/>
+                </p>
+                <input type="button" value="Search" onclick="instancecontainer.FilterItems()"/>
+            </div>
             <div id="factcontainer">
                 <ul id="factlist">
                     <li binding-type="template">
@@ -100,16 +112,16 @@
                     </ul>
                 </p>
 
-</div>
+            </div>
         </div>
 
         <div id="Validation">
             <ul id="validationlist">
                 <li binding-type="template">
-                    <div class="hmax30">
+                    <div class="hmax30 trimmed">
                         <h2>bind[DisplayText]</h2><br />
                     </div>
-                    <div class="hmax30">
+                    <div class="hmax30 trimmed">
                         <span>bind[OriginalExpression]</span>
                     </div>
                     <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowRuleDetail('{ID}')]" class="icon close">Details...</a>
@@ -117,11 +129,12 @@
                     <div id="bind[validationrule_results_{ID}]">
 
                     </div>
-                   
+
                 </li>
             </ul>
             <div id="validationerrorpager" class="pagination">
             </div>
+
             <div id="validationdetail">
                 <a href="javascript:void(0)" onclick="instancecontainer.CloseRuleDetail()" class="icon close">Close</a>
                 <ul id="validationruleresults">
@@ -150,6 +163,30 @@
                 </div>
             </div>
         </div>
+
+        <div id="Units">
+
+        </div>
+
+        <div id="Details">
+            <p>
+                <input type="text" id="SchemaRef" value="bind[TaxonomyModuleReference]" class="w_large" />
+            </p>
+            <p>
+                <input type="date" id="ReportingDate" value="bind[ReportingDate]" />
+            </p>
+            <p>
+                <input type="text" id="MonetaryUnit" value="bind[ReportingMonetaryUnit.Name]" />
+            </p>
+            <p>
+                <input type="text" id="EntityID" value="bind[Entity.ID]" />
+            </p>
+            <p>
+                <input type="text" id="EntityScheme" value="bind[Entity.Scheme]" />
+            </p>
+
+        </div>
+
         <div id="Cells">
 
         </div>

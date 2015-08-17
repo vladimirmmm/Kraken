@@ -16,6 +16,16 @@ using Utilities;
 
 namespace LogicalModel
 {
+    public class TaxonomySettings
+    {
+        private List<ItemTypeSetting> _ItemTypeSettings = new List<ItemTypeSetting>();
+        public List<ItemTypeSetting> ItemTypeSettings { get { return _ItemTypeSettings; } set { _ItemTypeSettings = value; } }
+    }
+    public class TaxonomyProperties 
+    {
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+    }
     public class Taxonomy : DocumentCollection
     {
 
@@ -72,7 +82,10 @@ namespace LogicalModel
             }
             set { _SimpleValidationRules = value; }
         }
-        
+
+        public TaxonomyProperties GeneralProperties = new TaxonomyProperties();
+
+        public TaxonomySettings UserSettings = new TaxonomySettings(); 
         //public static Action<string> Console = null;
 
         public ValidationFunctionContainer ValidationFunctionContainer = null;
@@ -91,6 +104,10 @@ namespace LogicalModel
         public string TaxonomyTestPath
         {
             get { return ModuleFolder + "Test.txt"; }
+        }
+        public string TaxonomyGeneralPath
+        {
+            get { return ModuleFolder + "General.json"; }
         }
         public string TaxonomyStructurePath
         {
@@ -139,6 +156,10 @@ namespace LogicalModel
         public string TaxonomyValidationPath
         {
             get { return ModuleFolder + "Validations.json"; }
+        }
+        public string TaxonomySettingsPath
+        {
+            get { return ModuleFolder + "ConceptSettings.json"; }
         }
         public string TaxonomyValidationCsPath
         {
@@ -216,6 +237,58 @@ namespace LogicalModel
         public virtual void LoadLabelDictionary() { }
       
         public virtual void LoadFactDictionary() { }
+
+        public virtual void LoadGeneral() 
+        {
+            Console.WriteLine("Load General Properties");
+
+            //Save
+            if (!System.IO.File.Exists(TaxonomyGeneralPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+
+                var jsoncontent = Utilities.Converters.ToJson(GeneralProperties);
+                Utilities.FS.WriteAllText(TaxonomyGeneralPath, jsoncontent);
+            }
+            else
+            {
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyGeneralPath);
+                this.GeneralProperties = Utilities.Converters.JsonTo<TaxonomyProperties>(jsoncontent);
+            }
+            Console.WriteLine("Load General Properties");
+        }
+
+        public virtual void LoadSettings()
+        {
+            Console.WriteLine("Load Settings");
+
+            //Save
+            if (!System.IO.File.Exists(TaxonomySettingsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+
+                var itemtypes = this.Concepts.Select(i=>i.ItemType).Distinct().ToList();
+                foreach (var itemtype in itemtypes) 
+                {
+                    var itsetting = new ItemTypeSetting();
+                    itsetting.Set(itemtype, this);
+                    var unit = this.Units.FirstOrDefault(i => i.ItemType == itsetting.ItemType);
+                    if (unit != null) 
+                    {
+                        itsetting.UnitID = unit.ID;
+                    }
+                    UserSettings.ItemTypeSettings.Add(itsetting);
+                }
+             
+
+                var jsoncontent = Utilities.Converters.ToJson(UserSettings);
+                Utilities.FS.WriteAllText(TaxonomySettingsPath, jsoncontent);
+            }
+            else
+            {
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomySettingsPath);
+                this.UserSettings = Utilities.Converters.JsonTo<TaxonomySettings>(jsoncontent);
+            }
+            Console.WriteLine("Load Settings completed");
+        }
 
         public virtual void LoadFacts()
         {
@@ -631,6 +704,7 @@ namespace LogicalModel
                     }
                     concept.Name = conceptelement.Name;
                     concept.Namespace = conceptelement.Namespace;
+                    concept.ItemType = conceptelement.Type.IndexOf(":") > -1 ? conceptelement.Type.Substring(conceptelement.Type.IndexOf(":") + 1) : conceptelement.Type;
 
                     this.Concepts.Add(concept);
                 }

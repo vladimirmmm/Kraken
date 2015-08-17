@@ -285,7 +285,16 @@ namespace XBRLProcessor.Models
             Console.WriteLine("Load Units completed");
 
         }
-
+        public override void LoadGeneral()
+        {
+            var taxelement= this.SchemaElements.FirstOrDefault(i => i.Type == "model:taxonomyType");
+            if (taxelement != null) 
+            {
+                this.GeneralProperties.FromDate = taxelement.FromDate;
+                this.GeneralProperties.ToDate = taxelement.ToDate;
+            }
+            base.LoadGeneral();
+        }
         public override void LoadHierarchy()
         {
             Console.WriteLine("Load Hierarchies");
@@ -331,7 +340,8 @@ namespace XBRLProcessor.Models
                     //{
                     //    hierchildren.Item.NamespaceFolder = foldername;
                     //}
-                    this.Hierarchies.Add(hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem));
+                    var logicalhierarchy = hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem);
+                    this.Hierarchies.Add(logicalhierarchy);
                 }
 
                 var jsoncontent = Utilities.Converters.ToJson(this.Hierarchies);
@@ -729,9 +739,13 @@ namespace XBRLProcessor.Models
                 table.LoadLayoutHierarchy(logicaltable);
 
                 var tablegroup = this.TableGroups.FirstOrDefault(i => i.TableIDs.Contains(logicaltable.ID));
-                if (tablegroup != null) 
+                if (tablegroup != null)
                 {
                     logicaltable.FilingIndicator = tablegroup.FilingIndicator;
+                }
+                else 
+                {
+
                 }
              
                 //for debug

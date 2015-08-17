@@ -136,14 +136,14 @@ namespace XBRLProcessor.Model
                 }
 
 
-                var type = LogicalModel.Validation.TypeEnum.Numeric;
+                var type = LogicalModel.TypeEnum.Numeric;
                 var firstfact = parameter.FactGroups.FirstOrDefault().Facts.FirstOrDefault();
                 if (firstfact != null && firstfact.Concept != null)
                 {
                     //if (firstfact.Concept.ID.StartsWith("ei"))
-                    if (firstfact.Concept.ID.StartsWith("ei"))
+                    if (firstfact.Concept.Name.StartsWith("ei"))
                     {
-                        type = LogicalModel.Validation.TypeEnum.String;
+                        type = LogicalModel.TypeEnum.String;
                     }
                 }
                 parameter.Type = type;
@@ -181,7 +181,7 @@ namespace XBRLProcessor.Model
             {
                 var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel");
                 p_rl1.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("_con") ? "con" : "ind";
-                p_rl1.Type = LogicalModel.Validation.TypeEnum.String;
+                p_rl1.Type = LogicalModel.TypeEnum.String;
                 p_rl1.IsGeneral = true;
                 logicalrule.Parameters.Add(p_rl1);
             }
@@ -189,7 +189,7 @@ namespace XBRLProcessor.Model
             {
                 var p_rl2 = new LogicalModel.Validation.ValidationParameter("AccountingStandard");
                 p_rl2.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("GAAP") ? "GAAP" : "IFRS";
-                p_rl2.Type = LogicalModel.Validation.TypeEnum.String;
+                p_rl2.Type = LogicalModel.TypeEnum.String;
                 p_rl2.IsGeneral = true;
                 logicalrule.Parameters.Add(p_rl2);
             }

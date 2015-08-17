@@ -151,3 +151,10 @@ a.cellcount_0
 {
     color:red;
 }
+
+.dynamicdata {
+    min-height:20pt;
+}
+.w_large {
+    width:300px;
+}

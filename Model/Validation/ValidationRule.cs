@@ -208,7 +208,9 @@ namespace LogicalModel.Validation
               
                     if (p.BindAsSequence)
                     {
-                        var parameterfactgroup = p.FactGroups.FirstOrDefault();//i => i.GetFactString() == factgroup.GetFactKey());
+                        //var parameterfactgroup = factgroup;// p.FactGroups.FirstOrDefault();//i => i.GetFactString() == factgroup.GetFactKey());
+                        //var parameterfactgroup = p.FactGroups.FirstOrDefault(i => i.GetFactString() == factgroup.GetFactString());
+                        var parameterfactgroup = p.FactGroups.FirstOrDefault(i => i.GetFactKey() == factgroup.GetFactKey());
                         var instancefacts = GetInstanceFacts(parameterfactgroup.Facts);
                         //set the cells
                         var cells = new List<String>();

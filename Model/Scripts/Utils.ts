@@ -1310,11 +1310,16 @@ function BindX(item: JQuery, data: Object)
     var bt: BindingTemplate = null;
     var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
     if (templatedictionaryitem == null) {
-        bt = GetBindingTemplate(item);
-        templatedictionaryitem = new TemplateDictionaryItem();
-        templatedictionaryitem.Item = item;
-        templatedictionaryitem.Template = bt;
-        TemplateDictionary.push(templatedictionaryitem);
+        if (item.length > 0) {
+            bt = GetBindingTemplate(item);
+            templatedictionaryitem = new TemplateDictionaryItem();
+            templatedictionaryitem.Item = item;
+            templatedictionaryitem.Template = bt;
+            TemplateDictionary.push(templatedictionaryitem);
+        } else
+        {
+            console.log(item.selector + " was not found! (BindX)");
+        }
     } else
     {
         bt = templatedictionaryitem.Template;

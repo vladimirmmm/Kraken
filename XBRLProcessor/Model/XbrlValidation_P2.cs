@@ -105,9 +105,13 @@ namespace XBRLProcessor.Model
                         
                     }
                 }
+             
                 return allfactgroups;
             }
-
+            foreach (var fg in factgroups)
+            {
+                fg.Dimensions = fg.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+            }
             return factgroups;
         }
 

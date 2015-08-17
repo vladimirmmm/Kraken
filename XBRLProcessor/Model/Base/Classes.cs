@@ -141,9 +141,10 @@ namespace XBRLProcessor.Model.Base
         private string _TypedDomainRef = "";
         public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
 
-        public DateTime FromDate { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
 
-        public DateTime CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         public string Key { get { return String.Format("{0}:{1}", this.Namespace, this.ID); } }
 

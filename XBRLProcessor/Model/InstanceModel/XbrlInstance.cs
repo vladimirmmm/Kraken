@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
+using Utilities;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
 
@@ -14,7 +15,7 @@ namespace Model.InstanceModel
 {
     public class XbrlInstance: LogicalModel.Instance
     {
-
+        protected string TemplateFileName = "InstanceTemplate.xml";
 
         public Link SchemaRef { get; set; }
 
@@ -40,6 +41,7 @@ namespace Model.InstanceModel
             get { return _XbrlFilingIndicators; }
             set { _XbrlFilingIndicators = value; }
         }
+
 
         private XmlDocument _XmlDocument = null;
         public XmlDocument XmlDocument
@@ -97,8 +99,7 @@ namespace Model.InstanceModel
 
         public void LoadLogicalData() 
         {
-            this.Entity = Contexts.FirstOrDefault().Entity;
-            this.ReportingDate = Contexts.FirstOrDefault().Period.Instant;
+     
             this.TaxonomyModuleReference = this.SchemaRef.Href;
             this.FilingIndicators = this.XbrlFilingIndicators.Select(i=>i.Value).ToList();
             foreach (var xbrlfact in XbrlFacts) 
@@ -138,6 +139,24 @@ namespace Model.InstanceModel
                     factlist.Add(logicalfact);
                 }
             }
+
+            var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));
+            if (miconceptfact != null)
+            {
+                var micontext = Contexts.FirstOrDefault(i => i.ID == miconceptfact.ContextID);
+                var miunit = Units.FirstOrDefault(i => i.ID == miconceptfact.UnitID);
+                var measurestring = miunit.Measure.Content.ToLower();
+                var taxunit = Taxonomy.Units.FirstOrDefault(i => i.Measure.Content.ToLower() == measurestring);
+                ReportingMonetaryUnit = taxunit;
+            }
+            var firstcontext = Contexts.FirstOrDefault();
+            if (firstcontext != null)
+            {
+                this.Entity = firstcontext.Entity;
+                this.ReportingDate = firstcontext.Period.Instant;
+                this.ReportingPeriod = firstcontext.Period;
+            }
+
             SetCells();
 
             SaveToJson();
@@ -155,12 +174,7 @@ namespace Model.InstanceModel
                 var schemaset = new XmlSchemaSet();
                 var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
                 IDictionary<string, string> dic = nsmanager.GetNamespacesInScope(XmlNamespaceScope.All);
-                foreach (var dicitem in dic)
-                {
-                    //schemaset.Add(dicitem.Key, dicitem.Value);
-                    //this.XmlDocument.Schemas.Add(dicitem.Key, dicitem.Value);
-                }
-                //this.XmlDocument.Validate(OnValidated);
+      
 
                 results.AddRange(base.Validate(messages));
 
@@ -211,5 +225,253 @@ namespace Model.InstanceModel
         {
             base.SetTaxonomy(xbrlTaxonomy);
         }
+
+        #region Save
+
+        public override void Save(string filepath)
+        {
+            //base.Save(filepath);
+            var namespaces = GetNameSpaces();
+            SetContexts();
+            SetUnits();
+            SetFilingIndicators();
+            SetInstanceFacts();
+
+            var templatecontent = System.IO.File.ReadAllText(TemplateFileName);
+            var xmlstring = templatecontent;
+            var sb_ns = new StringBuilder();
+            foreach (var ns in namespaces) 
+            {
+                sb_ns.Append(String.Format("xmlns:{0}=\"{1}\" ", ns.Key, ns.Value));
+            }
+            xmlstring = xmlstring.Replace("#namespaces#", sb_ns.ToString());
+            xmlstring = xmlstring.Replace("#taxonomymodulereference#", this.SchemaRef.Href);
+
+            var sb_xml = new StringBuilder();
+            foreach (var unit in Units) 
+            {
+                sb_xml.AppendLine(unit.ToXmlString());
+
+            }
+
+            foreach (var context in Contexts)
+            {
+                sb_xml.AppendLine(context.ToXmlString());
+
+            }
+            sb_xml.AppendLine("<find:fIndicators>");
+            foreach (var find in this.XbrlFilingIndicators)
+            {
+                sb_xml.AppendLine(find.ToXmlString());
+            }
+            sb_xml.AppendLine("</find:fIndicators>");
+            foreach (var fact in Facts) 
+            {
+                sb_xml.AppendLine(fact.ToXmlString());
+
+            }
+
+           xmlstring = xmlstring.Replace("#content#", sb_xml.ToString());
+           System.IO.File.WriteAllText(filepath, xmlstring);
+        }
+
+        protected Dictionary<String,String> GetNameSpaces() 
+        {
+            var namespaces = new Dictionary<String, String>();
+
+            foreach (var fact in Facts) 
+            {
+          
+                AddNamespace(fact.Concept.Namespace,namespaces);
+                foreach (var dim in fact.Dimensions) 
+                {
+                    AddNamespace(GetNamespace(dim.DimensionItem), namespaces);
+                    AddNamespace(dim.Domain, namespaces);
+                }
+
+            }
+            AddNamespace("find", namespaces);
+            return namespaces;
+        }
+        
+        public void AddNamespace(string ns,Dictionary<String, String> dictionary)
+        {
+            if (!dictionary.ContainsKey(ns))
+            {
+                var uri = Utilities.Xml.Namespaces.ContainsKey(ns) ? Utilities.Xml.Namespaces[ns] : "";
+                dictionary.Add(ns, uri);
+            }
+        }
+       
+        private string GetNamespace(string qname) 
+        {
+            var ns="";
+            if (qname.Contains(":")) 
+            {
+                ns = qname.Remove(qname.IndexOf(":"));
+            }
+            return ns;
+        }
+
+        protected void SetInstanceFacts() 
+        {
+            foreach (var fact in Facts) 
+            {
+                var itemtype = fact.Concept.ItemType;
+                var setting = Taxonomy.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itemtype);
+                if (!String.IsNullOrEmpty(setting.UnitID))
+                { 
+
+                }
+
+            }
+        }
+
+        protected void SetUnits() 
+        {
+            this.Units.Clear();
+            var dict = new Dictionary<string, string>();
+            foreach (var fact in Facts)
+            {
+                var concept = fact.Concept;
+                var taxconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Content == concept.Content);
+                
+                var itemtypesetting = Taxonomy.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == taxconcept.ItemType);
+                var unitid = itemtypesetting.UnitID;
+                
+                if (!dict.ContainsKey(taxconcept.ItemType))
+                {
+                    Unit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
+                  
+                    if (taxconcept.ItemType == "monetaryItemType") 
+                    {
+                        unit = this.ReportingMonetaryUnit;
+                    }
+                    if (unit != null)
+                    {
+                        var xbrlunit = new Unit();
+                        xbrlunit.ID = GetNewID(this.Units, "U_{0}");
+                        xbrlunit.Measure = unit.Measure;
+                        this.Units.Add(xbrlunit);
+                        dict.Add(taxconcept.ItemType, xbrlunit.ID);
+                        fact.UnitID = xbrlunit.ID;
+                    }
+                }
+                else 
+                {
+                    fact.UnitID = dict[taxconcept.ItemType];
+                }
+                if (itemtypesetting.Type == TypeEnum.Numeric) 
+                {
+                    fact.Decimals = String.Format("{0}", itemtypesetting.Decimals);
+                }
+            }
+        }
+
+        protected void SetContexts()
+        {
+            this.Contexts.Clear();
+            var dict = new Dictionary<string, string>();
+            foreach (var fact in Facts)
+            {
+                var dimfact = new LogicalModel.Base.FactBase();
+                dimfact.Dimensions.AddRange(fact.Dimensions);
+           
+                if (!dict.ContainsKey(dimfact.FactString)) 
+                { 
+                    var context = GetContext(fact);
+                    dict.Add(dimfact.FactString,context.ID);
+                    this.Contexts.Add(context);
+                }
+                fact.ContextID = dict[dimfact.FactString];
+             
+            }
+            var filingcontext = GetContext(new InstanceFact());
+            filingcontext.ID = FilingIndicator.DefaultContextID;
+            this.Contexts.Add(filingcontext);
+        }
+
+        protected void SetFilingIndicators()
+        {
+            var finds = new Dictionary<string, string>();
+            this.FilingIndicators.Clear();
+            this.XbrlFilingIndicators.Clear();
+            foreach (var fact in Facts)
+            {
+                var cells = fact.Cells;
+                foreach (var cell in cells)
+                {
+                    var tableid = cell.Remove(cell.IndexOf("<"));
+
+                    if (!finds.ContainsKey(tableid))
+                    {
+                        var table = this.Taxonomy.Tables.FirstOrDefault(i => i.ID == tableid);
+                        var find = table.FilingIndicator;
+
+                        finds.Add(tableid, find);
+                        var filingndicator = new FilingIndicator();
+                        filingndicator.ContextID = FilingIndicator.DefaultContextID;
+                        
+                        filingndicator.Value = find;
+                        this.XbrlFilingIndicators.Add(filingndicator);
+                        
+                        this.FilingIndicators.Add(find);
+                       
+                    }
+                }
+            }
+            //return finds.Select(i=>i.Key).ToList();
+        }
+        
+        protected string GetNewID(IEnumerable<LogicalModel.Base.Identifiable> items, string format)
+        {
+            var nr = items.Count();
+            var newid = "";
+            while (String.IsNullOrEmpty(newid))
+            {
+                nr++;
+                var tempid = String.Format(format, nr);
+                var existing = items.FirstOrDefault(i => i.ID == tempid);
+                if (existing == null)
+                {
+                    newid = tempid;
+                }
+            }
+            return newid;
+        }
+
+        private Context GetContext(InstanceFact fact) 
+        {
+            var contextcount = this.Contexts.Count;
+            var contextid = String.Format("CT_{0}", contextcount + 1);
+
+            Context ct = null;
+            ct = new Context();
+      
+            ct.ID = contextid;
+
+            ct.Entity = this.Entity;
+
+            ct.Period = this.ReportingPeriod;
+
+            var scenario = new Scenario();
+            foreach (var dimension in fact.Dimensions)
+            {
+                scenario.Dimensions.Add(dimension);
+            }
+            ct.Scenario = scenario;
+   
+
+        
+            return ct;
+        }
+       
+
+        protected string ToXml()
+        {
+            return "";
+        }
+
+        #endregion
     }
 }
