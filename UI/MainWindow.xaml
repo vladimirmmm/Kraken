@@ -175,15 +175,7 @@
                     <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch"/>
                     <TextBox Visibility="Collapsed" Name="TB_XMLDocument" Grid.Column="2" Grid.Row="1" Margin="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
                     <Grid Name="MainGrid" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="5"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <WebBrowser Grid.Column="0" Name="Browser_Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
-                        <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
-                        <WebBrowser Grid.Column="2" Name="Browser_Right" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
-
+                        <WebBrowser Grid.Column="0" Name="Browser" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
                     </Grid>
                     <TextBox Grid.Column="0" Grid.Row="0"  Name="TB_TreeDocumentTitle"  Margin="0" HorizontalAlignment="Stretch" IsReadOnly="True"/>
 

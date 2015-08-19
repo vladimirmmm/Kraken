@@ -12,9 +12,15 @@
  
         }
         public SetExternals() {
-            this.Taxonomy = taxonomycontainer.Taxonomy;
-            this.Instance = window[var_currentinstance] == null ? {} : window[var_currentinstance];
-            this.ValidationResults = window[var_currentinstancevalidationresults] == null ? {} : window[var_currentinstancevalidationresults];
+            var me = this;
+            me.Taxonomy = taxonomycontainer.Taxonomy;
+            AjaxRequest("Instance/Get", "get", "json", null, function (data) {
+                me.Instance = data;
+                me.LoadToUI();
+            }, function (error) { console.log(error); });
+            AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
+                me.ValidationResults = data;
+            }, function (error) { console.log(error); });
          
         }
         public LoadInstance(instancejson: string) {
@@ -159,7 +165,7 @@
 
         public ShowContent(selector: string)
         {
-            $("#Contents>div").hide();
+            $(".subcontent", "#Contents").hide();
             $(selector).show();
 
         }
@@ -239,7 +245,11 @@
         }
 
         public NavigateToCell(cell: string) {
-            Notify(Format("navigatetocell:{0}", cell));
+            //Notify(Format("navigatetocell:{0}", cell));
+            
+            AjaxRequest("Table/Get", "get", "text/html", {cell: cell}, function (data) {
+                $("#tableframe").attr("src", data);
+            }, function (error) { console.log(error); });
         }
     }
 }

@@ -181,7 +181,8 @@ namespace Model.InstanceModel
                 messages.Add(String.Format("Validation finished at {0:" + Utilities.Converters.DateTimeFormat + "}", DateTime.Now));
 
                 var json_validationresults = Utilities.Converters.ToJson(results);
-                Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, "var currentvalidationresults = " + json_validationresults + ";");
+                //Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, "var currentvalidationresults = " + json_validationresults + ";");
+                Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, json_validationresults);
 
                 var validationresultfilepath = this.FullPath.Remove(this.FullPath.LastIndexOf("."));
                 validationresultfilepath = validationresultfilepath + ".ValidationResults.txt";

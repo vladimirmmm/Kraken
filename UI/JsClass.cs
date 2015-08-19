@@ -22,4 +22,13 @@ namespace UI
 
 
     }
+
+    public class Request 
+    {
+        public string url { get; set; }
+        public Dictionary<string, string> parameters { get; set; }
+        public string requestid { get; set; }
+        public string contenttype { get; set; }
+
+    }
 }

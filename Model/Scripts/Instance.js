@@ -11,9 +11,19 @@ var Control;
             this.PageSize = 20;
         }
         InstanceContainer.prototype.SetExternals = function () {
-            this.Taxonomy = taxonomycontainer.Taxonomy;
-            this.Instance = window[var_currentinstance] == null ? {} : window[var_currentinstance];
-            this.ValidationResults = window[var_currentinstancevalidationresults] == null ? {} : window[var_currentinstancevalidationresults];
+            var me = this;
+            me.Taxonomy = taxonomycontainer.Taxonomy;
+            AjaxRequest("Instance/Get", "get", "json", null, function (data) {
+                me.Instance = data;
+                me.LoadToUI();
+            }, function (error) {
+                console.log(error);
+            });
+            AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
+                me.ValidationResults = data;
+            }, function (error) {
+                console.log(error);
+            });
         };
         InstanceContainer.prototype.LoadInstance = function (instancejson) {
             var item = JSON.parse(instancejson);
@@ -126,7 +136,7 @@ var Control;
             //console.log(new Date());
         };
         InstanceContainer.prototype.ShowContent = function (selector) {
-            $("#Contents>div").hide();
+            $(".subcontent", "#Contents").hide();
             $(selector).show();
         };
         InstanceContainer.prototype.LoadContentToUI = function (contentid) {
@@ -181,7 +191,12 @@ var Control;
             console.log(new Date());
         };
         InstanceContainer.prototype.NavigateToCell = function (cell) {
-            Notify(Format("navigatetocell:{0}", cell));
+            //Notify(Format("navigatetocell:{0}", cell));
+            AjaxRequest("Table/Get", "get", "text/html", { cell: cell }, function (data) {
+                $("#tableframe").attr("src", data);
+            }, function (error) {
+                console.log(error);
+            });
         };
         return InstanceContainer;
     })();

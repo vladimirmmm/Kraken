@@ -35,12 +35,10 @@ namespace UI
             var uitw = new UITextWriter(ShowMessage);
             Console.SetOut(uitw);
 
-            Browser_Right.LoadCompleted += Browser_LoadCompleted;
-            Browser_Left.LoadCompleted += Browser_LoadCompleted;
+            Browser.LoadCompleted += Browser_LoadCompleted;
             var ofs =new JsClass();
             ofs.UIAction=fromJS;
-            Browser_Left.ObjectForScripting = ofs;
-            Browser_Right.ObjectForScripting = ofs;
+            Browser.ObjectForScripting = ofs;
             var mw =this;
             this.Features = new Features(this);
 
@@ -53,6 +51,7 @@ namespace UI
         {
             var command = String.Format("{0}", param).ToLower();
             Console.WriteLine(command);
+            var request_tag = "request: ";
             if (command == "table_ready") 
             {
                 SetExtension();
@@ -67,6 +66,24 @@ namespace UI
                 var column = cellspecifiers[2];
 
                 Features.NavigateToCell(report, extension, row, column);
+            }
+            if (command.StartsWith(request_tag)) 
+            {
+                var request_s = command.Substring(request_tag.Length);
+                var request = Utilities.Converters.JsonTo<Request>(request_s);
+                var isok = false;
+                var response = new object();
+                try
+                {
+                    response = this.Features.ProcessRequest(request);
+                    isok = true;
+                }
+                catch (Exception ex) 
+                {
+                    response = ex.Message + "\r\n";
+                }
+                Browser.InvokeScript("AjaxResponse", request.requestid, isok, response);
+
             }
 
         }
@@ -102,11 +119,11 @@ namespace UI
                 try
                 {
                     var extparam = table.CurrentExtension == null ? "" : Utilities.Converters.ToJson(table.CurrentExtension);
-                    Browser_Right.InvokeScript("SetExtension", extparam);
+                    Browser.InvokeScript("SetExtension", extparam);
                     var instance = Features.CurrentInstance;
                     if (instance != null)
                     {
-                        Browser_Right.InvokeScript("LoadInstance", "");
+                        Browser.InvokeScript("LoadInstance", "");
                     }
                 }
                 catch (Exception ex)
@@ -167,7 +184,7 @@ namespace UI
                     var securitytag = "<!-- saved from url=(0014)about:internet -->\r\n";
                     System.IO.File.WriteAllText(file, securitytag + content);
 
-                    Browser_Left.Navigate(file);
+                    //Browser_Left.Navigate(file);
 
                 }
             }
@@ -180,7 +197,10 @@ namespace UI
             {
                 table.CreateHtmlLayout(true);
             }
-            Browser_Right.Refresh();
+            dynamic doc = Browser.Document;
+            var htmlText = doc.documentElement.InnerHtml;
+            System.IO.File.WriteAllText(this.Features.Engine.HtmlPath.Replace(".html", "_Current.html"), htmlText);
+            Browser.Refresh();
    
         }
 
@@ -213,7 +233,7 @@ namespace UI
             if (table != null)
             {
                 table.EnsureHtmlLayout();
-                Browser_Right.Navigate(table.HtmlPath);
+                Browser.Navigate(table.HtmlPath);
                 TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
 
             }
@@ -274,8 +294,7 @@ namespace UI
 
         private void B_Browser_Back_Click(object sender, RoutedEventArgs e)
         {
-            var Browser = Browser_Right.IsFocused ? Browser_Right : Browser_Left;
-
+       
             if (Browser.CanGoBack) 
             {
                 Browser.GoBack();
@@ -284,7 +303,6 @@ namespace UI
 
         private void B_Browser_Forward_Click(object sender, RoutedEventArgs e)
         {
-            var Browser = Browser_Right.IsFocused ? Browser_Right : Browser_Left;
             if (Browser.CanGoForward)
             {
                 Browser.GoForward();

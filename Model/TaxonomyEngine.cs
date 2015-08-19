@@ -28,6 +28,9 @@ namespace LogicalModel
         public event TaxonomyEventHandler InstanceLoadFailed;
         public event TaxonomyEventHandler InstanceLoaded;
 
+        public string HtmlPath = AppDomain.CurrentDomain.BaseDirectory + "UI.html";
+
+
         public virtual bool LoadInstance(string filepath) 
         {
             return true;

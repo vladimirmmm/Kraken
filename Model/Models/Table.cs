@@ -446,8 +446,12 @@ namespace LogicalModel
             Columns = columnsnode.GetLeafs();
     
             Rows = rowsnode.ToHierarchy().Where(i => i.Item.IsVisible).ToList();
+            Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
+            var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
+            if (xRows.Count > 1) 
+            {
 
-
+            }
             if (Extensions.Count == 0)
             {
                 SetExtensions();
@@ -705,12 +709,20 @@ namespace LogicalModel
                 row.Item.LabelContent, row.Item.FactString, row.Item.LabelID+"  "+row.Item.FactString));
                 
                 //adding the code cell
+                if (String.IsNullOrEmpty(row.Item.LabelCode))
+                {
+
+                }
                 sb.AppendLine(String.Format("<th class=\"code left\">{0}</th>", row.Item.LabelCode));
 
                 //adding the data cells
                 foreach (var column in Columns) 
                 {
                     var cell = LayoutCells.FirstOrDefault(i => i.Row == row.Item.LabelCode && i.Column == column.Item.LabelCode);
+                    if (!String.IsNullOrEmpty(cell.FactKey) && String.IsNullOrEmpty(row.Item.LabelCode)) 
+                    {
+                    }
+
                     var alt = String.Format("R{0}|C{1}", row.Item.LabelCode, column.Item.LabelCode);
                     var cssclass = "data";
                     if (cell.IsBlocked) 

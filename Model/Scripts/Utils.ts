@@ -15,6 +15,7 @@ interface JQuery
     serializeObject(...any);
     padding(direction: string): number;
     pagination(total: any, options: any);
+    splitPane(options?: any);
 }
 
 interface External {
@@ -22,13 +23,66 @@ interface External {
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+    debugger;
     Notify(errortext);
     return true;
+}
+function SetPivots()
+{
+  
+    $("#pivot").splitPane();
+    //$("#pivot").splitPane({
+    //    type: "v",
+    //    outline: true,
+    //    minLeft: 100, sizeLeft: 150, minRight: 100,
+    //    resizeToWidth: true,
+    //    cookie: "vsplitter",
+    //    accessKey: 'I'
+    //});
+    /*
+    $(".pivotitem").click(function () {
+        Activate($(this));
+    });
+    var iframe = $($("#tableframe")[0]["contentWindow"].document);
+    $(iframe).click(function () {
+        Activate($("#tableframe").parent());
+    });
+    */
+}
+function Activate(jitem: JQuery)
+{
+    var $item = jitem;
+    var $parent = $item.parent();
+    var previouswidth = 0;
+    var minsize = 200;
+    var margin = 0;
+    var previouswidth = 0;
+    $parent.children().each(function (ix, item) {
+        var current: JQuery = $(item);
+        var currentwidth = current.width();
+        margin = previouswidth == 0 ? 0 : minsize - previouswidth;
+        if (current[0] == $item[0]) {
+            //$item.animate({ "margin-left": (-200)+"px" }, { duration: this.duration, queue: false });
+            current.css("z-index", "1");
+        }
+        else {
+            current.css("z-index", "0");
+        }
+        current.css("margin-left", margin + "px");
+
+        previouswidth = currentwidth; 
+    });
+
+
+       // $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
+        //$("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
+
+ 
 }
 //Notify("typeof console " + typeof console);
 //if (typeof console === "undefined") {
 
-    window.onerror = ErrorHandler;
+   // window.onerror = ErrorHandler;
 //}
 function Notify(notification) {
     if ('Notify' in window.external) {
@@ -106,9 +160,65 @@ module General {
         public Value: any = null;
     }
 }
+
+interface RequestHandler
+{
+    success: Function;
+    error: Function;
+    url: string;
+    contenttype: string;
+}
 var StopProgress: F_Progress = function (id: string) { return null; };
 var StartProgress: F_Progress = function (id: string) { return null; };
-var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata};
+var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
+
+
+var requests: General.KeyValue[] = IsNull(parent["requests"]) ? [] : parent["requests"];
+
+
+function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function) {
+ 
+
+    var requestid = Guid();
+    var requesthandler = <RequestHandler>{ error: error, success: success, url: url, contenttype: contenttype };
+    var kv = new General.KeyValue();
+    kv.Key = requestid;
+    kv.Value = requesthandler;
+    requests.push(kv);
+    var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
+    Notify("Request: "+JSON.stringify(notification));
+
+} 
+
+function AjaxResponse(requestid:string, isok:boolean, stringdata: string)
+{
+    
+
+    var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == requestid);
+    if (request != null) {
+        var requesthandler = <RequestHandler>request.Value;
+        var response = stringdata;
+        if (requesthandler.contenttype.indexOf("json") > -1) {
+            response = JSON.parse(stringdata);
+        }
+
+        var ix = requests.indexOf(request);
+        if (ix > -1) {
+            requests.splice(ix, 1);
+        }
+
+        if (isok) {
+            requesthandler.success(response);
+        }
+        else {
+            requesthandler.error(response);
+            Notify("Response Error: " + response);
+        }
+    } else
+    {
+        Notify("Request not found! " + requestid);
+    }
+}
 
 function Ajax(url:string, method:string, parameters:Dictionary, generichandler:Function, contentType?:string) {
     var result = {}; //new Engine.InfoContainer();

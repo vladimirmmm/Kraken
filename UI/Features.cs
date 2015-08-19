@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using XBRLProcessor;
+using Utilities;
 
 namespace UI
 {
@@ -16,7 +17,7 @@ namespace UI
         public MenuCommand CommandContainer = null;
         public ControlNode FeatureContainer = null;
 
-        private XbrlEngine Engine = new XbrlEngine();
+        public XbrlEngine Engine = new XbrlEngine();
 
         private const string RegSettingsPath = @"Software\WKFS\X-TreeM\";
         private const string RegKey_Recent_Taxonomies = "Recent_Taxonomies";
@@ -127,9 +128,9 @@ namespace UI
 
         public void ShowInstance() 
         {
-            if (Engine.CurrentInstance != null) 
+            if (Engine.CurrentTaxonomy != null) 
             {
-                ShowInBrowser(Engine.CurrentInstance.HtmlPath, true); 
+                ShowInBrowser(Engine.HtmlPath); 
             }
         }
 
@@ -226,9 +227,25 @@ namespace UI
                 table.EnsureHtmlLayout();
                 var url = String.Format("{0}#ext={1};cell=R{2}_C{3};", table.HtmlPath, extension, row, column);
                 
-                UI.Browser_Right.Navigate(url);
+                UI.Browser.Navigate(url);
                 UI.TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
             }
+        }
+
+        private string GetTableHtmlPath(string report, string extension, string row, string column) 
+        {
+            var table = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.ID.ToLower() == report);
+            var url = "";
+            if (table != null)
+            {
+                table.CurrentExtension = table.Extensions.FirstOrDefault(i => i.LabelCode == extension);
+                table.EnsureHtmlLayout();
+                url = String.Format("{0}#ext={1};cell=R{2}_C{3};", table.HtmlPath, extension, row, column);
+
+                //UI.Browser.Navigate(url);
+                //UI.TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
+            }
+            return url;
         }
         
         private void RegValueToList(string regkey, List<string> items) 
@@ -648,23 +665,89 @@ namespace UI
             }
         }
 
-        public void ShowInBrowser(string path,bool left) 
+        public void ShowInBrowser(string path) 
         {
             if (UI.Dispatcher.CheckAccess())
             {
-                if (left)
-                {
-                    UI.Browser_Left.Navigate(path);
-                }
-                else 
-                {
-                    UI.Browser_Right.Navigate(path);
-                }
+     
+                UI.Browser.Navigate(path);
+                UI.TB_Title.Text = path;
+              
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { ShowInBrowser(path, left); });
+                UI.Dispatcher.Invoke(() => { ShowInBrowser(path); });
             }
+        }
+
+        public object ProcessRequest(Request request)
+        {
+            object result = null;
+            var urlparts = request.url.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+            if (urlparts.Length == 2) 
+            {
+                var part0 = urlparts[0].ToLower();
+                var part1 = urlparts[1].ToLower();
+                if (part0 == "instance")
+                {
+                    if (Engine.CurrentInstance != null)
+                    {
+                        if (part1 == "get")
+                        {
+                            var json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.CurrentInstancePath);
+                            result = json;
+                        }
+                        if (part1 == "validation")
+                        {
+                            var json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.CurrentInstanceValidationResultPath);
+                            result = json;
+                            
+                        }
+                    }
+                }
+                if (part0 == "taxonomy")
+                {
+                    var json = "";
+                    if (part1 == "concepts")
+                    {
+                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyConceptPath);
+
+                    }
+                    if (part1 == "validationrules")
+                    {
+                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyValidationPath);
+
+                    }
+                    if (part1 == "hierarchies")
+                    {
+                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyHierarchyPath);                        
+
+                    }
+                    if (part1 == "labels")
+                    {
+                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyLabelPath);
+
+                    }
+                    result = json;
+                }
+                if (part0 == "table")
+                {
+                    if (part1 == "get")
+                    {
+                        var cell = request.parameters["cell"];
+                        //var cell = command.Substring(command.IndexOf(":") + 1);
+                        var report = cell.Remove(cell.IndexOf("<"));
+                        var cellspecifiers = cell.TextBetween("<", ">").Split('|');
+                        var extension = cellspecifiers[0];
+                        var row = cellspecifiers[1];
+                        var column = cellspecifiers[2];
+
+                        result = GetTableHtmlPath(report, extension, row, column);
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

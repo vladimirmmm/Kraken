@@ -436,7 +436,7 @@ namespace LogicalModel
             }
 
             ManageUIFile(@"Table.css");
-            ManageUIFile(@"InstanceTemplate.html");
+            ManageUIFile(@"UI.html");
             //TaxonomyToUI();
         }
 
