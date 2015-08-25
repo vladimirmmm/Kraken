@@ -120,6 +120,7 @@
     <Content Include="Scripts\AppItems.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\colResizable-1.5.min.js" />
     <Content Include="Scripts\Instance.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -206,8 +207,9 @@
   <Target Name="BeforeBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(ProjectDir)Scripts" "C:\My\taxonomies\testtaxonomy\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2013-12-01\mod\corep_le_con\Layout\Scripts\"
-xcopy /E /Y "$(ProjectDir)Scripts" "C:\My\taxonomies\testtaxonomy\www.eba.europa.eu\eu\fr\xbrl\crr\fws\finrep\its-2013-03/2014-03-31\mod\finrep_con_ifrs\Layout\Scripts\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y "$(ProjectDir)Scripts" "$(SolutionDir)UI\Bin\Debug\Scripts\"
+xcopy /E /Y "$(ProjectDir)Table.css" "$(SolutionDir)UI\Bin\Debug\Table.css"
+xcopy /E /Y "$(ProjectDir)UI.html" "$(SolutionDir)UI\Bin\Debug\UI.html"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

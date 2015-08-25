@@ -28,6 +28,8 @@ namespace LogicalModel
         public event TaxonomyEventHandler InstanceLoadFailed;
         public event TaxonomyEventHandler InstanceLoaded;
 
+        protected Boolean IsInstanceLoading = false;
+
         public string HtmlPath = AppDomain.CurrentDomain.BaseDirectory + "UI.html";
 
 
@@ -58,7 +60,7 @@ namespace LogicalModel
             return true;
         }
         public virtual bool Trigger_TaxonomyLoaded(string filepath)
-        {
+        {           
             if (TaxonomyLoaded != null)
             {
                 TaxonomyLoaded(this, new TaxonomyEventArgs(filepath));

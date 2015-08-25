@@ -32,7 +32,8 @@ namespace UI
         {
             this.UI = ui;
             Load();
-            this.Engine.TaxonomyLoaded+=Engine_TaxonomyLoaded;
+            this.Engine.TaxonomyLoaded += Engine_TaxonomyLoaded;
+            this.Engine.InstanceLoaded += Engine_InstanceLoaded;
             this.Settings.Load(null);
             this.Settings = Settings.Current;
         }
@@ -361,7 +362,21 @@ namespace UI
         }
         private void Engine_InstanceLoaded(object sender, EventArgs e)
         {
+            UIReload();
 
+        }
+
+        public void UIReload() 
+        {
+
+            if (UI.Dispatcher.CheckAccess())
+            {
+                UI.Browser.Refresh();
+            }
+            else 
+            {
+                UI.Dispatcher.Invoke(() => { LoadInstanceToUI(); });
+            }
         }
         public void CloseInstance()
         {
@@ -437,6 +452,7 @@ namespace UI
                 UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
                 UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
                 UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
+                ShowInBrowser(Engine.HtmlPath); 
 
             }
             else
@@ -694,12 +710,12 @@ namespace UI
                     {
                         if (part1 == "get")
                         {
-                            var json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.CurrentInstancePath);
+                            var json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.CurrentInstancePath);
                             result = json;
                         }
                         if (part1 == "validation")
                         {
-                            var json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.CurrentInstanceValidationResultPath);
+                            var json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.CurrentInstanceValidationResultPath);
                             result = json;
                             
                         }
@@ -710,22 +726,22 @@ namespace UI
                     var json = "";
                     if (part1 == "concepts")
                     {
-                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyConceptPath);
+                        json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyConceptPath);
 
                     }
                     if (part1 == "validationrules")
                     {
-                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyValidationPath);
+                        json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyValidationPath);
 
                     }
                     if (part1 == "hierarchies")
                     {
-                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyHierarchyPath);                        
+                        json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyHierarchyPath);                        
 
                     }
                     if (part1 == "labels")
                     {
-                        json = System.IO.File.ReadAllText(Engine.CurrentTaxonomy.TaxonomyLabelPath);
+                        json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyLabelPath);
 
                     }
                     result = json;
@@ -736,13 +752,60 @@ namespace UI
                     {
                         var cell = request.parameters["cell"];
                         //var cell = command.Substring(command.IndexOf(":") + 1);
-                        var report = cell.Remove(cell.IndexOf("<"));
-                        var cellspecifiers = cell.TextBetween("<", ">").Split('|');
-                        var extension = cellspecifiers[0];
-                        var row = cellspecifiers[1];
-                        var column = cellspecifiers[2];
+                        var report = "";
+                        var extension = "";
+                        var row = "";
+                        var column = "";
+                        if (cell.IndexOf(">") > -1)
+                        {
+                            report = cell.Remove(cell.IndexOf("<"));
+                            var cellspecifiers = cell.TextBetween("<", ">").Split('|');
+                            var nr_params = cellspecifiers.Length;
+                            extension = nr_params > 0 ? cellspecifiers[0] : "";
+                            row = nr_params > 1 ? cellspecifiers[1] : "";
+                            column = nr_params > 2 ? cellspecifiers[2] : "";
+                        }
+                        else 
+                        {
+                            report = cell;
+                        }
 
                         result = GetTableHtmlPath(report, extension, row, column);
+                    }
+                    if (part1 == "list")
+                    {
+                        var h = new BaseModel.Hierarchy<LogicalModel.TableInfo>();
+                        var tgs = Engine.CurrentTaxonomy.TableGroups.Select(i => { var ti = new TableInfo(); ti.ID = i.FilingIndicator; ti.Name =  i.FilingIndicator; ti.Description=i.LabelContent; return ti; });
+                        foreach (var tg in tgs) 
+                        {
+                            var htg = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tg);
+                            h.Children.Add(htg);
+                            var tables = Engine.CurrentTaxonomy.Tables.Where(i=>i.FilingIndicator==tg.ID);
+                            //if (tables.Count() == 1) 
+                            //{
+                            //    htg.Item.ID == String.Format("{0}<>", tables.FirstOrDefault().ID);
+                            //}
+                            foreach (var tbl in tables)
+                            {
+                                var tbinfo = new TableInfo();
+                                var ht = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tbinfo);
+                                ht.Item.SetFrom(tbl);
+                                ht.Item.ID = String.Format("{0}<>", tbl.ID);
+
+                                htg.Children.Add(ht);
+                                foreach (var ext in tbl.Extensions) 
+                                {
+                                    var extinfo = new TableInfo();
+                                    extinfo.ID = String.Format("{0}<{1}>", tbl.ID, ext.LabelCode);
+                                    extinfo.Name = ext.LabelContent;
+                                    var hext = new BaseModel.Hierarchy<LogicalModel.TableInfo>(extinfo);
+                                    ht.Children.Add(hext);
+                                }
+                            }
+                         
+                          
+                        }
+                        result = Utilities.Converters.ToJson(h);
                     }
                 }
             }

@@ -268,11 +268,13 @@
         }
 
     }
+
     export class ConceptLookUp {
         public Concept: string = "";
         public Values: Object = {};
         public OptionsHTML: string = "";
     }
+
     export class Cell extends InstanceFact {
         public Report: string;
         public Extension: string;
@@ -310,7 +312,7 @@
     }   
 
     export class Label {
-        public labelID: string;
+        public LabelID: string;
         public Lang: string;
         public Code: string;
         public Content: string;
@@ -353,14 +355,12 @@
         public Results: ValidationRuleResult[] = [];
     }
 
-
     export class Taxonomy
     {
         public Name: string;
         public EntryDocumentName: string;
         public ValidationRules: ValidationRule[] = [];
-        //public FactMap: Dictionary<string[]> = {};
-        public Labels: Dictionary<string[]> = {};
+        public Labels: Model.Label[] = [];
 
         public Concepts: Model.Concept[] = [];
         public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = [];
@@ -368,4 +368,9 @@
 
     }
 
+    export class TableInfo extends Identifiable
+    {
+        public Name: string = "";
+        public Description: string = "";
+    }
 }

@@ -28,8 +28,22 @@ namespace XBRLProcessor
                 CurrentEngine = this;
             }
             this.InstanceLoad += XbrlEngine_InstanceLoad;
+            this.InstanceLoaded += XbrlEngine_InstanceLoaded;
+            this.InstanceLoadFailed += XbrlEngine_InstanceLoadFailed;
             this.TaxonomyLoadFailed += XbrlEngine_TaxonomyLoadFailed;
             this.TaxonomyLoaded += XbrlEngine_TaxonomyLoaded;
+        }
+
+        private void XbrlEngine_InstanceLoadFailed(object sender, TaxonomyEventArgs e)
+        {
+            IsInstanceLoading = false;
+        }
+
+        private void XbrlEngine_InstanceLoaded(object sender, TaxonomyEventArgs e)
+        {
+            IsInstanceLoading = false;
+
+
         }
 
         void XbrlEngine_TaxonomyLoaded(object sender, TaxonomyEventArgs e)
@@ -66,6 +80,7 @@ namespace XBRLProcessor
             {
                 Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
             }
+     
          
         }
 
@@ -148,6 +163,12 @@ namespace XBRLProcessor
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
                 Console.WriteLine("Loading Taxonomy finished");
+                this.CurrentInstance = (XbrlInstance)this.CurrentTaxonomy.GetNewInstance();
+                if (!IsInstanceLoading)
+                {
+                    Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
+                    this.CurrentInstance.SaveToJson();
+                }
                 Trigger_TaxonomyLoaded(filepath);
             }
             else 
@@ -161,6 +182,7 @@ namespace XBRLProcessor
 
         public override bool LoadInstance(string filepath)
         {
+            IsInstanceLoading = true;
             Console.WriteLine("Loading Instance started");
             CurrentInstance = new XbrlInstance(filepath);
             CurrentInstanceTaxonomyLoaded = null;

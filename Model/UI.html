@@ -2,15 +2,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta charset="utf-8" />
 
     <link rel="stylesheet" type="text/css" href="Table.css">
     <script src="Scripts\jquery-2.1.3.js" type="text/javascript"></script>
     <script src="Scripts\jquery-ui-1.11.4.js" type="text/javascript"></script>
     <script src="Scripts\jquery.cookie.js" type="text/javascript"></script>
 
-    <script src="Scripts\splitter.js" type="text/javascript"></script>
+    <script src="Scripts\colResizable-1.5.min.js" type="text/javascript"></script>
     <script src="Scripts\jquery.pagination.js" type="text/javascript"></script>
     <script src="Scripts\Linq.js" type="text/javascript"></script>
     <script src="Scripts\AppItems.js" type="text/javascript"></script>
@@ -29,7 +30,9 @@
 <body>
     <script type="text/javascript">
         var instance = null;
+        debugger;
         $(document).ready(function () {
+
             Notify("instance_ready");
             SetPivots();
             taxonomycontainer.SetExternals();
@@ -43,178 +46,308 @@
 
     </script>
 
-    <div id="pivot" class="split-pane vertical-percent">
-        <div id="Contents" class="pivotitem split-pane-component">
-            <div class="content">
-                <div id="Commands">
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Facts')">Facts</a>
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('InvalidFacts');">Invalid Facts</a>
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('ValidationErrors');">Validations</a>
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Contexts');">Contexts</a>
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Units');">Units</a>
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('FilingIndicators');">Filing Indicators</a>
-                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('General');">General</a>
-                </div>
-                <div id="Facts" class="subcontent">
-                    <div id="FactFilter">
-                        <p>
-                            <label>Concept: </label><input type="text" id="F_Concept" />
-                        </p>
-                        <p>
-                            <label>Context: </label><textarea type="text" id="F_Context"></textarea>
-                        </p>
-                        <p>
-                            <label>Value: </label><input type="text" id="F_Value" />
-                        </p>
-                        <input type="button" value="Search" onclick="instancecontainer.FilterItems()" />
-                    </div>
-                    <div id="factcontainer">
-                        <ul id="factlist">
-                            <li binding-type="template">
-                                <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[instancecontainer.ShowDetails('{FactKey}', '{FactString}')]">
-                                    <span>bind[<strong>{Concept.FullName}-{ContextID}:</strong> {Value}]></span>
-                                </a>
-
-                            </li>
-                        </ul>
-                        <div id="factpager" class="pagination">
-                        </div>
-                    </div>
-                    <div id="factdetail">
-                        <p>
-                            <strong>FactKey:</strong> <span>bind[FactKey]</span>
-                        </p>
-                        <p>
-                            <strong>FactString:</strong>  <span>bind[FactString]</span>
-                        </p>
-                        <p>
-                            <strong>Context & Unit:</strong>  <span>bind[Context ID: {ContextID}; Unit ID: {UnitID}]</span>
-                        </p>
-                        <p>
-                            <strong>Value:</strong>  <span>bind[Value]</span>
-                        </p>
-                        <p>
-                            <strong>Concept:</strong>  <span>bind[Concept.FullName]</span>
-                        </p>
-                        <p>
-                            <strong>Dimensions:</strong>
-                            <table binding-items="Dimensions">
-                                <tr binding-type="template">
-                                    <td>
-                                        bind[{DomainMemberFullName}]
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </p>
-                        <p>
-                            <strong>Cells:</strong>
-                            <ul id="celllist" binding-items="Cells">
+    <div id="pivot" class="">
+        <table id="maintable">
+            <thead>
+                <tr>
+                    <th class="th1"></th>
+                    <th class="th2"></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="th1">
+                        <div id="Tables" class="pivotitem">
+                            <ul id="tabletreeview" class="treeview" binding-items="Children">
                                 <li binding-type="template">
-                                    <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateToCell('{this}')]">
-                                        <span>bind[{this}]</span>
+                                    <a href="javascript:void(0)" title="bind[Item.Description]">
+                                        bind[Item.Name]
                                     </a>
-
+                                    <ul class="treeview" binding-items="Children">
+                                        <li binding-type="template">
+                                            <a href="javascript:void(0)" onclick="bind[ShowHideChild('.tables', this); instancecontainer.NavigateTo('{Item.ID}');]">
+                                                bind[Item.Name]
+                                            </a>
+                                            <ul class="treeview hidden tables" binding-items="Children">
+                                                <li binding-type="template">
+                                                    <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateTo('{Item.ID}');]">
+                                                        bind[Item.Name]
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
-                        </p>
-
-                    </div>
-                </div>
-
-                <div id="Validation" class="subcontent">
-                    <ul>
-                        <li>
-                            dsgdsg
-                        </li>
-                        <li>
-                            dsgdsg
-                        </li>
-                        <li>
-                            dsgdsg
-                        </li>
-                    </ul>
-                    <ul id="validationlist">
-                        <li binding-type="template">
-                            <div class="hmax30 trimmed">
-                                <h2>bind[DisplayText]</h2><br />
-                            </div>
-                            <div class="hmax30 trimmed">
-                                <span>bind[OriginalExpression]</span>
-                            </div>
-                            <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowRuleDetail('{ID}')]" class="icon close">Details...</a>
-
-                            <div id="bind[validationrule_results_{ID}]">
-
-                            </div>
-
-                        </li>
-
-                    </ul>
-                    <div id="validationerrorpager" class="pagination">
-                    </div>
-
-                    <div id="validationdetail">
-                        <a href="javascript:void(0)" onclick="instancecontainer.CloseRuleDetail()" class="icon close">Close</a>
-                        <ul id="validationruleresults">
-                            <li binding-type="template">
-                                <table binding-items="Parameters">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Value</th>
-                                        <th>Cells</th>
-                                    </tr>
-                                    <tr binding-type="template">
-                                        <td>bind[{Name}]</td>
-                                        <td class="right">bind[{Value}]</td>
-                                        <td binding-items="Cells">
-                                            <a binding-type="template" href="javascript:void(0)" onclick="bind[instancecontainer.NavigateToCell('{this}')]">
-                                                bind[this]
-                                            </a>
-                                        </td>
-
-                                    </tr>
-                                </table>
-                            </li>
-                        </ul>
-                        <div id="validationddetailpager" class="pagination">
-
                         </div>
-                    </div>
-                </div>
+                    </td>
+                    <td class="th2">
+                        <div id="Contents" class="pivotitem">
+                            <div class="contentcontainer">
+                                <div id="MainCommands">
+                                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Taxonomy', this)">Taxonomy</a>
+                                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Instance', this);">Instance</a>
+                                </div>
+                                <div id="TaxonomyContainer" class="contentcontainer subcontent">
+                            
+                                        <div id="TaxCommands">
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Labels', this)">Labels</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Facts', this)">Facts</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Concepts', this);">Concepts</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Hierarchies', this);">Hierarchies</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Dimensions', this);">Dimensions</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_ValidationRules', this);">Validations</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_FilingIndicators', this);">Filing Indicators</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_General', this);">General</a>
+                                        </div>
+                                        <div id="T_Labels" class="subcontent">
+                                            <div class="listfilter">
+                                                <table class="filter noborder">
+                                                    <tr>
+                                                        <td>
+                                                            <label>Content: </label><br /><textarea type="text" id="F_Content"></textarea>
+                                                        </td>
+                                                        <td>
+                                                            <label>Code: </label><br /><input type="text" id="F_Code" />
+                                                        </td>
+                                                        <td>
+                                                            <label>Key: </label><br /><input type="text" id="F_Key" />
 
-                <div id="Units" class="subcontent">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>
+                                                            <input type="button" value="Clear" onclick="taxonomycontainer.ClearFilterLabels()" />
+                                                            <input type="button" value="Search" onclick="taxonomycontainer.FilterLabels()" />
 
-                </div>
+                                                        </td>
+                                                    </tr>
 
-                <div id="Details" class="subcontent">
-                    <p>
-                        <input type="text" id="SchemaRef" value="bind[TaxonomyModuleReference]" class="w_large" />
-                    </p>
-                    <p>
-                        <input type="date" id="ReportingDate" value="bind[ReportingDate]" />
-                    </p>
-                    <p>
-                        <input type="text" id="MonetaryUnit" value="bind[ReportingMonetaryUnit.Name]" />
-                    </p>
-                    <p>
-                        <input type="text" id="EntityID" value="bind[Entity.ID]" />
-                    </p>
-                    <p>
-                        <input type="text" id="EntityScheme" value="bind[Entity.Scheme]" />
-                    </p>
+                                                </table>
+                                            </div>
+                                            <div>
+                                                <div  class="listpager pagination">
+                                                </div>
+                                                <ul class="list">
+                                                    <li binding-type="template">
+                                                        <a href="javascript:void(0)">
+                                                        </a>
+                                                        <span>bind[<strong>{FileName}</strong> {LabelID} ({Lang})]</span>
+                                                        <br />
+                                                        <span>bind[{Code} | {Content}]</span>
 
-                </div>
 
-                <div id="Cells" class="subcontent">
+                                                    </li>
+                                                </ul>
 
-                </div>
-            </div>
-        </div>
-        <div class="split-pane-divider"></div>
-        <div id="Table" class="pivotitem split-pane-component">
-            <iframe id="tableframe"></iframe>
-        </div>
+                                            </div>
+
+                                        </div>
+                             
+
+                                </div>
+                                <div id="InstanceContainer" class="contentcontainer subcontent">
+                                    <div id="InstCommands">
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Facts', this)">Facts</a>
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Facts', this)">Invalid Facts</a>
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('T_Validations', this);">Validations</a>
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Units', this);">Units</a>
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_FilingIndicators', this);">Filing Indicators</a>
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_General', this);">General</a>
+                                    </div>
+                                    <div id="I_Facts" class="subcontent">
+                                        <div class="listfilter">
+                                            <table class="filter noborder">
+                                                <tr>
+                                                    <td>
+                                                        <label>Concept: </label><br /><input type="text" id="F_Concept" />
+                                                    </td>
+                                                    <td>
+                                                        <label>Context: </label><br /><textarea type="text" id="F_Context"></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <label>Value: </label><br /><input type="text" id="F_Value" />
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <label>Dimension: </label><br /><textarea type="text" id="F_Dimension"></textarea>
+
+                                                    </td>
+                                                    <td>
+                                                        <label>Label: </label><br /><input type="text" id="F_Label" />
+
+                                                    </td>
+                                                    <td>
+                                                        <input type="button" value="Clear" onclick="instancecontainer.ClearFilterFacts()" />
+                                                        <input type="button" value="Search" onclick="instancecontainer.FilterFacts()" />
+
+                                                    </td>
+                                                </tr>
+
+                                            </table>
+                                        </div>
+                                        <div>
+                                            <div class="listpager pagination">
+                                            </div>
+                                            <ul class="list">
+                                                <li binding-type="template">
+                                                    <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[instancecontainer.ShowDetails('{FactKey}', '{FactString}')]">
+                                                        <span>bind[<strong>{Concept.FullName}-{ContextID}:</strong> {Value}]></span>
+                                                    </a>
+
+                                                </li>
+                                            </ul>
+
+                                        </div>
+                                        <div class="detail">
+
+                                            <table class="noborder">
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <strong>FactString:</strong> <span title="bind[FactKey: {FactKey}]">bind[FactString]</span>
+                                                        <br />
+                                                        <ul id="celllist" binding-items="Cells">
+                                                            <li binding-type="template">
+                                                                <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateTo('{this}')]">
+                                                                    <span>bind[{this}]</span>
+                                                                </a>
+
+                                                            </li>
+                                                        </ul>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+
+                                                    <td>
+                                                        <p>
+                                                            <strong>Context & Unit:</strong>  <span>bind[Context ID: {ContextID}; Unit ID: {UnitID}]</span>
+                                                        </p>
+                                                        <p>
+                                                            <strong>Value:</strong>  <span>bind[Value]</span>
+                                                        </p>
+                                                        <p>
+                                                            <strong>Concept:</strong>  <span>bind[Concept.FullName]</span>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <strong>Dimensions:</strong>
+                                                        <table binding-items="Dimensions">
+                                                            <tr binding-type="template">
+                                                                <td>
+                                                                    bind[{DomainMemberFullName}]
+                                                                </td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+
+
+
+
+                                        </div>
+                                    </div>
+
+
+                                    <div id="I_Validations" class="subcontent">
+
+                                        <ul class="list">
+                                            <li binding-type="template">
+                                                <div class="hmax30 trimmed">
+                                                    <h2>bind[DisplayText]</h2><br />
+                                                </div>
+                                                <div class="hmax30 trimmed">
+                                                    <span>bind[OriginalExpression]</span>
+                                                </div>
+                                                <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowRuleDetail('{ID}')]" class="icon close">Details...</a>
+
+                                                <div id="bind[validationrule_results_{ID}]">
+
+                                                </div>
+
+                                            </li>
+
+                                        </ul>
+                                        <div class="listpager pagination">
+                                        </div>
+
+                                        <div class="detail">
+                                            <a href="javascript:void(0)" onclick="instancecontainer.CloseRuleDetail()" class="icon close">Close</a>
+                                            <ul class="sublist">
+                                                <li binding-type="template">
+                                                    <table binding-items="Parameters">
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Value</th>
+                                                            <th>Cells</th>
+                                                        </tr>
+                                                        <tr binding-type="template">
+                                                            <td>bind[{Name}]</td>
+                                                            <td class="right">bind[{Value}]</td>
+                                                            <td binding-items="Cells">
+                                                                <a binding-type="template" href="javascript:void(0)" onclick="bind[instancecontainer.NavigateTo('{this}')]">
+                                                                    bind[this]
+                                                                </a>
+                                                            </td>
+
+                                                        </tr>
+                                                    </table>
+                                                </li>
+                                            </ul>
+                                            <div class="sublistpager pagination">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="I_Units" class="subcontent">
+
+                                    </div>
+
+                                    <div id="I_General"  class="general subcontent">
+                                        <p>
+                                            <input type="text" id="I_SchemaRef" value="bind[TaxonomyModuleReference]" class="w_large" />
+                                        </p>
+                                        <p>
+                                            <input type="date" id="I_ReportingDate" value="bind[ReportingDate]" />
+                                        </p>
+                                        <p>
+                                            <input type="text" id="I_MonetaryUnit" value="bind[ReportingMonetaryUnit.Name]" />
+                                        </p>
+                                        <p>
+                                            <input type="text" id="I_EntityID" value="bind[Entity.ID]" />
+                                        </p>
+                                        <p>
+                                            <input type="text" id="I_EntityScheme" value="bind[Entity.Scheme]" />
+                                        </p>
+
+                                    </div>
+
+                                    <div id="I_Cells" class="subcontent">
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="Table" class="">
+                            <iframe id="tableframe"></iframe>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

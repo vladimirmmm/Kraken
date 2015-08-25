@@ -15,7 +15,8 @@ interface JQuery
     serializeObject(...any);
     padding(direction: string): number;
     pagination(total: any, options: any);
-    splitPane(options?: any);
+    colResizable(options?: any);
+    resizableColumns(options?: any);
 }
 
 interface External {
@@ -23,14 +24,20 @@ interface External {
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    debugger;
     Notify(errortext);
     return true;
 }
+function ShowHideChild(selector: any,sender:any)
+{
+    $(selector).hide();
+    var $item = $(selector, $(sender).parent()).first();
+    $item.show();
+}
 function SetPivots()
 {
-  
-    $("#pivot").splitPane();
+    $("#maintable").colResizable({
+        liveDrag: false,
+    });
     //$("#pivot").splitPane({
     //    type: "v",
     //    outline: true,
@@ -82,7 +89,7 @@ function Activate(jitem: JQuery)
 //Notify("typeof console " + typeof console);
 //if (typeof console === "undefined") {
 
-   // window.onerror = ErrorHandler;
+    window.onerror = ErrorHandler;
 //}
 function Notify(notification) {
     if ('Notify' in window.external) {
@@ -173,8 +180,57 @@ var StartProgress: F_Progress = function (id: string) { return null; };
 var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
 
 
-var requests: General.KeyValue[] = IsNull(parent["requests"]) ? [] : parent["requests"];
+var requests: General.KeyValue[] = []; 
+try {
+    if (!IsNull(parent["requests"])){
+        requests = parent["requests"];
+    }
+}
+catch (err) {
+    
+}
+function ShowContent(selector: string, sender:any)
+{
+    var me = this;
+    var $parent = $(sender).parents(s_contentcontainer_selector).first();
+    $parent.children(s_content_selector).hide();
+    var $contenttoshow = $parent.children(selector)
+    if ($contenttoshow.length == 0)
+    {
+        Notify("ShowContent: " + $contenttoshow.selector + " has not items!");
+    }
+    $contenttoshow.show();
 
+
+}
+function LoadPage($bindtarget: JQuery, $pager:JQuery, items:any[], page: number, pagesize: number)
+{
+    var me = this;
+    var startix = pagesize * page;
+    var endix = startix + pagesize;
+    var itemspart = items.slice(startix, endix);
+    BindX($bindtarget, itemspart);
+    if ($pager.length == 0 || 1 == 1) {
+        $pager.pagination(items.length,
+            {
+                items_per_page: pagesize,
+                current_page: page ? page : 0,
+                link_to: "",
+                prev_text: "Prev",
+                next_text: "Next",
+                ellipse_text: "...",
+                prev_show_always: true,
+                next_show_always: true,
+                callback: function (pageix) {
+                    LoadPage($bindtarget, $pager, items, pageix, pagesize);
+                },
+            });
+    } else
+    {
+        //console.log("")
+    }
+
+}
 
 function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function) {
  
@@ -199,7 +255,9 @@ function AjaxResponse(requestid:string, isok:boolean, stringdata: string)
         var requesthandler = <RequestHandler>request.Value;
         var response = stringdata;
         if (requesthandler.contenttype.indexOf("json") > -1) {
-            response = JSON.parse(stringdata);
+            if (!IsNull(stringdata)) {
+                response = JSON.parse(stringdata);
+            }
         }
 
         var ix = requests.indexOf(request);
@@ -1417,28 +1475,37 @@ class TemplateDictionaryItem
 
 function BindX(item: JQuery, data: Object)
 {
-    var bt: BindingTemplate = null;
-    var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
-    if (templatedictionaryitem == null) {
-        if (item.length > 0) {
-            bt = GetBindingTemplate(item);
-            templatedictionaryitem = new TemplateDictionaryItem();
-            templatedictionaryitem.Item = item;
-            templatedictionaryitem.Template = bt;
-            TemplateDictionary.push(templatedictionaryitem);
-        } else
-        {
-            console.log(item.selector + " was not found! (BindX)");
+    if (item.length == 0) {
+        Notify(item.selector + " has no items!");
+    } else {
+        var bt: BindingTemplate = null;
+        var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
+        if (templatedictionaryitem == null) {
+            if (item.length > 0) {
+                bt = GetBindingTemplate(item);
+                templatedictionaryitem = new TemplateDictionaryItem();
+                templatedictionaryitem.Item = item;
+                templatedictionaryitem.Template = bt;
+                TemplateDictionary.push(templatedictionaryitem);
+            } else {
+                console.log(item.selector + " was not found! (BindX)");
+            }
+        } else {
+            bt = templatedictionaryitem.Template;
         }
-    } else
-    {
-        bt = templatedictionaryitem.Template;
+        item[0].innerHTML = bt.Bind(data);
     }
-    item[0].innerHTML = bt.Bind(data);
-    
 }
 var S_Bind_Start = "bind[";
 var S_Bind_End = "]";
+var s_list_selector: string = ".list";
+var s_listpager_selector: string = ".listpager";
+var s_listfilter_selector: string = ".listfilter";
+var s_sublist_selector: string = ".sublist";
+var s_sublistpager_selector: string = ".sublistpager";
+var s_detail_selector: string = ".detail";
+var s_contentcontainer_selector: string = ".contentcontainer";
+var s_content_selector: string = ".subcontent";
 
 function BindLevel(html: string, data: Object):string
 {

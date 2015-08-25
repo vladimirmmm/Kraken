@@ -383,8 +383,7 @@ var Model;
     var Taxonomy = (function () {
         function Taxonomy() {
             this.ValidationRules = [];
-            //public FactMap: Dictionary<string[]> = {};
-            this.Labels = {};
+            this.Labels = [];
             this.Concepts = [];
             this.Hierarchies = [];
             this.ConceptValues = [];
@@ -392,5 +391,15 @@ var Model;
         return Taxonomy;
     })();
     Model.Taxonomy = Taxonomy;
+    var TableInfo = (function (_super) {
+        __extends(TableInfo, _super);
+        function TableInfo() {
+            _super.apply(this, arguments);
+            this.Name = "";
+            this.Description = "";
+        }
+        return TableInfo;
+    })(Identifiable);
+    Model.TableInfo = TableInfo;
 })(Model || (Model = {}));
 //# sourceMappingURL=Models.js.map

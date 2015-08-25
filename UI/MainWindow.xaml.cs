@@ -46,11 +46,14 @@ namespace UI
             this.Features.LoadFeatures(this.Features.FeatureContainer, null);
 
         }
-
+        private object slocker = new object();
         void fromJS(object param) 
         {
             var command = String.Format("{0}", param).ToLower();
-            Console.WriteLine(command);
+            lock (slocker)
+            {
+                Console.WriteLine(command);
+            }
             var request_tag = "request: ";
             if (command == "table_ready") 
             {
@@ -198,8 +201,15 @@ namespace UI
                 table.CreateHtmlLayout(true);
             }
             dynamic doc = Browser.Document;
-            var htmlText = doc.documentElement.InnerHtml;
-            System.IO.File.WriteAllText(this.Features.Engine.HtmlPath.Replace(".html", "_Current.html"), htmlText);
+            try
+            {
+                var htmlText = doc.documentElement.InnerHtml;
+                System.IO.File.WriteAllText(this.Features.Engine.HtmlPath.Replace(".html", "_Current.html"), htmlText);
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine("Failed to save the document! " + ex.Message);
+            }
             Browser.Refresh();
    
         }

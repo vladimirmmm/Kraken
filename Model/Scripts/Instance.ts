@@ -8,9 +8,51 @@
         public FactsNr: number = 0;
         public Page: number = 0;
         public PageSize: number = 20;
+        public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
+
+      
+
+        private s_fact_id: string = "I_Facts";
+        private s_validation_id: string = "I_Validations";
+        private s_units_id: string = "I_Units";
+        private s_find_id: string = "I_Filing";
+        private s_general_id: string = "I_General";
+
+        private s_main_id: string = "InstanceContainer";
+
+        private s_fact_selector: string = "";
+        private s_validation_selector: string = "";
+        private s_unit_selector: string = "";
+        private s_find_selector: string = "";
+        private s_general_selector: string = "";
+
         constructor() {
- 
+            this.s_fact_selector = "#" + this.s_fact_id;
+            this.s_validation_selector = "#" + this.s_validation_id;
+            this.s_unit_selector = "#" + this.s_units_id;
+            this.s_find_selector = "#" + this.s_find_id;
+            this.s_general_selector = "#" + this.s_general_id;
         }
+
+        public Sel(selector: any): JQuery
+        {
+            var me = this;
+            return $(selector, "#" + me.s_main_id);
+        }
+
+        public SelFrom(parentselector: any, selector: any): JQuery {
+            var me = this;
+            return $(selector, me.Sel(parentselector));
+        }
+        public SelFromFact(selector: any): JQuery {
+            var me = this;
+            return $(selector, me.Sel(me.s_fact_selector));
+        }
+        public SelFromValidation(selector: any): JQuery {
+            var me = this;
+            return $(selector, me.Sel(me.s_validation_selector));
+        }
+
         public SetExternals() {
             var me = this;
             me.Taxonomy = taxonomycontainer.Taxonomy;
@@ -21,7 +63,11 @@
             AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
                 me.ValidationResults = data;
             }, function (error) { console.log(error); });
-         
+            AjaxRequest("Table/List", "get", "json", null, function (data) {
+                me.TableStructure = data;
+                BindX($("#tabletreeview"), me.TableStructure);
+
+            }, function (error) { console.log(error); });
         }
         public LoadInstance(instancejson: string) {
             var item: Model.Instance = <Model.Instance>JSON.parse(instancejson);
@@ -31,9 +77,12 @@
         public LoadToUI()
         {
             var me = this;
-            $("#factdetail").hide();
-            this.ShowContent("#Facts");
-            console.log("Loading validationlist" + new Date());
+            S_Bind_End
+            me.Sel(s_detail_selector).hide();
+            ShowContent("#" + me.s_fact_id, $("#TaxCommands"));
+            ShowContent("#" + me.s_fact_id, $("#InstCommands"));
+            ShowContent("#TaxonomyContainer", $("#MainCommands"));
+
             var facts: Model.FactBase[] = [];
             var dict = this.Instance.FactDictionary;
             if (IsNull(this.Instance.Facts))
@@ -58,60 +107,58 @@
                 }
             }
             me.FactsNr = this.Instance.Facts.length;
-            me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
+            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
 
-            console.log(new Date());
-
-     
         }
 
-        public FilterItems()
+        public ClearFilterFacts()
+        {
+            $("input[type=text]","#FactFilter ").val("");
+            $("textarea","#FactFilter ").val("");
+            this.FilterFacts();
+        }
+        public FilterFacts()
         {
             var me = this;
-            var f_concept: string = $("#FactFilter #F_Concept").val();
-            var f_context: string = $("#FactFilter #F_Context").val();
-            var f_value: string = $("#FactFilter #F_Value").val();
+            var f_label: string = me.SelFromFact(s_listfilter_selector + " #F_Label").val().toLowerCase().trim();
+            var f_concept: string = me.SelFromFact(s_listfilter_selector + " #F_Concept").val().toLowerCase().trim();
+            var f_context: string = me.SelFromFact(s_listfilter_selector + " #F_Context").val().toLowerCase().trim();
+            var f_dimension: string = me.SelFromFact(s_listfilter_selector + " #F_Dimension").val().toLowerCase().trim();
+            var f_value: string = me.SelFromFact(s_listfilter_selector + " #F_Value").val().toLowerCase().trim();
             var context_id = "";
             var context_xml = "";
-            if (f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1)
-            {
+            var query = me.Instance.Facts.AsLinq<Model.InstanceFact>();
+            if (f_context.indexOf(">") > -1 || f_context.indexOf("\n") > -1) {
 
             }
-            //var context_id = f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1 ? "" : f_context.trim();
+            else
+            {
+                context_id = f_context;
+                query = query.Where(i=> i.ContextID.toLowerCase().indexOf(context_id) > -1);
 
-            me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
+            }
+            if (!IsNull(f_concept))
+            {
+                query = query.Where(i=> i.Concept.FullName.toLowerCase().indexOf(f_concept) > -1);
+            }
+            if (!IsNull(f_dimension)) {
+                query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
+            }
+            if (!IsNull(f_value)) {
+                query = query.Where(i=> i.Value.toLowerCase()==f_value);
+            }
+      
+            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize);
 
         }
 
-        public LoadPage($bindtarget: JQuery, $pager:JQuery, items:any[], page: number, pagesize: number)
-        {
-            var me = this;
-            var startix = pagesize * page;
-            var endix = startix + pagesize;
-            var itemspart = items.slice(startix, endix);
-            BindX($bindtarget, itemspart);
-            if ($pager.length == 0 || 1==1)
-            {
-                $pager.pagination(items.length,
-                    {
-                        items_per_page: pagesize,
-                        current_page: page ? page : 0,
-                        link_to: "",
-                        prev_text: "Prev",
-                        next_text: "Next",
-                        ellipse_text: "...",
-                        prev_show_always: true,
-                        next_show_always: true,
-                        callback: function (pageix) {
-                            me.LoadPage($bindtarget, $pager, items, pageix, pagesize);
-                        },
-                    });
-            }
-        
-        }
+
+
+
 
         public ShowDetails(factkey:string, factstring:string)
         {
+            var me = this;
             var facts: Model.InstanceFact[] = this.Instance.FactDictionary[factkey];
           
             if (facts != null && facts.length>0)
@@ -119,7 +166,7 @@
            
                 var fact = facts[0];
                 Model.FactBase.LoadFromFactString(fact);
-                var $factdetail = $("#factdetail");
+                var $factdetail = me.SelFromFact(s_detail_selector);
                 BindX($factdetail, fact);
                 $factdetail.show();
             }
@@ -149,7 +196,7 @@
                 }
                 
             });
-            me.LoadPage($("#validationlist"), $("#validationerrorpager"), me.ValidationErrors, 0, me.PageSize);
+            LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), me.ValidationErrors, 0, me.PageSize);
             $(".trimmed").click(function () {
                 if ($(this).hasClass("hmax30")) {
                     $(this).removeClass("hmax30");
@@ -158,57 +205,54 @@
 
                 }
             });
-             //console.log("Loading validationlist" + new Date());
-            //console.log(new Date());
+  
 
         }
 
-        public ShowContent(selector: string)
-        {
-            $(".subcontent", "#Contents").hide();
-            $(selector).show();
+     
 
-        }
-
-        public LoadContentToUI(contentid: string)
+        public LoadContentToUI(contentid: string, sender: any)
         {
             var me = this;
-            if (contentid == "Facts"){
-                me.ShowContent('#Facts');
-                me.LoadPage($("#factlist"), $("#factpager"), me.Instance.Facts, 0, me.PageSize);
+            var text = $(sender).text();
+            if (contentid == "Taxonomy")
+            {
+                ShowContent('#TaxonomyContainer', sender);
 
             }
-            if (contentid == "InvalidFacts") {
-                me.ShowContent('#Facts');
+            if (contentid == "Instance")
+            {
+                ShowContent('#InstanceContainer', sender);
+
+            }
+            if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") == -1){
+                ShowContent('#'+contentid, sender);
+                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
+
+            }
+            if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid")>-1) {
+                ShowContent('#' + contentid, sender);
                 var invalidfacts = me.Instance.Facts.AsLinq<Model.InstanceFact>().Where(i=> i.Cells.length == 0).ToArray();
-                me.LoadPage($("#factlist"), $("#factpager"), invalidfacts, 0, me.PageSize);
+                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), invalidfacts, 0, me.PageSize);
 
             }
-            if (contentid == "ValidationErrors") {
-                me.ShowContent('#Validation');
+            if (contentid == me.s_validation_id) {
+                ShowContent('#'+contentid, sender);
                 instancecontainer.ShowValidationResults()
             }
-            if (contentid == "ValidationRules") {
-                me.ShowContent('#Validation');
+
+
+            if (contentid == me.s_units_id) {
+                ShowContent('#' + contentid, sender);
 
             }
-
-            if (contentid == "Contexts") {
-                me.ShowContent('#Context');
-
-            }
-            if (contentid == "Units") {
-                me.ShowContent('#Unit');
+            if (contentid == me.s_find_id) {
+                ShowContent('#'+contentid, sender);
 
             }
-            if (contentid == "FilingIndicators") {
-                me.ShowContent('#FilingIndicator');
-
-            }
-            if (contentid == "General") {
-                var $target = $("#Details");
-                BindX($target, me.Instance);
-                me.ShowContent('#Details');
+            if (contentid == me.s_general_id) {
+                BindX(me.Sel(me.s_general_selector), me.Instance);
+                ShowContent('#'+contentid, sender);
 
             }
         }
@@ -218,7 +262,7 @@
             var me = this;
             var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
 
-            me.LoadPage($("#validationruleresults"), $("#validationddetailpager"), rule.Results, 0, 1);
+            LoadPage($("#validationruleresults"), $("#validationddetailpager"), rule.Results, 0, 1);
 
             $("#validationrule_results_" + ruleid).append($("#validationdetail"));
             $("#validationdetail").show();
@@ -235,22 +279,16 @@
        
         }
 
-        public Test()
-        {
-            this.ShowValidationResults();
-            console.log("Loading validationlist" + new Date());
-            BindX($("#validationlist"), this.ValidationErrors);
-            console.log(new Date());
 
-        }
-
-        public NavigateToCell(cell: string) {
+        public NavigateTo(cell: string) {
             //Notify(Format("navigatetocell:{0}", cell));
             
             AjaxRequest("Table/Get", "get", "text/html", {cell: cell}, function (data) {
                 $("#tableframe").attr("src", data);
+                $("#tableframe").css("height", $("#tableframe").parent().parent().height());
             }, function (error) { console.log(error); });
         }
+
     }
 }
 

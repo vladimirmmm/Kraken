@@ -245,14 +245,17 @@ var UI;
             var me = this;
             $("dynamicdata").remove();
             if (IsNull(me.Instance)) {
-                if (IsNull(instance.FactDictionary)) {
+                me.Instance = instance;
+                if (IsNull(me.Instance.FactDictionary)) {
                     Notify("Loading Fact Dictionary");
-                    instance.FactDictionary = {};
-                    instance.Facts.forEach(function (fact, index) {
-                        instance.FactDictionary[fact.FactString] = fact;
+                    me.Instance.FactDictionary = {};
+                    me.Instance.Facts.forEach(function (fact, index) {
+                        if (!IsNull(me.Instance.FactDictionary[fact.FactString])) {
+                            var x = 5;
+                        }
+                        me.Instance.FactDictionary[fact.FactString] = fact;
                     });
                 }
-                me.Instance = instance;
             }
             if (!IsNull(me.FactMap)) {
                 var c = 0;
@@ -365,12 +368,6 @@ var UI;
                 $newrow.find(".title").html("new row");
             }
             var $rows = $("tr", me.$TemplateRow.parent());
-            /*
-            if ($rows.length > 2) {
-                $lastrow.attr("id", Format("R{0}", rownum + 1));
-                me.SetCellID($lastrow);
-            }
-            */
             return $newrow;
         };
         Table.prototype.SetCellID = function ($row) {

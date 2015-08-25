@@ -15,6 +15,7 @@ using BaseModel;
 using LogicalModel.Expressions;
 using System.CodeDom.Compiler;
 using System.Reflection;
+using Model.InstanceModel;
 
 namespace XBRLProcessor.Models
 {
@@ -855,6 +856,17 @@ namespace XBRLProcessor.Models
             this.Hierarchies.Clear();
             this.SimpleValidationRules.Clear();
             GC.Collect();
+        }
+
+        public override LogicalModel.Instance GetNewInstance()
+        {
+            var instance = new XbrlInstance();
+            var link = new Link();
+            link.Href = this.SourceTaxonomyPath;
+
+            instance.SchemaRef = link;
+            instance.Taxonomy = this;
+            return instance;
         }
     }
 }

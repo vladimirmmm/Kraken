@@ -1,11 +1,17 @@
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    debugger;
     Notify(errortext);
     return true;
 }
+function ShowHideChild(selector, sender) {
+    $(selector).hide();
+    var $item = $(selector, $(sender).parent()).first();
+    $item.show();
+}
 function SetPivots() {
-    $("#pivot").splitPane();
+    $("#maintable").colResizable({
+        liveDrag: false,
+    });
     //$("#pivot").splitPane({
     //    type: "v",
     //    outline: true,
@@ -50,7 +56,7 @@ function Activate(jitem) {
 }
 //Notify("typeof console " + typeof console);
 //if (typeof console === "undefined") {
-// window.onerror = ErrorHandler;
+window.onerror = ErrorHandler;
 //}
 function Notify(notification) {
     if ('Notify' in window.external) {
@@ -130,7 +136,48 @@ var StartProgress = function (id) {
 var ResultFormatter = function (rawdata) {
     return rawdata;
 };
-var requests = IsNull(parent["requests"]) ? [] : parent["requests"];
+var requests = [];
+try {
+    if (!IsNull(parent["requests"])) {
+        requests = parent["requests"];
+    }
+}
+catch (err) {
+}
+function ShowContent(selector, sender) {
+    var me = this;
+    var $parent = $(sender).parents(s_contentcontainer_selector).first();
+    $parent.children(s_content_selector).hide();
+    var $contenttoshow = $parent.children(selector);
+    if ($contenttoshow.length == 0) {
+        Notify("ShowContent: " + $contenttoshow.selector + " has not items!");
+    }
+    $contenttoshow.show();
+}
+function LoadPage($bindtarget, $pager, items, page, pagesize) {
+    var me = this;
+    var startix = pagesize * page;
+    var endix = startix + pagesize;
+    var itemspart = items.slice(startix, endix);
+    BindX($bindtarget, itemspart);
+    if ($pager.length == 0 || 1 == 1) {
+        $pager.pagination(items.length, {
+            items_per_page: pagesize,
+            current_page: page ? page : 0,
+            link_to: "",
+            prev_text: "Prev",
+            next_text: "Next",
+            ellipse_text: "...",
+            prev_show_always: true,
+            next_show_always: true,
+            callback: function (pageix) {
+                LoadPage($bindtarget, $pager, items, pageix, pagesize);
+            },
+        });
+    }
+    else {
+    }
+}
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     var requestid = Guid();
     var requesthandler = { error: error, success: success, url: url, contenttype: contenttype };
@@ -147,7 +194,9 @@ function AjaxResponse(requestid, isok, stringdata) {
         var requesthandler = request.Value;
         var response = stringdata;
         if (requesthandler.contenttype.indexOf("json") > -1) {
-            response = JSON.parse(stringdata);
+            if (!IsNull(stringdata)) {
+                response = JSON.parse(stringdata);
+            }
         }
         var ix = requests.indexOf(request);
         if (ix > -1) {
@@ -1241,27 +1290,40 @@ var TemplateDictionaryItem = (function () {
     return TemplateDictionaryItem;
 })();
 function BindX(item, data) {
-    var bt = null;
-    var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == item[0]; });
-    if (templatedictionaryitem == null) {
-        if (item.length > 0) {
-            bt = GetBindingTemplate(item);
-            templatedictionaryitem = new TemplateDictionaryItem();
-            templatedictionaryitem.Item = item;
-            templatedictionaryitem.Template = bt;
-            TemplateDictionary.push(templatedictionaryitem);
-        }
-        else {
-            console.log(item.selector + " was not found! (BindX)");
-        }
+    if (item.length == 0) {
+        Notify(item.selector + " has no items!");
     }
     else {
-        bt = templatedictionaryitem.Template;
+        var bt = null;
+        var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == item[0]; });
+        if (templatedictionaryitem == null) {
+            if (item.length > 0) {
+                bt = GetBindingTemplate(item);
+                templatedictionaryitem = new TemplateDictionaryItem();
+                templatedictionaryitem.Item = item;
+                templatedictionaryitem.Template = bt;
+                TemplateDictionary.push(templatedictionaryitem);
+            }
+            else {
+                console.log(item.selector + " was not found! (BindX)");
+            }
+        }
+        else {
+            bt = templatedictionaryitem.Template;
+        }
+        item[0].innerHTML = bt.Bind(data);
     }
-    item[0].innerHTML = bt.Bind(data);
 }
 var S_Bind_Start = "bind[";
 var S_Bind_End = "]";
+var s_list_selector = ".list";
+var s_listpager_selector = ".listpager";
+var s_listfilter_selector = ".listfilter";
+var s_sublist_selector = ".sublist";
+var s_sublistpager_selector = ".sublistpager";
+var s_detail_selector = ".detail";
+var s_contentcontainer_selector = ".contentcontainer";
+var s_content_selector = ".subcontent";
 function BindLevel(html, data) {
     var result_html = html;
     var bindings = TextsBetween(html, S_Bind_Start, S_Bind_End, true);

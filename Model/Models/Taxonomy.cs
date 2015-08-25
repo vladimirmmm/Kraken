@@ -763,7 +763,10 @@ namespace LogicalModel
         {
 
         }
-
+        public virtual Instance GetNewInstance()
+        {
+            return new Instance();
+        }
         #region Clear
 
         public void Clear_All_But_Structure()
