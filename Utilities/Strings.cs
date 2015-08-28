@@ -36,15 +36,19 @@ namespace Utilities
                     return FilePath.Remove(FilePath.LastIndexOf("/") + 1);
                 }
             }
-            return "";
+            return FilePath;
         }
         public static string GetFolderName(string FilePath)
         {
             var folder = GetFolder(FilePath);
-            var foldername = folder.Trim('\\');
+            var foldername = folder.Trim('\\').Trim('/');
             if (foldername.Contains("\\"))
             {
                 foldername = foldername.Substring(foldername.LastIndexOf("\\") + 1);
+            }
+            if (foldername.Contains("/"))
+            {
+                foldername = foldername.Substring(foldername.LastIndexOf("/") + 1);
             }
             return foldername;
         }
@@ -69,6 +73,19 @@ namespace Utilities
                 }
             }
             return filename;
+        }
+        public static string GetRelativePath(string referencePath, string absolutePath)
+        {
+            var lowerref = referencePath.ToLower();
+            var lowerabs = absolutePath.ToLower();
+            var ix = lowerabs.IndexOf(lowerref);
+            if (ix == 0) 
+            {
+                var relpath = absolutePath.Substring(lowerref.Length);
+                relpath = /*"..\\" +*/ relpath;
+                return relpath;
+            }
+            return absolutePath;
         }
         public static string ResolveRelativePath(string referencePath, string relativePath)
         {

@@ -75,7 +75,7 @@ namespace Model.InstanceModel
         }
         public void LoadComplex() 
         {
-
+            Clear();
             var factnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.StartsWith(this.Taxonomy.ConceptNameSpace+":")).ToList();
             foreach (var factnode in factnodes) 
             {
@@ -95,7 +95,11 @@ namespace Model.InstanceModel
             LoadLogicalData();
         }
 
-
+        public override void Clear()
+        {
+            base.Clear();
+            this.XbrlFacts.Clear();
+        }
 
         public void LoadLogicalData() 
         {
@@ -319,7 +323,7 @@ namespace Model.InstanceModel
             foreach (var fact in Facts) 
             {
                 var itemtype = fact.Concept.ItemType;
-                var setting = Taxonomy.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itemtype);
+                var setting = Taxonomy.Module.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itemtype);
                 if (!String.IsNullOrEmpty(setting.UnitID))
                 { 
 
@@ -336,8 +340,8 @@ namespace Model.InstanceModel
             {
                 var concept = fact.Concept;
                 var taxconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Content == concept.Content);
-                
-                var itemtypesetting = Taxonomy.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == taxconcept.ItemType);
+
+                var itemtypesetting = Taxonomy.Module.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == taxconcept.ItemType);
                 var unitid = itemtypesetting.UnitID;
                 
                 if (!dict.ContainsKey(taxconcept.ItemType))

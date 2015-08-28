@@ -12,10 +12,7 @@ namespace BaseModel
 
         protected string _FileName = "";
         public string FileName { get { return _FileName; } set { _FileName = value; } }
-
-        protected string _LocalFolder = "";
-        public string LocalFolder { get { return _LocalFolder; } set { _LocalFolder = value; } }
-        
+     
         protected string _SourceFolder = "";
         public string SourceFolder { get { return _SourceFolder; } }
 
@@ -26,11 +23,25 @@ namespace BaseModel
             set { _ReferencedFiles = value; }
         }
 
-        protected string _LocalPath = "";
+        protected string _LocalRelPath = "";
+        public string LocalRelPath
+        {
+            get { return _LocalRelPath; }
+            set { _LocalRelPath = value; }
+        }
         public string LocalPath
         {
-            get { return _LocalPath; }
-            set {_LocalPath = value; }
+            get 
+            {
+                //return String.Format("{0}{1}", GetEngineLocalFolder(), LocalRelPath);
+                return Utilities.Strings.ResolveRelativePath( GetEngineLocalFolder(), LocalRelPath); 
+            }
+    
+        }
+        public string LocalFolder
+        {
+            get { return Utilities.Strings.GetFolder(LocalPath); }
+
         }
 
         protected string _SourcePath = "";
@@ -44,6 +55,10 @@ namespace BaseModel
         {
             get { return GetContent(); }
             //set { SetContent(value); }
+        }
+
+        public virtual string GetEngineLocalFolder() {
+            return "";
         }
 
         public virtual void SetContent(string value) { }

@@ -15,6 +15,7 @@ interface JQuery
     serializeObject(...any);
     padding(direction: string): number;
     pagination(total: any, options: any);
+    resizable(options?: any);
     colResizable(options?: any);
     resizableColumns(options?: any);
 }
@@ -22,9 +23,30 @@ interface JQuery
 interface External {
     Notify(obj: any)
 }
+function CreateMsg(category: string): General.Message {
+    var msg = new General.Message();
+    msg.Category = category;
+    return msg;
+}
+function CreateNotificationMsg(message: string): General.Message
+{
+    var msg = CreateMsg("notification");
+    msg.Data = message;
+    return msg
+}
+function CreateAjaxMsg(): General.Message {
+    var msg = CreateMsg("ajax");
+    return msg
+}
+function CreateErrorMsg(errormessage: string):General.Message
+{
+    var msg = CreateMsg("error");
+    msg.Error = errormessage;
+    return msg;
+}
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Notify(errortext);
+    Error(errortext);
     return true;
 }
 function ShowHideChild(selector: any,sender:any)
@@ -35,9 +57,11 @@ function ShowHideChild(selector: any,sender:any)
 }
 function SetPivots()
 {
-    $("#maintable").colResizable({
-        liveDrag: false,
-    });
+    
+    $("#maintable").resizableColumns();
+    //$("#maintable").colResizable({
+    //    liveDrag: false,
+    //});
     //$("#pivot").splitPane({
     //    type: "v",
     //    outline: true,
@@ -56,6 +80,20 @@ function SetPivots()
     });
     */
 }
+
+var waitForFinalEvent = (function () {
+    var timers = {};
+    return function (callback, ms, uniqueId) {
+        if (!uniqueId) {
+            uniqueId = "Don't call this twice without a uniqueId";
+        }
+        if (timers[uniqueId]) {
+            clearTimeout(timers[uniqueId]);
+        }
+        timers[uniqueId] = setTimeout(callback, ms);
+    };
+})();
+
 function Activate(jitem: JQuery)
 {
     var $item = jitem;
@@ -91,13 +129,9 @@ function Activate(jitem: JQuery)
 
     window.onerror = ErrorHandler;
 //}
-function Notify(notification) {
-    if ('Notify' in window.external) {
-        window.external.Notify(notification);
-    } else {
-        console.log(notification);
-    }
-}
+
+
+
 
 function LoadJS(path:string)
 {
@@ -152,7 +186,8 @@ function ToObjectX(items: Dictionary): Object {
     };
     return obj;
 }
-function ToObject(items:General.KeyValue[]):Object
+
+function ToObject(items: General.KeyValue[]): Object
 {
     var obj = {};
     items.forEach(function (item)
@@ -161,10 +196,29 @@ function ToObject(items:General.KeyValue[]):Object
     });
     return obj;
 }
+
 module General {
     export class KeyValue {
         public Key: string = "";
         public Value: any = null;
+    }
+
+    export class Message
+    {
+        public Id: string;
+        public Url: string;
+        public Category: string;
+        public Parameters: Object = {};
+        public ContentType: string;
+        public Error: string
+        public Data:string
+    }
+    function X()
+    {
+        console.log("retek");
+    }
+    export function XY() {
+        console.log("retek");
     }
 }
 
@@ -172,9 +226,13 @@ interface RequestHandler
 {
     success: Function;
     error: Function;
+    Id: string;
+    /*
     url: string;
     contenttype: string;
+    */
 }
+
 var StopProgress: F_Progress = function (id: string) { return null; };
 var StartProgress: F_Progress = function (id: string) { return null; };
 var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
@@ -197,13 +255,14 @@ function ShowContent(selector: string, sender:any)
     var $contenttoshow = $parent.children(selector)
     if ($contenttoshow.length == 0)
     {
-        Notify("ShowContent: " + $contenttoshow.selector + " has not items!");
+        ShowError("ShowContent: " + $contenttoshow.selector + " has not items!");
     }
     $contenttoshow.show();
 
 
 }
-function LoadPage($bindtarget: JQuery, $pager:JQuery, items:any[], page: number, pagesize: number)
+
+function LoadPage($bindtarget: JQuery, $pager: JQuery, items: any[], page: number, pagesize: number, events?: Object)
 {
     var me = this;
     var startix = pagesize * page;
@@ -222,7 +281,10 @@ function LoadPage($bindtarget: JQuery, $pager:JQuery, items:any[], page: number,
                 prev_show_always: true,
                 next_show_always: true,
                 callback: function (pageix) {
-                    LoadPage($bindtarget, $pager, items, pageix, pagesize);
+                    CallFunction(events, "onpaging");
+                    LoadPage($bindtarget, $pager, items, pageix, pagesize, events);
+                    CallFunction(events, "onpaged");
+
                 },
             });
     } else
@@ -232,29 +294,101 @@ function LoadPage($bindtarget: JQuery, $pager:JQuery, items:any[], page: number,
 
 }
 
+function CallFunction(eventcontainer: Object, eventname: string, args?: any[])
+{
+    if (!IsNull(eventcontainer))
+    {
+        if (eventname in eventcontainer && IsFunction(eventcontainer[eventname]))
+        {
+            eventcontainer[eventname](args);
+        }
+    }
+}
+
+function CallFunctionVariable(func: Function, args?: any[])
+{
+    if (!IsNull(func) && IsFunction(func)) {
+        func(args);
+    }
+    
+}
+
+function Notify(message: string) {
+    ShowNotification(message);
+}
+function ShowNotification(message: string) {
+    var msg = CreateNotificationMsg(message);
+    Communication_ToApp(msg);
+}
+function ShowError(message: string) {
+    var msg = CreateErrorMsg(message);
+    Communication_ToApp(msg);
+
+}
+function Communication_ToApp(message: General.Message)
+{
+    var strdata = JSON.stringify(message);
+    if ('Notify' in window.external) {
+        window.external.Notify(strdata);
+    } else {
+        console.log(strdata);
+    }
+}
+
+function Communication_Listener(data: string) {
+    var message: General.Message = <General.Message>JSON.parse(data);
+    if (message.Category == "ajax") {
+        AjaxResponse(message);
+    }
+    if (message.Category == "notfication")
+    {
+
+    }
+    if (message.Category == "error") {
+
+    }
+    if (message.Category == "action") {
+        if (message.Url.toLowerCase() == "instance")
+        {
+            instancecontainer.HandleAction(message);
+        }
+    }
+    if (message.Category == "debug") {
+        debugger;
+    }
+}
+
+
 function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function) {
  
 
     var requestid = Guid();
-    var requesthandler = <RequestHandler>{ error: error, success: success, url: url, contenttype: contenttype };
+    var requesthandler = <RequestHandler>{ error: error, success: success, Id: requestid};
     var kv = new General.KeyValue();
     kv.Key = requestid;
     kv.Value = requesthandler;
     requests.push(kv);
-    var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
-    Notify("Request: "+JSON.stringify(notification));
+    //var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
+    var msg = CreateAjaxMsg();
+    msg.Url = url;
+    msg.Parameters = parameters;
+    msg.Id = requestid;
+    msg.ContentType = contenttype;
+
+    Communication_ToApp(msg);
 
 } 
 
-function AjaxResponse(requestid:string, isok:boolean, stringdata: string)
+function AjaxResponse(message: General.Message)
 {
     
 
-    var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == requestid);
+    var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == message.Id);
     if (request != null) {
         var requesthandler = <RequestHandler>request.Value;
+        var stringdata = message.Data;
         var response = stringdata;
-        if (requesthandler.contenttype.indexOf("json") > -1) {
+        if (message.ContentType.indexOf("json") > -1) {
             if (!IsNull(stringdata)) {
                 response = JSON.parse(stringdata);
             }
@@ -265,16 +399,16 @@ function AjaxResponse(requestid:string, isok:boolean, stringdata: string)
             requests.splice(ix, 1);
         }
 
-        if (isok) {
+        if (IsNull(message.Error)) {
             requesthandler.success(response);
         }
         else {
             requesthandler.error(response);
-            Notify("Response Error: " + response);
+            ShowError("Response Error: " + response);
         }
     } else
     {
-        Notify("Request not found! " + requestid);
+        ShowError("Request not found! " + message.Id);
     }
 }
 
@@ -463,11 +597,18 @@ function In(item,...any) {
     if (arguments.length < 2)
         return false;
     else {
-        var array = Array.prototype.slice.call(arguments, 0);
+        var array: any[]  = Array.prototype.slice.call(arguments, 0);
         array.splice(0, 1);
-        return array.where(function (x) {
-            return x === item;
-        }).length > 0;
+        //return array.where(function (x) {
+        //    return x === item;
+        //}).length > 0;
+        var found = false;
+        array.forEach(function (item_i) {
+            if (item_i===item) {
+                found = true;
+            }
+        });
+        return found;
     }
 }
 
@@ -475,11 +616,16 @@ function IsAllNull(item, ...any) {
     if (arguments.length < 1)
         return false;
     else {
-        var array = Array.prototype.slice.call(arguments, 0);
+        var array:any[] = Array.prototype.slice.call(arguments, 0);
         array.splice(0, 0);
-        return array.where(function (x) {
-            return !IsNull(x);
-        }).length > 0;
+        var nullcount = 0;
+        array.forEach(function (item_i) {
+            if (IsNull(item_i))
+            {
+                nullcount++;
+            }
+        });
+        return nullcount == array.length;
     }
 }
 
@@ -487,10 +633,15 @@ function IsAllNotNull(item, ...any) {
     if (arguments.length < 1)
         return false;
     else {
-        var array = Array.prototype.slice.call(arguments, 0);
+        var array: any[] = Array.prototype.slice.call(arguments, 0);
         array.splice(0, 0);
-        var nulls = array.where(function (x) { return IsNull(x); });
-        return nulls.length == 0;
+        var nullcount = 0;
+        array.forEach(function (item_i) {
+            if (IsNull(item_i)) {
+                nullcount++;
+            }
+        });
+        return nullcount == 0;
     }
 }
 
@@ -555,6 +706,21 @@ function ToHierarchy(items, idproperty, parentproperty, rootid) {
     });
     return Children;
 };
+
+function ForAll(hierarchy: Object,childrenproperty:string, func:Function)
+{
+    func(hierarchy);
+    if (childrenproperty in hierarchy)
+    {
+        var children = hierarchy[childrenproperty];
+        if (!IsNull(children) && IsArray(children))
+        {
+            (<any[]>children).forEach(function (item) {
+                ForAll(item, childrenproperty, func);
+            });
+        }
+    }
+}
 
 function Clone(obj:Object):Object {
 
@@ -1344,6 +1510,7 @@ class BindingTemplate
     public Content: string;
     public ChildPlaceholder: string = "@children@";
     public AccessorExpression: string = "";
+    public PageSize: number = 0;
     
     public Bind(data:Object):string
     {
@@ -1352,27 +1519,17 @@ class BindingTemplate
         var me = this;
         result_html = BindLevel(this.Content, data);
         me.Children.forEach(function (child) {
-            var items = Access(data, child.AccessorExpression);
-            var childitems = "";
-            items.forEach(function (item) {
-                childitems += child.Bind(item);
+            if (child.AccessorExpression != "nobind") {
+                var items = Access(data, child.AccessorExpression);
+                items = IsNull(items) ? [] : items;
+                var childitems = "";
 
-
-            });
-            result_html = Replace(result_html, child.ID, childitems);
+                items.forEach(function (item) {
+                    childitems += child.Bind(item);
+                });
+                result_html = Replace(result_html, child.ID, childitems);
+            }
         });
-        /*
-        if (me.Child != null) {
-            var items = Access(data, me.Child.AccessorExpression);
-
-            items.forEach(function (item) {
-                childitems += me.Child.Bind(item);
-
-
-            });
-            result_html = Replace(result_html, me.Child.ID, childitems);
-        }
-    */
         return result_html;
 
     }
@@ -1408,12 +1565,14 @@ function GetBindingTemplate(target:JQuery)
         var ix = jitem.index();
         var parent = jitem.parents("[binding-items]")[0];
         var parentbinding = $(parent).attr("binding-items");
+        var parentpagesize = $(parent).attr("binding-pagesize");
         var placeholder = "@" + index + "@";
         var placeholdernode = document.createTextNode(placeholder);
         //jitem.insertBefore(placeholdernode);
         $(placeholdernode).insertBefore(jitem);
         jitem.attr("ChildID", placeholder);
         jitem.attr("Expression", parentbinding);
+        jitem.attr("PageSize", parentpagesize);
         jitem.remove();
 
 
@@ -1428,6 +1587,9 @@ function GetBindingTemplate(target:JQuery)
         jitem.removeAttr("ChildID");
         var parentBinding = jitem.attr("Expression");
         jitem.removeAttr("Expression");
+        var parentPageSize = jitem.attr("PageSize");
+        jitem.removeAttr("PageSize");
+
         jitem.removeAttr("binding-type");
         var html = OuterHtml(jitem);
         var t = new BindingTemplate();
@@ -1435,6 +1597,7 @@ function GetBindingTemplate(target:JQuery)
         t.ID = childID
         t.Content = html;
         t.AccessorExpression = parentBinding;
+        //t.ParentPageSize = parentPageSize;
 
     });
 
@@ -1451,6 +1614,7 @@ function GetBindingTemplate(target:JQuery)
             item.Parent = parenttemplate;
             if (IsNull(item.AccessorExpression)) {
                 item.AccessorExpression = parenttemplate.AccessorExpression;
+                //todo
             }
             parenttemplate.Children.push(item);
         }
@@ -1476,7 +1640,7 @@ class TemplateDictionaryItem
 function BindX(item: JQuery, data: Object)
 {
     if (item.length == 0) {
-        Notify(item.selector + " has no items!");
+        ShowNotification("BindX: " + item.selector + " has no items!");
     } else {
         var bt: BindingTemplate = null;
         var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
@@ -1504,6 +1668,7 @@ var s_listfilter_selector: string = ".listfilter";
 var s_sublist_selector: string = ".sublist";
 var s_sublistpager_selector: string = ".sublistpager";
 var s_detail_selector: string = ".detail";
+var s_parent_selector: string = ".parent";
 var s_contentcontainer_selector: string = ".contentcontainer";
 var s_content_selector: string = ".subcontent";
 

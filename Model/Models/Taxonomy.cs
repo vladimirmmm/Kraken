@@ -23,8 +23,7 @@ namespace LogicalModel
     }
     public class TaxonomyProperties 
     {
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
+   
     }
     public class Taxonomy : DocumentCollection
     {
@@ -38,7 +37,7 @@ namespace LogicalModel
         public string Prefix = "";
 
         public List<Table> Tables = new List<Table>();
-        public List<TableGroup> TableGroups = new List<TableGroup>();
+        public TaxonomyModule Module = new TaxonomyModule();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
         public List<Concept> Concepts = new List<Concept>();
@@ -83,9 +82,6 @@ namespace LogicalModel
             set { _SimpleValidationRules = value; }
         }
 
-        public TaxonomyProperties GeneralProperties = new TaxonomyProperties();
-
-        public TaxonomySettings UserSettings = new TaxonomySettings(); 
         //public static Action<string> Console = null;
 
         public ValidationFunctionContainer ValidationFunctionContainer = null;
@@ -97,18 +93,35 @@ namespace LogicalModel
         public string ModuleFolder { get; set; }
 
         public string SourceTaxonomyPath = "";
-        public string SourceTaxonomyFolder
+        public string SourceTaxonomyModuleFolder
         {
             get { return Utilities.Strings.GetFolder(SourceTaxonomyPath); }
+        }
+        public string SourceTaxonomyFolder
+        {
+            get 
+            {
+                var strfolder = "mod";
+                var str1 = "\\"+strfolder+"\\"; 
+                var str2 = "/"+strfolder+"/";
+                var taxpath = SourceTaxonomyModuleFolder;
+                if (taxpath.ToLower().EndsWith(str1)) 
+                {
+                    taxpath = taxpath.Remove(taxpath.Length - (str1.Length - 1));
+                }
+                if (taxpath.ToLower().EndsWith(str2))
+                {
+                    taxpath = taxpath.Remove(taxpath.Length - (str2.Length - 1));
+                }
+
+                return Utilities.Strings.GetFolder(taxpath); 
+            }
         }
         public string TaxonomyTestPath
         {
             get { return ModuleFolder + "Test.txt"; }
         }
-        public string TaxonomyGeneralPath
-        {
-            get { return ModuleFolder + "General.json"; }
-        }
+
         public string TaxonomyStructurePath
         {
             get { return ModuleFolder + "Structure.json"; }
@@ -125,10 +138,7 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Concept.json"; }
         }
-        public string TaxonomyTableGroupPath
-        {
-            get { return ModuleFolder + "TableGroup.json"; }
-        }
+
         public string TaxonomyHyperCuberPath
         {
             get { return ModuleFolder + "Hypercube.json"; }
@@ -145,9 +155,9 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Labels.json"; }
         }
-        public string TaxonomyTablesPath
+        public string TaxonomyModulePath
         {
-            get { return ModuleFolder + "Tabels.json"; }
+            get { return ModuleFolder + "Module.json"; }
         }
         public string TaxonomySchemaElementsPath
         {
@@ -190,7 +200,7 @@ namespace LogicalModel
 
         public Taxonomy(string entrypath) 
         {
-            var localentrypath = Utilities.Strings.GetLocalPath(LocalFolder, entrypath);
+            var localentrypath = Utilities.Strings.GetLocalPath(TaxonomyEngine.LocalFolder, entrypath);
             ModuleFolder = localentrypath.Replace(".xsd", "\\");
             this.TaxonomyDocuments.Clear();
             SourceTaxonomyPath = entrypath;
@@ -237,58 +247,6 @@ namespace LogicalModel
         public virtual void LoadLabelDictionary() { }
       
         public virtual void LoadFactDictionary() { }
-
-        public virtual void LoadGeneral() 
-        {
-            Console.WriteLine("Load General Properties");
-
-            //Save
-            if (!System.IO.File.Exists(TaxonomyGeneralPath) || Settings.Current.ReloadFullTaxonomyButStructure)
-            {
-
-                var jsoncontent = Utilities.Converters.ToJson(GeneralProperties);
-                Utilities.FS.WriteAllText(TaxonomyGeneralPath, jsoncontent);
-            }
-            else
-            {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyGeneralPath);
-                this.GeneralProperties = Utilities.Converters.JsonTo<TaxonomyProperties>(jsoncontent);
-            }
-            Console.WriteLine("Load General Properties");
-        }
-
-        public virtual void LoadSettings()
-        {
-            Console.WriteLine("Load Settings");
-
-            //Save
-            if (!System.IO.File.Exists(TaxonomySettingsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
-            {
-
-                var itemtypes = this.Concepts.Select(i=>i.ItemType).Distinct().ToList();
-                foreach (var itemtype in itemtypes) 
-                {
-                    var itsetting = new ItemTypeSetting();
-                    itsetting.Set(itemtype, this);
-                    var unit = this.Units.FirstOrDefault(i => i.ItemType == itsetting.ItemType);
-                    if (unit != null) 
-                    {
-                        itsetting.UnitID = unit.ID;
-                    }
-                    UserSettings.ItemTypeSettings.Add(itsetting);
-                }
-             
-
-                var jsoncontent = Utilities.Converters.ToJson(UserSettings);
-                Utilities.FS.WriteAllText(TaxonomySettingsPath, jsoncontent);
-            }
-            else
-            {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomySettingsPath);
-                this.UserSettings = Utilities.Converters.JsonTo<TaxonomySettings>(jsoncontent);
-            }
-            Console.WriteLine("Load Settings completed");
-        }
 
         public virtual void LoadFacts()
         {
@@ -349,29 +307,39 @@ namespace LogicalModel
             ManageUIFiles();
             //
 
-            if (!System.IO.File.Exists(TaxonomyTablesPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            if (!System.IO.File.Exists(TaxonomyModulePath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
+                PopulateTableGroups();
+                LoadGeneral();
                 TableHandler.HandleTaxonomy(this);
 
-                var jsoncontent = Utilities.Converters.ToJson(Tables);
-                Utilities.FS.WriteAllText(TaxonomyTablesPath, jsoncontent);
+                var jsoncontent = Utilities.Converters.ToJson(Module);
+                foreach (var Table in Tables)
+                {
+                    var tjson = Utilities.Converters.ToJson(Table);
+                    Utilities.FS.WriteAllText(Table.JsonPath, tjson);
+
+                }
+                Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent);
 
             }
             else
             {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyTablesPath);
-                this.Tables = Utilities.Converters.JsonTo<List<LogicalModel.Table>>(jsoncontent);
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyModulePath);
+                this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
 
-
-                foreach (var table in this.Tables)
+                foreach (var tablepath in Module.TablePaths)
                 {
+                    var fulltablepath = Utilities.Strings.ResolveRelativePath(this.TaxonomyLayoutFolder, tablepath);
+                    var tjson = Utilities.FS.ReadAllText(fulltablepath);
+                    var table = Utilities.Converters.JsonTo<Table>(tjson);
                     table.Taxonomy = this;
                     table.Reload();
-                    //table.LoadDefinitions();
                     table.LoadLayout();
-
-
+                    this.Tables.Add(table);
                 }
+
+
             }
             Console.WriteLine("Load Tables completed");
 
@@ -416,18 +384,7 @@ namespace LogicalModel
             {
                 System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
             }
-            /*
-            ManageUIFile(@"Scripts\jquery-2.1.3.js");
-            ManageUIFile(@"Scripts\jquery-ui-1.11.4.js");
 
-            ManageUIFile(@"Scripts\Linq.js");
-            ManageUIFile(@"Scripts\AppItems.js");
-            ManageUIFile(@"Scripts\Instance.js");
-            ManageUIFile(@"Scripts\Models.js");
-            ManageUIFile(@"Scripts\Table.js");
-            ManageUIFile(@"Scripts\Utils.js");
-            ManageUIFile(@"Scripts\Taxonomy.js");
-            */
             var scriptfiles = System.IO.Directory.GetFiles("Scripts");
             foreach (var scriptfile in scriptfiles)
             {
@@ -437,7 +394,7 @@ namespace LogicalModel
 
             ManageUIFile(@"Table.css");
             ManageUIFile(@"UI.html");
-            //TaxonomyToUI();
+         
         }
 
         public void TaxonomyToUI()
@@ -728,25 +685,29 @@ namespace LogicalModel
         {
 
         }
-        public virtual void LoadTableGroups()
+        public virtual void LoadGeneral() 
         {
-            Console.WriteLine("Load TableGroups");
 
-            if (!System.IO.File.Exists(TaxonomyTableGroupPath) || Settings.Current.ReloadFullTaxonomyButStructure)
-            {
-                PopulateTableGroups();
-                var jsoncontent = Utilities.Converters.ToJson(this.TableGroups);
-                Utilities.FS.WriteAllText(TaxonomyTableGroupPath, jsoncontent);
-            }
-            else
-            {
-
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyTableGroupPath);
-                this.TableGroups = Utilities.Converters.JsonTo<List<TableGroup>>(jsoncontent);
-
-            }
-            Console.WriteLine("Load TableGroups completed");
         }
+        //public virtual void LoadTableGroups()
+        //{
+        //    Console.WriteLine("Load TableGroups");
+
+        //    if (!System.IO.File.Exists(TaxonomyTableGroupPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+        //    {
+        //        PopulateTableGroups();
+        //        var jsoncontent = Utilities.Converters.ToJson(this.Module.TableGroups);
+        //        Utilities.FS.WriteAllText(TaxonomyTableGroupPath, jsoncontent);
+        //    }
+        //    else
+        //    {
+
+        //        var jsoncontent = System.IO.File.ReadAllText(TaxonomyTableGroupPath);
+        //        this.Module.TableGroups = Utilities.Converters.JsonTo<List<TableGroup>>(jsoncontent);
+
+        //    }
+        //    Console.WriteLine("Load TableGroups completed");
+        //}
 
 
         public virtual void LoadInstance(string filepath)
@@ -767,6 +728,7 @@ namespace LogicalModel
         {
             return new Instance();
         }
+
         #region Clear
 
         public void Clear_All_But_Structure()
@@ -810,8 +772,7 @@ namespace LogicalModel
         
         public void Clear_Tables()
         {
-            Utilities.FS.DeleteFile(TaxonomyTablesPath);
-            Utilities.FS.DeleteFile(TaxonomyTableGroupPath);
+            Utilities.FS.DeleteFile(TaxonomyModulePath);
         }
 
         public void Clear_Layout()

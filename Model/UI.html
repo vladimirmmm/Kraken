@@ -30,10 +30,9 @@
 <body>
     <script type="text/javascript">
         var instance = null;
-        debugger;
         $(document).ready(function () {
 
-            Notify("instance_ready");
+            //Notify("instance_ready");
             SetPivots();
             taxonomycontainer.SetExternals();
             instancecontainer.SetExternals();
@@ -48,30 +47,54 @@
 
     <div id="pivot" class="">
         <table id="maintable">
+            <colgroup>
+                <col style="width: 300px" />
+                <col style="width: 500px" />
+                <col />
+            </colgroup>
             <thead>
-                <tr>
-                    <th class="th1"></th>
-                    <th class="th2"></th>
-                    <th></th>
+                <tr class="colHeaders">
+                    <th class="th1 ui-resizable">
+                        <div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>
+                    </th>
+                    <th class="th2 ui-resizable">
+                        <div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>
+                    </th>
+                    <th class="ui-resizable">
+                        <div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="th1">
                         <div id="Tables" class="pivotitem">
+                            <div id="TaxonomyInfo">
+                                <h1 title="bind[TaxonomyName]">
+                                    bind[TaxonomyID]
+                                </h1>
+                                <h2 title="bind[Name]">
+                                    bind[ID]
+
+                                </h2>
+                            </div>
                             <ul id="tabletreeview" class="treeview" binding-items="Children">
-                                <li binding-type="template">
-                                    <a href="javascript:void(0)" title="bind[Item.Description]">
+                                <li binding-type="template" class="bind[{Item.Type}]">
+                                    <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
                                         bind[Item.Name]
                                     </a>
-                                    <ul class="treeview" binding-items="Children">
-                                        <li binding-type="template">
-                                            <a href="javascript:void(0)" onclick="bind[ShowHideChild('.tables', this); instancecontainer.NavigateTo('{Item.ID}');]">
+                                    &nbsp;
+                                    <span>bind[Item.ExtensionText]</span>
+                                    <ul class="bind[treeview {Item.CssClass}]" binding-items="Children">
+                                        <li binding-type="template" class="bind[{Item.Type}]">
+                                            <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
                                                 bind[Item.Name]
                                             </a>
-                                            <ul class="treeview hidden tables" binding-items="Children">
-                                                <li binding-type="template">
-                                                    <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateTo('{Item.ID}');]">
+                                            &nbsp;
+                                            <span>bind[Item.ExtensionText]</span>
+                                            <ul class="bind[treeview {Item.CssClass}]" binding-items="Children">
+                                                <li binding-type="template" class="bind[{Item.Type}]">
+                                                    <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
                                                         bind[Item.Name]
                                                     </a>
                                                 </li>
@@ -86,7 +109,7 @@
                         <div id="Contents" class="pivotitem">
                             <div class="contentcontainer">
                                 <div id="MainCommands">
-                                    <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Taxonomy', this)">Taxonomy</a>
+                                    <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('Taxonomy', this)">Taxonomy</a>
                                     <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('Instance', this);">Instance</a>
                                 </div>
                                 <div id="TaxonomyContainer" class="contentcontainer subcontent">
@@ -97,7 +120,7 @@
                                             <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Concepts', this);">Concepts</a>
                                             <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Hierarchies', this);">Hierarchies</a>
                                             <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Dimensions', this);">Dimensions</a>
-                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_ValidationRules', this);">Validations</a>
+                                            <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_Validations', this);">Validations</a>
                                             <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_FilingIndicators', this);">Filing Indicators</a>
                                             <a href="javascript:void(0)" onclick="taxonomycontainer.LoadContentToUI('T_General', this);">General</a>
                                         </div>
@@ -147,13 +170,64 @@
 
                                         </div>
                              
+                                    <div id="T_Validations" class="subcontent">
+                                        <div class="listpager pagination">
+                                        </div>
+                                        <ul class="list">
+                                            <li binding-type="template">
+
+                                                <a href="javascript:void(0)" onclick="bind[taxonomycontainer.ShowRuleDetail('{ID}')]">bind[{ID}]</a> &nbsp;<strong>bind[{Title}]</strong>
+                                                <div id="bind[validationrule_results_{ID}]">
+
+                                                </div>
+
+                                            </li>
+
+                                        </ul>
+
+
+                                        <div class="detail">
+                                            <div class="parent">
+                                                <div class="hmax30 trimmed">
+                                                    <span>bind[DisplayText]</span>
+                                                </div>
+                                                <div class="hmax30 trimmed">
+                                                    <span>bind[OriginalExpression]</span>
+                                                </div>
+                                            </div>
+                                            <ul class="sublist">
+                                                <li binding-type="template">
+                                                    <table binding-items="Parameters">
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Value</th>
+                                                            <th>Cells</th>
+                                                        </tr>
+                                                        <tr binding-type="template">
+                                                            <td>bind[{Name}]</td>
+                                                            <td class="right">bind[{Value}]</td>
+                                                            <td binding-items="Cells">
+                                                                <a binding-type="template" href="javascript:void(0)" onclick="bind[taxonomycontainer.NavigateTo('{this}')]">
+                                                                    bind[this]
+                                                                </a>
+                                                            </td>
+
+                                                        </tr>
+                                                    </table>
+                                                </li>
+                                            </ul>
+                                            <div class="sublistpager pagination">
+
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                                 <div id="InstanceContainer" class="contentcontainer subcontent">
                                     <div id="InstCommands">
                                         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Facts', this)">Facts</a>
                                         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Facts', this)">Invalid Facts</a>
-                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('T_Validations', this);">Validations</a>
+                                        <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Validations', this);">Validations</a>
                                         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_Units', this);">Units</a>
                                         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_FilingIndicators', this);">Filing Indicators</a>
                                         <a href="javascript:void(0)" onclick="instancecontainer.LoadContentToUI('I_General', this);">General</a>
@@ -213,7 +287,7 @@
                                                         <br />
                                                         <ul id="celllist" binding-items="Cells">
                                                             <li binding-type="template">
-                                                                <a href="javascript:void(0)" onclick="bind[instancecontainer.NavigateTo('{this}')]">
+                                                                <a href="javascript:void(0)" onclick="bind[taxonomycontainer.NavigateTo('{this}')]">
                                                                     <span>bind[{this}]</span>
                                                                 </a>
 
@@ -258,17 +332,12 @@
 
 
                                     <div id="I_Validations" class="subcontent">
-
+                                        <div class="listpager pagination">
+                                        </div>
                                         <ul class="list">
                                             <li binding-type="template">
-                                                <div class="hmax30 trimmed">
-                                                    <h2>bind[DisplayText]</h2><br />
-                                                </div>
-                                                <div class="hmax30 trimmed">
-                                                    <span>bind[OriginalExpression]</span>
-                                                </div>
-                                                <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowRuleDetail('{ID}')]" class="icon close">Details...</a>
-
+                                          
+                                                <a href="javascript:void(0)" onclick="bind[instancecontainer.ShowRuleDetail('{ID}')]">bind[{ID}]</a> &nbsp;<strong>bind[{Title}]</strong>
                                                 <div id="bind[validationrule_results_{ID}]">
 
                                                 </div>
@@ -276,12 +345,19 @@
                                             </li>
 
                                         </ul>
-                                        <div class="listpager pagination">
-                                        </div>
+                                     
 
                                         <div class="detail">
-                                            <a href="javascript:void(0)" onclick="instancecontainer.CloseRuleDetail()" class="icon close">Close</a>
-                                            <ul class="sublist">
+                                            <!--<a href="javascript:void(0)" onclick="instancecontainer.CloseRuleDetail()" class="icon close">Close</a>-->
+                                            <div class="parent">
+                                                <div class="hmax30 trimmed">
+                                                    <span>bind[DisplayText]</span>
+                                                </div>
+                                                <div class="hmax30 trimmed">
+                                                    <span>bind[OriginalExpression]</span>
+                                                </div>
+                                            </div>
+                                            <ul class="sublist" >
                                                 <li binding-type="template">
                                                     <table binding-items="Parameters">
                                                         <tr>
@@ -293,7 +369,7 @@
                                                             <td>bind[{Name}]</td>
                                                             <td class="right">bind[{Value}]</td>
                                                             <td binding-items="Cells">
-                                                                <a binding-type="template" href="javascript:void(0)" onclick="bind[instancecontainer.NavigateTo('{this}')]">
+                                                                <a binding-type="template" href="javascript:void(0)" onclick="bind[taxonomycontainer.NavigateTo('{this}')]">
                                                                     bind[this]
                                                                 </a>
                                                             </td>
@@ -334,6 +410,7 @@
                                     <div id="I_Cells" class="subcontent">
 
                                     </div>
+                                
                                 </div>
 
 
@@ -342,8 +419,9 @@
                     </td>
                     <td>
                         <div id="Table" class="">
-                            <iframe id="tableframe"></iframe>
                         </div>
+                        <iframe id="tableframe" class="pivotitem"></iframe>
+
                     </td>
                 </tr>
             </tbody>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,8 +32,35 @@ namespace LogicalModel
         protected Boolean IsInstanceLoading = false;
 
         public string HtmlPath = AppDomain.CurrentDomain.BaseDirectory + "UI.html";
+        
+        public static string PreparedFolder = "Taxonomies";
+        private static string _LocalFolder = @"";
+        public static string LocalFolder
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_LocalFolder))
+                {
+                    var appdatafolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    var name = Assembly.GetEntryAssembly().GetName().Name;
+                    var folder = String.Format(@"{0}\{1}\", appdatafolder, name);
+                    //Utilities.FS.DirectoryCopy(PreparedFolder, folder, true, false);
+                    var taxfolder = folder + "Taxonomies\\";
+                    Utilities.FS.EnsurePath(taxfolder);
+                    _LocalFolder = taxfolder;
+                }
+                return _LocalFolder;
+            }
+            set
+            {
+                _LocalFolder = value;
+            }
+        }
 
-
+        public TaxonomyEngine() 
+        {
+            Console.WriteLine(LocalFolder);
+        }
         public virtual bool LoadInstance(string filepath) 
         {
             return true;

@@ -27,11 +27,14 @@ namespace LogicalModel
 
         public void SetLocalPath(string value) 
         {
-            _LocalPath = value;
-            _FileName = Utilities.Strings.GetFileName(_LocalPath);
-            _LocalFolder = Utilities.Strings.GetFolder(_LocalPath);
+            _LocalRelPath =  Utilities.Strings.GetRelativePath(TaxonomyEngine.LocalFolder, value);
+            _FileName = Utilities.Strings.GetFileName(_LocalRelPath);
         }
 
+        public override string GetEngineLocalFolder()
+        {
+            return TaxonomyEngine.LocalFolder;
+        }
         public void SetSourcePath(string value)
         {
             _SourcePath = value;

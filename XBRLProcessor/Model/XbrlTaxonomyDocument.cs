@@ -94,7 +94,7 @@ namespace XBRLProcessor.Models
                 }
             }
 
-            var localpath = Utilities.Strings.GetLocalPath(BaseModel.DocumentCollection.LocalFolder, sourcepath);
+            var localpath = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, sourcepath);
 
             SetLocalPath(localpath);
             SetSourcePath(sourcepath);
@@ -177,10 +177,11 @@ namespace XBRLProcessor.Models
                 {
                     sourcepath = Utilities.Strings.ResolveRelativePath(SourceFolder, path);
                 }
-                var localpath = Utilities.Strings.GetLocalPath(BaseModel.DocumentCollection.LocalFolder, sourcepath);
+                var localpath = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, sourcepath);
+                var localrelpath = Utilities.Strings.GetRelativePath(LogicalModel.TaxonomyEngine.LocalFolder, localpath);
                 //Console.WriteLine(localpath);
 
-                var taxonomydocument = Taxonomy.FindDocument(localpath);
+                var taxonomydocument = Taxonomy.FindDocument(localrelpath);
                 if (taxonomydocument == null)
                 {
                     //Console.WriteLine(path);
@@ -189,11 +190,11 @@ namespace XBRLProcessor.Models
                     taxonomydocument.LoadReferences();
                 }
                 //var reference = References.FirstOrDefault(i => i.SourcePath == path);
-                var reference = References.FirstOrDefault(i => i.LocalPath == localpath);
+                var reference = References.FirstOrDefault(i => i.LocalRelPath == localrelpath);
                 if (reference == null)
                 {
                     References.Add(taxonomydocument);
-                    ReferencedFiles.Add(taxonomydocument.LocalPath);
+                    ReferencedFiles.Add(taxonomydocument.LocalRelPath);
 
                 }
             }
@@ -201,7 +202,7 @@ namespace XBRLProcessor.Models
 
         public override void LoadDocument()
         {
-            XmlDocument.LoadXml(System.IO.File.ReadAllText(_LocalPath));
+            XmlDocument.LoadXml(System.IO.File.ReadAllText(LocalPath));
 
         }
 

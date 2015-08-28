@@ -1,6 +1,25 @@
+function CreateMsg(category) {
+    var msg = new General.Message();
+    msg.Category = category;
+    return msg;
+}
+function CreateNotificationMsg(message) {
+    var msg = CreateMsg("notification");
+    msg.Data = message;
+    return msg;
+}
+function CreateAjaxMsg() {
+    var msg = CreateMsg("ajax");
+    return msg;
+}
+function CreateErrorMsg(errormessage) {
+    var msg = CreateMsg("error");
+    msg.Error = errormessage;
+    return msg;
+}
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Notify(errortext);
+    Error(errortext);
     return true;
 }
 function ShowHideChild(selector, sender) {
@@ -9,9 +28,10 @@ function ShowHideChild(selector, sender) {
     $item.show();
 }
 function SetPivots() {
-    $("#maintable").colResizable({
-        liveDrag: false,
-    });
+    $("#maintable").resizableColumns();
+    //$("#maintable").colResizable({
+    //    liveDrag: false,
+    //});
     //$("#pivot").splitPane({
     //    type: "v",
     //    outline: true,
@@ -30,6 +50,18 @@ function SetPivots() {
     });
     */
 }
+var waitForFinalEvent = (function () {
+    var timers = {};
+    return function (callback, ms, uniqueId) {
+        if (!uniqueId) {
+            uniqueId = "Don't call this twice without a uniqueId";
+        }
+        if (timers[uniqueId]) {
+            clearTimeout(timers[uniqueId]);
+        }
+        timers[uniqueId] = setTimeout(callback, ms);
+    };
+})();
 function Activate(jitem) {
     var $item = jitem;
     var $parent = $item.parent();
@@ -58,14 +90,6 @@ function Activate(jitem) {
 //if (typeof console === "undefined") {
 window.onerror = ErrorHandler;
 //}
-function Notify(notification) {
-    if ('Notify' in window.external) {
-        window.external.Notify(notification);
-    }
-    else {
-        console.log(notification);
-    }
-}
 function LoadJS(path) {
     var fileref = document.createElement('script');
     fileref.setAttribute("type", "text/javascript");
@@ -126,6 +150,20 @@ var General;
         return KeyValue;
     })();
     General.KeyValue = KeyValue;
+    var Message = (function () {
+        function Message() {
+            this.Parameters = {};
+        }
+        return Message;
+    })();
+    General.Message = Message;
+    function X() {
+        console.log("retek");
+    }
+    function XY() {
+        console.log("retek");
+    }
+    General.XY = XY;
 })(General || (General = {}));
 var StopProgress = function (id) {
     return null;
@@ -150,11 +188,11 @@ function ShowContent(selector, sender) {
     $parent.children(s_content_selector).hide();
     var $contenttoshow = $parent.children(selector);
     if ($contenttoshow.length == 0) {
-        Notify("ShowContent: " + $contenttoshow.selector + " has not items!");
+        ShowError("ShowContent: " + $contenttoshow.selector + " has not items!");
     }
     $contenttoshow.show();
 }
-function LoadPage($bindtarget, $pager, items, page, pagesize) {
+function LoadPage($bindtarget, $pager, items, page, pagesize, events) {
     var me = this;
     var startix = pagesize * page;
     var endix = startix + pagesize;
@@ -171,29 +209,87 @@ function LoadPage($bindtarget, $pager, items, page, pagesize) {
             prev_show_always: true,
             next_show_always: true,
             callback: function (pageix) {
-                LoadPage($bindtarget, $pager, items, pageix, pagesize);
+                CallFunction(events, "onpaging");
+                LoadPage($bindtarget, $pager, items, pageix, pagesize, events);
+                CallFunction(events, "onpaged");
             },
         });
     }
     else {
     }
 }
+function CallFunction(eventcontainer, eventname, args) {
+    if (!IsNull(eventcontainer)) {
+        if (eventname in eventcontainer && IsFunction(eventcontainer[eventname])) {
+            eventcontainer[eventname](args);
+        }
+    }
+}
+function CallFunctionVariable(func, args) {
+    if (!IsNull(func) && IsFunction(func)) {
+        func(args);
+    }
+}
+function Notify(message) {
+    ShowNotification(message);
+}
+function ShowNotification(message) {
+    var msg = CreateNotificationMsg(message);
+    Communication_ToApp(msg);
+}
+function ShowError(message) {
+    var msg = CreateErrorMsg(message);
+    Communication_ToApp(msg);
+}
+function Communication_ToApp(message) {
+    var strdata = JSON.stringify(message);
+    if ('Notify' in window.external) {
+        window.external.Notify(strdata);
+    }
+    else {
+        console.log(strdata);
+    }
+}
+function Communication_Listener(data) {
+    var message = JSON.parse(data);
+    if (message.Category == "ajax") {
+        AjaxResponse(message);
+    }
+    if (message.Category == "notfication") {
+    }
+    if (message.Category == "error") {
+    }
+    if (message.Category == "action") {
+        if (message.Url.toLowerCase() == "instance") {
+            instancecontainer.HandleAction(message);
+        }
+    }
+    if (message.Category == "debug") {
+        debugger;
+    }
+}
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     var requestid = Guid();
-    var requesthandler = { error: error, success: success, url: url, contenttype: contenttype };
+    var requesthandler = { error: error, success: success, Id: requestid };
     var kv = new General.KeyValue();
     kv.Key = requestid;
     kv.Value = requesthandler;
     requests.push(kv);
-    var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
-    Notify("Request: " + JSON.stringify(notification));
+    //var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
+    var msg = CreateAjaxMsg();
+    msg.Url = url;
+    msg.Parameters = parameters;
+    msg.Id = requestid;
+    msg.ContentType = contenttype;
+    Communication_ToApp(msg);
 }
-function AjaxResponse(requestid, isok, stringdata) {
-    var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == requestid; });
+function AjaxResponse(message) {
+    var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == message.Id; });
     if (request != null) {
         var requesthandler = request.Value;
+        var stringdata = message.Data;
         var response = stringdata;
-        if (requesthandler.contenttype.indexOf("json") > -1) {
+        if (message.ContentType.indexOf("json") > -1) {
             if (!IsNull(stringdata)) {
                 response = JSON.parse(stringdata);
             }
@@ -202,16 +298,16 @@ function AjaxResponse(requestid, isok, stringdata) {
         if (ix > -1) {
             requests.splice(ix, 1);
         }
-        if (isok) {
+        if (IsNull(message.Error)) {
             requesthandler.success(response);
         }
         else {
             requesthandler.error(response);
-            Notify("Response Error: " + response);
+            ShowError("Response Error: " + response);
         }
     }
     else {
-        Notify("Request not found! " + requestid);
+        ShowError("Request not found! " + message.Id);
     }
 }
 function Ajax(url, method, parameters, generichandler, contentType) {
@@ -393,9 +489,16 @@ function In(item) {
     else {
         var array = Array.prototype.slice.call(arguments, 0);
         array.splice(0, 1);
-        return array.where(function (x) {
-            return x === item;
-        }).length > 0;
+        //return array.where(function (x) {
+        //    return x === item;
+        //}).length > 0;
+        var found = false;
+        array.forEach(function (item_i) {
+            if (item_i === item) {
+                found = true;
+            }
+        });
+        return found;
     }
 }
 function IsAllNull(item) {
@@ -408,9 +511,13 @@ function IsAllNull(item) {
     else {
         var array = Array.prototype.slice.call(arguments, 0);
         array.splice(0, 0);
-        return array.where(function (x) {
-            return !IsNull(x);
-        }).length > 0;
+        var nullcount = 0;
+        array.forEach(function (item_i) {
+            if (IsNull(item_i)) {
+                nullcount++;
+            }
+        });
+        return nullcount == array.length;
     }
 }
 function IsAllNotNull(item) {
@@ -423,10 +530,13 @@ function IsAllNotNull(item) {
     else {
         var array = Array.prototype.slice.call(arguments, 0);
         array.splice(0, 0);
-        var nulls = array.where(function (x) {
-            return IsNull(x);
+        var nullcount = 0;
+        array.forEach(function (item_i) {
+            if (IsNull(item_i)) {
+                nullcount++;
+            }
         });
-        return nulls.length == 0;
+        return nullcount == 0;
     }
 }
 function cleanArray(actual) {
@@ -492,6 +602,17 @@ function ToHierarchy(items, idproperty, parentproperty, rootid) {
     return Children;
 }
 ;
+function ForAll(hierarchy, childrenproperty, func) {
+    func(hierarchy);
+    if (childrenproperty in hierarchy) {
+        var children = hierarchy[childrenproperty];
+        if (!IsNull(children) && IsArray(children)) {
+            children.forEach(function (item) {
+                ForAll(item, childrenproperty, func);
+            });
+        }
+    }
+}
 function Clone(obj) {
     if (null == obj || "object" != typeof obj)
         return obj;
@@ -1181,31 +1302,23 @@ var BindingTemplate = (function () {
         this.Parent = null;
         this.ChildPlaceholder = "@children@";
         this.AccessorExpression = "";
+        this.PageSize = 0;
     }
     BindingTemplate.prototype.Bind = function (data) {
         var result_html = "";
         var me = this;
         result_html = BindLevel(this.Content, data);
         me.Children.forEach(function (child) {
-            var items = Access(data, child.AccessorExpression);
-            var childitems = "";
-            items.forEach(function (item) {
-                childitems += child.Bind(item);
-            });
-            result_html = Replace(result_html, child.ID, childitems);
+            if (child.AccessorExpression != "nobind") {
+                var items = Access(data, child.AccessorExpression);
+                items = IsNull(items) ? [] : items;
+                var childitems = "";
+                items.forEach(function (item) {
+                    childitems += child.Bind(item);
+                });
+                result_html = Replace(result_html, child.ID, childitems);
+            }
         });
-        /*
-        if (me.Child != null) {
-            var items = Access(data, me.Child.AccessorExpression);
-
-            items.forEach(function (item) {
-                childitems += me.Child.Bind(item);
-
-
-            });
-            result_html = Replace(result_html, me.Child.ID, childitems);
-        }
-    */
         return result_html;
     };
     BindingTemplate.prototype.ToHierarchyString = function (tab) {
@@ -1232,12 +1345,14 @@ function GetBindingTemplate(target) {
         var ix = jitem.index();
         var parent = jitem.parents("[binding-items]")[0];
         var parentbinding = $(parent).attr("binding-items");
+        var parentpagesize = $(parent).attr("binding-pagesize");
         var placeholder = "@" + index + "@";
         var placeholdernode = document.createTextNode(placeholder);
         //jitem.insertBefore(placeholdernode);
         $(placeholdernode).insertBefore(jitem);
         jitem.attr("ChildID", placeholder);
         jitem.attr("Expression", parentbinding);
+        jitem.attr("PageSize", parentpagesize);
         jitem.remove();
     });
     var templatecollection = [];
@@ -1248,6 +1363,8 @@ function GetBindingTemplate(target) {
         jitem.removeAttr("ChildID");
         var parentBinding = jitem.attr("Expression");
         jitem.removeAttr("Expression");
+        var parentPageSize = jitem.attr("PageSize");
+        jitem.removeAttr("PageSize");
         jitem.removeAttr("binding-type");
         var html = OuterHtml(jitem);
         var t = new BindingTemplate();
@@ -1255,6 +1372,7 @@ function GetBindingTemplate(target) {
         t.ID = childID;
         t.Content = html;
         t.AccessorExpression = parentBinding;
+        //t.ParentPageSize = parentPageSize;
     });
     var t = new BindingTemplate();
     templatecollection.push(t);
@@ -1291,7 +1409,7 @@ var TemplateDictionaryItem = (function () {
 })();
 function BindX(item, data) {
     if (item.length == 0) {
-        Notify(item.selector + " has no items!");
+        ShowNotification("BindX: " + item.selector + " has no items!");
     }
     else {
         var bt = null;
@@ -1322,6 +1440,7 @@ var s_listfilter_selector = ".listfilter";
 var s_sublist_selector = ".sublist";
 var s_sublistpager_selector = ".sublistpager";
 var s_detail_selector = ".detail";
+var s_parent_selector = ".parent";
 var s_contentcontainer_selector = ".contentcontainer";
 var s_content_selector = ".subcontent";
 function BindLevel(html, data) {

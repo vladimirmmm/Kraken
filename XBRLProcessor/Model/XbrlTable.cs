@@ -291,7 +291,9 @@ namespace XBRLProcessor.Model
                             var se_dim_doc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == hypercubeitem.Item.Element.Namespace);
                             //TODO
                             var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
-                            var se_domain_doc = this.Taxonomy.FindDocument(path);
+                            var localrelpath = Utilities.Strings.GetRelativePath(LogicalModel.TaxonomyEngine.LocalFolder, path);
+                            var se_domain_doc = this.Taxonomy.FindDocument(localrelpath);
+
                             var refid = domainref.Substring(domainref.IndexOf("#") + 1);
                             var se_domain_key = se_domain_doc.TargetNamespace + ":" + refid;
                             var se_domain = Taxonomy.SchemaElementDictionary[se_domain_key];

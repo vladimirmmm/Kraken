@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace BaseModel
 {
     public class DocumentCollection
     {
-        public static string LocalFolder = @"c:\my\taxonomies\testtaxonomy\";
+
         
         public Document EntryDocument { get; set; }
 

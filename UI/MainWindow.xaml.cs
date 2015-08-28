@@ -49,43 +49,42 @@ namespace UI
         private object slocker = new object();
         void fromJS(object param) 
         {
-            var command = String.Format("{0}", param).ToLower();
-            lock (slocker)
-            {
-                Console.WriteLine(command);
-            }
-            var request_tag = "request: ";
-            if (command == "table_ready") 
-            {
-                SetExtension();
-            }
-            if (command.StartsWith("navigatetocell")) 
-            {
-                var cell = command.Substring(command.IndexOf(":") + 1);
-                var report = cell.Remove(cell.IndexOf("<"));
-                var cellspecifiers = cell.TextBetween("<", ">").Split('|');
-                var extension = cellspecifiers[0];
-                var row = cellspecifiers[1];
-                var column = cellspecifiers[2];
+            var request = new Message();
+            var response = new Message();
 
-                Features.NavigateToCell(report, extension, row, column);
-            }
-            if (command.StartsWith(request_tag)) 
+            try
             {
-                var request_s = command.Substring(request_tag.Length);
-                var request = Utilities.Converters.JsonTo<Request>(request_s);
-                var isok = false;
-                var response = new object();
+                request = Utilities.Converters.JsonTo<Message>(param.ToString());
+            }
+            catch (Exception ex) 
+            {
+                response.Error = ex.Message;
+                response.Category = "error";
+                Console.WriteLine(String.Format("Error at {0} - {1}: {2}", request.Id, request.Url, ex.Message));
+                Features.ToUI(response);
+
+            }
+            var ajaxtag = "ajax";
+            if (request.Category == "notification")
+            {
+                lock (slocker)
+                {
+                    Console.WriteLine(request.Data);
+                }
+            }
+
+            if (request.Category == ajaxtag) 
+            {
+              
                 try
                 {
                     response = this.Features.ProcessRequest(request);
-                    isok = true;
                 }
                 catch (Exception ex) 
                 {
-                    response = ex.Message + "\r\n";
+                    response.Error = ex.Message + "\r\n";
                 }
-                Browser.InvokeScript("AjaxResponse", request.requestid, isok, response);
+                Features.ToUI(response);
 
             }
 
@@ -243,8 +242,8 @@ namespace UI
             if (table != null)
             {
                 table.EnsureHtmlLayout();
-                Browser.Navigate(table.HtmlPath);
-                TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
+                Browser.Navigate(table.FullHtmlPath);
+                TB_Title.Text = String.Format("{0} - {1}", table.ID, table.FullHtmlPath);
 
             }
         }

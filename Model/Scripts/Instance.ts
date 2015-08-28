@@ -8,6 +8,7 @@
         public FactsNr: number = 0;
         public Page: number = 0;
         public PageSize: number = 20;
+        public VPageSize: number = 20;
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
 
       
@@ -56,22 +57,54 @@
         public SetExternals() {
             var me = this;
             me.Taxonomy = taxonomycontainer.Taxonomy;
-            AjaxRequest("Instance/Get", "get", "json", null, function (data) {
-                me.Instance = data;
-                me.LoadToUI();
-            }, function (error) { console.log(error); });
-            AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
-                me.ValidationResults = data;
-            }, function (error) { console.log(error); });
+
+            me.LoadInstance(null);
+
+            me.LoadValidationResults(null);
+
             AjaxRequest("Table/List", "get", "json", null, function (data) {
                 me.TableStructure = data;
+                ForAll(me.TableStructure, "Children", function (item: Model.Hierarchy<Model.TableInfo>) {
+                    if (!IsNull(item.Item)) {
+                        item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
+                        item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length>0 ? Format("({0})",item.Children.length) : "";
+                   
+                    }
+                });
                 BindX($("#tabletreeview"), me.TableStructure);
 
             }, function (error) { console.log(error); });
         }
-        public LoadInstance(instancejson: string) {
-            var item: Model.Instance = <Model.Instance>JSON.parse(instancejson);
-            this.Instance = item;
+
+        public HandleAction(msg: General.Message)
+        {
+            var me = this;
+            var action = msg.Data.toLowerCase();
+            if (action == "instancevalidated")
+            {
+                me.LoadValidationResults(function () {
+                    me.LoadContentToUI(me.s_validation_id, $("#InstCommands"));
+                });
+            }
+        }
+
+        public LoadValidationResults(onloaded:Function)
+        {
+            var me = this;
+            AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
+                me.ValidationResults = data;
+                CallFunctionVariable(onloaded);
+            }, function (error) { console.log(error); });
+        }
+
+        public LoadInstance(onloaded: Function) {
+            var me = this;
+            AjaxRequest("Instance/Get", "get", "json", null, function (data) {
+                me.Instance = data;
+                me.LoadToUI();
+                CallFunctionVariable(onloaded);
+
+            }, function (error) { console.log(error); });
         }
 
         public LoadToUI()
@@ -149,7 +182,7 @@
             }
       
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize);
-
+            me.HideFactDetails();
         }
 
 
@@ -173,39 +206,52 @@
 
         }
 
+        public HideFactDetails()
+        {
+            var me = this;
+            var $factdetail = me.SelFromFact(s_detail_selector);
+            $factdetail.hide();
+
+        }
+
         public ShowValidationResults()
         {
+
             var me = this;
             var rule: Model.ValidationRule = null;
             this.ValidationErrors = [];
-            this.ValidationResults.forEach(function (v) {
-                if (IsNull(rule) || rule.ID != v.ID) {
-                    var tax_rule = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == v.ID);
-                    rule = new Model.ValidationRule();
-                    rule.ID = tax_rule.ID;
-                    rule.FunctionName = tax_rule.FunctionName;
-                    rule.DisplayText = tax_rule.DisplayText;
-                    rule.OriginalExpression = tax_rule.OriginalExpression;
-                    me.ValidationErrors.push(rule);
-                }
-                if (!IsNull(rule)) {
-                    rule.Results.push(v);
-                    v.Parameters.forEach(function (p) {
-                        var fact = p.Facts[0];
-                    });
-                }
-                
-            });
-            LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), me.ValidationErrors, 0, me.PageSize);
-            $(".trimmed").click(function () {
-                if ($(this).hasClass("hmax30")) {
-                    $(this).removeClass("hmax30");
-                } else {
-                    $(this).addClass("hmax30");
+            me.CloseRuleDetail();
+            if (!IsNull(me.ValidationResults)) {
+                me.ValidationResults.forEach(function (v) {
+                    if (IsNull(rule) || rule.ID != v.ID) {
+                        var tax_rule = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == v.ID);
+                        rule = new Model.ValidationRule();
+                        rule.ID = tax_rule.ID;
+                        rule.FunctionName = tax_rule.FunctionName;
+                        rule.Title = Truncate(tax_rule.DisplayText, 100)
+                        rule.DisplayText = tax_rule.DisplayText;
+                        rule.OriginalExpression = tax_rule.OriginalExpression;
+                        me.ValidationErrors.push(rule);
+                    }
+                    if (!IsNull(rule)) {
+                        rule.Results.push(v);
+                        v.Parameters.forEach(function (p) {
+                            var fact = p.Facts[0];
+                        });
+                    }
 
-                }
-            });
-  
+                });
+                var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
+                LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), me.ValidationErrors, 0, me.VPageSize, eventhandlers);
+                $(".trimmed").click(function () {
+                    if ($(this).hasClass("hmax30")) {
+                        $(this).removeClass("hmax30");
+                    } else {
+                        $(this).addClass("hmax30");
+
+                    }
+                });
+            }
 
         }
 
@@ -215,11 +261,8 @@
         {
             var me = this;
             var text = $(sender).text();
-            if (contentid == "Taxonomy")
-            {
-                ShowContent('#TaxonomyContainer', sender);
-
-            }
+            ShowContent('#InstanceContainer', $("#MainCommands"));
+       
             if (contentid == "Instance")
             {
                 ShowContent('#InstanceContainer', sender);
@@ -238,7 +281,7 @@
             }
             if (contentid == me.s_validation_id) {
                 ShowContent('#'+contentid, sender);
-                instancecontainer.ShowValidationResults()
+                me.ShowValidationResults()
             }
 
 
@@ -262,15 +305,19 @@
             var me = this;
             var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
 
-            LoadPage($("#validationruleresults"), $("#validationddetailpager"), rule.Results, 0, 1);
+            BindX(me.SelFromValidation(s_parent_selector), rule);
+            LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
 
-            $("#validationrule_results_" + ruleid).append($("#validationdetail"));
-            $("#validationdetail").show();
+            $("#validationrule_results_" + ruleid).append(me.SelFromValidation(s_detail_selector));
+           
+            me.SelFromValidation(s_detail_selector).show();
         }
 
         public CloseRuleDetail()
         {
-            $("#validationdetail").hide();
+            var me = this;
+            me.SelFromValidation(s_detail_selector).hide();
+            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
 
         }
 
@@ -280,14 +327,7 @@
         }
 
 
-        public NavigateTo(cell: string) {
-            //Notify(Format("navigatetocell:{0}", cell));
-            
-            AjaxRequest("Table/Get", "get", "text/html", {cell: cell}, function (data) {
-                $("#tableframe").attr("src", data);
-                $("#tableframe").css("height", $("#tableframe").parent().parent().height());
-            }, function (error) { console.log(error); });
-        }
+    
 
     }
 }

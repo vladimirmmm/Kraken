@@ -384,6 +384,7 @@ var Model;
         function Taxonomy() {
             this.ValidationRules = [];
             this.Labels = [];
+            this.Module = null;
             this.Concepts = [];
             this.Hierarchies = [];
             this.ConceptValues = [];
@@ -391,12 +392,27 @@ var Model;
         return Taxonomy;
     })();
     Model.Taxonomy = Taxonomy;
+    var TaxonomyModule = (function () {
+        function TaxonomyModule() {
+        }
+        return TaxonomyModule;
+    })();
+    Model.TaxonomyModule = TaxonomyModule;
+    var TaxonomyProperties = (function () {
+        function TaxonomyProperties() {
+        }
+        return TaxonomyProperties;
+    })();
+    Model.TaxonomyProperties = TaxonomyProperties;
     var TableInfo = (function (_super) {
         __extends(TableInfo, _super);
         function TableInfo() {
             _super.apply(this, arguments);
             this.Name = "";
             this.Description = "";
+            this.Type = "";
+            this.CssClass = "";
+            this.ExtensionText = "";
         }
         return TableInfo;
     })(Identifiable);

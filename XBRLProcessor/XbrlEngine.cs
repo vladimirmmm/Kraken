@@ -67,7 +67,7 @@ namespace XBRLProcessor
             var taxonomyloadneeded = true;
             if (CurrentTaxonomy != null)
             {
-                var localmoduleentry = Utilities.Strings.GetLocalPath(Taxonomy.LocalFolder,
+                var localmoduleentry = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder,
                     CurrentInstance.TaxonomyModuleReference);
                 taxonomyloadneeded = CurrentTaxonomy.EntryDocument.LocalPath != localmoduleentry;
             }
@@ -153,20 +153,23 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadLabels();
                 CurrentTaxonomy.LoadSchemaElements();
                 CurrentTaxonomy.LoadConcepts();
-                CurrentTaxonomy.LoadTableGroups();
                 CurrentTaxonomy.LoadTables();
                 CurrentTaxonomy.LoadFacts();
                 CurrentTaxonomy.LoadValidationFunctions();
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
-                CurrentTaxonomy.LoadGeneral();
+              
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
                 Console.WriteLine("Loading Taxonomy finished");
-                this.CurrentInstance = (XbrlInstance)this.CurrentTaxonomy.GetNewInstance();
+                Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
+                Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstanceValidationResultPath);
                 if (!IsInstanceLoading)
                 {
+                    this.CurrentInstance = (XbrlInstance)this.CurrentTaxonomy.GetNewInstance();
                     Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
+                    Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstanceValidationResultPath);
+                    //Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
                     this.CurrentInstance.SaveToJson();
                 }
                 Trigger_TaxonomyLoaded(filepath);

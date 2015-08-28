@@ -20,7 +20,7 @@ var UI;
             this.Load();
             this.HighlightCell();
             this.GetData();
-            Notify("Table constructed " + window.location.hash);
+            ShowNotification("Table instance loaded!");
         }
         Table.prototype.SetExternals = function () {
             this.FactMap = window["FactMap"];
@@ -104,7 +104,6 @@ var UI;
         Table.prototype.HighlightCell = function () {
             $(".highlight").removeClass("highlight");
             var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
-            Notify("Hilglighting " + cellselector);
             $("#" + cellselector).addClass("highlight");
             $("#" + cellselector).focus();
         };
@@ -247,7 +246,6 @@ var UI;
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
-                    Notify("Loading Fact Dictionary");
                     me.Instance.FactDictionary = {};
                     me.Instance.Facts.forEach(function (fact, index) {
                         if (!IsNull(me.Instance.FactDictionary[fact.FactString])) {
@@ -275,7 +273,7 @@ var UI;
                                             if (!IsNull(fact)) {
                                                 var selector = "#" + cell.LayoutID.replace("|", "\\|");
                                                 if ($(selector).length == 0) {
-                                                    Notify(Format("No cell found with selector {0}", selector));
+                                                    ShowNotification(Format("No cell found with selector {0}", selector));
                                                 }
                                                 c++;
                                                 $(selector).html(fact.Value);
@@ -305,7 +303,7 @@ var UI;
                         }
                     });
                     me.SetCellEditors();
-                    Notify(Format("{0} cells were populated!", c));
+                    ShowNotification(Format("{0} cells were populated!", c));
                 }
             }
         };
@@ -397,20 +395,20 @@ var UI;
             var cells = JSON.parse(item);
             this.LoadCells(cells);
         };
-        Table.prototype.SetInstance = function (item) {
-            Notify("Instance recieved");
-            var instance = JSON.parse(item);
-            //f
-            this.LoadInstance(instance);
-        };
+        //public SetInstance(item) {
+        //    var instance = <Model.Instance>JSON.parse(item);
+        //    //f
+        //    this.LoadInstance(instance);
+        //}
         Table.prototype.HashChanged = function () {
+            ShowNotification("Navigation occured: " + window.location.hash);
+            var currentextensioncode = this.Current_ExtensionCode;
             this.SetNavigation();
             this.SetExtensionByCode(this.Current_ExtensionCode);
             this.HighlightCell();
-            this.GetData();
-        };
-        Table.prototype.TestInstance = function () {
-            this.LoadInstance(window[var_currentinstance]);
+            if (currentextensioncode != this.Current_ExtensionCode) {
+                this.GetData();
+            }
         };
         return Table;
     })();
@@ -419,7 +417,7 @@ var UI;
 var Table = null;
 function SetExtension(extjson) {
 }
-function LoadInstance(instancejson) {
-    Table.LoadInstance(window[var_currentinstance]);
-}
+//function LoadInstance(instancejson:string) {
+//    Table.LoadInstance(window[var_currentinstance]);
+//} 
 //# sourceMappingURL=Table.js.map

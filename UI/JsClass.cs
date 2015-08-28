@@ -23,12 +23,15 @@ namespace UI
 
     }
 
-    public class Request 
+    public class Message 
     {
-        public string url { get; set; }
-        public Dictionary<string, string> parameters { get; set; }
-        public string requestid { get; set; }
-        public string contenttype { get; set; }
+        public string Id { get; set; }
+        public string Url { get; set; }
+        public Dictionary<string, string> Parameters { get; set; }
+        public string Category { get; set; }
+        public string ContentType { get; set; }
+        public string Error { get; set; }
+        public string Data { get; set; }
 
     }
 }

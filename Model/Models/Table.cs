@@ -16,6 +16,8 @@ namespace LogicalModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Type { get; set; }
+
         public TableInfo() 
         {
 
@@ -27,6 +29,7 @@ namespace LogicalModel
             this.Name = table.Name;     
         }
     }
+
     public class Table : Identifiable,ILabeled
     {
         private int datacellminwidth = 100;
@@ -40,25 +43,33 @@ namespace LogicalModel
             get { return _HtmlPath; }
             set { _HtmlPath=value; }
         }
+        public string JsonFileName
+        {
+            get { return _HtmlPath.Replace(".html", ".json"); }
+        }
+        public string JsonPath
+        {
+            get { return this.Taxonomy.TaxonomyLayoutFolder + JsonFileName; }
+        }
         public string FactMapPath
         {
-            get { return _HtmlPath.Replace(".html", "-factmap.js"); }
+            get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-factmap.js"); }
         }
         public string FactPath 
         {
-            get { return _HtmlPath.Replace(".html", "-facts.txt"); }
+            get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-facts.txt"); }
         }
         public string CubePath
         {
-            get { return _HtmlPath.Replace(".html", "-cubes.txt"); }
+            get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-cubes.txt"); }
         }
         public string DefPath
         {
-            get { return _HtmlPath.Replace(".html", "-def.txt"); }
+            get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-def.txt"); }
         }
         public string LayoutPath
         {
-            get { return _HtmlPath.Replace(".html", "-layout.txt"); }
+            get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-layout.txt"); }
         }
         private string _FolderName = "";
         public string FolderName
@@ -236,8 +247,16 @@ namespace LogicalModel
         public void SetHtmlPath()
         {
             string folder = Taxonomy.TaxonomyLayoutFolder;
-            var filepath = folder + this.ID + ".html";
+            var filepath = this.ID + ".html";
             HtmlPath = filepath;
+        }
+
+        public string FullHtmlPath
+        {
+            get 
+            {
+                return String.Format("{0}{1}", Taxonomy.TaxonomyLayoutFolder, HtmlPath);
+            }
         }
 
         public void MapCells() 
@@ -574,7 +593,7 @@ namespace LogicalModel
                 var jscontent = "var FactMap = " + jsoncontent + ";\r\n";
                 jscontent += "var Extensions = " + Utilities.Converters.ToJson(Extensions) + ";";
                 System.IO.File.WriteAllText(FactMapPath, jscontent);
-                System.IO.File.WriteAllText(this.HtmlPath.Replace(".html","_layout.txt"), LayoutRoot.ToHierarchyString(i=>i.ID +" code: "+i.LabelCode+" >>> "+i.FactString));
+                System.IO.File.WriteAllText(this.FullHtmlPath.Replace(".html", "_layout.txt"), LayoutRoot.ToHierarchyString(i => i.ID + " code: " + i.LabelCode + " >>> " + i.FactString));
 
             }
 
@@ -585,7 +604,7 @@ namespace LogicalModel
         {
             Taxonomy.ManageUIFiles();
 
-            if (!System.IO.File.Exists(HtmlPath))
+            if (!System.IO.File.Exists(FullHtmlPath))
             {
                 CreateHtmlLayout();
             }
@@ -593,7 +612,7 @@ namespace LogicalModel
         
         public void CreateHtmlLayout(bool regenerate = false)
         {
-            if (regenerate || !System.IO.File.Exists(HtmlPath))
+            if (regenerate || !System.IO.File.Exists(FullHtmlPath))
             {
                 var taxscriptincludes = "";
                 foreach (var taxfile in Taxonomy.TaxFiles)
@@ -601,7 +620,7 @@ namespace LogicalModel
                     taxscriptincludes += String.Format("<script src=\"{0}\" type=\"text/javascript\" ></script>\r\n", taxfile);
                 }
 
-                var folder = Utilities.Strings.GetFolder(HtmlPath);
+                var folder = Utilities.Strings.GetFolder(FullHtmlPath);
                 var htmlbuilder = new StringBuilder();
                 var template = System.IO.File.ReadAllText("TableTemplate.html");
                 var html = template;
@@ -615,7 +634,7 @@ namespace LogicalModel
 
 
 
-                Utilities.FS.WriteAllText(HtmlPath, htmlbuilder.ToString());
+                Utilities.FS.WriteAllText(FullHtmlPath, htmlbuilder.ToString());
             }
         }
 

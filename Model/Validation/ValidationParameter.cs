@@ -59,7 +59,6 @@ namespace LogicalModel.Validation
             }
         }
         
-        
         private string _StringValue = "";
 
         public string StringValue
@@ -95,6 +94,7 @@ namespace LogicalModel.Validation
             this.StringValues = new string[] { };
             this.DecimalValues = new decimal[] { };
             this.CurrentFacts.Clear();
+            this.CurrentCells.Clear();
         }
 
         public bool IsGeneral { get; set; }

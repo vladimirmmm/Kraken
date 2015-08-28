@@ -65,14 +65,14 @@ namespace XBRLProcessor.Models
         
         public bool AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
         {
-            if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalPath))
+            if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalRelPath))
             {
-                this.TaxonomyDocumentDictionary.Add(document.LocalPath.ToLower(), document);
+                this.TaxonomyDocumentDictionary.Add(document.LocalRelPath.ToLower(), document);
                 return true;
             }
             else
             {
-                this.TaxonomyDocumentDictionary[document.LocalPath] = document;
+                this.TaxonomyDocumentDictionary[document.LocalRelPath] = document;
             }
             return false;
         }
@@ -190,9 +190,11 @@ namespace XBRLProcessor.Models
         public XbrlTaxonomyDocument FindDocument(string localpath) 
         {
             localpath = localpath.ToLower();
-            if (TaxonomyDocumentDictionary.ContainsKey(localpath)) 
+            var localtaxfolder = LogicalModel.TaxonomyEngine.LocalFolder.ToLower();
+            var localrelpath = Utilities.Strings.GetRelativePath(localtaxfolder, localpath);
+            if (TaxonomyDocumentDictionary.ContainsKey(localrelpath)) 
             {
-                return TaxonomyDocumentDictionary[localpath];
+                return TaxonomyDocumentDictionary[localrelpath];
             }
             return null;
         }
@@ -204,6 +206,10 @@ namespace XBRLProcessor.Models
             if (!System.IO.File.Exists(TaxonomyStructurePath) || LogicalModel.Settings.Current.ReloadFullTaxonomy)
             {
                 EntryDocument.LoadReferences();
+
+                var taxpath = SourceTaxonomyFolder + "tax.xsd";
+                EntryDocument.LoadTaxonomyDocument(taxpath);
+                //EntryDocument.ReferencedFiles
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyDocuments);
                 Utilities.FS.WriteAllText(TaxonomyStructurePath, jsoncontent);
             }
@@ -215,7 +221,7 @@ namespace XBRLProcessor.Models
                 {
                     this.AddTaxonomyDocumentToDictionary(doc);
                 }
-                var existing_entry = this.FindDocument(EntryDocument.LocalPath);
+                var existing_entry = this.FindDocument(EntryDocument.LocalRelPath);
                 EntryDocument.ReferencedFiles = existing_entry.ReferencedFiles;
                 EntryDocument.TagNames = existing_entry.TagNames;
                 this.TaxonomyDocuments.Remove(existing_entry);
@@ -286,15 +292,32 @@ namespace XBRLProcessor.Models
             Console.WriteLine("Load Units completed");
 
         }
+       
         public override void LoadGeneral()
         {
-            var taxelement= this.SchemaElements.FirstOrDefault(i => i.Type == "model:taxonomyType");
+            var taxelement = this.SchemaElements.FirstOrDefault(i => i.Type == "model:taxonomyType");
+         
             if (taxelement != null) 
             {
-                this.GeneralProperties.FromDate = taxelement.FromDate;
-                this.GeneralProperties.ToDate = taxelement.ToDate;
+                var taxfoldername = Utilities.Strings.GetFolderName(this.SourceTaxonomyFolder);
+                var l = this.FindLabel(LogicalModel.Label.GetKey(taxfoldername, taxelement.ID));
+
+                this.Module.FromDate = taxelement.FromDate;
+                this.Module.ToDate = taxelement.ToDate;
+                this.Module.TaxonomyID = taxelement.Name;
+                this.Module.TaxonomyName = l != null ? l.Content : taxelement.Name;
+  
             }
-            base.LoadGeneral();
+            var modulelement = this.SchemaElements.FirstOrDefault(i => i.Type == "model:moduleType");
+            if (modulelement != null)
+            {
+                var l = this.FindLabel(LogicalModel.Label.GetKey("mod", modulelement.ID));
+
+                this.Module.ID = modulelement.Name;
+                this.Module.Name = l != null ? l.Content : modulelement.Name;
+                this.Module.SchemaRef = this.SourceTaxonomyPath;
+
+            }
         }
         public override void LoadHierarchy()
         {
@@ -380,7 +403,7 @@ namespace XBRLProcessor.Models
                     }
                 }
             }
-            var predocpath = this.EntryDocument.LocalPath.Replace(".xsd","-pre.xml");
+            var predocpath = this.EntryDocument.LocalRelPath.Replace(".xsd","-pre.xml");
             var predoc = this.TaxonomyDocumentDictionary[predocpath];
             if (predoc != null) 
             {
@@ -408,7 +431,7 @@ namespace XBRLProcessor.Models
                     }
                     var hierarchy = hier.GetHierarchy();
                     var leafs = hierarchy.GetLeafs();
-                    this.TableGroups.Clear();
+                    this.Module.TableGroups.Clear();
 
                     foreach (var leaf in leafs) 
                     {
@@ -417,7 +440,7 @@ namespace XBRLProcessor.Models
                         var tableID= leaf.Item.ID;
 
                         LogicalModel.TableGroup tablegroup = null;
-                        tablegroup = this.TableGroups.FirstOrDefault(i => i.ID == parent.ID);
+                        tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.ID == parent.ID);
                         if (tablegroup == null) 
                         {
                             tablegroup = new LogicalModel.TableGroup();
@@ -426,7 +449,7 @@ namespace XBRLProcessor.Models
                             tablegroup.Label = parent.Label;
                             var find = filingindicators.FirstOrDefault(i => parentID.Contains(i.ToLower()));
                             tablegroup.FilingIndicator = find;
-                            this.TableGroups.Add(tablegroup);
+                            this.Module.TableGroups.Add(tablegroup);
 
                         }
                         tablegroup.TableIDs.Add(leaf.Item.ID);
@@ -477,7 +500,7 @@ namespace XBRLProcessor.Models
                     }
                 }
 
-                
+                this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID).ToList();
 
                 if (!System.IO.File.Exists(expressionfile))
                 {
@@ -506,116 +529,7 @@ namespace XBRLProcessor.Models
             Console.WriteLine("Loading Validations completed");
 
         }
-        /*
-        private void GenerateCSFile() 
-        {
-            if (!System.IO.File.Exists(this.TaxonomyValidationCsPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
-            {
-                var sb_functions = new StringBuilder();
-                var sb_dictionary = new StringBuilder();
-                var sb_cs = new StringBuilder();
-                var tab = "  ";
-                foreach (var val in ValidationRules)
-                {
-                    if (!string.IsNullOrEmpty(val.FunctionString))
-                    {
-                        sb_dictionary.AppendFormat("{0}{0}this.FunctionDictionary.Add(\"{1}\", this.{1});\r\n", tab, val.FunctionName);
-                        sb_functions.AppendLine("       //" + val.OriginalExpression);
-                        sb_functions.AppendLine(val.FunctionString);
-                    }
-
-                }
-                sb_cs.AppendLine("using System;");
-                sb_cs.AppendLine("using System.Collections.Generic;");
-                sb_cs.AppendLine("using System.Linq;");
-                sb_cs.AppendLine("using System.Text;");
-                sb_cs.AppendLine("using LogicalModel.Expressions;");
-                sb_cs.AppendLine("using LogicalModel.Base;");
-                sb_cs.AppendLine("using LogicalModel.Validation;");
-                sb_cs.AppendLine("using Utilities;");
-
-                sb_cs.AppendLine("namespace LogicalModel.Validation");
-                sb_cs.AppendLine("{");
-
-                sb_cs.AppendLine("  public class ValidationsX: ValidationFunctionContainer");
-                sb_cs.AppendLine("  {");
-
-                sb_cs.AppendLine("      public ValidationsX()");
-                sb_cs.AppendLine("      {");
-
-                sb_cs.AppendLine(sb_dictionary.ToString());
-
-                sb_cs.AppendLine("      }");
-
-                sb_cs.AppendLine(sb_functions.ToString());
-
-                sb_cs.AppendLine("  }");
-                sb_cs.AppendLine("}");
-
-
-
-
-                Utilities.FS.WriteAllText(this.TaxonomyValidationCsPath, sb_cs.ToString());
-            }
-        }
-
-        private void CompileCSFile() 
-        {
-            if (!System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
-            {
-                var content = System.IO.File.ReadAllText(this.TaxonomyValidationCsPath);
-
-                CodeDomProvider codeProvider = CodeDomProvider.CreateProvider("CSharp");
-                string Output = this.TaxonomyValidationDotNetLibPath;
-
-                System.CodeDom.Compiler.CompilerParameters parameters = new CompilerParameters();
-                //Make sure we generate an EXE, not a DLL
-                parameters.GenerateExecutable = false;
-                parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
-                parameters.IncludeDebugInformation = true;
-                parameters.TempFiles = new TempFileCollection(".", true);
-                var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
-                var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                parameters.ReferencedAssemblies.Add(logicalmodelassembly.Location);
-         
-                foreach (var assemblyname in logicalreferences)
-                {
-                    Assembly asm = assemblies.FirstOrDefault(i => i.GetName().Name == assemblyname.Name);
-                    if (asm != null)
-                    {
-                        parameters.ReferencedAssemblies.Add(asm.Location);
-                    }
-                    else 
-                    {
-                        Console.WriteLine("Assembly " + assemblyname.Name + " was not found!");
-                    }
-                }
-            
-                CompilerResults results = codeProvider.CompileAssemblyFromSource(parameters, content);
-
-                if (results.Errors.Count > 0)
-                {
-                    foreach (CompilerError CompErr in results.Errors)
-                    {
-                        var error = "Line number " + CompErr.Line +
-                                    ", Error Number: " + CompErr.ErrorNumber +
-                                    ", '" + CompErr.ErrorText + ";" +
-                                    Environment.NewLine + Environment.NewLine;
-                        Console.WriteLine(error);
-                    }
-                }
-                else
-                {
-                    //Successful Compile
-                    Console.WriteLine(String.Format("File {0} was successfully compiled to {1}",
-                        this.TaxonomyValidationCsPath, this.TaxonomyValidationDotNetLibPath));
-
-                }
-
-            }
-        }
-        */
+        
         
         #region Handlers
 
@@ -722,7 +636,7 @@ namespace XBRLProcessor.Models
                             var localhref = locator.Href;
                             if (!Utilities.Strings.IsRelativePath(localhref))
                             {
-                                localhref = Utilities.Strings.GetLocalPath(LogicalModel.Taxonomy.LocalFolder, locator.Href);
+                                localhref = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, locator.Href);
                             }
                             var path = Utilities.Strings.ResolveRelativePath(definitiondocument.LocalFolder, localhref);
                             var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
@@ -739,7 +653,7 @@ namespace XBRLProcessor.Models
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
 
-                var tablegroup = this.TableGroups.FirstOrDefault(i => i.TableIDs.Contains(logicaltable.ID));
+                var tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.TableIDs.Contains(logicaltable.ID));
                 if (tablegroup != null)
                 {
                     logicaltable.FilingIndicator = tablegroup.FilingIndicator;
@@ -755,8 +669,9 @@ namespace XBRLProcessor.Models
                
                 logicaltable.LoadDefinitions();
                 logicaltable.LoadLayout();
-                var s = Utilities.Converters.ToJson(logicaltable);
-                Utilities.FS.WriteAllText(logicaltable.HtmlPath.Replace(".html", ".json"), s);
+                //var s = Utilities.Converters.ToJson(logicaltable);
+
+                this.Module.TablePaths.Add(logicaltable.JsonFileName);
                 this.Tables.Add(logicaltable);
                 this.TaxonomyTables.Add(table);
             }
@@ -839,6 +754,7 @@ namespace XBRLProcessor.Models
 
         internal void ClearObjects()
         {
+            this.Module.Clear();
             this.Facts.Clear();
             this.ValidationRules.Clear();
             this.Tables.Clear();

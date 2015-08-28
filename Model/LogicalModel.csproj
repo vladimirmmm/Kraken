@@ -48,7 +48,6 @@
     <Compile Include="Expression\Expression.cs" />
     <Compile Include="Expression\Parser.cs" />
     <Compile Include="Helpers\QNameHelper.cs" />
-    <Compile Include="ITaxonomyEngine.cs" />
     <Compile Include="Models\BaseClasses.cs" />
     <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\Dimensions\DimensionDomain.cs" />
@@ -70,6 +69,7 @@
     <Compile Include="Models\LayoutItem.cs" />
     <Compile Include="Models\Period.cs" />
     <Compile Include="Helpers\TaxHandler.cs" />
+    <Compile Include="Models\TaxonomyModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Rule.cs" />
     <Compile Include="Models\Table.cs" />

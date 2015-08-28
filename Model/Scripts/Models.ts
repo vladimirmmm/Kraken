@@ -326,6 +326,7 @@
         public Facts: string[] = [];
         public Value: string;
         public Cells: string[] = [];
+        public BindAsSequence: boolean;
 
     }
 
@@ -350,6 +351,7 @@
         public ID: string;
         public FunctionName: string;
         public OriginalExpression: string;
+        public Title: string;
         public DisplayText: string;
         public Parameters: ValidationParameter[] = [];
         public Results: ValidationRuleResult[] = [];
@@ -361,10 +363,23 @@
         public EntryDocumentName: string;
         public ValidationRules: ValidationRule[] = [];
         public Labels: Model.Label[] = [];
+        public Module: TaxonomyModule = null;
 
         public Concepts: Model.Concept[] = [];
         public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = [];
         public ConceptValues: Model.ConceptLookUp[] = [];
+
+    }
+    export class TaxonomyModule
+    {
+        public Name: string;
+        public TaxonomyName: string;
+        public FromDate: Date;
+        public ToDate: Date;
+        public SchemaRef: string;
+
+    }
+    export class TaxonomyProperties {
 
     }
 
@@ -372,5 +387,8 @@
     {
         public Name: string = "";
         public Description: string = "";
+        public Type: string = "";
+        public CssClass: string = "";
+        public ExtensionText: string = "";
     }
 }
