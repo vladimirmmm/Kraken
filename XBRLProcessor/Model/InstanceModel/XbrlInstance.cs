@@ -123,8 +123,8 @@ namespace Model.InstanceModel
                 var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
                 foreach (var dimension in dimensions) 
                 {
-                    var dimitem = String.Format("{0},", dimension.DomainMemberFullName);
-                    var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain);
+                    var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
+                    var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());
                     factstring += dimitem;
                     factkey += dimension.IsTyped ? dimitemforkey : dimitem;
                 }

@@ -255,6 +255,7 @@ var UI;
                     });
                 }
             }
+            me.SetDynamicRows();
             if (!IsNull(me.FactMap)) {
                 var c = 0;
                 var extfacts = me.FactMap[me.CurrentExtension.LabelCode];
@@ -287,7 +288,7 @@ var UI;
                                                 var typeddimensions = fact.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
                                                 var typedfacts = new Model.FactBase();
                                                 typedfacts.Dimensions = typeddimensions;
-                                                var rowid = me.GetDynamicRowID(typedfacts);
+                                                var rowid = me.GetDynamicRowID(cell.LayoutID, typedfacts);
                                                 var cellid = cell.LayoutID;
                                                 var r_ix = cellid.indexOf("R");
                                                 if (r_ix > -1) {
@@ -307,7 +308,38 @@ var UI;
                 }
             }
         };
-        Table.prototype.GetDynamicRowID = function (fact) {
+        Table.prototype.SetDynamicRows = function () {
+            var me = this;
+            var cellobj = me.Cells[0];
+            var url = window.location.pathname;
+            var reportname = url.substring(url.lastIndexOf('/') + 1);
+            reportname = reportname.replace(".html", "");
+            var extensioncode = IsNull(me.Current_ExtensionCode) ? this.Extensions[0].LabelCode : me.Current_ExtensionCode;
+            var reportkey = Format("{0}|{1}", reportname, extensioncode);
+            var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
+            var rows = GetProperties(rowidcontainer);
+            rows.forEach(function (rowitem) {
+                var $row = me.AddRow("", true, rowitem.Value);
+                var fact = new Model.FactBase();
+                fact.FactString = rowitem.Key;
+                Model.FactBase.LoadFromFactString(fact);
+                $row.attr("factkey", rowitem.Key);
+                var cells = $("td", $row);
+                cells.each(function (index, cell) {
+                    var $cell = $(cell);
+                    var cellfactstring = $cell.attr("factstring");
+                    cellfactstring = Replace(cellfactstring.trim(), ",", "");
+                    if (!IsNull(cellfactstring)) {
+                        var dim = fact.Dimensions.AsLinq().FirstOrDefault(function (i) { return i.DomainMemberFullName.indexOf(cellfactstring) == 0; });
+                        if (dim != null) {
+                            var text = dim.DomainMember;
+                            $cell.text(text);
+                        }
+                    }
+                });
+            });
+        };
+        Table.prototype.GetDynamicRowID = function (cellid, fact) {
             var me = this;
             var newrowneeded = false;
             var rownum = 1;
@@ -317,16 +349,6 @@ var UI;
                 factkey = fact.GetFactString();
                 var $rows = $("tr", me.$TemplateRow.parent());
                 $row = $("tr[factkey='" + factkey + "']");
-                rownum = $rows.length - 1;
-                newrowneeded = $row.length == 0;
-            }
-            else {
-                newrowneeded = true;
-            }
-            if (newrowneeded) {
-                //var id = Format("R{0}", rownum);
-                var $newrow = me.AddRow("", true, rownum);
-                $row = $newrow; //.prev();
             }
             if (fact != null) {
                 $row.attr("factkey", factkey);

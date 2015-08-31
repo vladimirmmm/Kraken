@@ -89,11 +89,24 @@ namespace LogicalModel
 
         public string ToStringForKey() 
         {
-            if (this.IsTyped) 
+            var item = "";
+            if (this.IsTyped  )
             {
-                return String.Format("[{0}]{1}", this.DimensionItem, this.Domain);
+                if (this.Domain == "eba_typ")
+                {
+                    item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+
+                }
+                else
+                {
+                    item = String.Format("[{0}]{1}", this.DimensionItem, this.Domain);
+                }
             }
-            return String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+            else
+            {
+                item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+            }
+            return item.Trim();
         }
 
         public override bool Equals(object obj)

@@ -6,6 +6,9 @@ var __extends = this.__extends || function (d, b) {
 };
 var Model;
 (function (Model) {
+    //interface Dictionary<T,K> {
+    //    [key: K]: T;
+    //}
     var Hierarchy = (function () {
         function Hierarchy() {
             this.Children = [];
@@ -32,6 +35,19 @@ var Model;
         }
         Object.defineProperty(Dimension.prototype, "DomainMemberFullName", {
             get: function () {
+                if (IsNull(this.DomainMember)) {
+                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+                }
+                return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Dimension.prototype, "ToStringForKey", {
+            get: function () {
+                if (this.IsTyped) {
+                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+                }
                 if (IsNull(this.DomainMember)) {
                     return Format("[{0}]{1}", this.DimensionItem, this.Domain);
                 }
@@ -137,6 +153,17 @@ var Model;
             }
             this.Dimensions.forEach(function (dimension, index) {
                 result += Format("{0},", dimension.DomainMemberFullName);
+            });
+            return result;
+        };
+        FactBase.prototype.GetFactKey = function () {
+            var me = this;
+            var result = "";
+            if (!IsNull(this.Concept)) {
+                result = this.Concept.FullName + ",";
+            }
+            this.Dimensions.forEach(function (dimension, index) {
+                result += Format("{0},", dimension.ToStringForKey);
             });
             return result;
         };
@@ -340,6 +367,7 @@ var Model;
             this.Facts = [];
             this.FilingIndicators = [];
             this.FactDictionary = null;
+            this.DynamicCellDictionary = {};
         }
         return Instance;
     })();
@@ -353,7 +381,7 @@ var Model;
     var SimlpeValidationParameter = (function () {
         function SimlpeValidationParameter() {
             this.Facts = [];
-            this.Cells = [];
+            this.CellsOfFacts = {};
         }
         return SimlpeValidationParameter;
     })();

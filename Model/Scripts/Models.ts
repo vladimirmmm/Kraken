@@ -3,6 +3,9 @@
     interface Dictionary<T> {
         [key: string]: T;
     }
+    //interface Dictionary<T,K> {
+    //    [key: K]: T;
+    //}
 
     export class Hierarchy<T>
     {
@@ -34,6 +37,18 @@
         public IsTyped: boolean;
 
         public get DomainMemberFullName(): string {
+
+            if (IsNull(this.DomainMember)) {
+                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+            }
+
+            return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+        }
+        public get ToStringForKey(): string {
+            if (this.IsTyped) {
+                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+            }
+
             if (IsNull(this.DomainMember)) {
                 return Format("[{0}]{1}", this.DimensionItem, this.Domain);
             }
@@ -122,6 +137,19 @@
             }
             this.Dimensions.forEach(function (dimension, index) {
                 result += Format("{0},", dimension.DomainMemberFullName);
+            });
+            return result;
+        }
+
+        public GetFactKey(): string {
+            var me = this;
+
+            var result = "";
+            if (!IsNull(this.Concept)) {
+                result = this.Concept.FullName + ",";
+            }
+            this.Dimensions.forEach(function (dimension, index) {
+                result += Format("{0},", dimension.ToStringForKey);
             });
             return result;
         }
@@ -308,7 +336,8 @@
         public ReportingCurrency: string;
         public Entity: Entity;
         public TaxonomyModuleReference: string;
-        public FactDictionary:Object = null;
+        public FactDictionary: Object = null;
+        public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
     }   
 
     export class Label {
@@ -325,7 +354,7 @@
         public Name: string;
         public Facts: string[] = [];
         public Value: string;
-        public Cells: string[] = [];
+        public CellsOfFacts: Dictionary<string[]> = {};
         public BindAsSequence: boolean;
 
     }

@@ -773,7 +773,7 @@ namespace UI
                         var rule = Engine.CurrentTaxonomy.ValidationRules.FirstOrDefault(i => i.ID == id);
                         if (rule != null) 
                         {
-                            var results = rule.GetAllResults();
+                            var results = Engine.CurrentInstance.Facts.Count > 0 ? rule.GetAllInstanceResults(Engine.CurrentInstance) : rule.GetAllResults();
                             json = Utilities.Converters.ToJson(results);
                         }
                     }

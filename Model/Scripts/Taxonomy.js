@@ -174,52 +174,87 @@ var Control;
                 me.NavigateTo(id);
             }
         };
+        TaxonomyContainer.SetValues = function (ruleresult) {
+            ruleresult.Parameters.forEach(function (parameter) {
+                var strvalue = "";
+                var numericval = 0;
+                if (parameter.BindAsSequence) {
+                    var factsnr = parameter.Facts.length;
+                    var ix = 0;
+                    strvalue += "(";
+                    parameter.Facts.forEach(function (factstring) {
+                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        numericval += Number(strval);
+                        strvalue += strval;
+                        strvalue += ix < factsnr - 1 ? ", " : ")";
+                        ix++;
+                    });
+                    strvalue = numericval.toFixed(2).toString() + "  " + strvalue;
+                }
+                else {
+                    if (parameter.Facts.length == 1) {
+                        strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
+                    }
+                }
+                parameter.Value = strvalue;
+            });
+        };
         TaxonomyContainer.prototype.ShowRuleDetail = function (ruleid) {
             var me = this;
-            var rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
-            BindX(me.SelFromValidation(s_parent_selector), rule);
-            AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
-                var results = data;
-                results.forEach(function (ruleresult) {
-                    ruleresult.Parameters.forEach(function (parameter) {
-                        var strvalue = "";
-                        var numericval = 0;
-                        if (parameter.BindAsSequence) {
-                            var factsnr = parameter.Facts.length;
-                            var ix = 0;
-                            strvalue += "(";
-                            parameter.Facts.forEach(function (cell) {
-                                var strval = me.GetFactValue(cell);
-                                numericval += Number(strval);
-                                strvalue += strval;
-                                strvalue += ix < factsnr - 1 ? ", " : ")";
-                                ix++;
-                            });
-                            strvalue = numericval.toFixed(2).toString() + "  " + strvalue;
-                        }
-                        else {
-                            if (parameter.Facts.length == 1) {
-                                strvalue = me.GetFactValue(parameter.Facts[0]);
-                            }
-                        }
-                        parameter.Value = strvalue;
+            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
+            var $valdetail = me.SelFromValidation(s_detail_selector);
+            if ($valdetail.is(':visible')) {
+                $valdetail.hide();
+            }
+            else {
+                if (ruleid == previousruleid) {
+                    $valdetail.show();
+                }
+            }
+            if (ruleid != previousruleid) {
+                var rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
+                BindX(me.SelFromValidation(s_parent_selector), rule);
+                AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
+                    var results = data;
+                    results.forEach(function (ruleresult) {
+                        //TODO
+                        TaxonomyContainer.SetValues(ruleresult);
                     });
+                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1);
+                }, function (error) {
+                    console.log(error);
                 });
-                LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1);
-            }, function (error) {
-                console.log(error);
-            });
-            $("#validationrule_results_" + ruleid).append(me.SelFromValidation(s_detail_selector));
-            me.SelFromValidation(s_detail_selector).show();
+                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
+                $(".trimmed").click(function () {
+                    if ($(this).hasClass("hmax30")) {
+                        $(this).removeClass("hmax30");
+                    }
+                    else {
+                        $(this).addClass("hmax30");
+                    }
+                });
+                $valdetail.show();
+            }
         };
         TaxonomyContainer.prototype.GetCellValue = function (cellid) {
             return "";
         };
-        TaxonomyContainer.prototype.GetFactValue = function (factkey) {
+        TaxonomyContainer.GetFactValue = function (factstring) {
+            var tmpfact = new Model.FactBase();
+            tmpfact.FactString = factstring;
+            Model.FactBase.LoadFromFactString(tmpfact);
+            var factkey = tmpfact.GetFactKey();
             var facts = instancecontainer.Instance.FactDictionary[factkey];
             if (!IsNull(facts) && facts.length > 0) {
-                var fact = facts[0];
-                return fact.Value;
+                var fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
+                //var fact: Model.InstanceFact = facts[0];
+                if (IsNull(fact)) {
+                    //Notify(Format("FactString {1} was not found in the instance", factstring));
+                    return "";
+                }
+                else {
+                    return fact.Value;
+                }
             }
             else {
             }

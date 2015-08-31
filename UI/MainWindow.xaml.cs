@@ -83,6 +83,7 @@ namespace UI
                 catch (Exception ex) 
                 {
                     response.Error = ex.Message + "\r\n";
+                    Console.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}",request, ex.Message));
                 }
                 Features.ToUI(response);
 

@@ -188,23 +188,13 @@ var Control;
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);
-                        v.Parameters.forEach(function (p) {
-                            var fact = p.Facts[0];
-                        });
+                        Control.TaxonomyContainer.SetValues(v);
                     }
                 });
                 var eventhandlers = { onpaging: function () {
                     me.CloseRuleDetail();
                 } };
                 LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), me.ValidationErrors, 0, me.VPageSize, eventhandlers);
-                $(".trimmed").click(function () {
-                    if ($(this).hasClass("hmax30")) {
-                        $(this).removeClass("hmax30");
-                    }
-                    else {
-                        $(this).addClass("hmax30");
-                    }
-                });
             }
         };
         InstanceContainer.prototype.LoadContentToUI = function (contentid, sender) {
@@ -240,11 +230,31 @@ var Control;
         };
         InstanceContainer.prototype.ShowRuleDetail = function (ruleid) {
             var me = this;
-            var rule = this.ValidationErrors.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
-            BindX(me.SelFromValidation(s_parent_selector), rule);
-            LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
-            $("#validationrule_results_" + ruleid).append(me.SelFromValidation(s_detail_selector));
-            me.SelFromValidation(s_detail_selector).show();
+            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
+            var $valdetail = me.SelFromValidation(s_detail_selector);
+            if ($valdetail.is(':visible')) {
+                $valdetail.hide();
+            }
+            else {
+                if (ruleid == previousruleid) {
+                    $valdetail.show();
+                }
+            }
+            if (ruleid != previousruleid) {
+                var rule = this.ValidationErrors.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
+                BindX(me.SelFromValidation(s_parent_selector), rule);
+                LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
+                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
+                $(".trimmed").click(function () {
+                    if ($(this).hasClass("hmax30")) {
+                        $(this).removeClass("hmax30");
+                    }
+                    else {
+                        $(this).addClass("hmax30");
+                    }
+                });
+                $valdetail.show();
+            }
         };
         InstanceContainer.prototype.CloseRuleDetail = function () {
             var me = this;

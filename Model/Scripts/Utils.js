@@ -1293,6 +1293,19 @@ function Replace(text, texttoreplace, textwithreplace) {
     } while ((index = text.indexOf(texttoreplace, index + 1)) > -1);
     return text;
 }
+function GetProperties(item) {
+    var properties = [];
+    for (var propertyName in item) {
+        if (item.hasOwnProperty(propertyName)) {
+            var propertyValue = item[propertyName];
+            var kv = new General.KeyValue();
+            kv.Key = propertyName;
+            kv.Value = propertyValue;
+            properties.push(kv);
+        }
+    }
+    return properties;
+}
 var BindingTemplate = (function () {
     function BindingTemplate() {
         this.ID = "";
@@ -1313,9 +1326,19 @@ var BindingTemplate = (function () {
                 var items = Access(data, child.AccessorExpression);
                 items = IsNull(items) ? [] : items;
                 var childitems = "";
-                items.forEach(function (item) {
-                    childitems += child.Bind(item);
-                });
+                if (IsArray(items)) {
+                    items.forEach(function (item) {
+                        childitems += child.Bind(item);
+                    });
+                }
+                else {
+                    for (var propertyName in items) {
+                        if (items.hasOwnProperty(propertyName)) {
+                            var item = items[propertyName];
+                            childitems += child.Bind(item);
+                        }
+                    }
+                }
                 result_html = Replace(result_html, child.ID, childitems);
             }
         });

@@ -33,5 +33,9 @@ namespace UI
         public string Error { get; set; }
         public string Data { get; set; }
 
+        public override string ToString()
+        {
+            return String.Format("Message{{ Url: {0}}}", Url);
+        }
     }
 }

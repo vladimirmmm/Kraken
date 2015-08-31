@@ -106,7 +106,11 @@ namespace LogicalModel.Base
                 SetFromString(value);
             }
         }
-
+        public void SetFactString()
+        {
+            Dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+            _FactString = "";
+        }
         public string GetFactString() 
         {
             var sb = new StringBuilder();
@@ -116,7 +120,7 @@ namespace LogicalModel.Base
             }
             foreach (var dimension in Dimensions)
             {
-                sb.Append(dimension.DomainMemberFullName + ",");//|
+                sb.Append(dimension.DomainMemberFullName.Trim() + ",");//|
             }
             return sb.ToString();
         }
@@ -167,6 +171,10 @@ namespace LogicalModel.Base
                     {
                         domain = domainparts[0];
                         member = domainparts[1];
+                        if (domain == "eba_typ") 
+                        {
+                            dim.IsTyped = true;
+                        }
                     }
                     if (domainparts.Length == 3)
                     {
@@ -193,11 +201,13 @@ namespace LogicalModel.Base
             }
             return false;
         }
-
+      
         public override string ToString()
         {
             return GetFactString();
         }
+
+     
     }
 
     public class FactGroup : FactBase 

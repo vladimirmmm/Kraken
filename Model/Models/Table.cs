@@ -480,7 +480,7 @@ namespace LogicalModel
             Columns = columnsnode.GetLeafs();
     
             Rows = rowsnode.ToHierarchy().Where(i => i.Item.IsVisible).ToList();
-            Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
+            Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode) || i.Item.IsDynamic).ToList();
             var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
             if (xRows.Count > 1) 
             {

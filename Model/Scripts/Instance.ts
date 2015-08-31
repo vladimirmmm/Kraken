@@ -235,22 +235,16 @@
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);
-                        v.Parameters.forEach(function (p) {
-                            var fact = p.Facts[0];
-                        });
+                        TaxonomyContainer.SetValues(v);
+                        //v.Parameters.forEach(function (p) {
+                        //    var fact = p.Facts[0];
+                        //});
                     }
 
                 });
                 var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
                 LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), me.ValidationErrors, 0, me.VPageSize, eventhandlers);
-                $(".trimmed").click(function () {
-                    if ($(this).hasClass("hmax30")) {
-                        $(this).removeClass("hmax30");
-                    } else {
-                        $(this).addClass("hmax30");
-
-                    }
-                });
+         
             }
 
         }
@@ -303,14 +297,35 @@
         public ShowRuleDetail(ruleid: string)
         {
             var me = this;
-            var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
+            var previousruleid = me.SelFromValidation(s_parent_selector+" .rule").attr("rule-id");
+            var $valdetail = me.SelFromValidation(s_detail_selector);
+            if ($valdetail.is(':visible')) {
+                $valdetail.hide();
+            }
+            else {
+                if (ruleid == previousruleid) {
+                    $valdetail.show();
+                }
+            }
+            if (ruleid != previousruleid) {
+                var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
 
-            BindX(me.SelFromValidation(s_parent_selector), rule);
-            LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
+                BindX(me.SelFromValidation(s_parent_selector), rule);
+                LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
 
-            $("#validationrule_results_" + ruleid).append(me.SelFromValidation(s_detail_selector));
-           
-            me.SelFromValidation(s_detail_selector).show();
+                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
+
+                $(".trimmed").click(function () {
+                    if ($(this).hasClass("hmax30")) {
+                        $(this).removeClass("hmax30");
+                    } else {
+                        $(this).addClass("hmax30");
+
+                    }
+                });
+
+                $valdetail.show();
+            }
         }
 
         public CloseRuleDetail()
