@@ -386,10 +386,16 @@ namespace LogicalModel
             }
 
             var scriptfiles = System.IO.Directory.GetFiles("Scripts");
-            foreach (var scriptfile in scriptfiles)
+            foreach (var file in scriptfiles)
             {
-                var scriptpath = scriptfile.Substring(scriptfile.IndexOf("\\Scripts") + 1);
-                ManageUIFile(scriptpath);
+                var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
+                ManageUIFile(filepath);
+            }
+            var layoutfiles = System.IO.Directory.GetFiles("Layout");
+            foreach (var file in layoutfiles)
+            {
+                var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
+                ManageUIFile(filepath);
             }
 
             ManageUIFile(@"Table.css");

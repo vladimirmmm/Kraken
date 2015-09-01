@@ -13,11 +13,19 @@ namespace XBRLProcessor
 {
     public partial class XbrlEngine: LogicalModel.TaxonomyEngine
     {
-
-        public XbrlTaxonomy CurrentTaxonomy = null;
-        public XbrlInstance CurrentInstance = null;
+      
+        public XbrlTaxonomy CurrentXbrlTaxonomy 
+        {
+            get{return CurrentTaxonomy as XbrlTaxonomy;}
+            set{CurrentTaxonomy =value;}
+        }
+        public XbrlInstance CurrentXbrlInstance{
+            get{return CurrentInstance as XbrlInstance;}
+            set{CurrentInstance =value;}
+        }
+        /*
         public static XbrlEngine CurrentEngine = null;
-
+        */
         private TaxonomyEventHandler CurrentInstanceTaxonomyLoaded = null;
         private TaxonomyEventHandler CurrentInstanceTaxonomyLoadFailed = null;
 
@@ -73,7 +81,7 @@ namespace XBRLProcessor
             }
             if (taxonomyloadneeded)
             {
-                LoadTaxonomy(CurrentInstance.SchemaRef.Href);
+                LoadTaxonomy(CurrentXbrlInstance.SchemaRef.Href);
                 //LoadTaxonomy();
             }
             else 
@@ -91,7 +99,7 @@ namespace XBRLProcessor
             var sb = new StringBuilder();
 
 
-            foreach (var doc in CurrentTaxonomy.TaxonomyDocuments)
+            foreach (var doc in CurrentXbrlTaxonomy.TaxonomyDocuments)
             {
                 foreach (var tagname in doc.TagNames)
                 {
@@ -130,7 +138,7 @@ namespace XBRLProcessor
             if (CurrentTaxonomy != null) 
             {
                 Utilities.Xml.NamespaceDictionary.Clear();
-                CurrentTaxonomy.ClearObjects();
+                CurrentXbrlTaxonomy.ClearObjects();
                 CurrentTaxonomy = null;
             }
             var isloaded = false;
@@ -146,7 +154,7 @@ namespace XBRLProcessor
 
                 CheckMapping();
 
-                var metdoc = CurrentTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "met.xsd");
+                var metdoc = CurrentXbrlTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "met.xsd");
                 CurrentTaxonomy.ConceptNameSpace = metdoc.TargetNamespace;
                 CurrentTaxonomy.Prefix = CurrentTaxonomy.ConceptNameSpace.Remove(CurrentTaxonomy.ConceptNameSpace.LastIndexOf("_")) + "_";
 
@@ -190,12 +198,12 @@ namespace XBRLProcessor
             CurrentInstance = new XbrlInstance(filepath);
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
-            CurrentInstance.LoadSimple();
+            CurrentXbrlInstance.LoadSimple();
 
             CurrentInstanceTaxonomyLoaded = (object o, TaxonomyEventArgs e) =>
             {
                 CurrentInstance.SetTaxonomy(CurrentTaxonomy);
-                CurrentInstance.LoadComplex();
+                CurrentXbrlInstance.LoadComplex();
                 Console.WriteLine("Loading Instance finished");
             };
             CurrentInstanceTaxonomyLoadFailed = (object o, TaxonomyEventArgs e) =>

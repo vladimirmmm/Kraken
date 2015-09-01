@@ -157,14 +157,43 @@ var General;
         return Message;
     })();
     General.Message = Message;
-    function X() {
-        console.log("retek");
-    }
-    function XY() {
-        console.log("retek");
-    }
-    General.XY = XY;
 })(General || (General = {}));
+var Waiter = (function () {
+    function Waiter(Condition, AllCompleted) {
+        this.Items = [];
+        this.Condition = null;
+        this.AllCompleted = null;
+        this.IsStarted = false;
+        this.AllCompleted = AllCompleted;
+        this.Condition = Condition;
+    }
+    Waiter.prototype.Check = function () {
+        var me = this;
+        var result = true;
+        this.Items.forEach(function (Item) {
+            if (!me.Condition(Item)) {
+                result = false;
+            }
+        });
+        if (result && me.IsStarted) {
+            me.Stop();
+            me.AllCompleted();
+            me.Items = [];
+        }
+    };
+    Waiter.prototype.WaitFor = function (Item) {
+        var me = this;
+        me.Items.push(Item);
+    };
+    Waiter.prototype.Start = function () {
+        this.IsStarted = true;
+        this.Check();
+    };
+    Waiter.prototype.Stop = function () {
+        this.IsStarted = false;
+    };
+    return Waiter;
+})();
 var StopProgress = function (id) {
     return null;
 };
@@ -261,7 +290,7 @@ function Communication_Listener(data) {
     }
     if (message.Category == "action") {
         if (message.Url.toLowerCase() == "instance") {
-            instancecontainer.HandleAction(message);
+            app.instancecontainer.HandleAction(message);
         }
     }
     if (message.Category == "debug") {
@@ -269,8 +298,11 @@ function Communication_Listener(data) {
     }
 }
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
+    return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
+}
+function AjaxRequestComplex(url, method, contenttype, parameters, success, error) {
     var requestid = Guid();
-    var requesthandler = { error: error, success: success, Id: requestid };
+    var requesthandler = { error: error, success: success, Id: requestid, succeded: false };
     var kv = new General.KeyValue();
     kv.Key = requestid;
     kv.Value = requesthandler;
@@ -282,6 +314,7 @@ function AjaxRequest(url, method, contenttype, parameters, success, error) {
     msg.Id = requestid;
     msg.ContentType = contenttype;
     Communication_ToApp(msg);
+    return requesthandler;
 }
 function AjaxResponse(message) {
     var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == message.Id; });
@@ -299,10 +332,15 @@ function AjaxResponse(message) {
             requests.splice(ix, 1);
         }
         if (IsNull(message.Error)) {
-            requesthandler.success(response);
+            requesthandler.succeded = true;
+            requesthandler.success.forEach(function (func) {
+                func(response, requesthandler);
+            });
         }
         else {
-            requesthandler.error(response);
+            requesthandler.error.forEach(function (func) {
+                func(response);
+            });
             ShowError("Response Error: " + response);
         }
     }

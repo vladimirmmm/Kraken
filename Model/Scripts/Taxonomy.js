@@ -85,6 +85,12 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
+            AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
+                me.Taxonomy.Facts = data;
+                me.Taxonomy.FactList = GetProperties(data);
+            }, function (error) {
+                console.log(error);
+            });
         };
         TaxonomyContainer.prototype.LoadValidationResults = function (onloaded) {
             var me = this;
@@ -116,6 +122,10 @@ var Control;
         };
         TaxonomyContainer.prototype.LoadContentToUI = function (contentid, sender) {
             var me = this;
+            var $command = $(sender);
+            var $commands = $command.parent().children("a");
+            $commands.removeClass("selected");
+            $command.addClass("selected");
             ShowContent('#TaxonomyContainer', $("#MainCommands"));
             if (contentid == "Taxonomy") {
                 ShowContent('#TaxonomyContainer', sender);
@@ -128,8 +138,12 @@ var Control;
                 ShowContent('#' + contentid, sender);
                 me.ShowValidationResults();
             }
+            if (contentid == me.s_fact_id) {
+                ShowContent('#' + contentid, sender);
+                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.FactList, 0, me.PageSize);
+            }
         };
-        TaxonomyContainer.prototype.ClearFilterLabelss = function () {
+        TaxonomyContainer.prototype.ClearFilterLabels = function () {
             $("input[type=text]", "#LabelFilter ").val("");
             $("textarea", "#LabelFilter ").val("");
             this.FilterLabels();
@@ -151,6 +165,69 @@ var Control;
             }
             //var context_id = f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1 ? "" : f_context.trim();
             LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+        };
+        TaxonomyContainer.prototype.ClearFilterValidations = function () {
+            var me = this;
+            var $filtercontainer = me.SelFromValidation(s_listfilter_selector);
+            $("input[type=text]", $filtercontainer).val("");
+            $("textarea", $filtercontainer).val("");
+            me.FilterValidations();
+        };
+        TaxonomyContainer.prototype.FilterValidations = function () {
+            var me = this;
+            var f_ruleid = me.SelFromValidation(s_listfilter_selector + " #F_RuleID").val().toLowerCase().trim();
+            var f_ruletext = me.SelFromValidation(s_listfilter_selector + " #F_RuleText").val().toLowerCase().trim();
+            var query = me.Taxonomy.ValidationRules.AsLinq();
+            if (!IsNull(f_ruletext)) {
+                query = query.Where(function (i) { return i.DisplayText.toLowerCase().indexOf(f_ruletext) > -1; });
+            }
+            if (!IsNull(f_ruleid)) {
+                query = query.Where(function (i) { return i.ID.indexOf(f_ruleid) > -1; });
+            }
+            //if (!IsNull(f_key)) {
+            //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
+            //}
+            LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+        };
+        TaxonomyContainer.prototype.ClearFilterFacts = function () {
+            var me = this;
+            $("input[type=text]", me.SelFromFact(s_listfilter_selector)).val("");
+            $("textarea", me.SelFromFact(s_listfilter_selector)).val("");
+            this.FilterFacts();
+        };
+        TaxonomyContainer.prototype.FilterFacts = function () {
+            var me = this;
+            var f_factstring = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
+            var f_cellid = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
+            var query = me.Taxonomy.FactList.AsLinq();
+            if (!IsNull(f_factstring)) {
+                query = query.Where(function (i) { return i.Key.toLowerCase().indexOf(f_factstring) > -1; });
+            }
+            if (!IsNull(f_cellid)) {
+            }
+            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize);
+            me.HideFactDetails();
+        };
+        TaxonomyContainer.prototype.ShowFactDetails = function (factkey, factstring) {
+            var me = this;
+            if (factkey in me.Taxonomy.Facts) {
+                var cells = me.Taxonomy.Facts[factkey];
+                var fact = new Model.InstanceFact();
+                fact.FactString = factkey;
+                Model.FactBase.LoadFromFactString(fact);
+                fact.Cells = cells;
+                var $factdetail = me.SelFromFact(s_detail_selector);
+                BindX($factdetail, fact);
+                $factdetail.show();
+            }
+            else {
+                Notify(Format("Fact {0} was not found!", factkey));
+            }
+        };
+        TaxonomyContainer.prototype.HideFactDetails = function () {
+            var me = this;
+            var $factdetail = me.SelFromFact(s_detail_selector);
+            $factdetail.hide();
         };
         TaxonomyContainer.prototype.TableInfoSelected = function (id, ttype, sender) {
             var me = this;
@@ -244,7 +321,7 @@ var Control;
             tmpfact.FactString = factstring;
             Model.FactBase.LoadFromFactString(tmpfact);
             var factkey = tmpfact.GetFactKey();
-            var facts = instancecontainer.Instance.FactDictionary[factkey];
+            var facts = app.instancecontainer.Instance.FactDictionary[factkey];
             if (!IsNull(facts) && facts.length > 0) {
                 var fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
                 //var fact: Model.InstanceFact = facts[0];
@@ -279,5 +356,4 @@ var Control;
     Control.TaxonomyContainer = TaxonomyContainer;
 })(Control || (Control = {}));
 var s_tableframe_selector = "#tableframe";
-var taxonomycontainer = new Control.TaxonomyContainer();
 //# sourceMappingURL=Taxonomy.js.map

@@ -61,6 +61,7 @@
     <Compile Include="Features.cs" />
     <Compile Include="JsClass.cs" />
     <Compile Include="MenuCommand.cs" />
+    <Compile Include="Services\DataService.cs" />
     <Compile Include="SettingControl.xaml.cs">
       <DependentUpon>SettingControl.xaml</DependentUpon>
     </Compile>

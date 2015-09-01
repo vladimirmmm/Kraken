@@ -56,7 +56,7 @@
 
         public SetExternals() {
             var me = this;
-            me.Taxonomy = taxonomycontainer.Taxonomy;
+            me.Taxonomy = app.taxonomycontainer.Taxonomy;
 
             me.LoadInstance(null);
 
@@ -248,12 +248,15 @@
             }
 
         }
-
      
-
         public LoadContentToUI(contentid: string, sender: any)
         {
             var me = this;
+            var $command = $(sender);
+            var $commands = $command.parent().children("a");
+            $commands.removeClass("selected");
+            $command.addClass("selected");
+
             var text = $(sender).text();
             ShowContent('#InstanceContainer', $("#MainCommands"));
        
@@ -346,6 +349,3 @@
 
     }
 }
-
-
-var instancecontainer = new Control.InstanceContainer();

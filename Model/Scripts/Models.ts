@@ -392,6 +392,8 @@
         public EntryDocumentName: string;
         public ValidationRules: ValidationRule[] = [];
         public Labels: Model.Label[] = [];
+        public Facts: Dictionary<string[]> = {};
+        public FactList: General.KeyValue[] = [];
         public Module: TaxonomyModule = null;
 
         public Concepts: Model.Concept[] = [];

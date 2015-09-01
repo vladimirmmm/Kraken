@@ -1,0 +1,56 @@
+﻿<div class="listpager pagination">
+</div>
+<ul class="list">
+    <li binding-type="template">
+
+        <a href="javascript:void(0)" onclick="bind[app.instancecontainer.ShowRuleDetail('{ID}')]">bind[{ID}]</a> &nbsp;<strong>bind[{Title}]</strong>
+        <div class="bind[validationrule_results_{ID}]">
+
+        </div>
+
+    </li>
+
+</ul>
+
+
+<div class="detail">
+    <!--<a href="javascript:void(0)" onclick="instancecontainer.CloseRuleDetail()" class="icon close">Close</a>-->
+    <div class="parent">
+        <span class="rule" rule-id="bind[{ID}]"></span>
+        <div class="hmax30 trimmed">
+            <span>bind[DisplayText]</span>
+        </div>
+        <div class="hmax30 trimmed">
+            <span>bind[OriginalExpression]</span>
+        </div>
+    </div>
+    <ul class="sublist">
+        <li binding-type="template">
+            <table binding-items="Parameters">
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Cells</th>
+                </tr>
+                <tr binding-type="template">
+                    <td>bind[{Name}]</td>
+                    <td class="right">bind[{Value}]</td>
+                    <td binding-items="CellsOfFacts">
+                        <ul binding-items="this" binding-type="template">
+                            <li>
+                                <a binding-type="template" href="javascript:void(0)" onclick="bind[app.taxonomycontainer.NavigateTo('{this}')]">
+                                    bind[this]
+                                </a>
+                            </li>
+                        </ul>
+
+                    </td>
+
+                </tr>
+            </table>
+        </li>
+    </ul>
+    <div class="sublistpager pagination">
+
+    </div>
+</div>

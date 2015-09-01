@@ -38,28 +38,31 @@ var UI;
         Table.prototype.GetData = function () {
             var me = this;
             me.IsInstanceLoaded = false;
-            //debugger;
-            AjaxRequest("Instance/Get", "get", "json", null, function (data) {
-                me.Instance = data;
+            var waiter = new Waiter(function (i) { return i.succeded; }, function () {
+                me.LoadConceptValues();
                 me.LoadToUI();
+            });
+            //debugger;
+            waiter.WaitFor(AjaxRequest("Instance/Get", "get", "json", null, function (data) {
+                me.Instance = data;
+                waiter.Check();
             }, function (error) {
                 console.log(error);
-            });
+            }));
             AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Concepts = data;
                 me.Concepts = me.Concepts.AsLinq().Where(function (i) { return i.Domain != null; }).ToArray();
-                me.LoadConceptValues();
-                me.LoadToUI();
+                waiter.Check();
             }, function (error) {
                 console.log(error);
             });
             AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
                 me.Hierarchies = data;
-                me.LoadConceptValues();
-                me.LoadToUI();
+                waiter.Check();
             }, function (error) {
                 console.log(error);
             });
+            waiter.Start();
         };
         Table.prototype.SetNavigation = function () {
             var hash = window.location.hash;

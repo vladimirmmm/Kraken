@@ -21,6 +21,10 @@ namespace LogicalModel
     }
     public abstract class TaxonomyEngine
     {
+        public Instance CurrentInstance = null;
+        public Taxonomy CurrentTaxonomy = null;
+        public static TaxonomyEngine CurrentEngine = null;
+
         public delegate void TaxonomyEventHandler(object sender, TaxonomyEventArgs e);
         public event TaxonomyEventHandler TaxonomyLoad;
         public event TaxonomyEventHandler TaxonomyLoadFailed;
@@ -59,6 +63,10 @@ namespace LogicalModel
 
         public TaxonomyEngine() 
         {
+            if (CurrentEngine == null)
+            {
+                CurrentEngine = this;
+            }
             Console.WriteLine(LocalFolder);
         }
         public virtual bool LoadInstance(string filepath) 

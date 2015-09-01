@@ -120,8 +120,10 @@ ul {
 #Facts {
 }
 
-a {
+a, a:visited{
     margin-right: 5px;
+    text-decoration:none;
+    color:#375990;
 }
 
 li {
@@ -186,9 +188,6 @@ li {
 }
 
 
-a, a:visited {
-    color: blue;
-}
 
     a.cellcount_0 {
         color: red;
@@ -359,3 +358,37 @@ resizable columns
         text-align: left;
         overflow: hidden;
     }
+
+.commands a {
+    padding-right:10px;
+    padding-left:10px;
+    margin-right:0px;
+    margin-left:0px;
+    border-right:none 0px;
+    border-left:none 0px;
+    text-decoration:none;
+    font-size:12pt;
+}
+.commands a.selected {
+    color:black;
+    font-weight:bold;
+    background-color:transparent;
+    /*
+
+*/
+    border-bottom:solid 2px white;
+}
+#MainCommands {
+    border-bottom:solid 1px black;
+
+}
+
+    #MainCommands a {
+    font-size:14pt;
+
+    }
+#MainCommands a.selected{
+
+    border-right:solid 1px black;
+    border-left:solid 1px black;
+}

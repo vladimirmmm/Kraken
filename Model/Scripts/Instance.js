@@ -46,7 +46,7 @@ var Control;
         };
         InstanceContainer.prototype.SetExternals = function () {
             var me = this;
-            me.Taxonomy = taxonomycontainer.Taxonomy;
+            me.Taxonomy = app.taxonomycontainer.Taxonomy;
             me.LoadInstance(null);
             me.LoadValidationResults(null);
             AjaxRequest("Table/List", "get", "json", null, function (data) {
@@ -199,6 +199,10 @@ var Control;
         };
         InstanceContainer.prototype.LoadContentToUI = function (contentid, sender) {
             var me = this;
+            var $command = $(sender);
+            var $commands = $command.parent().children("a");
+            $commands.removeClass("selected");
+            $command.addClass("selected");
             var text = $(sender).text();
             ShowContent('#InstanceContainer', $("#MainCommands"));
             if (contentid == "Instance") {
@@ -267,5 +271,4 @@ var Control;
     })();
     Control.InstanceContainer = InstanceContainer;
 })(Control || (Control = {}));
-var instancecontainer = new Control.InstanceContainer();
 //# sourceMappingURL=Instance.js.map

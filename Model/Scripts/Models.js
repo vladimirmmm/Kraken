@@ -412,6 +412,8 @@ var Model;
         function Taxonomy() {
             this.ValidationRules = [];
             this.Labels = [];
+            this.Facts = {};
+            this.FactList = [];
             this.Module = null;
             this.Concepts = [];
             this.Hierarchies = [];

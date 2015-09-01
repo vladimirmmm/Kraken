@@ -1,0 +1,34 @@
+﻿<div id="TaxonomyInfo">
+    <h1 title="bind[TaxonomyName]">
+        bind[TaxonomyID]
+    </h1>
+    <h2 title="bind[Name]">
+        bind[ID]
+
+    </h2>
+</div>
+<ul id="tabletreeview" class="treeview" binding-items="Children">
+    <li binding-type="template" class="bind[{Item.Type}]">
+        <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
+            bind[Item.Name]
+        </a>
+        &nbsp;
+        <span>bind[Item.ExtensionText]</span>
+        <ul class="bind[treeview {Item.CssClass}]" binding-items="Children">
+            <li binding-type="template" class="bind[{Item.Type}]">
+                <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
+                    bind[Item.Name]
+                </a>
+                &nbsp;
+                <span>bind[Item.ExtensionText]</span>
+                <ul class="bind[treeview {Item.CssClass}]" binding-items="Children">
+                    <li binding-type="template" class="bind[{Item.Type}]">
+                        <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
+                            bind[Item.Name]
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>

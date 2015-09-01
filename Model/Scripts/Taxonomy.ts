@@ -97,6 +97,10 @@
                 me.Taxonomy.Labels = data;
             }, function (error) { console.log(error); });
         
+            AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
+                me.Taxonomy.Facts = data;
+                me.Taxonomy.FactList = GetProperties(data);
+            }, function (error) { console.log(error); });
         }
 
         public LoadValidationResults(onloaded: Function) {
@@ -127,6 +131,10 @@
         }
         public LoadContentToUI(contentid: string, sender: any) {
             var me = this;
+            var $command = $(sender);
+            var $commands = $command.parent().children("a");
+            $commands.removeClass("selected");
+            $command.addClass("selected");
             ShowContent('#TaxonomyContainer', $("#MainCommands"));
             if (contentid == "Taxonomy") {
                 ShowContent('#TaxonomyContainer', sender);
@@ -141,13 +149,19 @@
                 ShowContent('#' + contentid, sender);
                 me.ShowValidationResults();
             }
+            if (contentid == me.s_fact_id) {
+                ShowContent('#' + contentid, sender);
+                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.FactList, 0, me.PageSize);
+
+            }
         }
 
-        public ClearFilterLabelss() {
+        public ClearFilterLabels() {
             $("input[type=text]", "#LabelFilter ").val("");
             $("textarea", "#LabelFilter ").val("");
             this.FilterLabels();
         }
+
         public FilterLabels() {
             var me = this;
             var f_key: string = me.SelFromLabel(s_listfilter_selector + " #F_Key").val().toLowerCase().trim();
@@ -168,6 +182,86 @@
             //var context_id = f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1 ? "" : f_context.trim();
 
             LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+
+        }
+
+        public ClearFilterValidations() {
+            var me = this;
+            var $filtercontainer = me.SelFromValidation(s_listfilter_selector);
+            $("input[type=text]", $filtercontainer).val("");
+            $("textarea", $filtercontainer).val("");
+            me.FilterValidations();
+        }
+
+        public FilterValidations() {
+            var me = this;
+            var f_ruleid: string = me.SelFromValidation(s_listfilter_selector + " #F_RuleID").val().toLowerCase().trim();
+            var f_ruletext: string = me.SelFromValidation(s_listfilter_selector + " #F_RuleText").val().toLowerCase().trim();
+            var query = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>();
+            if (!IsNull(f_ruletext)) {
+                query = query.Where(i=> i.DisplayText.toLowerCase().indexOf(f_ruletext) > -1);
+            }
+            if (!IsNull(f_ruleid)) {
+                query = query.Where(i=> i.ID.indexOf(f_ruleid) > -1);
+            }
+            //if (!IsNull(f_key)) {
+            //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
+            //}
+
+            LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+
+        }
+
+        public ClearFilterFacts() {
+            var me = this;
+            $("input[type=text]", me.SelFromFact(s_listfilter_selector)).val("");
+            $("textarea", me.SelFromFact(s_listfilter_selector)).val("");
+            this.FilterFacts();
+        }
+
+        public FilterFacts() {
+            var me = this;
+            var f_factstring: string = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
+            var f_cellid: string = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
+            var query = me.Taxonomy.FactList.AsLinq<General.KeyValue>();
+       
+            if (!IsNull(f_factstring)) {
+                query = query.Where(i=> i.Key.toLowerCase().indexOf(f_factstring) > -1);
+            }
+            if (!IsNull(f_cellid)) {
+                //query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
+            }
+       
+
+            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize);
+            me.HideFactDetails();
+        }
+
+        public ShowFactDetails(factkey: string, factstring: string) {
+            var me = this;
+        
+            if (factkey in me.Taxonomy.Facts) {
+                var cells: string[] = me.Taxonomy.Facts[factkey];
+
+                var fact = new Model.InstanceFact();
+                fact.FactString = factkey;
+                Model.FactBase.LoadFromFactString(fact);
+                fact.Cells = cells;
+                var $factdetail = me.SelFromFact(s_detail_selector);
+                BindX($factdetail, fact);
+                $factdetail.show();
+            } else
+            {
+                Notify(Format("Fact {0} was not found!", factkey));
+            }
+            
+
+        }
+
+        public HideFactDetails() {
+            var me = this;
+            var $factdetail = me.SelFromFact(s_detail_selector);
+            $factdetail.hide();
 
         }
 
@@ -200,6 +294,7 @@
 
             }
         }
+
         public static SetValues(ruleresult: Model.ValidationRuleResult)
         {
             ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {
@@ -225,6 +320,7 @@
                 parameter.Value = strvalue;
             });
         }
+
         public ShowRuleDetail(ruleid: string) {
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
@@ -271,12 +367,13 @@
         {
             return "";
         }
+
         public static GetFactValue(factstring: string): string {
             var tmpfact = new Model.FactBase();
             tmpfact.FactString = factstring;
             Model.FactBase.LoadFromFactString(tmpfact);
             var factkey = tmpfact.GetFactKey()
-            var facts: Model.InstanceFact[] = instancecontainer.Instance.FactDictionary[factkey];
+            var facts: Model.InstanceFact[] = app.instancecontainer.Instance.FactDictionary[factkey];
             if (!IsNull(facts) && facts.length > 0) {
                 var fact: Model.InstanceFact = facts.AsLinq<Model.InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
                 //var fact: Model.InstanceFact = facts[0];
@@ -312,4 +409,3 @@
 }
 var s_tableframe_selector: string = "#tableframe";
 
-var taxonomycontainer = new Control.TaxonomyContainer();
