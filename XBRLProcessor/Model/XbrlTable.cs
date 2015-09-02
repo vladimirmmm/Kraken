@@ -11,6 +11,8 @@ using Utilities;
 using XBRLProcessor.Enums;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
+using XBRLProcessor.Model.DefinitionModel;
+using XBRLProcessor.Model.DefinitionModel.Formula;
 using XBRLProcessor.Models;
 
 namespace XBRLProcessor.Model

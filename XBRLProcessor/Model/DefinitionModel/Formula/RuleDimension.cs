@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Model.DefinitionModel.Formula
+namespace XBRLProcessor.Model.DefinitionModel.Formula
 {
     public class RuleDimension
     {

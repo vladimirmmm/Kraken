@@ -42,8 +42,9 @@ namespace LogicalModel.Validation
         public String FunctionName { get { return Utilities.Strings.AlfaNumericOnly(this.ID); } }
         public Expression RootExpression = null;
 
+        [JsonIgnore]
         public string OriginalExpression { get; set; }
-        
+        [JsonIgnore]
         public string LabelID { get; set; }
         
         private Label _Label = null;
@@ -65,6 +66,7 @@ namespace LogicalModel.Validation
         }
 
         private string _DisplayText = "";
+        [JsonIgnore]        
         public string DisplayText 
         {
             get {
@@ -129,8 +131,11 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().FactGroups;
+            if (this.ID.Contains("0988")) 
+            {
 
-            foreach (var factgroup in factgroups)
+            }
+            foreach (var factgroup in factgroups.Values)
             {
                 //var firstfact = factgroup.Facts.FirstOrDefault();
                 factgroup.FactString = factgroup.GetFactString();
@@ -143,12 +148,14 @@ namespace LogicalModel.Validation
                 {
                     var fg_factstring = factgroup.FactString;
 
-                    var parameterfactgroup = p.FactGroups.Count == 1 ? p.FactGroups.FirstOrDefault() : p.FactGroups.FirstOrDefault(i => i.GetFactString() == fg_factstring);
                     if (p.IsGeneral)
                     {
                         continue;
                     }
                     p.Clear();
+                    //var parameterfactgroup = p.FactGroups.Count == 1 ? p.FactGroups.FirstOrDefault() : p.FactGroups.FirstOrDefault(i => i.GetFactString() == fg_factstring);
+
+                    var parameterfactgroup = p.FactGroups[fg_factstring];
 
 
                     p.CurrentCells.Clear();
@@ -162,7 +169,7 @@ namespace LogicalModel.Validation
                     if (p.BindAsSequence)
                     {
                         //set the cells
-                        itemfacts.AddRange(parameterfactgroup.Facts.Select(i=>i.GetFactKey()));
+                        itemfacts.AddRange(parameterfactgroup.Facts.Select(i => i.GetFactKey()));
                         foreach (var tax_fact in parameterfactgroup.Facts)
                         {
                             var taxfactkey = tax_fact.GetFactKey();
@@ -236,7 +243,7 @@ namespace LogicalModel.Validation
             {
 
             }
-            var parameterfacts = parameter.FactGroups.FirstOrDefault().Facts;
+            var parameterfacts = parameter.FactGroups.FirstOrDefault().Value.Facts;
             var parameterinstancefacts = GetInstanceFacts(parameterfacts);
             foreach (var fact in parameterinstancefacts)
             {
@@ -284,7 +291,7 @@ namespace LogicalModel.Validation
 
         public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
-            if (this.ID.Contains("1677")) 
+            if (this.ID.Contains("4006")) 
             { 
             }
             var allresults = GetAllResults();
@@ -299,7 +306,7 @@ namespace LogicalModel.Validation
 
 
                     var mainparameter = Parameters.FirstOrDefault(i => !i.IsGeneral);
-                    var parameterfactgroup = mainparameter.FactGroups.FirstOrDefault(i => i.GetFactKey() == result.FactGroup.GetFactKey());
+                    var parameterfactgroup = mainparameter.FactGroups[result.FactGroup.GetFactKey()];
                     var fact = parameterfactgroup.Facts.FirstOrDefault();
                     var instancefacts = instance.GetFacts(fact.GetFactKey());
                     foreach (var instancefact in instancefacts)
@@ -325,7 +332,7 @@ namespace LogicalModel.Validation
                             var rp = this.Parameters.FirstOrDefault(i => i.Name == p.Name);
                             p.Facts.Clear();
                             p.CellsOfFacts.Clear();
-                            var rpfactgroup = rp.FactGroups.FirstOrDefault(i => i.GetFactKey() == parameterfactgroup.GetFactKey());
+                            var rpfactgroup = rp.FactGroups[parameterfactgroup.GetFactKey()];
                             foreach (var rpfact in rpfactgroup.Facts)
                             {
                                 var newfact = new FactBase();
@@ -362,7 +369,7 @@ namespace LogicalModel.Validation
                     //ishandled = true;
                 }
                 //handling concept only 
-                var factgroup = this.Parameters.FirstOrDefault().FactGroups.FirstOrDefault();
+                var factgroup = this.Parameters.FirstOrDefault().FactGroups.Values.FirstOrDefault();
                 var firstfact = factgroup.Facts.FirstOrDefault();
                 if (factgroup.Facts.Count == 1 && firstfact.Dimensions.Count == 0)
                 {

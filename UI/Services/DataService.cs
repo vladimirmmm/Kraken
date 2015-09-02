@@ -65,7 +65,7 @@ namespace UI.Services
                     }
                     if (part1 == "validationrules")
                     {
-                        json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyValidationPath);
+                        json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomySimpleValidationPath);
 
                     }
                     if (part1 == "validationrule")

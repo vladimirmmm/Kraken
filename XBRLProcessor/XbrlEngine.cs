@@ -163,9 +163,10 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadConcepts();
                 CurrentTaxonomy.LoadTables();
                 CurrentTaxonomy.LoadFacts();
-                CurrentTaxonomy.LoadValidationFunctions();
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
+                CurrentTaxonomy.LoadValidationFunctions();
+
               
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;

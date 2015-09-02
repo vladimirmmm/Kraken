@@ -233,6 +233,12 @@ var Control;
             }
         };
         InstanceContainer.prototype.ShowRuleDetail = function (ruleid) {
+            var showvaldetail = function () {
+                $valdetail.show();
+                var $rulecontainer = me.SelFromValidation(".validationrule_results_" + ruleid);
+                $rulecontainer.append($valdetail);
+                $valdetail.focus();
+            };
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
             var $valdetail = me.SelFromValidation(s_detail_selector);
@@ -241,14 +247,13 @@ var Control;
             }
             else {
                 if (ruleid == previousruleid) {
-                    $valdetail.show();
+                    showvaldetail();
                 }
             }
             if (ruleid != previousruleid) {
                 var rule = this.ValidationErrors.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
                 BindX(me.SelFromValidation(s_parent_selector), rule);
                 LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
-                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
                         $(this).removeClass("hmax30");
@@ -257,7 +262,7 @@ var Control;
                         $(this).addClass("hmax30");
                     }
                 });
-                $valdetail.show();
+                showvaldetail();
             }
         };
         InstanceContainer.prototype.CloseRuleDetail = function () {

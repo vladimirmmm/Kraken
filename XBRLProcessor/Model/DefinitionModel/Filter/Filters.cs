@@ -9,6 +9,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 {
     public class Filter : XbrlIdentifiable 
     {
+        //all but the filter if true else only the filter
         public bool Complement { get; set; }
 
     }

@@ -101,6 +101,13 @@ function GetFunctionBody(f) {
     var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
     return result;
 }
+function Select(sender) {
+    var $command = $(sender);
+    var $commands = $command.parent().children(); //a
+    $commands.removeClass("selected");
+    $command.addClass("selected");
+    return sender;
+}
 function GetReturnStatement(f) {
     var body = GetFunctionBody(f);
     var body = body.substring(body.lastIndexOf("return "));
@@ -226,7 +233,9 @@ function LoadPage($bindtarget, $pager, items, page, pagesize, events) {
     var startix = pagesize * page;
     var endix = startix + pagesize;
     var itemspart = items.slice(startix, endix);
+    CallFunction(events, "onloading", itemspart);
     BindX($bindtarget, itemspart);
+    CallFunction(events, "onloaded", itemspart);
     if ($pager.length == 0 || 1 == 1) {
         $pager.pagination(items.length, {
             items_per_page: pagesize,

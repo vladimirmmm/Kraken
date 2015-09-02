@@ -517,9 +517,18 @@ namespace XBRLProcessor.Models
                 foreach (var rule in this.ValidationRules) 
                 {
                     rule.SetTaxonomy(this);
+                    foreach (var p in rule.Parameters) 
+                    {
+                        p.SetMyFactBase();
+                    }
                 }
                 
            
+            }
+            if (!System.IO.File.Exists(TaxonomySimpleValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+                var jsoncontent = Utilities.Converters.ToJson(this.SimpleValidationRules);
+                Utilities.FS.WriteAllText(this.TaxonomySimpleValidationPath, jsoncontent);
             }
             //GenerateCSFile();
             //CompileCSFile();

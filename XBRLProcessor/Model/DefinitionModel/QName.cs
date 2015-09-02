@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Model.DefinitionModel
+namespace XBRLProcessor.Model.DefinitionModel
 {
 
     public class QName

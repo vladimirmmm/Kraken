@@ -36,8 +36,35 @@ namespace XBRLProcessor.Model
             {
 
             }
+            var complementedrulefilters = rule_dimensionfilters.Where(i => i.Complement).ToList();
+            foreach (var complementedrulefilter in complementedrulefilters)
+            {
+                var explicitdimfilter = complementedrulefilter as ExplicitDimensionFilter;
+                if (explicitdimfilter != null)
+                {
 
-            rule_dimensionfilters = rule_dimensionfilters.Where(i => i.Complement == false).ToList();
+                    var dimensiondomain = explicitdimfilter.Members.FirstOrDefault().QName.Domain;
+                    if (dimensiondomain.StartsWith(this.Taxonomy.Prefix)) 
+                    {
+                        dimensiondomain = dimensiondomain.Substring(this.Taxonomy.Prefix.Length);
+                    }
+                    var dimensiondomainitems = this.Taxonomy.Hierarchies.Where(i => i.Item.Name == dimensiondomain).SelectMany(i => i.Children).Select(i=>i.Item.Content).Distinct().ToList();
+                    dimensiondomainitems = dimensiondomainitems.Except(explicitdimfilter.Members.Select(i => i.QName.Content)).ToList();
+                    explicitdimfilter.Members.Clear();
+                    foreach (var item in dimensiondomainitems) 
+                    {
+                        var member = new DimensionMember();
+                        member.QName = new QName();
+                        member.QName.Content = item;
+                        explicitdimfilter.Members.Add(member);
+                    }
+                    explicitdimfilter.Complement = false;
+
+                }
+            }
+
+            rule_dimensionfilters = rule_dimensionfilters.Where(i => !i.Complement).ToList();
+         
 
             var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
             var rule_dimensions = rule_dimensionfilters.Select(i => Mapping.Mappings.ToLogicalDimensions(i)).ToList();
@@ -293,7 +320,7 @@ namespace XBRLProcessor.Model
             sb.AppendLine("parameter: " + parameter.Name + " " + sequence);
             var c_sb = new StringBuilder();
             var log = false;
-            foreach (var factgroup in parameter.FactGroups) 
+            foreach (var factgroup in parameter.FactGroups.Values) 
             {
                 foreach (var fact in factgroup.Facts)
                 {

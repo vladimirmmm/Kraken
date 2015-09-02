@@ -34,6 +34,30 @@ h2 {
     font-size: 12pt;
 }
 
+ul {
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 0px;
+    margin-top:0px;
+}
+
+    ul > li {
+        margin-left: 20px;
+    }
+
+#maintable {
+    table-layout: fixed;
+}
+
+    #maintable th {
+        position: relative;
+    }
+
+    #maintable th, #maintable td {
+        padding: 2px 5px;
+        text-align: left;
+        overflow: hidden;
+    }
 
 .left {
     text-align: left;
@@ -69,17 +93,6 @@ input[type=text].celleditor {
 [binding-type="template"] {
     display: none;
 }
-
-ul {
-    list-style-type: none;
-    margin-left: 0px;
-    padding-left: 0px;
-    margin-top:0px;
-}
-
-    ul > li {
-        margin-left: 20px;
-    }
 
 #Contents > div {
     min-width: 400px;
@@ -151,6 +164,8 @@ li {
     clear: both;
     display: block;
     float: none;
+    min-height:31px;
+    margin:5px;
 }
 
     .pagination a {
@@ -345,19 +360,7 @@ resizable columns
     }
 }
 
-#maintable {
-    table-layout: fixed;
-}
 
-    #maintable th {
-        position: relative;
-    }
-
-    #maintable th, #maintable td {
-        padding: 2px 5px;
-        text-align: left;
-        overflow: hidden;
-    }
 
 .commands a {
     padding-right:10px;
@@ -391,4 +394,11 @@ resizable columns
 
     border-right:solid 1px black;
     border-left:solid 1px black;
+}
+.detail, .filter 
+{
+    border:solid 1px black;
+}
+.sublist {
+    margin-right:5px;
 }

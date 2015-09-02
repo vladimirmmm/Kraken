@@ -131,10 +131,7 @@
         }
         public LoadContentToUI(contentid: string, sender: any) {
             var me = this;
-            var $command = $(sender);
-            var $commands = $command.parent().children("a");
-            $commands.removeClass("selected");
-            $command.addClass("selected");
+           
             ShowContent('#TaxonomyContainer', $("#MainCommands"));
             if (contentid == "Taxonomy") {
                 ShowContent('#TaxonomyContainer', sender);
@@ -342,11 +339,16 @@
 
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
                     var results = <Model.ValidationRuleResult[]>data;
-                    results.forEach(function (ruleresult: Model.ValidationRuleResult) {
-                        //TODO
-                        TaxonomyContainer.SetValues(ruleresult);
-                    });
-                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1);
+                 
+                    var eventhandlers = {
+                        onloading: (data: Model.ValidationRuleResult[]) => {
+                            data.forEach(function (ruleresult: Model.ValidationRuleResult) {
+                                TaxonomyContainer.SetValues(ruleresult);
+                            });
+                        }
+                    };
+
+                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1, eventhandlers);
 
                 }, function (error) { console.log(error); });
 

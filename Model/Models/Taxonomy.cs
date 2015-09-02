@@ -167,6 +167,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Validations.json"; }
         }
+        public string TaxonomySimpleValidationPath
+        {
+            get { return ModuleFolder + "SimpleValidations.json"; }
+        }
         public string TaxonomySettingsPath
         {
             get { return ModuleFolder + "ConceptSettings.json"; }
@@ -407,15 +411,18 @@ namespace LogicalModel
         {
             TaxFiles.Clear();
             //TaxFiles.Add(JsonFileToJsVarible(TaxonomyFactsPath, "", "tax_facts"));
-            TaxFiles.Add(JsonFileToJsVarible(TaxonomyHierarchyPath, "", "tax_hierarchies"));
-            TaxFiles.Add(JsonFileToJsVarible(TaxonomyConceptPath, "", "tax_concepts"));
-            var jsonsimplifiedvalidation = "";
-            if (this.SimpleValidationRules.Count > 0) 
-            {
-                jsonsimplifiedvalidation = Utilities.Converters.ToJson(this.SimpleValidationRules);
-            }
-            TaxFiles.Add(JsonToJsVarible(jsonsimplifiedvalidation, "tax_validations"));
-            TaxFiles.Add(JsonFileToJsVarible(TaxonomyLabelPath, "", "tax_labels"));
+            /*
+             TaxFiles.Add(JsonFileToJsVarible(TaxonomyHierarchyPath, "", "tax_hierarchies"));
+             TaxFiles.Add(JsonFileToJsVarible(TaxonomyConceptPath, "", "tax_concepts"));
+         
+             var jsonsimplifiedvalidation = "";
+             if (this.SimpleValidationRules.Count > 0) 
+             {
+                 jsonsimplifiedvalidation = Utilities.Converters.ToJson(this.SimpleValidationRules);
+             }
+             TaxFiles.Add(JsonToJsVarible(jsonsimplifiedvalidation, "tax_validations"));
+             TaxFiles.Add(JsonFileToJsVarible(TaxonomyLabelPath, "", "tax_labels"));
+             */
         }
 
         public string JsonFileToJsVarible(string path, string jsonvalue, string variablename, bool overwrite = false) 
@@ -798,6 +805,7 @@ namespace LogicalModel
 
         public void Clear_Validations()
         {
+            Utilities.FS.DeleteFile(TaxonomySimpleValidationPath);
             Utilities.FS.DeleteFile(TaxonomyValidationPath);
             Utilities.FS.DeleteFile(TaxonomyValidationCsPath);
             Utilities.FS.DeleteFile(TaxonomyValidationDotNetLibPath);

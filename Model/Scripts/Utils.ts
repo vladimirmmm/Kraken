@@ -148,6 +148,15 @@ function GetFunctionBody(f: Function):string
     return result;
 }
 
+function Select(sender):any
+{
+    var $command = $(sender);
+    var $commands = $command.parent().children();//a
+    $commands.removeClass("selected");
+    $command.addClass("selected");
+    return sender;
+}
+
 function GetReturnStatement(f: Function): string
 {
     var body = GetFunctionBody(f);
@@ -308,7 +317,10 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, items: any[], page: numbe
     var startix = pagesize * page;
     var endix = startix + pagesize;
     var itemspart = items.slice(startix, endix);
+    CallFunction(events, "onloading", itemspart);
     BindX($bindtarget, itemspart);
+    CallFunction(events, "onloaded", itemspart);
+
     if ($pager.length == 0 || 1 == 1) {
         $pager.pagination(items.length,
             {

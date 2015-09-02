@@ -1,35 +1,34 @@
 ﻿
-    <div class="listfilter">
-        <table class="filter noborder">
-            <tr>
-                <td>
-                    <label>Validation ID: </label><br /><input type="text" id="F_RuleID" />
-                </td>
-                <td>
-                    <label>Message: </label><br /><input type="text" id="F_RuleText" />
-                </td>
-             
-            </tr>
-            <tr>
-                <td>
-                </td>
-              
-                <td>
-                    <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterValidations()" />
-                    <input type="button" value="Search" onclick="app.taxonomycontainer.FilterValidations()" />
+    <div class="listfilter filter">
+    <table class=" noborder">
+        <tr>
+            <td>
+                <label>Validation ID: </label><br /><input type="text" id="F_RuleID" />
+            </td>
+            <td>
+                <label>Message: </label><br /><input type="text" id="F_RuleText" />
+            </td>
 
-                </td>
-            </tr>
+        </tr>
+        <tr>
+            <td></td>
 
-        </table>
-    </div>
+            <td>
+                <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterValidations()" />
+                <input type="button" value="Search" onclick="app.taxonomycontainer.FilterValidations()" />
+
+            </td>
+        </tr>
+
+    </table>
+</div>
 <div>
     <div class="listpager pagination">
     </div>
     <ul class="list">
         <li binding-type="template">
 
-            <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.ShowRuleDetail('{ID}')]">bind[{ID}]</a> &nbsp;<strong>bind[{Title}]</strong>
+            <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.ShowRuleDetail('{ID}'); Select(this);]">bind[{ID}]</a> &nbsp;<strong>bind[{Title}]</strong>
             <div class="bind[validationrule_results_{ID}]">
 
             </div>
@@ -51,7 +50,7 @@
     </div>
     <ul class="sublist">
         <li binding-type="template">
-            <table binding-items="Parameters">
+            <table binding-items="Parameters" class="sublist">
                 <tr>
                     <th>Name</th>
                     <th>Value</th>
@@ -73,9 +72,9 @@
 
                 </tr>
             </table>
-        </li>
-    </ul>
-    <div class="sublistpager pagination">
-         
-    </div>
+            </li>
+        </ul>
+            <div class="sublistpager pagination">
+
+            </div>
 </div>

@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using XBRLProcessor.Model.Base;
+using XBRLProcessor.Model.DefinitionModel.Formula;
 
-namespace Model.DefinitionModel
+namespace XBRLProcessor.Model.DefinitionModel
 {
     public class RuleNode:XbrlIdentifiable
     {

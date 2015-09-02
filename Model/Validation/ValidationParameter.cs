@@ -1,6 +1,8 @@
 ﻿using LogicalModel.Base;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +12,29 @@ namespace LogicalModel.Validation
     public class ValidationParameter
     {
         public string Name { get; set; }
+        /*
         private List<FactGroup> _FactGroups = new List<FactGroup>();
         public List<FactGroup> FactGroups { get { return _FactGroups; } set { _FactGroups = value; } }
-        public string FallBackValue { get; set; }
+        */
+        private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
+        public Dictionary<string, FactGroup> FactGroups { get { return _FactGroups; } set {
+            _FactGroups = value; 
+            
+        } 
+        }
+
+        public void SetMyFactBase()
+        {
+            foreach (var key in FactGroups.Keys) 
+            {
+                var fg = FactGroups[key];
+                fg.SetFromString(key);
+            }
+        }
+
+        private string _FallBackValue ="0";
+        [DefaultValue("0")]
+        public string FallBackValue { get { return _FallBackValue; } set { _FallBackValue = value; } }
         private TypeEnum _Type = TypeEnum.String;
         public TypeEnum Type { get { return _Type; } set { _Type = value; } }
         public bool BindAsSequence { get; set; }
@@ -60,7 +82,7 @@ namespace LogicalModel.Validation
         }
         
         private string _StringValue = "";
-
+        [JsonIgnore]
         public string StringValue
         {
             get

@@ -122,10 +122,6 @@ var Control;
         };
         TaxonomyContainer.prototype.LoadContentToUI = function (contentid, sender) {
             var me = this;
-            var $command = $(sender);
-            var $commands = $command.parent().children("a");
-            $commands.removeClass("selected");
-            $command.addClass("selected");
             ShowContent('#TaxonomyContainer', $("#MainCommands"));
             if (contentid == "Taxonomy") {
                 ShowContent('#TaxonomyContainer', sender);
@@ -293,11 +289,14 @@ var Control;
                 BindX(me.SelFromValidation(s_parent_selector), rule);
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
                     var results = data;
-                    results.forEach(function (ruleresult) {
-                        //TODO
-                        TaxonomyContainer.SetValues(ruleresult);
-                    });
-                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1);
+                    var eventhandlers = {
+                        onloading: function (data) {
+                            data.forEach(function (ruleresult) {
+                                TaxonomyContainer.SetValues(ruleresult);
+                            });
+                        }
+                    };
+                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1, eventhandlers);
                 }, function (error) {
                     console.log(error);
                 });

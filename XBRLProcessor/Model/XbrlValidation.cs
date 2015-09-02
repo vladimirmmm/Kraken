@@ -121,7 +121,7 @@ namespace XBRLProcessor.Model
                 foreach (var factgroup in factgroups) 
                 {
                     var parameterfactgroup= factgroup.Copy();
-                    parameter.FactGroups.Add(parameterfactgroup);
+                    parameter.FactGroups.Add(parameterfactgroup.FactString, parameterfactgroup);
                     var facts = GetFacts(fv);
                     parameterfactgroup.Facts = facts;
                     SetFacts(parameterfactgroup);
@@ -137,7 +137,7 @@ namespace XBRLProcessor.Model
 
 
                 var type = LogicalModel.TypeEnum.Numeric;
-                var firstfact = parameter.FactGroups.FirstOrDefault().Facts.FirstOrDefault();
+                var firstfact = parameter.FactGroups.Values.FirstOrDefault().Facts.FirstOrDefault();
                 if (firstfact != null && firstfact.Concept != null)
                 {
                     //if (firstfact.Concept.ID.StartsWith("ei"))

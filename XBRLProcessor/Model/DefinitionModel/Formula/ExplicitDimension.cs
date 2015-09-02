@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Model.DefinitionModel.Formula
+namespace XBRLProcessor.Model.DefinitionModel.Formula
 {
 
     public class ExplicitDimension:RuleDimension

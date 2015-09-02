@@ -87,10 +87,10 @@ namespace LogicalModel.Base
         [JsonIgnore]
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
 
-        private string _FactString = "";
+        internal string _FactString = "";
         
         [JsonProperty]
-        public string FactString
+        public virtual string FactString
         {
             get 
             {
@@ -125,18 +125,29 @@ namespace LogicalModel.Base
             return sb.ToString();
         }
 
+        public void ClearFactKey()
+        {
+            _FactKey = "";
+        }
+        private string _FactKey = "";
         public string GetFactKey()
         {
-            var sb = new StringBuilder();
-            if (Concept != null)
+            if (String.IsNullOrEmpty(_FactKey))
             {
-                sb.Append(Concept + ",");
+                var sb = new StringBuilder();
+                if (Concept != null)
+                {
+                    sb.Append(Concept + ",");
+                }
+                foreach (var dimension in Dimensions)
+                {
+                    sb.Append(dimension.ToStringForKey() + ",");
+                }
+                _FactKey = sb.ToString();
             }
-            foreach (var dimension in Dimensions)
-            {
-                sb.Append(dimension.ToStringForKey() + ",");
-            }
-            return sb.ToString();
+
+            return _FactKey;
+
         }
 
         public void SetFromString(string item) 
@@ -209,12 +220,31 @@ namespace LogicalModel.Base
 
      
     }
-
+    [JsonObject(MemberSerialization.OptIn)]
+    //public class FactGroup : FactBase 
     public class FactGroup : FactBase 
     {
         private List<FactBase> _Facts = new List<FactBase>();
+        [JsonProperty]
         public List<FactBase> Facts { get { return _Facts; } set { _Facts = value; } }
 
+        [JsonIgnore]
+        public override string FactString
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_FactString))
+                {
+                    _FactString = GetFactString();
+                }
+                return _FactString;
+            }
+            set
+            {
+                _FactString = value;
+                SetFromString(value);
+            }
+        }
 
         public FactGroup Copy() 
         {

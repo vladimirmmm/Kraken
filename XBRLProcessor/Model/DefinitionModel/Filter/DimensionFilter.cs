@@ -68,5 +68,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
 
         public FilterAxis Axis { get; set; }
+
+
     }
 }
