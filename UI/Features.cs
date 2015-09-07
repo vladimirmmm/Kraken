@@ -17,7 +17,7 @@ namespace UI
     {
         public MenuCommand CommandContainer = null;
         public ControlNode FeatureContainer = null;
-
+        private Object BrowserLocker = new Object();
         public XbrlEngine Engine = new XbrlEngine();
         public DataService DataService = null;
         private const string RegSettingsPath = @"Software\WKFS\X-TreeM\";
@@ -421,7 +421,10 @@ namespace UI
         {
             if (UI.Dispatcher.CheckAccess())
             {
-                UI.Browser.InvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
+                //lock (BrowserLocker)
+                //{
+                    UI.Browser.InvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
+                //}
             }
             else
             {

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\DefinitionModel\AspectNodeFilterArc.cs" />
+    <Compile Include="Model\DefinitionModel\AssertionSet.cs" />
     <Compile Include="Model\DefinitionModel\Filter\AspectFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\ConceptFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\DimensionFilter.cs" />

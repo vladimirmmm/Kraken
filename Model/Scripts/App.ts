@@ -13,7 +13,7 @@
             var funcloader = function () { me.Load.call(me) };
 
             var waiter: Waiter = new Waiter((i: RequestHandler) => i.succeded, funcloader);
-
+            $(s_content_selector).hide();
             $containers.each(function (ix, item) {
                 var $item = $(item);
                 var contanerid = $item.attr("container-for");

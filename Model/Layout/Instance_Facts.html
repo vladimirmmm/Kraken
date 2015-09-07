@@ -4,9 +4,7 @@
             <td>
                 <label>Concept & Dimensions </label><br /><input type="text" id="F_Concept" />
             </td>
-            <td>
-                <label>Context: </label><br /><textarea type="text" id="F_Context"></textarea>
-            </td>
+
             <td>
                 <label>Value: </label><br /><input type="text" id="F_Value" />
 
@@ -14,10 +12,7 @@
         </tr>
         <tr>
             <td>
-                <label>Label: </label><br /><input type="text" id="F_Label" />
-            </td>
-            <td>
-
+                <label>Context: </label><br /><textarea rows="4" type="text" id="F_Context"></textarea>
             </td>
             <td>
                 <input type="button" value="Clear" onclick="app.instancecontainer.ClearFilterFacts()" />
@@ -33,7 +28,7 @@
     </div>
     <ul class="list">
         <li binding-type="template">
-            <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[app.instancecontainer.ShowDetails('{FactKey}', '{FactString}')]">
+            <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[Select(this); app.instancecontainer.ShowFactDetails('{FactKey}', '{FactString}')]">
                 <span>bind[<strong>{Concept.FullName}-{ContextID}:</strong> {Value}]></span>
             </a>
 
@@ -48,6 +43,15 @@
             <td colspan="2">
                 <strong>FactString:</strong> <span title="bind[FactKey: {FactKey}]">bind[FactString]</span>
                 <br />
+        
+  
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Value:  <span>bind[Value]</span></strong>
+            </td>
+            <td>
                 <ul id="celllist" binding-items="Cells">
                     <li binding-type="template">
                         <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.NavigateTo('{this}')]">
@@ -56,7 +60,6 @@
 
                     </li>
                 </ul>
-                </p>
             </td>
         </tr>
         <tr>
@@ -65,12 +68,7 @@
                 <p>
                     <strong>Context & Unit:</strong>  <span>bind[Context ID: {ContextID}; Unit ID: {UnitID}]</span>
                 </p>
-                <p>
-                    <strong>Value:</strong>  <span>bind[Value]</span>
-                </p>
-                <p>
-                    <strong>Concept:</strong>  <span>bind[Concept.FullName]</span>
-                </p>
+         
             </td>
             <td>
                 <strong>Dimensions:</strong>

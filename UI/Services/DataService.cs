@@ -139,7 +139,8 @@ namespace UI.Services
                                 var ht = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tbinfo);
 
                                 ht.Item.ID = String.Format("{0}<>", tbl.ID);
-                                var name = tbl.Extensions.Count > 1 ? String.Format("{0}({1})", tbl.Name, tbl.Extensions.Count) : tbl.Name;
+                               // var name = tbl.Extensions.Count > 1 ? String.Format("{0}({1})", tbl.Name, tbl.Extensions.Count) : tbl.Name;
+                                var name = tbl.Name;
                                 ht.Item.Name = name;
                                 ht.Item.Description = tbl.LabelContent;
                                 ht.Item.Type = "table";

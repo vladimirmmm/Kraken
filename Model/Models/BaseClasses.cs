@@ -303,6 +303,7 @@ namespace LogicalModel.Base
 
         public string _LabelID = "";
         public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
+        public string ParentRole { get; set; }
 
         public override string ToString()
         {

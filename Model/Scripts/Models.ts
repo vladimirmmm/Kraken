@@ -372,7 +372,7 @@
     {
         public ID: string;
         public Parameters: SimlpeValidationParameter[] = [];
-
+        public HasAllFind: string;
     }
 
     export class ValidationRule
@@ -384,6 +384,7 @@
         public DisplayText: string;
         public Parameters: ValidationParameter[] = [];
         public Results: ValidationRuleResult[] = [];
+        public HasAllFind: string= "";
     }
 
     export class Taxonomy

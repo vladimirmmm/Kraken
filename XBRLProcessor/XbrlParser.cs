@@ -235,6 +235,7 @@ namespace XBRLProcessor
         }
 
         #endregion
+        
         public void Test2()
         {
             var xbrlparser = new XbrlFormulaParser();
@@ -244,6 +245,7 @@ namespace XBRLProcessor
             var item3_xbrl = xbrlparser.Translate(expr3);
 
         }
+        
         public void Test()
         {
             var xbrlparser = new XbrlFormulaParser();

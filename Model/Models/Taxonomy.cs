@@ -314,16 +314,20 @@ namespace LogicalModel
             if (!System.IO.File.Exists(TaxonomyModulePath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 PopulateTableGroups();
+               
                 LoadGeneral();
                 TableHandler.HandleTaxonomy(this);
 
                 var jsoncontent = Utilities.Converters.ToJson(Module);
+                PopulateValidationSets();
+
                 foreach (var Table in Tables)
                 {
                     var tjson = Utilities.Converters.ToJson(Table);
                     Utilities.FS.WriteAllText(Table.JsonPath, tjson);
 
                 }
+                ClearTablesAfterLoad();
                 Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent);
 
             }
@@ -698,6 +702,10 @@ namespace LogicalModel
         {
 
         }
+        public virtual void PopulateValidationSets()
+        {
+
+        }
         public virtual void LoadGeneral() 
         {
 
@@ -732,7 +740,11 @@ namespace LogicalModel
         {
 
         }
+        public virtual void ClearTablesAfterLoad() 
+        {
 
+        }
+    
         public virtual void ClearCache()
         {
 

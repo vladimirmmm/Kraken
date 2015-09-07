@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -75,17 +76,25 @@ namespace UI
 
             if (request.Category == ajaxtag) 
             {
-              
-                try
+                new Thread(() =>
                 {
-                    response = this.Features.ProcessRequest(request);
-                }
-                catch (Exception ex) 
-                {
-                    response.Error = ex.Message + "\r\n";
-                    Console.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}",request, ex.Message));
-                }
-                Features.ToUI(response);
+                    Thread.CurrentThread.IsBackground = true;
+                    /* run your code here */
+                    try
+                    {
+                        response = this.Features.ProcessRequest(request);
+                        Features.ToUI(response);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        response.Error = ex.Message + "\r\n";
+                        Console.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
+                        Features.ToUI(response);
+
+                    }
+                }).Start();
+
 
             }
 
@@ -109,31 +118,6 @@ namespace UI
         {
     
             return true;
-        }
-
-        private void SetExtension() 
-        {
-            var table = Table_Tree.SelectedItem as Table;
-            var extension = Table_Tree.SelectedItem as LayoutItem;
-            if (extension != null)
-            {
-                table = extension.Table;
-
-                try
-                {
-                    var extparam = table.CurrentExtension == null ? "" : Utilities.Converters.ToJson(table.CurrentExtension);
-                    Browser.InvokeScript("SetExtension", extparam);
-                    var instance = Features.CurrentInstance;
-                    if (instance != null)
-                    {
-                        Browser.InvokeScript("LoadInstance", "");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
         }
 
         private void ShowMessage(string content) 
@@ -187,7 +171,7 @@ namespace UI
                     var securitytag = "<!-- saved from url=(0014)about:internet -->\r\n";
                     System.IO.File.WriteAllText(file, securitytag + content);
 
-                    //Browser_Left.Navigate(file);
+     
 
                 }
             }

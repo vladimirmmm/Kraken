@@ -367,8 +367,23 @@ namespace XBRLProcessor.Model
             }
            
         }
-        
 
+        public void Clear() 
+        {
+            this.Identifiables.Clear();
+            this.Arcs.Clear();
+            this.AspectNodeFilters.Clear();
+            this.AspectNodes.Clear();
+            this.BreakDowns.Clear();
+            this.BreakdownTrees.Clear();
+            this.DefinitionLinks.Clear();
+            this.DefinitionNodeSubTrees.Clear();
+            this.DimensionFilters.Clear();
+            this.RuleNodes.Clear();
+            this.TableBreakDowns.Clear();
+            this.Tables.Clear();
+            this.DefinitionRoot = null;
+        }
 
         public void LocateDefinitions()
         {

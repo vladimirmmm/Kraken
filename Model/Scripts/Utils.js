@@ -18,7 +18,7 @@ function CreateErrorMsg(errormessage) {
     return msg;
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
     Error(errortext);
     return true;
 }
@@ -103,9 +103,32 @@ function GetFunctionBody(f) {
 }
 function Select(sender) {
     var $command = $(sender);
+    var sel = "selected";
     var $commands = $command.parent().children(); //a
-    $commands.removeClass("selected");
-    $command.addClass("selected");
+    $commands.removeClass(sel);
+    $command.addClass(sel);
+    var selectfromlist = function (item, items) {
+        if (item.length > 0) {
+            items.removeClass(sel);
+            item.addClass(sel);
+        }
+    };
+    var $list = $command.parents(".list").first();
+    if ($list.length == 1) {
+        var tag = $list.prop("tagName");
+        tag = tag.toLowerCase();
+        var $listitem = null;
+        var $listitems = null;
+        if (tag == "ul") {
+            $listitem = $command.parents("li").first();
+            $listitems = $list.children();
+        }
+        if (tag == "table") {
+            $listitem = $command.parents("tr").first();
+            $listitems = $("tr", $list);
+        }
+        selectfromlist($listitem, $listitems);
+    }
     return sender;
 }
 function GetReturnStatement(f) {
@@ -219,14 +242,34 @@ try {
 catch (err) {
 }
 function ShowContent(selector, sender) {
-    var me = this;
-    var $parent = $(sender).parents(s_contentcontainer_selector).first();
+    var id = selector.replace("#", "");
+    var $activator = $(sender); // $("[activator-for=" + id + "]");
+    Select($activator);
+    var $content = $(selector);
+    var $parents = ($activator.length == 0 ? $content : $activator).parents(s_contentcontainer_selector);
+    var $parent = $parents.first();
     $parent.children(s_content_selector).hide();
-    var $contenttoshow = $parent.children(selector);
-    if ($contenttoshow.length == 0) {
-        ShowError("ShowContent: " + $contenttoshow.selector + " has not items!");
+    if ($parent.length > 0) {
+        var id = $parent.attr("id");
+        ShowContentByID("#" + id);
     }
-    $contenttoshow.show();
+    if ($content.length == 0) {
+        ShowError("ShowContent: " + selector + " has not items!");
+    }
+    $content.show();
+    return $activator;
+}
+function ShowContentByID(selector) {
+    var id = selector.replace("#", "");
+    var $activator = $("[activator-for=" + id + "]").first();
+    ShowContent(selector, $activator);
+    return $activator;
+}
+function ShowContentBySender(sender) {
+    var $activator = $(sender);
+    var targetselector = "#" + $activator.attr("activator-for");
+    ShowContent(targetselector, sender);
+    return $activator;
 }
 function LoadPage($bindtarget, $pager, items, page, pagesize, events) {
     var me = this;

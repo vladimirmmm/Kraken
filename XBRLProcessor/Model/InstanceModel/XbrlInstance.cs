@@ -188,8 +188,7 @@ namespace Model.InstanceModel
                 //Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, "var currentvalidationresults = " + json_validationresults + ";");
                 Utilities.FS.WriteAllText(Taxonomy.CurrentInstanceValidationResultPath, json_validationresults);
 
-                var validationresultfilepath = this.FullPath.Remove(this.FullPath.LastIndexOf("."));
-                validationresultfilepath = validationresultfilepath + ".ValidationResults.txt";
+         
                 var sb = new StringBuilder();
                 foreach (var message in messages)
                 {
@@ -199,7 +198,12 @@ namespace Model.InstanceModel
                 sb.AppendLine();
                 sb.AppendLine("Validation Errors JSON:");
                 sb.AppendLine(json_validationresults);
-                Utilities.FS.WriteAllText(validationresultfilepath, sb.ToString());
+                if (System.IO.File.Exists(this.FullPath))
+                {
+                    var validationresultfilepath = this.FullPath.Remove(this.FullPath.LastIndexOf("."));
+                    validationresultfilepath = validationresultfilepath + ".ValidationResults.txt";
+                    Utilities.FS.WriteAllText(validationresultfilepath, sb.ToString());
+                }
 
 
                 Console.WriteLine("Validating Instance finished");
@@ -478,5 +482,10 @@ namespace Model.InstanceModel
         }
 
         #endregion
+
+        internal void SetDocument(System.Xml.XmlDocument doc)
+        {
+            _XmlDocument = doc;
+        }
     }
 }

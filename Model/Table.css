@@ -55,7 +55,7 @@ ul {
 
     #maintable th, #maintable td {
         padding: 2px 5px;
-        text-align: left;
+        /*text-align: left;*/
         overflow: hidden;
     }
 
@@ -141,10 +141,22 @@ a, a:visited{
 
 li {
     clear: both;
+    border-bottom:solid 1px transparent;
+    border-top:solid 1px transparent;
 }
 
 .selected {
-    background: #9cd3fa;
+
+}
+.selected a,.selected a:visited {
+    color:red;
+}
+li.selected {
+    border-bottom:solid 1px black;
+    border-top:solid 1px black;
+}
+tr.selected {
+    background:#cecece;
 }
 
     .selected .editing {
@@ -199,6 +211,8 @@ li {
     max-height: 20px;
     overflow: hidden;
     cursor: pointer;
+}
+.trimmed {
     margin: 5px;
 }
 
@@ -294,11 +308,11 @@ iframe {
     }
 
 .th1 {
-    width: 300px;
+    width: 250px;
 }
 
 .th2 {
-    width: 600px;
+    width: 700px;
 }
 /*end splitter*/
 
@@ -401,4 +415,10 @@ resizable columns
 }
 .sublist {
     margin-right:5px;
+}
+.rule_1>a {
+    color:red;
+}
+.rule_2>a {
+    color:#988a3e;
 }

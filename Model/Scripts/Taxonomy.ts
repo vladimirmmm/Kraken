@@ -129,25 +129,26 @@
                 }
             });
         }
-        public LoadContentToUI(contentid: string, sender: any) {
+        public LoadContentToUI( sender: any) {
+            var me = this;
+            ShowContentBySender(sender);
+            var target = $(sender).attr("activator-for");
+            me.LoadContentToUIX(target, sender);
+        }
+        public LoadContentToUIX(contentid: string, sender: any) {
             var me = this;
            
-            ShowContent('#TaxonomyContainer', $("#MainCommands"));
             if (contentid == "Taxonomy") {
-                ShowContent('#TaxonomyContainer', sender);
 
             }
             if (contentid == me.s_label_id) {
-                ShowContent('#'+contentid, sender);
                 LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
 
             }
             if (contentid == me.s_validation_id) {
-                ShowContent('#' + contentid, sender);
                 me.ShowValidationResults();
             }
             if (contentid == me.s_fact_id) {
-                ShowContent('#' + contentid, sender);
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.FactList, 0, me.PageSize);
 
             }
@@ -204,8 +205,9 @@
             //if (!IsNull(f_key)) {
             //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
             //}
+            var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
 
-            LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+            LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize, eventhandlers);
 
         }
 

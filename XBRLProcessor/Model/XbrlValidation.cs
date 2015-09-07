@@ -93,10 +93,11 @@ namespace XBRLProcessor.Model
         public LogicalModel.Validation.ValidationRule GetLogicalRule() 
         {
             var logicalrule = new LogicalModel.Validation.ValidationRule();
-            logicalrule.SetTaxonomy(this.Taxonomy);
             logicalrule.ID = this.ID;
             logicalrule.LabelID = this.ValueAssertion.LabelID;
             logicalrule.OriginalExpression = this.ValueAssertion.Test;
+            logicalrule.SetTaxonomy(this.Taxonomy);
+
             var factvariables = ValidationRoot.Where(i => i.Item is FactVariable).ToList();
  
             var sb = new StringBuilder();
@@ -219,6 +220,24 @@ namespace XBRLProcessor.Model
         {
             var items = item.Where(i => i.Item is DimensionFilter).Select(s => Mapping.Mappings.ToLogicalDimensions(s.Item as DimensionFilter)).ToList();
             return items;
+        }
+
+        public void Clear() 
+        {
+            this.Arcs.Clear();
+            this.Identifiables.Clear();
+            this.AspectFilters.Clear();
+   
+            this.VariableArcs.Clear();
+            this.VariableFilterArcs.Clear();
+            this.VariableSetFilterArcs.Clear();
+            this.ConceptFilters.Clear();
+            this.DimensionFilters.Clear();
+            this.Filters.Clear();
+            this.FactVariables.Clear();
+
+            this.ValidationRoot = null;
+
         }
 
     }

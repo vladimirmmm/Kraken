@@ -16,11 +16,27 @@ namespace LogicalModel.Validation
         private List<FactGroup> _FactGroups = new List<FactGroup>();
         public List<FactGroup> FactGroups { get { return _FactGroups; } set { _FactGroups = value; } }
         */
+        /*
         private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
-        public Dictionary<string, FactGroup> FactGroups { get { return _FactGroups; } set {
-            _FactGroups = value; 
-            
-        } 
+        public Dictionary<string, FactGroup> FactGroups
+        {
+            get { return _FactGroups; }
+            set
+            {
+                _FactGroups = value;
+
+            }
+        }
+        */
+        private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
+        public Dictionary<string, FactGroup> FactGroups
+        {
+            get { return _FactGroups; }
+            set
+            {
+                _FactGroups = value;
+
+            }
         }
 
         public void SetMyFactBase()
@@ -156,7 +172,7 @@ namespace LogicalModel.Validation
             }
         }
     }
-
+    /*
     public class ValidationParameter<T> : ValidationParameter
     {
         public ValidationParameter(string name)
@@ -183,6 +199,6 @@ namespace LogicalModel.Validation
         }
     }
 
-
+    */
 
 }

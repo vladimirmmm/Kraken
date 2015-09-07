@@ -40,7 +40,7 @@ namespace XBRLProcessor.Model
             }
         }
 
-        public Hierarchy<TClass> GetHierarchy() 
+        public virtual Hierarchy<TClass> GetHierarchy() 
         {
             //DefinitionRoot = Hierarchy<TClass>.GetHierarchy(Arcs, Items,
             //                  (i, a) => i.Item.ID == a.From || i.Item.LabelID == a.From,

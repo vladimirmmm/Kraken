@@ -404,6 +404,7 @@ var Model;
         function ValidationRule() {
             this.Parameters = [];
             this.Results = [];
+            this.HasAllFind = "";
         }
         return ValidationRule;
     })();

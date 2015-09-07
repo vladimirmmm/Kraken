@@ -91,6 +91,9 @@ namespace LogicalModel
         private List<HyperCube> _HyperCubes = new List<HyperCube>();
         public List<HyperCube> HyperCubes { get { return _HyperCubes; } set { _HyperCubes = value; } }
 
+        private List<String> _ValidationRules = new List<String>();
+        public List<String> ValidationRules { get { return _ValidationRules; } set { _ValidationRules = value; } }
+
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> X_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Y_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Z_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
@@ -122,6 +125,12 @@ namespace LogicalModel
         {
             get { return _LayoutCells; }
             set { _LayoutCells = value; }
+        }
+
+        public int InstanceFactsCount
+        {
+            get;
+            set;
         }
 
         public override string ToString()

@@ -50,8 +50,8 @@
     <div id="pivot" class="">
         <table id="maintable">
             <colgroup>
-                <col style="width: 300px" />
-                <col style="width: 500px" />
+                <col style="width: 250px" />
+                <col style="width: 700px" />
                 <col />
             </colgroup>
             <thead>
@@ -76,21 +76,21 @@
                     </td>
                     <td class="th2">
                         <div id="Contents" class="pivotitem">
-                            <div class="contentcontainer">
+                            <div id="MainContainer" class="contentcontainer">
                                 <div id="MainCommands" class="commands">
-                                    <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('Taxonomy', Select(this))">Taxonomy</a>
-                                    <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('Instance', Select(this));">Instance</a>
+                                    <a activator-for="TaxonomyContainer" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this))">Taxonomy</a>
+                                    <a activator-for="InstanceContainer" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">Instance</a>
                                 </div>
                                 <div id="TaxonomyContainer" class="contentcontainer subcontent">
                             
                                     <div id="TaxCommands" class="commands">
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_Labels', Select(this))">Labels</a>
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_Facts', Select(this))">Facts</a>
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_Concepts', Select(this));">Concepts</a>
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_Hierarchies', Select(this));">Hierarchies</a>
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_Validations', Select(this));">Validations</a>
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_General', Select(this));">General</a>
-                                        <a href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI('T_Settings', Select(this));">Settings</a>
+                                        <a activator-for="T_Labels" href=" javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this))">Labels</a>
+                                        <a activator-for="T_Facts" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this))">Facts</a>
+                                        <a activator-for="T_Concepts" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this));">Concepts</a>
+                                        <a activator-for="T_Hierarchies" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this));">Hierarchies</a>
+                                        <a activator-for="T_Validations" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this));">Validations</a>
+                                        <a activator-for="T_General" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this));">General</a>
+                                        <a activator-for="T_Settings" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this));">Settings</a>
                                     </div>
                                     <div id="T_Labels" class="subcontent" container-for="Taxonomy_Labels">
 
@@ -108,13 +108,13 @@
                                 </div>
                                 <div id="InstanceContainer" class="contentcontainer subcontent">
                                     <div id="InstCommands" class="commands">
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_Facts', Select(this))">Facts</a>
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_Facts', Select(this))">Invalid Facts</a>
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_Validations', Select(this));">Validations</a>
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_Units', Select(this));">Units</a>
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_Finds', Select(this));">Filing Indicators</a>
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_General', Select(this));">General</a>
-                                        <a href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI('I_Settings', Select(this));">Settings</a>
+                                        <a activator-for="I_Facts" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this))">Facts</a>
+                                        <a activator-for="I_Facts" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this))">Invalid Facts</a>
+                                        <a activator-for="I_Validations" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">Validations</a>
+                                        <a activator-for="I_Units" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">Units</a>
+                                        <a activator-for="I_Finds" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">Filing Indicators</a>
+                                        <a activator-for="I_General" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">General</a>
+                                        <a activator-for="I_Settings" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">Settings</a>
                                     </div>
                                     <div id="I_Facts" class="subcontent" container-for="Instance_Facts">
 

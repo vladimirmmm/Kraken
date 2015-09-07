@@ -16,6 +16,7 @@ using LogicalModel.Expressions;
 using System.CodeDom.Compiler;
 using System.Reflection;
 using Model.InstanceModel;
+using XBRLProcessor.Model.DefinitionModel;
 
 namespace XBRLProcessor.Models
 {
@@ -252,7 +253,7 @@ namespace XBRLProcessor.Models
             {
                 this.Units.Clear();
                 var docs = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("unit")).ToList();
-                var utrpath = "www.xbrl.org/utr/utr.xml";
+                var utrpath = "http://www.xbrl.org/utr/utr.xml";
                 if (docs.FirstOrDefault(i => i.SourcePath == utrpath) == null) 
                 {
                     var utrdoc = new XbrlTaxonomyDocument(this, utrpath);
@@ -458,7 +459,64 @@ namespace XBRLProcessor.Models
 
                 }
             }
-        } 
+        }
+
+        public override void PopulateValidationSets()
+        {
+            var assertionsets = new Hierarchy<LogicalModel.Base.IdentifiablewithLabel>();
+            var validationsetdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("validation:assertionSet")).ToList();
+
+            foreach (var doc in validationsetdocuments) 
+            {
+                var genlinknode = Utilities.Xml.SelectSingleNode(doc.XmlDocument.DocumentElement, "//gen:link");
+                if (genlinknode != null)
+                {
+                    var hier = new AssertionSet();
+                    hier.LoadFromXml(genlinknode);
+                    foreach (var h in hier.Items)
+                    {
+                        //var folder = Utilities.Strings.GetFolderName(doc.LocalFolder);
+                        //folder = "tab";
+                        //var labelid = h.LabelID;
+                        //if (labelid.StartsWith("loc_"))
+                        //{
+                        //    labelid = labelid.Substring(4);
+                        //}
+                        //h.ID = labelid;
+                        //var labelkey = LogicalModel.Label.GetKey(folder, labelid);
+                        //var label = FindLabel(labelkey);
+                        //if (label != null)
+                        //{
+                        //    h.Label = label;
+                        //}
+                    }
+                    var hierarchy = hier.GetHierarchy();
+                    hierarchy.Item.ParentRole = "assertionset";
+                    assertionsets.Children.Add(hierarchy);
+                    
+
+                }
+            }
+
+            foreach (var aset in assertionsets.Children) 
+            {
+                var tableids = aset.Where(i => i.Item.ParentRole == "table").Select(i => i.Item.ID).ToList();
+                var ruleids = aset.Where(i => i.Item.ParentRole == "rule").Select(i => i.Item.ID).ToList();
+                foreach (var tableid in tableids) 
+                {
+                    var table = this.Tables.FirstOrDefault(i => i.ID == tableid);
+                    if (table != null) 
+                    {
+                          foreach (var ruleid in ruleids) 
+                          {
+                              if (!table.ValidationRules.Contains(ruleid)) {
+                                  table.ValidationRules.Add(ruleid);
+                              }
+                          }
+                    }
+                }
+            }
+        }
 
         public override void LoadValidationFunctions()
         {
@@ -489,6 +547,9 @@ namespace XBRLProcessor.Models
                         validations.Add(validation);
                         logicalrule.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
                         var translated = csparser.GetFunction(logicalrule);
+                        //clear the rule
+                        logicalrule.RootExpression = null;
+
                         logicalrule.FunctionString = translated;
                         this.ValidationRules.Add(logicalrule);
            
@@ -514,6 +575,11 @@ namespace XBRLProcessor.Models
             {
                 var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
                 this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
+
+                var jsoncontent2 = System.IO.File.ReadAllText(this.TaxonomySimpleValidationPath);
+                this.SimpleValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.SimpleValidationRule>>(jsoncontent);
+                
+
                 foreach (var rule in this.ValidationRules) 
                 {
                     rule.SetTaxonomy(this);
@@ -521,6 +587,8 @@ namespace XBRLProcessor.Models
                     {
                         p.SetMyFactBase();
                     }
+                    var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
+
                 }
                 
            
@@ -780,7 +848,19 @@ namespace XBRLProcessor.Models
             this.Concepts.Clear();
             this.Hierarchies.Clear();
             this.SimpleValidationRules.Clear();
+
             GC.Collect();
+        }
+
+        public override void ClearTablesAfterLoad()
+        {
+            foreach (var xbrltable in TaxonomyTables) 
+            {
+                xbrltable.Clear();
+            }
+            TaxonomyTables.Clear();
+            GC.Collect();
+    
         }
 
         public override LogicalModel.Instance GetNewInstance()
@@ -788,6 +868,13 @@ namespace XBRLProcessor.Models
             var instance = new XbrlInstance();
             var link = new Link();
             link.Href = this.SourceTaxonomyPath;
+            //set the xml
+            var doc = new XmlDocument();
+            var docelement = doc.CreateElement("xbrli:xbrl");
+            doc.AppendChild(docelement);
+            instance.SetDocument(doc);
+            //set the period
+            instance.ReportingPeriod = new LogicalModel.Period();
 
             instance.SchemaRef = link;
             instance.Taxonomy = this;
