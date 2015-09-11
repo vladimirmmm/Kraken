@@ -236,7 +236,7 @@ namespace LogicalModel
             {
                 if (log)
                 {
-                    Logger.WriteLine(String.Format("Label {0} was not found!", key));
+                    //Logger.WriteLine(String.Format("Label {0} was not found!", key));
                 }
             }
             return null;

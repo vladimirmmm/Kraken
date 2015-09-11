@@ -9,7 +9,6 @@
         public Page: number = 0;
         public PageSize: number = 20;
         public VPageSize: number = 20;
-        public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
 
       
 
@@ -62,18 +61,7 @@
 
             me.LoadValidationResults(null);
 
-            AjaxRequest("Table/List", "get", "json", null, function (data) {
-                me.TableStructure = data;
-                ForAll(me.TableStructure, "Children", function (item: Model.Hierarchy<Model.TableInfo>) {
-                    if (!IsNull(item.Item)) {
-                        item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
-                        item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length>0 ? Format("({0})",item.Children.length) : "";
-                   
-                    }
-                });
-                BindX($("#tabletreeview"), me.TableStructure);
-
-            }, function (error) { console.log(error); });
+          
         }
 
         public HandleAction(msg: General.Message)

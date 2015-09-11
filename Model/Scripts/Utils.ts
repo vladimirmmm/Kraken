@@ -492,11 +492,27 @@ function Communication_ToApp(message: General.Message)
         console.log(strdata);
     }
 }
-
+function asyncFunc(func:Function) {
+    setTimeout(function () {
+       
+        func();
+    }, 10);
+}
 function Communication_Listener(data: string) {
+    //Notify("Communication_Listener_Start");
     var message: General.Message = <General.Message>JSON.parse(data);
+    data = "";
+
+    //Notify("Communication_Listener Parsed");
+
+    data = null;
     if (message.Category == "ajax") {
-        AjaxResponse(message);
+        asyncFunc(() => {
+            //Notify("Calling AjaxResponse");
+            AjaxResponse(message);
+        });
+        //clearobject(message);
+        //AjaxResponse(message);
     }
     if (message.Category == "notfication")
     {
@@ -514,6 +530,7 @@ function Communication_Listener(data: string) {
     if (message.Category == "debug") {
         debugger;
     }
+    //Notify("Communication_Listener_End");
 }
 
 function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function): RequestHandler {
@@ -549,10 +566,14 @@ function AjaxResponse(message: General.Message)
     if (request != null) {
         var requesthandler = <RequestHandler>request.Value;
         var stringdata = message.Data;
+        message.Data = "";
         var response = stringdata;
         if (message.ContentType.indexOf("json") > -1) {
             if (!IsNull(stringdata)) {
+                
+                
                 response = JSON.parse(stringdata);
+                stringdata = "";
             }
         }
 
@@ -573,9 +594,21 @@ function AjaxResponse(message: General.Message)
             });
             ShowError("Response Error: " + response);
         }
+        //clearobject(response);
     } else
     {
         ShowError("Request not found! " + message.Id);
+    }
+}
+
+function clearobject(item: any)
+{
+    if (typeof item == "string") {
+        item = "";
+    } else {
+        for (var propertyName in item) {
+            delete item[propertyName];
+        }
     }
 }
 

@@ -445,4 +445,3 @@ function SetExtension(extjson) {
 //function LoadInstance(instancejson:string) {
 //    Table.LoadInstance(window[var_currentinstance]);
 //} 
-//# sourceMappingURL=Table.js.map

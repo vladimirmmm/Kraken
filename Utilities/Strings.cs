@@ -606,5 +606,25 @@ namespace Utilities
             System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
             return new string(chars);
         }
+
+        public static string TrimTo(string name, int p)
+        {
+            if (name.Length > p + 3) 
+            {
+                name = name.Remove(p);
+                name = name + "...";
+            }
+            return name;
+        }
+
+        public static string RemoveFrom(string name, int p)
+        {
+            if (name.Length > p + 3)
+            {
+                name = name.Remove(p);
+                name = name + "...";
+            }
+            return name;
+        }
     }
 }

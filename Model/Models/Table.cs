@@ -17,6 +17,7 @@ namespace LogicalModel
         public string Name { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
+        public List<string> Tables = new List<string>();
 
         public TableInfo() 
         {
@@ -28,6 +29,8 @@ namespace LogicalModel
             this.ID = table.ID;
             this.Name = table.Name;     
         }
+
+
     }
 
     public class Table : Identifiable,ILabeled

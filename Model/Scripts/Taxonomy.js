@@ -4,6 +4,7 @@ var Control;
         function TaxonomyContainer() {
             this.Taxonomy = new Model.Taxonomy();
             this.ValidationRules = [];
+            this.TableStructure = null;
             this.LPageSize = 10;
             this.PageSize = 20;
             this.s_fact_id = "T_Facts";
@@ -32,7 +33,7 @@ var Control;
             $(window).resize(function () {
                 waitForFinalEvent(function () {
                     me.SetHeight();
-                }, 500, "retek");
+                }, 200, "retek");
             });
         }
         TaxonomyContainer.prototype.SetHeight = function () {
@@ -69,6 +70,18 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
+            AjaxRequest("Table/List", "get", "json", null, function (data) {
+                me.TableStructure = data;
+                ForAll(me.TableStructure, "Children", function (item) {
+                    if (!IsNull(item.Item)) {
+                        item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
+                        item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
+                    }
+                });
+                BindX($("#tabletreeview"), me.TableStructure);
+            }, function (error) {
+                console.log(error);
+            });
             AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Taxonomy.Concepts = data;
             }, function (error) {
@@ -86,7 +99,9 @@ var Control;
                 console.log(error);
             });
             AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
-                me.Taxonomy.Facts = data;
+                //Notify("factsize " + sizeof(data));
+                //me.Taxonomy.Facts = data;
+                clearobject(data);
             }, function (error) {
                 console.log(error);
             });
@@ -136,7 +151,6 @@ var Control;
                 me.ShowValidationResults();
             }
             if (contentid == me.s_fact_id) {
-                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.Facts, 0, me.PageSize);
             }
         };
         TaxonomyContainer.prototype.ClearFilterLabels = function () {
@@ -242,6 +256,7 @@ var Control;
             var $extensioncontainers = $(".extension").parent();
             var $tablecontainers = $(".table").parent();
             var childidentifier = $childrencontainer.parent().attr("title");
+            Notify(Format("id: {0} type: {1}", id, ttype));
             //$tablecontainers.hide();
             if (In(ttype, "table", "tablegroup")) {
                 if ($childrencontainer.css("display") == "none") {
@@ -364,4 +379,3 @@ var Control;
     Control.TaxonomyContainer = TaxonomyContainer;
 })(Control || (Control = {}));
 var s_tableframe_selector = "#tableframe";
-//# sourceMappingURL=Taxonomy.js.map

@@ -92,6 +92,7 @@ namespace UI.Services
                     if (part1 == "facts")
                     {
                         json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyFactsPath);
+                        json = json.Replace("\r\n", "");
 
                     }
                     result.Data = json;
@@ -125,33 +126,55 @@ namespace UI.Services
                     if (part1 == "list")
                     {
                         var h = new BaseModel.Hierarchy<LogicalModel.TableInfo>();
-                        var tgsitems = Engine.CurrentTaxonomy.Module.TableGroups.Where(i => i.Item.TableIDs.Count > 0);
-                        var tgs = tgsitems.Select(i => { 
-                            var ti = new TableInfo();
-                            ti.ID = i.Item.FilingIndicator; 
-                            ti.Name = i.Item.FilingIndicator;
-                            ti.Description = i.Item.LabelContent;
-                            return ti; });
-                        foreach (var tg in tgs)
+                        var tablegroups = Engine.CurrentTaxonomy.Module.TableGroups.Cast<LogicalModel.TableInfo>(i =>
                         {
-                            var htg = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tg);
-                            htg.Item.Type = "tablegroup";
+                            var ti = new TableInfo();
+                            ti.ID = i.ID;// String.IsNullOrEmpty(i.FilingIndicator) ? i.ID : i.FilingIndicator;
+                            ti.Tables = i.TableIDs;
+                            //var name = String.IsNullOrEmpty(i.LabelCode) ? i.LabelContent : i.LabelCode;
+                            var name = i.LabelContent;
+                            ti.Name = name;
+                            ti.Description = i.LabelContent;
+                            ti.Type = "tablegroup";
+                            return ti;
+                        });
+                        var tgs = tablegroups.All();
+                        //var tgsitems = Engine.CurrentTaxonomy.Module.TableGroups.Where(i => i.Item.TableIDs.Count > 0);
+                        //var tgs = tgsitems.Select(i => { 
+                        //    var ti = new TableInfo();
+                        //    ti.ID = i.Item.FilingIndicator; 
+                        //    ti.Name = i.Item.FilingIndicator;
+                        //    ti.Description = i.Item.LabelContent;
+                        //    return ti; });
+                        foreach (var tgcontainer in tgs)
+                        {
+                            var tg = tgcontainer.Item;
+                            var htg = tgcontainer;// new BaseModel.Hierarchy<LogicalModel.TableInfo>(tg);
 
                             //h.Children.Add(htg);
-                            var tables = Engine.CurrentTaxonomy.Tables.Where(i => i.FilingIndicator == tg.ID);
-
+                            //var tables = Engine.CurrentTaxonomy.Tables.Where(i => i.FilingIndicator == tg.ID);
+                            var tables = Engine.CurrentTaxonomy.Tables.Where(i => tg.Tables.Contains(i.ID)).ToList();
+                            if (tables.Count > 0) 
+                            {
+                                //htg.Children.Clear();
+                            }
                             foreach (var tbl in tables)
                             {
                                 var tbinfo = new TableInfo();
-                                var ht = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tbinfo);
+                                var ht = htg.Children.FirstOrDefault(i => i.Item.ID == tbl.ID);
+                                if (ht == null)
+                                {
+                                   ht = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tbinfo);
+                                   htg.Children.Add(ht);
+                                }
 
                                 ht.Item.ID = String.Format("{0}<>", tbl.ID);
                                // var name = tbl.Extensions.Count > 1 ? String.Format("{0}({1})", tbl.Name, tbl.Extensions.Count) : tbl.Name;
                                 var name = tbl.Name;
-                                ht.Item.Name = name;
-                                ht.Item.Description = tbl.LabelContent;
+                                ht.Item.Name = Utilities.Strings.TrimTo(name, 40);
+                                ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
                                 ht.Item.Type = "table";
-                                htg.Children.Add(ht);
+                               
                                 foreach (var ext in tbl.Extensions)
                                 {
                                     var extinfo = new TableInfo();
@@ -163,17 +186,19 @@ namespace UI.Services
                                     ht.Children.Add(hext);
                                 }
                             }
-                            if (tables.Count() == 1)
-                            {
-                                h.Children.Add(htg.Children.FirstOrDefault());
-                            }
-                            else
-                            {
-                                h.Children.Add(htg);
-                            }
+                            //if (tables.Count() == 1)
+                            //{
+                            //    h.Children.Add(htg.Children.FirstOrDefault());
+                            //}
+                            //else
+                            //{
+                            //    h.Children.Add(htg);
+                            //}
 
 
                         }
+                        h = tablegroups;
+
                         result.Data = Utilities.Converters.ToJson(h);
                     }
                 }

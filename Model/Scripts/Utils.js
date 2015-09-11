@@ -383,10 +383,22 @@ function Communication_ToApp(message) {
         console.log(strdata);
     }
 }
+function asyncFunc(func) {
+    setTimeout(function () {
+        func();
+    }, 10);
+}
 function Communication_Listener(data) {
+    //Notify("Communication_Listener_Start");
     var message = JSON.parse(data);
+    data = "";
+    //Notify("Communication_Listener Parsed");
+    data = null;
     if (message.Category == "ajax") {
-        AjaxResponse(message);
+        asyncFunc(function () {
+            //Notify("Calling AjaxResponse");
+            AjaxResponse(message);
+        });
     }
     if (message.Category == "notfication") {
     }
@@ -400,6 +412,7 @@ function Communication_Listener(data) {
     if (message.Category == "debug") {
         debugger;
     }
+    //Notify("Communication_Listener_End");
 }
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
@@ -425,10 +438,12 @@ function AjaxResponse(message) {
     if (request != null) {
         var requesthandler = request.Value;
         var stringdata = message.Data;
+        message.Data = "";
         var response = stringdata;
         if (message.ContentType.indexOf("json") > -1) {
             if (!IsNull(stringdata)) {
                 response = JSON.parse(stringdata);
+                stringdata = "";
             }
         }
         var ix = requests.indexOf(request);
@@ -450,6 +465,16 @@ function AjaxResponse(message) {
     }
     else {
         ShowError("Request not found! " + message.Id);
+    }
+}
+function clearobject(item) {
+    if (typeof item == "string") {
+        item = "";
+    }
+    else {
+        for (var propertyName in item) {
+            delete item[propertyName];
+        }
     }
 }
 function Ajax(url, method, parameters, generichandler, contentType) {
@@ -1465,4 +1490,3 @@ var resourcemanager = { Get: function (key, culture) {
     return key;
 } };
 var activeItem = null;
-//# sourceMappingURL=Utils.js.map

@@ -165,6 +165,18 @@ namespace LogicalModel
             return this.DomainMemberFullName.GetHashCode();
         }
 
+        public static void MergeDimensions(List<Dimension> target, List<Dimension> items)
+        {
+            foreach (var item in items)
+            {
+                var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
+                if (existing == null)
+                {
+                    target.Add(item);
+                }
+            }
+        }
+
         public string ToXmlString()
         {
             var sb = new StringBuilder();

@@ -55,5 +55,10 @@ namespace LogicalModel
             return String.Format("TaxonomyDocument: {0} References {1} ", FileName , this.References.Count);
         }
 
+
+        public virtual void ClearDocument()
+        {
+           
+        }
     }
 }

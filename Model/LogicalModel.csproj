@@ -260,9 +260,9 @@
   <Target Name="BeforeBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(ProjectDir)Scripts" "$(SolutionDir)UI\Bin\Debug\Scripts\"
-xcopy /E /Y "$(ProjectDir)Layout" "$(SolutionDir)UI\Bin\Debug\Layout\"
-xcopy /E /Y "$(ProjectDir)Table.css" "$(SolutionDir)UI\Bin\Debug\Table.css"
+    <PostBuildEvent>xcopy /E /Y "$(ProjectDir)Scripts" "$(SolutionDir)UI\$(OutDir)\Scripts\"
+xcopy /E /Y "$(ProjectDir)Layout" "$(SolutionDir)UI\$(OutDir)\Layout\"
+xcopy /E /Y "$(ProjectDir)Table.css" "$(SolutionDir)UI\$(OutDir)\Table.css"
 xcopy /E /Y "$(ProjectDir)UI.html" "$(SolutionDir)UI\Bin\Debug\UI.html"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

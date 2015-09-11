@@ -245,7 +245,36 @@ namespace LogicalModel.Base
     {
         private List<FactBase> _Facts = new List<FactBase>();
         [JsonProperty]
-        public List<FactBase> Facts { get { return _Facts; } set { _Facts = value; } }
+        public List<FactBase> Facts {
+            get { return GetFullFacts(); } 
+           // set { _Facts = value; } 
+        }
+
+        public void SetFacts(List<FactBase> facts) 
+        {
+            _Facts = facts;
+        }
+
+        protected List<FactBase> GetFullFacts() 
+        {
+            var newfacts=new List<FactBase>();
+            foreach (var fact in _Facts)
+            {
+                var newfact = new FactBase();
+                newfacts.Add(newfact);
+                newfact.Dimensions.AddRange(fact.Dimensions);
+                newfact.Concept=fact.Concept;
+
+                Dimension.MergeDimensions(newfact.Dimensions, Dimensions);
+                if (newfact.Concept == null)
+                {
+                    newfact.Concept = Concept;
+                }
+                newfact.Dimensions = newfact.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+            }
+            return newfacts;
+        }
+
 
         [JsonIgnore]
         public override string FactString
@@ -323,6 +352,7 @@ namespace LogicalModel.Base
         public string _LabelID = "";
         public string LabelID { get { return _LabelID; } set { _LabelID = value; } }
         public string ParentRole { get; set; }
+        public string HRef { get; set; }
 
         public override string ToString()
         {

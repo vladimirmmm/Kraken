@@ -131,7 +131,7 @@ namespace XBRLProcessor.Model
                         var x_fg = new LogicalModel.Base.FactGroup();
                         x_fg.Concept = mainfactgroup.Concept == null ? orrule_fg.Concept : mainfactgroup.Concept;
                         x_fg.Dimensions.AddRange(mainfactgroup.Dimensions);
-                        MergeDimensions(x_fg.Dimensions, orrule_fg.Dimensions);
+                        LogicalModel.Dimension.MergeDimensions(x_fg.Dimensions, orrule_fg.Dimensions);
                         allfactgroups.Add(x_fg);
                         
                     }
@@ -207,7 +207,7 @@ namespace XBRLProcessor.Model
                     {
                         itemfact.Concept = paramfact.Concept;
                     }
-                    MergeDimensions(itemfact.Dimensions, paramfact.Dimensions);
+                    LogicalModel.Dimension.MergeDimensions(itemfact.Dimensions, paramfact.Dimensions);
                 }
 
             }
@@ -440,7 +440,7 @@ namespace XBRLProcessor.Model
         {
             foreach (var fact in factgroup.Facts) 
             {
-                MergeDimensions(fact.Dimensions, factgroup.Dimensions);
+                LogicalModel.Dimension.MergeDimensions(fact.Dimensions, factgroup.Dimensions);
                 if (fact.Concept == null) 
                 {
                     fact.Concept = factgroup.Concept;
@@ -462,16 +462,6 @@ namespace XBRLProcessor.Model
             }
         }
 
-        private void MergeDimensions(List<LogicalModel.Dimension> target, List<LogicalModel.Dimension> items)
-        {
-            foreach (var item in items)
-            {
-                var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
-                if (existing == null)
-                {
-                    target.Add(item);
-                }
-            }
-        }
+
     }
 }

@@ -408,6 +408,8 @@ namespace XBRLProcessor.Models
                     }
                 }
             }
+            var tablegroups = this.SchemaElements.Where(i => i.Type == "model:tableGroupType");
+
             var predocpath = this.EntryDocument.LocalRelPath.Replace(".xsd","-pre.xml");
             var predoc = this.TaxonomyDocumentDictionary[predocpath];
             if (predoc != null) 
@@ -420,7 +422,9 @@ namespace XBRLProcessor.Models
                     foreach (var h in hier.Items) 
                     {
                         var folder = Utilities.Strings.GetFolderName(predoc.LocalFolder);
-                        folder = "tab";
+                        var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef);
+                        folder = Utilities.Strings.GetFolderName(href);
+                        //folder = "tab";
                         var labelid = h.LabelID;
                         if (labelid.StartsWith("loc_"))
                         {
@@ -433,7 +437,12 @@ namespace XBRLProcessor.Models
                         {
                             h.Label = label;
                         }
+                        if (label == null) 
+                        { 
+                        }
                     }
+                    var root = hier.Items.FirstOrDefault();
+                    //hier.Items = hier.Items.Where(i => tablegroups.Any(j => j.ID == i.ID) || i == root).ToList();
                     var hierarchy = hier.GetHierarchy();
                     var leafs = hierarchy.GetLeafs();
                     this.Module.TableGroups.Clear();
@@ -460,7 +469,7 @@ namespace XBRLProcessor.Models
                             var parent = item.Parent.Item;
                             var parentLabelID = parent.LabelID.ToLower();
                             var parentLabelCode = parent.LabelCode.ToLower();
-                            if (item.Children.Count == 0)
+                            if (item.Children.Count == 0 && !tablegroups.Any(i=>i.ID==item.Item.ID))
                             {
                                 parent.TableIDs.Add(item.Item.ID);
                             }
@@ -625,7 +634,11 @@ namespace XBRLProcessor.Models
                 {
                     Utilities.FS.WriteAllText(expressionfile, sb.ToString());
                 }
-
+                foreach (var v in ValidationRules) 
+                {
+                    v.ClearObjects();
+                    
+                }
                 Validations.Clear();
                 GC.Collect();
 
@@ -662,10 +675,58 @@ namespace XBRLProcessor.Models
                 var jsoncontent = Utilities.Converters.ToJson(this.SimpleValidationRules);
                 Utilities.FS.WriteAllText(this.TaxonomySimpleValidationPath, jsoncontent);
             }
+                foreach (var rule in this.ValidationRules) 
+                {
+                    rule.ClearObjects();
+
+                    //var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
+
+                }
+            GC.Collect();
             //GenerateCSFile();
             //CompileCSFile();
             base.GenerateValidationFunctions();
             base.LoadValidationFunctions();
+            /*
+            var factgroups = new List<string>();
+            foreach (var v in ValidationRules)
+            {
+                foreach (var p in v.Parameters)
+                {
+                    var factgroupsofp = p.FactGroups.Select(i => i.Key);
+                    var sbx = new StringBuilder();
+                    foreach (var fact in factgroupsofp)
+                    {
+                        sbx.Append(fact + "\r\n");
+                    }
+                    factgroups.Add(sbx.ToString());
+                }
+                var tocompare = "";
+                var isdifferent = false;
+                foreach (var fs in factgroups)
+                {
+                    if (!String.IsNullOrEmpty(fs))
+                    {
+                        if (string.IsNullOrEmpty(tocompare))
+                        {
+                            tocompare = fs;
+                        }
+                        else
+                        {
+                            if (tocompare != fs)
+                            {
+                                isdifferent = true;
+                            }
+                        }
+                    }
+                }
+                if (isdifferent)
+                {
+
+                }
+                
+            }
+             * */
             //fore
             Logger.WriteLine("Loading Validations completed");
 

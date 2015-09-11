@@ -630,6 +630,14 @@ namespace LogicalModel.Validation
         }
 
 
+
+        public void ClearObjects()
+        {
+            foreach (var p in Parameters) 
+            {
+                p.ClearObjects();
+            }
+        }
     }
     
     public class SimlpeValidationParameter 

@@ -10,7 +10,6 @@ var Control;
             this.Page = 0;
             this.PageSize = 20;
             this.VPageSize = 20;
-            this.TableStructure = null;
             this.s_fact_id = "I_Facts";
             this.s_validation_id = "I_Validations";
             this.s_units_id = "I_Units";
@@ -49,18 +48,6 @@ var Control;
             me.Taxonomy = app.taxonomycontainer.Taxonomy;
             me.LoadInstance(null);
             me.LoadValidationResults(null);
-            AjaxRequest("Table/List", "get", "json", null, function (data) {
-                me.TableStructure = data;
-                ForAll(me.TableStructure, "Children", function (item) {
-                    if (!IsNull(item.Item)) {
-                        item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
-                        item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
-                    }
-                });
-                BindX($("#tabletreeview"), me.TableStructure);
-            }, function (error) {
-                console.log(error);
-            });
         };
         InstanceContainer.prototype.HandleAction = function (msg) {
             var me = this;
@@ -293,4 +280,3 @@ var Control;
     })();
     Control.InstanceContainer = InstanceContainer;
 })(Control || (Control = {}));
-//# sourceMappingURL=Instance.js.map

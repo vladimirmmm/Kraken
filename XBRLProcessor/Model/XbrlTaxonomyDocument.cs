@@ -211,5 +211,11 @@ namespace XBRLProcessor.Models
 
         }
 
+        public override void ClearDocument()
+        {
+            base.ClearDocument();
+            this._XmlDocument = null;
+        }
+
     }
 }

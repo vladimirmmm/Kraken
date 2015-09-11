@@ -425,14 +425,32 @@ namespace UI
             {
                 lock (BrowserLocker)
                 {
+                    var id = msg.Url;
                     try
                     {
+                        //var sb_json = new StringBuilder();
+                        //sb_json.Append(Utilities.Converters.ToJson(msg));
+                        //var size = System.Text.ASCIIEncoding.Unicode.GetByteCount(msg.Data);
+                        //if (size > 1024 * 1024 * 1) 
+                        //{
+
+                        //}
+                        //msg = null;
+                        //var data = msg.Data;
+                        //msg.Data = "@$@$";
+                        //data = data.Replace("\"", "\\\"");
+                        //var msgjson = Utilities.Converters.ToJson(msg);
+                        //var parts= msgjson.Split(new string[]{"@$@$"},StringSplitOptions.RemoveEmptyEntries);
+                        //sb_json.Append(parts[0]);
+                        //sb_json.Append(data);
+                        //data=null;
+                        //sb_json.Append(parts[1]);
                         UI.Browser.InvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
                     }
                     catch (Exception ex) 
                     {
                         var str = ex.Message;
-                        Logger.WriteLine("Error at Features.ToUI: " + str);
+                        Logger.WriteLine("Error at Features.ToUI ("+id+"): " + str);
                     }
                 }
             }

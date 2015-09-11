@@ -147,6 +147,7 @@ namespace XBRLProcessor
             var taxonomydocument = new XbrlTaxonomyDocument();
             if (taxonomydocument.LoadTaxonomyDocument(filepath, null))
             {
+                taxonomydocument.ClearDocument();
                 Trigger_TaxonomyLoad(filepath);
 
                 CurrentTaxonomy = new XbrlTaxonomy(filepath);
@@ -167,8 +168,14 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
                 CurrentTaxonomy.LoadValidationFunctions();
-
-              
+                
+                CurrentTaxonomy.EntryDocument.ClearDocument();
+                foreach (var doc in CurrentTaxonomy.TaxonomyDocuments) 
+                {
+                    doc.ClearDocument();
+                }
+                Utilities.Xml.NamespaceDictionary.Clear();
+                
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
                 Logger.WriteLine("Loading Taxonomy finished");

@@ -36,6 +36,7 @@ namespace XBRLProcessor.Model
                 var item = new IdentifiablewithLabel();
                 item.ID = Utilities.Xml.Attr(identifiable, "id");
                 item.LabelID = Utilities.Xml.Attr(identifiable, "*:label");
+                item.HRef = Utilities.Xml.Attr(identifiable, "*:href");
                 Items.Add(item as TClass);
             }
         }

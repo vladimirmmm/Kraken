@@ -124,8 +124,11 @@ namespace XBRLProcessor.Model
                     var parameterfactgroup= factgroup.Copy();
                     parameter.FactGroups.Add(parameterfactgroup.FactString, parameterfactgroup);
                     var facts = GetFacts(fv);
-                    parameterfactgroup.Facts = facts;
-                    SetFacts(parameterfactgroup);
+                    ////original
+                    //parameterfactgroup.Facts = facts;
+                    //SetFacts(parameterfactgroup);
+                    parameterfactgroup.SetFacts(facts);
+                    
                     var xfirstfact = parameterfactgroup.Facts.FirstOrDefault();
                     if (xfirstfact != null) 
                     {

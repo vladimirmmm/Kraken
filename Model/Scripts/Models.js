@@ -449,4 +449,3 @@ var Model;
     })(Identifiable);
     Model.TableInfo = TableInfo;
 })(Model || (Model = {}));
-//# sourceMappingURL=Models.js.map
