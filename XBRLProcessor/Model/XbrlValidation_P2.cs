@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 using XBRLProcessor.Model.Base;
 using XBRLProcessor.Model.DefinitionModel;
 using XBRLProcessor.Model.DefinitionModel.Filter;
@@ -44,10 +45,13 @@ namespace XBRLProcessor.Model
                 {
 
                     var dimensiondomain = explicitdimfilter.Members.FirstOrDefault().QName.Domain;
-                    if (dimensiondomain.StartsWith(this.Taxonomy.Prefix)) 
-                    {
-                        dimensiondomain = dimensiondomain.Substring(this.Taxonomy.Prefix.Length);
-                    }
+                    //TODOX
+                    //if (dimensiondomain.StartsWith(this.Taxonomy.Prefix)) 
+                    //{
+                    //    dimensiondomain = dimensiondomain.Substring(this.Taxonomy.Prefix.Length);
+                    //}
+                    dimensiondomain = dimensiondomain.IndexOf("_") > -1 ? dimensiondomain.Substring(dimensiondomain.LastIndexOf("_") + 1) : dimensiondomain;
+
                     var dimensiondomainitems = this.Taxonomy.Hierarchies.Where(i => i.Item.Name == dimensiondomain).SelectMany(i => i.Children).Select(i=>i.Item.Content).Distinct().ToList();
                     dimensiondomainitems = dimensiondomainitems.Except(explicitdimfilter.Members.Select(i => i.QName.Content)).ToList();
                     explicitdimfilter.Members.Clear();
@@ -146,8 +150,8 @@ namespace XBRLProcessor.Model
         {
             var facts = new List<LogicalModel.Base.FactBase>();
             var factvariable = fv.Item as FactVariable;
-            var or_filters = fv.Where(i => i.Item is OrFilter).ToList();
-            var and_filters = fv.Where(i => i.Item is AndFilter).ToList();
+            var or_filters = fv.Where(i => i.Item is OrFilter);
+            var and_filters = fv.Where(i => i.Item is AndFilter);
             foreach (var f_or in or_filters)
             {
                 foreach (var child in f_or.Children)
@@ -427,7 +431,7 @@ namespace XBRLProcessor.Model
             }
             if (c_sb.Length > 0)
             {
-                Console.WriteLine(c_sb.ToString());
+                Logger.WriteLine(c_sb.ToString());
             }
             return sb.ToString();
         }

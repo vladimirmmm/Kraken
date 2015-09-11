@@ -318,7 +318,9 @@ namespace UI
         }
 
         public void OpenTaxonomy(string path) 
-        {   
+        {
+            Engine.TaxonomyLoad -= Engine_TaxonomyLoad;
+            Engine.TaxonomyLoad += Engine_TaxonomyLoad;
             Engine.LoadTaxonomy(path);
     
         }
@@ -421,10 +423,18 @@ namespace UI
         {
             if (UI.Dispatcher.CheckAccess())
             {
-                //lock (BrowserLocker)
-                //{
-                    UI.Browser.InvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
-                //}
+                lock (BrowserLocker)
+                {
+                    try
+                    {
+                        UI.Browser.InvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
+                    }
+                    catch (Exception ex) 
+                    {
+                        var str = ex.Message;
+                        Logger.WriteLine("Error at Features.ToUI: " + str);
+                    }
+                }
             }
             else
             {

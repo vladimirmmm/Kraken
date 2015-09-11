@@ -25,7 +25,7 @@
 <div>
     <div class="listpager pagination">
     </div>
-    <ul class="list">
+    <ul class="list" binding-items="this">
         <li binding-type="template">
 
             <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.ShowRuleDetail('{ID}'); Select(this);]">bind[{ID}]</a> &nbsp;<strong>bind[{Title}]</strong>
@@ -48,7 +48,7 @@
             <span>bind[OriginalExpression]</span>
         </div>
     </div>
-    <ul class="sublist">
+    <ul class="sublist" binding-items="this">
         <li binding-type="template">
             <table binding-items="Parameters" class="sublist">
                 <tr>
@@ -72,8 +72,8 @@
 
                 </tr>
             </table>
-            </li>
-        </ul>
+        </li>
+    </ul>
             <div class="sublistpager pagination">
 
             </div>

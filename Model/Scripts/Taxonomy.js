@@ -87,7 +87,6 @@ var Control;
             });
             AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
                 me.Taxonomy.Facts = data;
-                me.Taxonomy.FactList = GetProperties(data);
             }, function (error) {
                 console.log(error);
             });
@@ -137,7 +136,7 @@ var Control;
                 me.ShowValidationResults();
             }
             if (contentid == me.s_fact_id) {
-                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.FactList, 0, me.PageSize);
+                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.Facts, 0, me.PageSize);
             }
         };
         TaxonomyContainer.prototype.ClearFilterLabels = function () {
@@ -199,13 +198,19 @@ var Control;
             var me = this;
             var f_factstring = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
             var f_cellid = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
-            var query = me.Taxonomy.FactList.AsLinq();
+            var query = me.Taxonomy.Facts;
             if (!IsNull(f_factstring)) {
-                query = query.Where(function (i) { return i.Key.toLowerCase().indexOf(f_factstring) > -1; });
+                var results = [];
+                EnumerateObject(query, me, function (value, key) {
+                    if (key.toLowerCase().indexOf(f_factstring) > -1) {
+                        results.push(value);
+                    }
+                });
+                query = results;
             }
             if (!IsNull(f_cellid)) {
             }
-            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize);
+            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);
             me.HideFactDetails();
         };
         TaxonomyContainer.prototype.ShowFactDetails = function (factkey, factstring) {

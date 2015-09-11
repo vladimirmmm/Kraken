@@ -17,6 +17,7 @@ namespace UI.Services
         }
         public Message ProcessRequest(Message request)
         {
+            Logger.WriteLine("ProcessRequest " + request.Url);
             Message result = new Message();
             result.Id = request.Id;
             result.Url = request.Url;
@@ -124,7 +125,13 @@ namespace UI.Services
                     if (part1 == "list")
                     {
                         var h = new BaseModel.Hierarchy<LogicalModel.TableInfo>();
-                        var tgs = Engine.CurrentTaxonomy.Module.TableGroups.Select(i => { var ti = new TableInfo(); ti.ID = i.FilingIndicator; ti.Name = i.FilingIndicator; ti.Description = i.LabelContent; return ti; });
+                        var tgsitems = Engine.CurrentTaxonomy.Module.TableGroups.Where(i => i.Item.TableIDs.Count > 0);
+                        var tgs = tgsitems.Select(i => { 
+                            var ti = new TableInfo();
+                            ti.ID = i.Item.FilingIndicator; 
+                            ti.Name = i.Item.FilingIndicator;
+                            ti.Description = i.Item.LabelContent;
+                            return ti; });
                         foreach (var tg in tgs)
                         {
                             var htg = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tg);
@@ -171,6 +178,7 @@ namespace UI.Services
                     }
                 }
             }
+            Logger.WriteLine("Finished " + request.Url);
 
             return result;
         }

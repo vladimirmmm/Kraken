@@ -132,6 +132,10 @@ namespace LogicalModel.Base
         private string _FactKey = "";
         public string GetFactKey()
         {
+            if (this.Dimensions.Count == 0 && this.Concept == null)
+            {
+                LoadObjects();
+            }
             if (String.IsNullOrEmpty(_FactKey))
             {
                 var sb = new StringBuilder();
@@ -144,6 +148,7 @@ namespace LogicalModel.Base
                     sb.Append(dimension.ToStringForKey() + ",");
                 }
                 _FactKey = sb.ToString();
+                ClearObjects();
             }
 
             return _FactKey;
@@ -182,10 +187,11 @@ namespace LogicalModel.Base
                     {
                         domain = domainparts[0];
                         member = domainparts[1];
-                        if (domain == "eba_typ") 
-                        {
-                            dim.IsTyped = true;
-                        }
+                        dim.IsTyped = Taxonomy.IsTyped(domain);
+                        //if (domain == "eba_typ") 
+                        //{
+                        //    dim.IsTyped = true;
+                        //}
                     }
                     if (domainparts.Length == 3)
                     {
@@ -218,7 +224,20 @@ namespace LogicalModel.Base
             return GetFactString();
         }
 
-     
+
+
+        public void ClearObjects()
+        {
+            var fs = this.FactString;
+            this.Concept = null;
+            this.Dimensions.Clear();
+        }
+
+        public void LoadObjects() 
+        {
+            SetFromString(_FactString);
+        }
+
     }
     [JsonObject(MemberSerialization.OptIn)]
     //public class FactGroup : FactBase 
@@ -354,6 +373,10 @@ namespace LogicalModel.Base
         public DateTime? CreationDate { get; set; }
 
         public string Key { get { return String.Format("{0}:{1}",this.Namespace,this.ID); } }
+
+        private string _FileName = "";
+        public string FileName { get { return _FileName; } set { _FileName = value; } }
+
 
     }
     [JsonObject(MemberSerialization=MemberSerialization.OptIn)]

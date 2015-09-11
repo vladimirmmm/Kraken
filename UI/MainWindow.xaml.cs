@@ -28,13 +28,16 @@ namespace UI
     public partial class MainWindow : Window
     {
         protected Features Features = null;
+
         
         public MainWindow()
         {
             InitializeComponent();
+            System.Threading.ThreadPool.SetMaxThreads(2, 2);
 
-            var uitw = new UITextWriter(ShowMessage);
-            Console.SetOut(uitw);
+            //var uitw = new UITextWriter(ShowMessage);
+            //Console.SetOut(uitw);
+            Utilities.Logger.action = ShowMessage;
 
             Browser.LoadCompleted += Browser_LoadCompleted;
             var ofs =new JsClass();
@@ -46,7 +49,33 @@ namespace UI
             this.Features.LoadMenu(this.Features.CommandContainer, null);
             this.Features.LoadFeatures(this.Features.FeatureContainer, null);
 
+            //tet();
+
         }
+
+        public void tet()
+        {
+            var l = new List<LogicalModel.Base.FactBase>();
+            for (int i = 0; i < 200000; i++)
+            {
+                var fact = new LogicalModel.Base.FactBase();
+                //fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[eba_dim:LEC]eba_typ:LE,[eba_dim:MCY]eba_MC:x27,[eba_dim:TRI]eba_TR:x6,");
+                fact.SetFromString("eba_met:mi235,[:BAS]eba_BA:x9,[:LEC]eba_typ:LE,[:MCY]eba_MC:x27,[:TRI]eba_TR:x6,");
+ 
+                l.Add(fact);
+            }
+
+            var x = 0;
+            Logger.WriteLine("take!!");
+            System.Threading.Thread.Sleep(20 * 1000);
+
+            foreach (var fact in l)
+            {
+                fact.ClearObjects();
+            }
+            var zz = 0;
+        }
+
         private object slocker = new object();
         void fromJS(object param) 
         {
@@ -61,7 +90,7 @@ namespace UI
             {
                 response.Error = ex.Message;
                 response.Category = "error";
-                Console.WriteLine(String.Format("Error at {0} - {1}: {2}", request.Id, request.Url, ex.Message));
+                Logger.WriteLine(String.Format("Error at {0} - {1}: {2}", request.Id, request.Url, ex.Message));
                 Features.ToUI(response);
 
             }
@@ -70,16 +99,42 @@ namespace UI
             {
                 lock (slocker)
                 {
-                    Console.WriteLine(request.Data);
+                    Logger.WriteLine(request.Data);
                 }
             }
 
+
+
+            //Action a = ()=>{
+            //      response = this.Features.ProcessRequest(request);
+            //        Features.ToUI(response);
+            //};
+         
+
             if (request.Category == ajaxtag) 
             {
+                try
+                {
+                    //response = this.Features.ProcessRequest(request);
+                    //Features.ToUI(response);
+
+               
+                        response = this.Features.ProcessRequest(request);
+                        Features.ToUI(response);
+
+
+                }
+                catch (Exception ex)
+                {
+                    response.Error = ex.Message + "\r\n";
+                    Logger.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
+                    Features.ToUI(response);
+
+                }
+                /*
                 new Thread(() =>
                 {
                     Thread.CurrentThread.IsBackground = true;
-                    /* run your code here */
                     try
                     {
                         response = this.Features.ProcessRequest(request);
@@ -89,12 +144,12 @@ namespace UI
                     catch (Exception ex)
                     {
                         response.Error = ex.Message + "\r\n";
-                        Console.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
+                        Logger.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
                         Features.ToUI(response);
 
                     }
                 }).Start();
-
+                */
 
             }
 
@@ -119,27 +174,30 @@ namespace UI
     
             return true;
         }
-
+        private object ConsoleLocker = new Object();
         private void ShowMessage(string content) 
         {
             if (this.Dispatcher.CheckAccess())
             {
-                String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
-                TB_Console.Text += msg;
-                if (TB_Console.LineCount > 3000) 
+                lock (ConsoleLocker)
                 {
-                    var lines = TB_Console.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1000);
-                    var sb = new StringBuilder();
-                    foreach (var line in lines) 
+                    String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
+                    TB_Console.Text += msg;
+                    if (TB_Console.LineCount > 3000)
                     {
-                        sb.AppendLine(line);
+                        var lines = TB_Console.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1000);
+                        var sb = new StringBuilder();
+                        foreach (var line in lines)
+                        {
+                            sb.AppendLine(line);
+                        }
+                        TB_Console.Text = sb.ToString();
                     }
-                    TB_Console.Text = sb.ToString();
+                    TB_Console.Focus();
+                    TB_Console.CaretIndex = TB_Console.Text.Length;
+                    TB_Console.ScrollToEnd();
+                    TB_Console.UpdateLayout();
                 }
-                TB_Console.Focus();
-                TB_Console.CaretIndex = TB_Console.Text.Length;
-                TB_Console.ScrollToEnd();
-                TB_Console.UpdateLayout();
             }
             else 
             {
@@ -179,20 +237,18 @@ namespace UI
 
         private void B_LoadLabel_Click(object sender, RoutedEventArgs e)
         {
-            var table = Table_Tree.SelectedItem as Table;
-            if (table != null)
-            {
-                table.CreateHtmlLayout(true);
-            }
-            dynamic doc = Browser.Document;
+    
             try
             {
+                dynamic doc = Browser.Document;
+
                 var htmlText = doc.documentElement.InnerHtml;
                 System.IO.File.WriteAllText(this.Features.Engine.HtmlPath.Replace(".html", "_Current.html"), htmlText);
+                doc = null;
             }
             catch (Exception ex) 
             {
-                Console.WriteLine("Failed to save the document! " + ex.Message);
+                Logger.WriteLine("Failed to save the document! " + ex.Message);
             }
             Browser.Refresh();
    

@@ -15,7 +15,10 @@ namespace UI
         {
             if (UIAction != null) 
             {
-                UIAction(value);
+                System.Threading.ThreadPool.QueueUserWorkItem((ab) =>
+               {
+                   UIAction(value);
+               });
             }
 
         }

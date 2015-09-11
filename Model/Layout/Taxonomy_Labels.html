@@ -1,0 +1,42 @@
+﻿<div class="listfilter">
+    <table class="filter noborder">
+        <tr>
+            <td>
+                <label>Content: </label><br /><textarea type="text" id="F_Content"></textarea>
+            </td>
+            <td>
+                <label>Code: </label><br /><input type="text" id="F_Code" />
+            </td>
+            <td>
+                <label>Key: </label><br /><input type="text" id="F_Key" />
+
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterLabels()" />
+                <input type="button" value="Search" onclick="app.taxonomycontainer.FilterLabels()" />
+
+            </td>
+        </tr>
+
+    </table>
+</div>
+<div>
+    <div class="listpager pagination">
+    </div>
+    <ul class="list" binding-items="this">
+        <li binding-type="template">
+            <a href="javascript:void(0)">
+            </a>
+            <span>bind[<strong>{FileName}</strong> {LabelID} ({Lang})]</span>
+            <br />
+            <span>bind[{Code} | {Content}]</span>
+
+
+        </li>
+    </ul>
+
+</div>

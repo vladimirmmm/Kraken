@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel
 {
@@ -34,7 +35,7 @@ namespace LogicalModel
                 if (String.IsNullOrEmpty(_Value)) { return 0; }
                 if (_Value.Length > 29 || !Utilities.Strings.IsDigitsOnly(_Value, '.', '-'))
                 {
-                    Console.WriteLine(String.Format("Invalid Value Detected: {0}", _Value));
+                    Logger.WriteLine(String.Format("Invalid Value Detected: {0}", _Value));
                 }
                 else 
                 {

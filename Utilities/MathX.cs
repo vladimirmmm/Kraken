@@ -40,7 +40,7 @@ namespace Utilities
                 {
                     s += String.Format("{0},", subitem);
                 }
-                Console.WriteLine(s);
+                Logger.WriteLine(s);
             }
             int z = 0;
         }

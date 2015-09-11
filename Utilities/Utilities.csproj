@@ -49,6 +49,7 @@
     <Compile Include="FS.cs" />
     <Compile Include="KeyValue.cs" />
     <Compile Include="Linq.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="MathX.cs" />
     <Compile Include="Objects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

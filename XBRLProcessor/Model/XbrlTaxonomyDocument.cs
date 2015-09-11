@@ -39,8 +39,13 @@ namespace XBRLProcessor.Models
         private string[] _TagNames = new string[] { };
         public string[] TagNames { get { return _TagNames; } set { _TagNames = value; } }
 
+        private string _TargetNamespacePrefix = "";
+        public string TargetNamespacePrefix { get { return _TargetNamespacePrefix; } set { _TargetNamespacePrefix = value; } }
+        
+     
         private string _TargetNamespace = "";
         public string TargetNamespace { get { return _TargetNamespace; } set { _TargetNamespace = value; } }
+    
 
         private XmlDocument _XmlDocument = null;
         public XmlDocument XmlDocument
@@ -106,7 +111,7 @@ namespace XBRLProcessor.Models
             }
             catch (Exception ex) 
             {
-                Console.WriteLine(String.Format("Can't get source file {0}. Error: {1}", sourcepath, ex));
+                Logger.WriteLine(String.Format("Can't get source file {0}. Error: {1}", sourcepath, ex));
                 result = false;
             }
 
@@ -122,7 +127,7 @@ namespace XBRLProcessor.Models
             {
                 var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
                 _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
-                _TargetNamespace = this.Taxonomy.GetTargetNamespace(XmlDocument);
+                this.Taxonomy.SetTargetNamespace(this);
                 foreach (var handler in structurehandlers)
                 {
                     var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));
@@ -179,12 +184,12 @@ namespace XBRLProcessor.Models
                 }
                 var localpath = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, sourcepath);
                 var localrelpath = Utilities.Strings.GetRelativePath(LogicalModel.TaxonomyEngine.LocalFolder, localpath);
-                //Console.WriteLine(localpath);
+                //Logger.WriteLine(localpath);
 
                 var taxonomydocument = Taxonomy.FindDocument(localrelpath);
                 if (taxonomydocument == null)
                 {
-                    //Console.WriteLine(path);
+                    //Logger.WriteLine(path);
                     taxonomydocument = new XbrlTaxonomyDocument(path, this);
                     Taxonomy.AddTaxonomyDocument(taxonomydocument);
                     taxonomydocument.LoadReferences();

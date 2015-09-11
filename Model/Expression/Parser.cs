@@ -19,6 +19,7 @@ namespace LogicalModel.Expressions
         public string ParameterSeparator = "";
         public string CodeItemSeparator = "";
         public string StringDelimiter = "";
+        public string StringDelimiter2 = "";
         public string Spacing = "";
         public string If = "";
         public string Then = "";

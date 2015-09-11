@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Utilities;
 using XBRLProcessor.Models;
 
 namespace XBRLProcessor
@@ -129,8 +130,8 @@ namespace XBRLProcessor
 
                 }
             }
-            Console.WriteLine("Tags not mapped: ");
-            Console.WriteLine(sb.ToString());
+            Logger.WriteLine("Tags not mapped: ");
+            Logger.WriteLine(sb.ToString());
         }
 
         public override bool LoadTaxonomy(string filepath) 
@@ -142,7 +143,7 @@ namespace XBRLProcessor
                 CurrentTaxonomy = null;
             }
             var isloaded = false;
-            Console.WriteLine("Loading Taxonomy ");
+            Logger.WriteLine("Loading Taxonomy ");
             var taxonomydocument = new XbrlTaxonomyDocument();
             if (taxonomydocument.LoadTaxonomyDocument(filepath, null))
             {
@@ -155,8 +156,8 @@ namespace XBRLProcessor
                 CheckMapping();
 
                 var metdoc = CurrentXbrlTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "met.xsd");
-                CurrentTaxonomy.ConceptNameSpace = metdoc.TargetNamespace;
-                CurrentTaxonomy.Prefix = CurrentTaxonomy.ConceptNameSpace.Remove(CurrentTaxonomy.ConceptNameSpace.LastIndexOf("_")) + "_";
+                CurrentTaxonomy.ConceptNameSpace = metdoc.TargetNamespacePrefix;
+                //CurrentTaxonomy.Prefix = CurrentTaxonomy.ConceptNameSpace.Remove(CurrentTaxonomy.ConceptNameSpace.LastIndexOf("_")) + "_";
 
                 CurrentTaxonomy.LoadLabels();
                 CurrentTaxonomy.LoadSchemaElements();
@@ -170,7 +171,7 @@ namespace XBRLProcessor
               
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
-                Console.WriteLine("Loading Taxonomy finished");
+                Logger.WriteLine("Loading Taxonomy finished");
                 Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
                 Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstanceValidationResultPath);
                 if (!IsInstanceLoading)
@@ -185,7 +186,7 @@ namespace XBRLProcessor
             }
             else 
             {
-                Console.WriteLine("Can't Load Taxonomy");
+                Logger.WriteLine("Can't Load Taxonomy");
                 Trigger_TaxonomyLoadFailed(filepath);
 
             }
@@ -195,7 +196,7 @@ namespace XBRLProcessor
         public override bool LoadInstance(string filepath)
         {
             IsInstanceLoading = true;
-            Console.WriteLine("Loading Instance started");
+            Logger.WriteLine("Loading Instance started");
             CurrentInstance = new XbrlInstance(filepath);
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
@@ -205,11 +206,11 @@ namespace XBRLProcessor
             {
                 CurrentInstance.SetTaxonomy(CurrentTaxonomy);
                 CurrentXbrlInstance.LoadComplex();
-                Console.WriteLine("Loading Instance finished");
+                Logger.WriteLine("Loading Instance finished");
             };
             CurrentInstanceTaxonomyLoadFailed = (object o, TaxonomyEventArgs e) =>
             {
-                Console.WriteLine("Loading Instance failed");
+                Logger.WriteLine("Loading Instance failed");
                 Trigger_InstanceLoadFailed(filepath);
 
             };

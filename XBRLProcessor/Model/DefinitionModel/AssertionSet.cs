@@ -34,5 +34,53 @@ namespace XBRLProcessor.Model.DefinitionModel
 
             return DefinitionRoot;
         }
+
+    
+    }
+    class c1 
+    {
+        protected string x = "";
+    }
+    class c2 : c1 
+    {
+        public string xx 
+        {
+            get { return x; }
+            set { x = value; }
+        }
+        public void sasfasf() 
+        {
+            var x = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                x = i;
+            }
+        }
+        public void sasfasf2()
+        {
+            var z = 0;
+            for (int i = 0; i < 10; i++)
+            {
+               z = i+1;
+            }
+        }
+
+        public void sasfasf3()
+        {
+            var z = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                z = i + 1;
+            }
+        }
+
+        public void sasfasf4()
+        {
+            var z = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                z = i + 1;
+            }
+        }
     }
 }

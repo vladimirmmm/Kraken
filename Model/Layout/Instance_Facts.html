@@ -26,7 +26,7 @@
 <div>
     <div class="listpager pagination">
     </div>
-    <ul class="list">
+    <ul class="list" binding-items="this">
         <li binding-type="template">
             <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[Select(this); app.instancecontainer.ShowFactDetails('{FactKey}', '{FactString}')]">
                 <span>bind[<strong>{Concept.FullName}-{ContextID}:</strong> {Value}]></span>

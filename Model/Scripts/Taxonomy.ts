@@ -98,8 +98,8 @@
             }, function (error) { console.log(error); });
         
             AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
+          
                 me.Taxonomy.Facts = data;
-                me.Taxonomy.FactList = GetProperties(data);
             }, function (error) { console.log(error); });
         }
 
@@ -149,7 +149,7 @@
                 me.ShowValidationResults();
             }
             if (contentid == me.s_fact_id) {
-                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.FactList, 0, me.PageSize);
+                LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.Facts, 0, me.PageSize);
 
             }
         }
@@ -222,17 +222,24 @@
             var me = this;
             var f_factstring: string = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
             var f_cellid: string = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
-            var query = me.Taxonomy.FactList.AsLinq<General.KeyValue>();
+            var query:any = me.Taxonomy.Facts;
        
             if (!IsNull(f_factstring)) {
-                query = query.Where(i=> i.Key.toLowerCase().indexOf(f_factstring) > -1);
+                var results: any[] = [];
+                EnumerateObject(query,me, function (value:any, key: string) {
+                    if (key.toLowerCase().indexOf(f_factstring) > -1)
+                    {
+                        results.push(value);
+                    }
+                });
+                query = results;
             }
             if (!IsNull(f_cellid)) {
                 //query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
             }
        
 
-            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize);
+            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);
             me.HideFactDetails();
         }
 

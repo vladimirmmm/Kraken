@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace BaseModel
 {
@@ -132,19 +133,36 @@ namespace BaseModel
             {
                 results.Add(this);
             }
-            else
-            {
+            //else
+            //{
                 foreach (var child in this.Children)
                 {
                     results.AddRange(child.Where(func));
                 }
-            }
+            //}
             return results;
+        }
+
+        public Hierarchy<TClass> FirstOrDefault(Func<Hierarchy<TClass>, bool> func)
+        {
+            Hierarchy<TClass> result = null;
+            if (func(this))
+            {
+                result =  this;
+            }
+            else
+            {
+                foreach (var child in this.Children)
+                {
+                    result = child.FirstOrDefault(func);
+                }
+            }
+            return result;
         }
 
         public void Remove(Hierarchy<TClass> item)
         {
-            var existing = this.Where(i => i.Children.Contains(item)).FirstOrDefault();
+            var existing = this.FirstOrDefault(i => i.Children.Contains(item));
             if (existing != null) 
             {
                 existing.Children.Remove(item);
@@ -259,7 +277,7 @@ namespace BaseModel
 
             if (root == null)
             {
-                Console.WriteLine("No root was found!");
+                Logger.WriteLine("No root was found!");
             }
 
             return root;
@@ -399,6 +417,11 @@ namespace BaseModel
                 current = current.Parent;
             }
             return current;
+        }
+
+        public void Clear()
+        {
+            this.Children.Clear();
         }
     }
 

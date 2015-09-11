@@ -35,6 +35,7 @@ namespace LogicalModel
         }
         public string ConceptNameSpace = "";
         public string Prefix = "";
+        public static string Lang = "en";
 
         public List<Table> Tables = new List<Table>();
         public TaxonomyModule Module = new TaxonomyModule();
@@ -212,29 +213,90 @@ namespace LogicalModel
         
         }
 
-        public LogicalModel.Label FindLabel(string key)
+        public LogicalModel.Label FindLabel(string key, bool log=true)
         {
             key = key.ToLower();
+           
             if (TaxonomyLabelDictionary.ContainsKey(key))
             {
-                return TaxonomyLabelDictionary[key];
+                var label = TaxonomyLabelDictionary[key];
+                if (String.IsNullOrEmpty(label.Code)) 
+                {
+                    var ix = key.IndexOf("[");
+                    var engkey = key.Remove(key.IndexOf("["), 4).Insert(ix, "[en]");
+                    if (TaxonomyLabelDictionary.ContainsKey(engkey))
+                    {
+                        var englabel = TaxonomyLabelDictionary[engkey];
+                        label.Code = englabel.Code;
+                    }
+                }
+                return label;
             }
             else
             {
+                if (log)
+                {
+                    Logger.WriteLine(String.Format("Label {0} was not found!", key));
+                }
             }
             return null;
+        }
+        
+        public Dictionary<string, List<string>> TypedDimensions = new Dictionary<string, List<string>>();
+        public virtual void LoadTypedDimensions() 
+        {
+            TypedDimensions.Clear();
+            var elements = this.SchemaElements.Where(i => i.Namespace.EndsWith("_typ")).ToList();
+            foreach (var element in elements)
+            {
+                if (!TypedDimensions.ContainsKey(element.Namespace)) 
+                {
+                    TypedDimensions.Add(element.Namespace, new List<string>());
+                }
+                TypedDimensions[element.Namespace].Add(element.Name);
+            }
+        }
+
+        public static bool IsTyped(string domain)
+        {
+            var result = false;
+            var ns = domain.Contains(":") ? new QualifiedName(domain).Namespace : domain;
+            if (TaxonomyEngine.CurrentEngine.CurrentTaxonomy.TypedDimensions.ContainsKey(ns)) 
+            {
+                result = true;
+            }
+            return result;
         }
 
         public virtual void LoadLabels()
         {
-            Console.WriteLine("Load Labels");
+            Logger.WriteLine("Load Labels");
 
             //Save
             if (!System.IO.File.Exists(TaxonomyLabelPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
 
                 LabelHandler.HandleTaxonomy(this);
+                Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
 
+                //fixing labelcodes for non en languages
+                //foreach (var label in this.TaxonomyLabels)
+                //{
+                //    if (label.Lang == "en")
+                //    {
+                //        var engkey = label.Key.Replace("[en]", "[" + Lang + "]");
+
+                //        if (String.IsNullOrEmpty(label.Code))
+                //        {
+                //            var engkey = label.Key.Replace("[" + label.Lang + "]", "[en]");
+                //            var englabel = FindLabel(engkey, false);
+                //            if (englabel != null)
+                //            {
+                //                label.Code = englabel.Code;
+                //            }
+                //        }
+                //    }
+                //}
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyLabels);
                 Utilities.FS.WriteAllText(TaxonomyLabelPath, jsoncontent);
             }
@@ -244,7 +306,10 @@ namespace LogicalModel
                 this.TaxonomyLabels = Utilities.Converters.JsonTo<List<LogicalModel.Label>>(jsoncontent);
                 LoadLabelDictionary();
             }
-            Console.WriteLine("Load Labels Completed");
+            Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
+            
+
+            Logger.WriteLine("Load Labels Completed");
 
         }
 
@@ -254,7 +319,7 @@ namespace LogicalModel
 
         public virtual void LoadFacts()
         {
-            Console.WriteLine("Load Facts");
+            Logger.WriteLine("Load Facts");
             //refresh files
             ManageUIFiles();
             //
@@ -282,12 +347,12 @@ namespace LogicalModel
 
                 LoadCells();
             }
-            Console.WriteLine("Load Facts completed");
+            Logger.WriteLine("Load Facts completed");
         }
 
         private void LoadCells()
         {
-            Console.WriteLine("Load Cells started");
+            Logger.WriteLine("Load Cells started");
             Cells.Clear();
             foreach (var fact in Facts) 
             {
@@ -300,13 +365,13 @@ namespace LogicalModel
                     }
                 }
             }
-            Console.WriteLine("Load Cells completed");
+            Logger.WriteLine("Load Cells completed");
 
         }
 
         public virtual void LoadTables()
         {
-            Console.WriteLine("Load Tables");
+            Logger.WriteLine("Load Tables");
             //refresh files
             ManageUIFiles();
             //
@@ -349,7 +414,7 @@ namespace LogicalModel
 
 
             }
-            Console.WriteLine("Load Tables completed");
+            Logger.WriteLine("Load Tables completed");
 
         }
         
@@ -559,7 +624,7 @@ namespace LogicalModel
                     }
                     else
                     {
-                        Console.WriteLine("Assembly " + assemblyname.Name + " was not found!");
+                        Logger.WriteLine("Assembly " + assemblyname.Name + " was not found!");
                     }
                 }
 
@@ -567,19 +632,22 @@ namespace LogicalModel
 
                 if (results.Errors.Count > 0)
                 {
+                    var sb_err = new StringBuilder();
                     foreach (CompilerError CompErr in results.Errors)
                     {
                         var error = "Line number " + CompErr.Line +
                                     ", Error Number: " + CompErr.ErrorNumber +
                                     ", '" + CompErr.ErrorText + ";" +
                                     Environment.NewLine + Environment.NewLine;
-                        Console.WriteLine(error);
+                        sb_err.Append(error);
                     }
+                    Logger.WriteLine(sb_err.ToString());
+
                 }
                 else
                 {
                     //Successful Compile
-                    Console.WriteLine(String.Format("File {0} was successfully compiled to {1}",
+                    Logger.WriteLine(String.Format("File {0} was successfully compiled to {1}",
                         this.TaxonomyValidationCsPath, this.TaxonomyValidationDotNetLibPath));
 
                 }
@@ -613,7 +681,7 @@ namespace LogicalModel
                     }
                     else
                     {
-                        Console.WriteLine(String.Format("There is no {0} in assembly {1}", typeof(ValidationFunctionContainer).Name, this.TaxonomyValidationDotNetLibPath));
+                        Logger.WriteLine(String.Format("There is no {0} in assembly {1}", typeof(ValidationFunctionContainer).Name, this.TaxonomyValidationDotNetLibPath));
                     }
                 }
             }
@@ -621,7 +689,7 @@ namespace LogicalModel
         
         public virtual void LoadSchemaElements()
         {
-            Console.WriteLine("Load Elements");
+            Logger.WriteLine("Load Elements");
 
             if (!System.IO.File.Exists(TaxonomySchemaElementsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
@@ -640,7 +708,8 @@ namespace LogicalModel
                 }
 
             }
-            Console.WriteLine("Load Elements completed");
+            LoadTypedDimensions();
+            Logger.WriteLine("Load Elements completed");
 
         }
 
@@ -661,12 +730,12 @@ namespace LogicalModel
 
         public virtual void LoadConcepts()
         {
-            Console.WriteLine("Load Concepts");
+            Logger.WriteLine("Load Concepts");
 
             if (!System.IO.File.Exists(TaxonomyConceptPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
 
-                var conceptelements = SchemaElements.Where(i => i.Namespace == ConceptNameSpace).ToList();
+                var conceptelements = SchemaElements.Where(i => i.FileName == "met.xsd").ToList();
                 foreach (var conceptelement in conceptelements) 
                 {
                     var concept = new Concept();
@@ -695,7 +764,7 @@ namespace LogicalModel
                 this.Concepts = Utilities.Converters.JsonTo<List<Concept>>(jsoncontent);
 
             }
-            Console.WriteLine("Load Concepts completed");
+            Logger.WriteLine("Load Concepts completed");
         }
 
         public virtual void PopulateTableGroups() 
@@ -712,7 +781,7 @@ namespace LogicalModel
         }
         //public virtual void LoadTableGroups()
         //{
-        //    Console.WriteLine("Load TableGroups");
+        //    Logger.WriteLine("Load TableGroups");
 
         //    if (!System.IO.File.Exists(TaxonomyTableGroupPath) || Settings.Current.ReloadFullTaxonomyButStructure)
         //    {
@@ -727,7 +796,7 @@ namespace LogicalModel
         //        this.Module.TableGroups = Utilities.Converters.JsonTo<List<TableGroup>>(jsoncontent);
 
         //    }
-        //    Console.WriteLine("Load TableGroups completed");
+        //    Logger.WriteLine("Load TableGroups completed");
         //}
 
 

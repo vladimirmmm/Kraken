@@ -98,7 +98,7 @@ namespace XBRLProcessor.Model
             logicalrule.OriginalExpression = this.ValueAssertion.Test;
             logicalrule.SetTaxonomy(this.Taxonomy);
 
-            var factvariables = ValidationRoot.Where(i => i.Item is FactVariable).ToList();
+            var factvariables = ValidationRoot.Where(i => i.Item is FactVariable);
  
             var sb = new StringBuilder();
             sb.AppendLine(logicalrule.DisplayText);

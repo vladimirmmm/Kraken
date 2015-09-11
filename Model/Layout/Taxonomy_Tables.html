@@ -7,7 +7,71 @@
 
     </h2>
 </div>
-<ul id="tabletreeview" class="treeview" binding-items="Children">
+<div id="tabletreeviewx">
+    <ul class="" binding-items="Children" binding-type="template" binding-mode="recursive">
+        <li binding-type="template" class="bind[{Item.Type}]">
+            <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
+                bind[Item.Name]
+            </a>
+            &nbsp;
+            @X@
+        </li>
+    </ul>
+</div>
+
+<div id="test2">
+    <ul class="" binding-items="this" binding-type="template">
+        <li binding-type="template" class="bind[{Item.Type}]">
+            <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
+                bind[Item.Name]
+            </a>
+        </li>
+    </ul>
+</div>
+<div id="tabletreeview">
+    <ul class="treeview" binding-type="template" binding-items="Children" binding-mode="recursive">
+        <li binding-type="template" class="bind[{Item.Type}]">
+            <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
+                bind[Item.Name]
+            </a>
+            &nbsp;
+            <span>bind[Item.ExtensionText]</span>
+
+        </li>
+    </ul>
+</div>
+
+
+
+<script type="text/javascript">
+    var testobj= 
+        {
+            Item : { Name:"a"},
+            Children:[
+                {Item : { Name:"a1"},
+                    Children:[
+                           {Item : { Name:"a11"},
+                               Children:[
+                                     {Item : { Name:"a111"}}
+                               ]},
+                               {Item : { Name:"a12"},
+                                   Children:[
+                        
+                                   ]}
+                    ]},
+                    {Item : { Name:"a2"},
+                        Children:[ ]}
+            ]
+        };
+    var testobj2 = {name:"rettek", title: "x"};
+    var testobj3 = [
+        {name:"na1", title: "x"},
+    {name:"na2", title: "yy"},
+    {name:"na3", title: "ff"},
+    {name:"na3", title: "aa"}
+    ];
+</script>
+<!--<ul id="tabletreeview" class="treeview" binding-items="Children">
     <li binding-type="template" class="bind[{Item.Type}]">
         <a href="javascript:void(0)" title="bind[Item.Description]" onclick="bind[app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);]">
             bind[Item.Name]
@@ -31,4 +95,4 @@
             </li>
         </ul>
     </li>
-</ul>
+</ul>-->

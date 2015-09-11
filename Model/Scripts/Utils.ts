@@ -358,19 +358,77 @@ function ShowContentBySender(sender:any)
     return $activator;
 
 }
+function GetPart(data: any, startix: number, endix: number) {
+    var part: any[] = [];
+    if (IsArray(data)) {
+        part = data.slice(startix, endix);
+    }
+    else
+    {
+        var ix = 0;
+        for (var propertyName in data) {
+            if (data.hasOwnProperty(propertyName)) {
+                if (ix >= startix && ix < endix)
+                {
+                    var item = data[propertyName];
+                    item["PropertyName"] = propertyName;
+                    part.push(item);
+                }
+                ix++;
+            }
+        }
+    }
+    return part;
+}
 
-function LoadPage($bindtarget: JQuery, $pager: JQuery, items: any[], page: number, pagesize: number, events?: Object)
+function EnumerateObject(target: Object, context:any, func:Function)
+{
+    if (IsArray(target)) {
+        var ix = 0;
+        (<any[]>target).forEach(function (item) {
+            func.call(context, item, ix);
+            ix++;
+        });
+    }
+    else {
+        for (var propertyName in target) {
+            if (target.hasOwnProperty(propertyName)) {
+
+                func(target[propertyName], propertyName);
+            }
+        }
+    }
+}
+
+function GetLength(data: any) {
+
+    if (IsArray(data)) {
+        return data.length;
+    }
+    else {
+        var ix = 0;
+        for (var propertyName in data) {
+            if (data.hasOwnProperty(propertyName)) {
+                ix++;
+            }
+        }
+        return ix;
+    }
+    return 0;
+}
+function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, pagesize: number, events?: Object)
 {
     var me = this;
     var startix = pagesize * page;
     var endix = startix + pagesize;
-    var itemspart = items.slice(startix, endix);
+    var itemspart = GetPart(data, startix, endix);
+    var datalength = GetLength(data);
     CallFunction(events, "onloading", itemspart);
     BindX($bindtarget, itemspart);
     CallFunction(events, "onloaded", itemspart);
 
     if ($pager.length == 0 || 1 == 1) {
-        $pager.pagination(items.length,
+        $pager.pagination(datalength,
             {
                 items_per_page: pagesize,
                 current_page: page ? page : 0,
@@ -382,7 +440,7 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, items: any[], page: numbe
                 next_show_always: true,
                 callback: function (pageix) {
                     CallFunction(events, "onpaging");
-                    LoadPage($bindtarget, $pager, items, pageix, pagesize, events);
+                    LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
                     CallFunction(events, "onpaged");
 
                 },
@@ -1626,178 +1684,7 @@ function GetProperties(item: Object): General.KeyValue[]
     return properties;
 }
 
-class BindingTemplate
-{
-    public ID: string = "";
-    public ChildID: string = "";
-    public Children: BindingTemplate[] = [];
-    //public Child: BindingTemplate = null;
-    public Parent: BindingTemplate = null;
-    public Content: string;
-    public ChildPlaceholder: string = "@children@";
-    public AccessorExpression: string = "";
-    public PageSize: number = 0;
-    
-    public Bind(data:Object):string
-    {
-     
-        var result_html: string = "";
-        var me = this;
-        result_html = BindLevel(this.Content, data);
-        me.Children.forEach(function (child) {
-            if (child.AccessorExpression != "nobind") {
-                var items = Access(data, child.AccessorExpression);
-                items = IsNull(items) ? [] : items;
-                var childitems = "";
-                
-                if (IsArray(items)) {
-                     items.forEach(function (item) {
-                    childitems += child.Bind(item);
-                });
-                }
-                else {
-                    for (var propertyName in items) {
-                        if (items.hasOwnProperty(propertyName)) {
-                            var item = items[propertyName];
-                            childitems += child.Bind(item);
-                        }
-                    }
-                }
-             
-                result_html = Replace(result_html, child.ID, childitems);
-            }
-        });
-        return result_html;
 
-    }
-
-
-    public ToHierarchyString(tab:string):string
-    {
-        var me = this;
-        var result = "";
-        tab = IsNull(tab) ? "    " : tab;
-        result += Format("{0} {1} {2}\n", tab, this.ID, this.AccessorExpression);
-        me.Children.forEach(function (child) {
-            result += child.ToHierarchyString(tab + tab);
-
-        });
-   
-        return result;
-    }
-    
-    public GetExpression(item: JQuery)
-    {
-        var expr = item.attr("binding");
-        return expr;
-    } 
-}
-
-function GetBindingTemplate(target:JQuery)
-{
-    var templates = $('[binding-type=template]', target);
-    var me = this;
-
-    templates.each(function (index, item) {
-        var jitem = $(item);
-        var ix = jitem.index();
-        var parent = jitem.parents("[binding-items]")[0];
-        var parentbinding = $(parent).attr("binding-items");
-        var parentpagesize = $(parent).attr("binding-pagesize");
-        var placeholder = "@" + index + "@";
-        var placeholdernode = document.createTextNode(placeholder);
-        //jitem.insertBefore(placeholdernode);
-        $(placeholdernode).insertBefore(jitem);
-        jitem.attr("ChildID", placeholder);
-        jitem.attr("Expression", parentbinding);
-        jitem.attr("PageSize", parentpagesize);
-        jitem.remove();
-
-
-    });
-
-    var templatecollection: BindingTemplate[] = [];
-
-    templates.each(function (index, item) {
-        var jitem = $(item);
-        var placeholder = "@" + index + "@";
-        var childID = jitem.attr("ChildID");
-        jitem.removeAttr("ChildID");
-        var parentBinding = jitem.attr("Expression");
-        jitem.removeAttr("Expression");
-        var parentPageSize = jitem.attr("PageSize");
-        jitem.removeAttr("PageSize");
-
-        jitem.removeAttr("binding-type");
-        var html = OuterHtml(jitem);
-        var t = new BindingTemplate();
-        templatecollection.push(t);
-        t.ID = childID
-        t.Content = html;
-        t.AccessorExpression = parentBinding;
-        //t.ParentPageSize = parentPageSize;
-
-    });
-
-    var t = new BindingTemplate();
-    templatecollection.push(t);
-    t.ID = "@root@";
-    t.Content = target.html();
-    t.AccessorExpression = "this";
-    var roottemplate: BindingTemplate = null;
-    var templatelist = templatecollection.AsLinq<BindingTemplate>();
-    templatecollection.forEach(function (item) {
-        var parenttemplate = templatelist.FirstOrDefault(i=> i.Content.indexOf(item.ID) > -1);
-        if (parenttemplate != null) {
-            item.Parent = parenttemplate;
-            if (IsNull(item.AccessorExpression)) {
-                item.AccessorExpression = parenttemplate.AccessorExpression;
-                //todo
-            }
-            parenttemplate.Children.push(item);
-        }
-        else
-        {
-            roottemplate = item;
-        }
-    });
-    if (IsNull(roottemplate))
-    {
-        roottemplate = templatelist.FirstOrDefault(i=> IsNull(i.Parent));
-    }
-    return roottemplate;
-}
-
-var TemplateDictionary: TemplateDictionaryItem[] = [];
-class TemplateDictionaryItem
-{
-    public Item: JQuery = null;
-    public Template: BindingTemplate = null;
-}
-
-function BindX(item: JQuery, data: Object)
-{
-    if (item.length == 0) {
-        ShowNotification("BindX: " + item.selector + " has no items!");
-    } else {
-        var bt: BindingTemplate = null;
-        var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
-        if (templatedictionaryitem == null) {
-            if (item.length > 0) {
-                bt = GetBindingTemplate(item);
-                templatedictionaryitem = new TemplateDictionaryItem();
-                templatedictionaryitem.Item = item;
-                templatedictionaryitem.Template = bt;
-                TemplateDictionary.push(templatedictionaryitem);
-            } else {
-                console.log(item.selector + " was not found! (BindX)");
-            }
-        } else {
-            bt = templatedictionaryitem.Template;
-        }
-        item[0].innerHTML = bt.Bind(data);
-    }
-}
 var S_Bind_Start = "bind[";
 var S_Bind_End = "]";
 var s_list_selector: string = ".list";
@@ -1810,31 +1697,7 @@ var s_parent_selector: string = ".parent";
 var s_contentcontainer_selector: string = ".contentcontainer";
 var s_content_selector: string = ".subcontent";
 
-function BindLevel(html: string, data: Object):string
-{
-    var result_html: string = html;
-    var bindings = TextsBetween(html, S_Bind_Start, S_Bind_End, true);
-    bindings.forEach(function (binding) {
-        var subbindings = TextsBetween(binding, "{", "}", true);
-        var bindingexpression = TextBetween(binding, S_Bind_Start, S_Bind_End);
-        if (subbindings.length == 0)
-        {
-            subbindings.push(bindingexpression);
-        } 
-        var s_html = bindingexpression;
-        subbindings.forEach(function (subbinding) {
-            var subbindingexpression = subbinding.indexOf("{")>-1 ? TextBetween(subbinding, "{", "}") : subbinding;
-            var dataitem = Access(data, subbindingexpression);
-            s_html = Replace(s_html, subbinding , dataitem);
-            //s_html = Replace(s_html, S_Bind_Start + subbinding + S_Bind_End, dataitem);
-        });
-        result_html = Replace(result_html, binding, s_html);
 
-    });
-    //result_html = Replace(result_html, S_Bind_Start, "");
-    //result_html = Replace(result_html, S_Bind_End, "");
-    return result_html;
-}
 
 var actioncenter = new Engine.ActionCenter();
 var uimanager = new Engine.UIManager();

@@ -112,6 +112,7 @@ namespace XBRLProcessor.Models
             {
                 this.TaxonomyLabels.Add(label);
 
+
             }
 
         }
@@ -156,10 +157,11 @@ namespace XBRLProcessor.Models
                 if (dimensionitem.Contains(":"))
                 {
                     var items = dimensionitem.Split(':');
-                    if (!items[1].StartsWith(Prefix))
-                    {
-                        items[1] = Prefix + items[1];
-                    }
+                    //TODOX
+                    //if (!items[1].StartsWith(Prefix))
+                    //{
+                    //    items[1] = Prefix + items[1];
+                    //}
                     ebadimensionkey = String.Format("{0}:{1}", items[0], items[1]);
                 }
                 if (this.SchemaElementDictionary.ContainsKey(ebadimensionkey))
@@ -175,12 +177,12 @@ namespace XBRLProcessor.Models
             if (se!=null)
             {
                 var domainref = se.TypedDomainRef;
-                var se_dim_doc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == se.Namespace);
+                var se_dim_doc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == se.Namespace);
                 //TODO
                 var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
                 var se_domain_doc = FindDocument(path);
                 var refid = domainref.Substring(domainref.IndexOf("#") + 1);
-                var se_domain_key = se_domain_doc.TargetNamespace + ":" + refid;
+                var se_domain_key = se_domain_doc.TargetNamespacePrefix + ":" + refid;
                 var se_domain = SchemaElementDictionary[se_domain_key];
                 //domain = se_domain.ID;
                 domain = String.Format("{0}:{1}",se_domain.Namespace, se_domain.Name);
@@ -202,7 +204,7 @@ namespace XBRLProcessor.Models
 
         public override void LoadAllReferences()
         {
-            Console.WriteLine("Load References");
+            Logger.WriteLine("Load References");
 
             if (!System.IO.File.Exists(TaxonomyStructurePath) || LogicalModel.Settings.Current.ReloadFullTaxonomy)
             {
@@ -241,13 +243,13 @@ namespace XBRLProcessor.Models
                 }
 
             }
-            Console.WriteLine("Load References Completed");
+            Logger.WriteLine("Load References Completed");
 
         }
 
         public override void LoadUnits()
         {
-            Console.WriteLine("Load Units started");
+            Logger.WriteLine("Load Units started");
 
             if (!System.IO.File.Exists(TaxonomyUnitPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
@@ -264,7 +266,7 @@ namespace XBRLProcessor.Models
                 var items = new List<XbrlUnit>();
                 foreach (var doc in docs)
                 {
-                    var ns = GetTargetNamespace(doc.XmlDocument);
+                    var ns = doc.TargetNamespacePrefix;// SetTargetNamespace(doc.XmlDocument);
 
                     var nodes = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, selector);
                     foreach (var node in nodes) 
@@ -290,7 +292,7 @@ namespace XBRLProcessor.Models
                 this.Units = Utilities.Converters.JsonTo<List<LogicalModel.Unit>>(jsoncontent);
             }
 
-            Console.WriteLine("Load Units completed");
+            Logger.WriteLine("Load Units completed");
 
         }
        
@@ -322,7 +324,7 @@ namespace XBRLProcessor.Models
         }
         public override void LoadHierarchy()
         {
-            Console.WriteLine("Load Hierarchies");
+            Logger.WriteLine("Load Hierarchies");
 
             if (!System.IO.File.Exists(TaxonomyHierarchyPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
@@ -330,7 +332,7 @@ namespace XBRLProcessor.Models
                 var hierarchies = new List<BaseModel.Hierarchy<Locator>>();
                 foreach (var hierdoc in hierdocs)
                 {
-                    var ns = GetTargetNamespace(hierdoc.XmlDocument);
+                    var ns = hierdoc.TargetNamespacePrefix;
                     var hierdefdoc = hierdoc.References.FirstOrDefault(i => i.FileName == "hier-def.xml");
 
                     var node = hierdefdoc.XmlDocument.DocumentElement;
@@ -343,7 +345,7 @@ namespace XBRLProcessor.Models
                         {
                             var path = Utilities.Strings.ResolveRelativePath(hierdefdoc.LocalFolder, loc.Href);
                             var loc_doc = FindDocument(path);
-                            ns = GetTargetNamespace(loc_doc.XmlDocument);
+                            ns = loc_doc.TargetNamespacePrefix;
                             loc.Namespace = ns;
                             loc.Locate();
                         }
@@ -357,7 +359,7 @@ namespace XBRLProcessor.Models
                 var sb = new StringBuilder();
                 foreach (var hier in hierarchies)
                 {
-                    var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == hier.Item.Namespace);
+                    var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == hier.Item.Namespace);
                     var foldername = Utilities.Strings.GetFolderName(nsdoc.LocalPath);
                     hier.Item.NamespaceFolder = foldername;
                     //var hierchildrens = hier.All();
@@ -380,7 +382,7 @@ namespace XBRLProcessor.Models
                 this.Hierarchies = Utilities.Converters.JsonTo<List<Hierarchy<LogicalModel.Base.QualifiedItem>>>(jsoncontent);
             }
 
-            Console.WriteLine("Load Hierarchies completed");
+            Logger.WriteLine("Load Hierarchies completed");
 
             //Utilities.FS.WriteAllText(this.ModuleFolder + "Hierarchy.json", Utilities.Converters.ToJson(hierarchies));
             //Utilities.FS.WriteAllText(this.ModuleFolder + "Hierarchy.txt", sb.ToString());
@@ -399,7 +401,9 @@ namespace XBRLProcessor.Models
                     {
                         if (node.Name.ToLower() == "variable:parameter") 
                         {
-                            filingindicators.Add(Utilities.Xml.Attr(node, "id"));
+                            var select = Utilities.Xml.Attr(node, "select");
+                            var find = select.TextBetween("'", "'");
+                            filingindicators.Add(find);
                         }
                     }
                 }
@@ -433,29 +437,76 @@ namespace XBRLProcessor.Models
                     var hierarchy = hier.GetHierarchy();
                     var leafs = hierarchy.GetLeafs();
                     this.Module.TableGroups.Clear();
+                    //this.Module.TableGroups.Item = new LogicalModel.TableGroup();
+                    //this.Module.TableGroups.Item.ID = "Tables";
+                    //this.Module.TableGroups.Item.Label = new LogicalModel.Label();
 
-                    foreach (var leaf in leafs) 
+                    var tgs = hierarchy.Cast<LogicalModel.TableGroup>(i => {
+                
+                        var tgitem = new LogicalModel.TableGroup();
+                        tgitem.ID = i.ID;
+                        tgitem.LabelID = i.LabelID;
+                        tgitem.Label = i.Label;
+
+                        return tgitem;
+                    });
+
+                    var items = tgs.All();
+                    foreach (var item in items) 
                     {
-                        var parent = leaf.Parent.Item;
-                        var parentID = parent.LabelID.ToLower();
-                        var tableID= leaf.Item.ID;
-
-                        LogicalModel.TableGroup tablegroup = null;
-                        tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.ID == parent.ID);
-                        if (tablegroup == null) 
+                        if (item.Parent != null)
                         {
-                            tablegroup = new LogicalModel.TableGroup();
-                            tablegroup.ID = parent.ID;
-                            tablegroup.LabelID = parent.LabelID;
-                            tablegroup.Label = parent.Label;
-                            var find = filingindicators.FirstOrDefault(i => parentID.Contains(i.ToLower()));
-                            tablegroup.FilingIndicator = find;
-                            this.Module.TableGroups.Add(tablegroup);
 
+                            var parent = item.Parent.Item;
+                            var parentLabelID = parent.LabelID.ToLower();
+                            var parentLabelCode = parent.LabelCode.ToLower();
+                            if (item.Children.Count == 0)
+                            {
+                                parent.TableIDs.Add(item.Item.ID);
+                            }
+                            var find = filingindicators.FirstOrDefault(i => parentLabelID.Contains(i.ToLower()));
+                            if (find == null)
+                            {
+                                find = filingindicators.FirstOrDefault(i => parentLabelCode.Contains(i.ToLower()));
+
+                            }
+                            item.Item.FilingIndicator = find;
                         }
-                        tablegroup.TableIDs.Add(leaf.Item.ID);
+                        if (item.Children.Count == 0) 
+                        {
+                            //item.Parent.Item.
+                        }
 
                     }
+                    this.Module.TableGroups = tgs;
+                    //foreach (var leaf in leafs) 
+                    //{
+                    //    var parent = leaf.Parent.Item;
+                    //    var parentID = parent.LabelID.ToLower();
+                    //    var tableID= leaf.Item.ID;
+
+                    //    var tablegroup = this.Module.TableGroups.Where(i => i.Item.ID == parent.ID).FirstOrDefault();
+                    //    if (tablegroup == null) 
+                    //    {
+                    //        var tgitem = new LogicalModel.TableGroup();
+                    //        tablegroup = new Hierarchy<LogicalModel.TableGroup>(tgitem);
+                    //        tgitem.ID = parent.ID;
+                    //        tgitem.LabelID = parent.LabelID;
+                    //        tgitem.Label = parent.Label;
+                    //        var find = filingindicators.FirstOrDefault(i => parentID.Contains(i.ToLower()));
+                    //        if (find == null) 
+                    //        {
+                    //            find = filingindicators.FirstOrDefault(i => parent.LabelCode.Contains(i.ToLower()));
+
+                    //        }
+                    //        tgitem.FilingIndicator = find;
+                    //        this.Module.TableGroups.Children.Add(tablegroup);
+
+
+                    //    }
+                    //    tablegroup.TableIDs.Add(leaf.Item.ID);
+
+                    //}
 
                 }
             }
@@ -500,8 +551,8 @@ namespace XBRLProcessor.Models
 
             foreach (var aset in assertionsets.Children) 
             {
-                var tableids = aset.Where(i => i.Item.ParentRole == "table").Select(i => i.Item.ID).ToList();
-                var ruleids = aset.Where(i => i.Item.ParentRole == "rule").Select(i => i.Item.ID).ToList();
+                var tableids = aset.Where(i => i.Item.ParentRole == "table").Select(i => i.Item.ID);
+                var ruleids = aset.Where(i => i.Item.ParentRole == "rule").Select(i => i.Item.ID);
                 foreach (var tableid in tableids) 
                 {
                     var table = this.Tables.FirstOrDefault(i => i.ID == tableid);
@@ -520,7 +571,10 @@ namespace XBRLProcessor.Models
 
         public override void LoadValidationFunctions()
         {
-            Console.WriteLine("Loading Validations started");
+
+            Logger.WriteLine("Loading Validations started");
+            //System.Threading.Thread.Sleep(20 * 1000);
+
             if (!System.IO.File.Exists(TaxonomyValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
@@ -540,10 +594,14 @@ namespace XBRLProcessor.Models
                     Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
                     if (validation.ValueAssertion != null)
                     {
-          
+                   
                         validation.LoadValidationHierarchy();
                       
                         var logicalrule = validation.GetLogicalRule();
+                        if (logicalrule.FunctionName.Contains("desprvbbkvbasis6")) 
+                        {
+
+                        }
                         validations.Add(validation);
                         logicalrule.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
                         var translated = csparser.GetFunction(logicalrule);
@@ -567,6 +625,10 @@ namespace XBRLProcessor.Models
                 {
                     Utilities.FS.WriteAllText(expressionfile, sb.ToString());
                 }
+
+                Validations.Clear();
+                GC.Collect();
+
                 var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
                 Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
 
@@ -586,8 +648,10 @@ namespace XBRLProcessor.Models
                     foreach (var p in rule.Parameters) 
                     {
                         p.SetMyFactBase();
+                        p.ClearObjects();
                     }
-                    var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
+
+                    //var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
 
                 }
                 
@@ -603,7 +667,7 @@ namespace XBRLProcessor.Models
             base.GenerateValidationFunctions();
             base.LoadValidationFunctions();
             //fore
-            Console.WriteLine("Loading Validations completed");
+            Logger.WriteLine("Loading Validations completed");
 
         }
         
@@ -618,6 +682,9 @@ namespace XBRLProcessor.Models
             var role = Utilities.Xml.Attr(node,Attributes.LabelRole);
             var lang = Utilities.Xml.Attr(node,Attributes.Language);
             var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
+            if (taxonomydocument.FileName == "tab-lab-codes.xml") 
+            { 
+            }
             if (FileID.Contains("-lab-")) 
             {
                 FileID = FileID.Remove(FileID.IndexOf("-lab-") + 5);
@@ -627,7 +694,7 @@ namespace XBRLProcessor.Models
             newlabel.Lang = lang;
             newlabel.FileName = FileID;
 
-            var label = FindLabel(newlabel.Key);
+            var label = FindLabel(newlabel.Key, false);
 
             if (label == null)
             {
@@ -717,7 +784,7 @@ namespace XBRLProcessor.Models
                             }
                             var path = Utilities.Strings.ResolveRelativePath(definitiondocument.LocalFolder, localhref);
                             var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
-                            locator.Namespace = GetTargetNamespace(defdoc.XmlDocument); 
+                            locator.Namespace = defdoc.TargetNamespacePrefix; 
      
                         }
 
@@ -730,10 +797,10 @@ namespace XBRLProcessor.Models
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
 
-                var tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.TableIDs.Contains(logicaltable.ID));
+                var tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.Item.TableIDs.Contains(logicaltable.ID));
                 if (tablegroup != null)
                 {
-                    logicaltable.FilingIndicator = tablegroup.FilingIndicator;
+                    logicaltable.FilingIndicator = tablegroup.Item.FilingIndicator;
                 }
                 else 
                 {
@@ -771,10 +838,12 @@ namespace XBRLProcessor.Models
             return element;
         }
         
-        public string GetTargetNamespace(XmlDocument doc) 
+        public void SetTargetNamespace(XbrlTaxonomyDocument xbrltaxdoc) 
         {
             var ns = "";
+            var doc = xbrltaxdoc.XmlDocument;
             var targetnamespace = Utilities.Xml.Attr(doc.DocumentElement, Literals.Attributes.TargetNamespace);
+            xbrltaxdoc.TargetNamespace = targetnamespace;
             if (targetnamespace != null)
             {
                 foreach (XmlAttribute attr in doc.DocumentElement.Attributes)
@@ -782,12 +851,13 @@ namespace XBRLProcessor.Models
                     if (attr.Name != Literals.Attributes.TargetNamespace && String.Equals(attr.Value, targetnamespace, StringComparison.InvariantCultureIgnoreCase))
                     {
                         ns = attr.LocalName;
+                        xbrltaxdoc.TargetNamespacePrefix = ns;
                         break;
                     }
 
                 }
             }
-            return ns;
+       
         }
         
         public bool HandleElements(XmlNode node, XbrlTaxonomyDocument taxonomydocument) 
@@ -797,9 +867,10 @@ namespace XBRLProcessor.Models
             {
                 Mappings.CurrentMapping.Map(node, element);
 
-                element.Namespace = GetTargetNamespace(node.OwnerDocument);
+                element.Namespace = taxonomydocument.TargetNamespacePrefix; // SetTargetNamespace(node.OwnerDocument);
 
                 var logicalelement = Mappings.ToLogical(element);
+                logicalelement.FileName = taxonomydocument.FileName;
                 this.SchemaElements.Add(logicalelement);
                 if (logicalelement.Key.Contains("541")) 
                 {

@@ -30,6 +30,7 @@ namespace LogicalModel.Validation
 
             return treshold;
         }
+       
         public static ValueWithTreshold GetValueWithTreshold(InstanceFact fact, string FallBackValue)
         {
             var result = new ValueWithTreshold();
@@ -48,6 +49,7 @@ namespace LogicalModel.Validation
             }
             return result;
         }
+        
         public ValueWithTreshold SplitValueThreshold(Object item)
         {
             var result = new ValueWithTreshold(); 
@@ -62,13 +64,15 @@ namespace LogicalModel.Validation
             }
             return result;
         }
+        
         public ValueWithTreshold SplitValueThreshold(IValueWithTreshold fact) 
         {
             var treshold = fact.Treshold;
             return new ValueWithTreshold(fact.DecimalValue, treshold);
         }
 
-        public ValueWithTreshold N_Add(Object a, Object b)
+        
+        public ValueWithTreshold IAF_N_Add(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
@@ -76,35 +80,71 @@ namespace LogicalModel.Validation
             var treshold = v_a.Treshold + v_b.Treshold;
             return new ValueWithTreshold(value, treshold);
         }
-        public bool N_Equals(Object a, Object b)
+        public bool IAF_N_Equals(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
 
             return abs(v_a.DecimalValue - v_b.DecimalValue) <= v_a.Treshold + v_b.Treshold;
         }
-        public bool N_Less(Object a, Object b)
+        public bool IAF_N_Less(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
 
             return v_a.DecimalValue - v_b.DecimalValue < v_a.Treshold + v_b.Treshold;
         }
-        public bool N_LessEqual(Object a, Object b)
+        public bool IAF_N_LessEqual(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
 
             return v_a.DecimalValue - v_b.DecimalValue <= v_a.Treshold + v_b.Treshold;
         }
-        public bool N_Greater(Object a, Object b)
+        public bool IAF_N_Greater(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
 
             return v_a.DecimalValue > v_b.DecimalValue - (v_a.Treshold + v_b.Treshold);
         }
-        public bool N_GreaterEqual(Object a, Object b)
+        public bool IAF_N_GreaterEqual(Object a, Object b)
+        {
+            var v_a = SplitValueThreshold(a);
+            var v_b = SplitValueThreshold(b);
+
+            return v_a.DecimalValue >= v_b.DecimalValue - (v_a.Treshold + v_b.Treshold);
+        }
+
+        public bool IAF_N_Equals_Treshold(Object a, Object b)
+        {
+            var v_a = SplitValueThreshold(a);
+            var v_b = SplitValueThreshold(b);
+
+            return abs(v_a.DecimalValue - v_b.DecimalValue) <= v_a.Treshold + v_b.Treshold;
+        }
+        public bool IAF_N_Less_Treshold(Object a, Object b)
+        {
+            var v_a = SplitValueThreshold(a);
+            var v_b = SplitValueThreshold(b);
+
+            return v_a.DecimalValue - v_b.DecimalValue < v_a.Treshold + v_b.Treshold;
+        }
+        public bool IAF_N_LessEqual_Treshold(Object a, Object b)
+        {
+            var v_a = SplitValueThreshold(a);
+            var v_b = SplitValueThreshold(b);
+
+            return v_a.DecimalValue - v_b.DecimalValue <= v_a.Treshold + v_b.Treshold;
+        }
+        public bool IAF_N_Greater_Treshold(Object a, Object b)
+        {
+            var v_a = SplitValueThreshold(a);
+            var v_b = SplitValueThreshold(b);
+
+            return v_a.DecimalValue > v_b.DecimalValue - (v_a.Treshold + v_b.Treshold);
+        }
+        public bool IAF_N_GreaterEqual_Treshold(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
@@ -134,7 +174,7 @@ namespace LogicalModel.Validation
         //    return a >= b;
         //}
 
-        public ValueWithTreshold N_Subtract(Object a, Object b)
+        public ValueWithTreshold IAF_N_Subtract(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
@@ -142,7 +182,7 @@ namespace LogicalModel.Validation
             var treshold = v_a.Treshold + v_b.Treshold;
             return new ValueWithTreshold(value, treshold);
         }
-        public ValueWithTreshold N_Divide(Object a, Object b)
+        public ValueWithTreshold IAF_N_Divide(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
@@ -163,7 +203,7 @@ namespace LogicalModel.Validation
             return new ValueWithTreshold(AdivB, treshold);
         }
 
-        public IValueWithTreshold N_Multiply(Object a, Object b)
+        public IValueWithTreshold IAF_N_Multiply(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
             var v_b = SplitValueThreshold(b);
@@ -175,10 +215,16 @@ namespace LogicalModel.Validation
             var treshold = sum(abs(A * deltaB), abs(B * deltaA), deltaA * deltaB);
             return new ValueWithTreshold(AxB, treshold);
         }
-        public IValueWithTreshold N_Unary_Minus(Object a)
+        public IValueWithTreshold IAF_N_Unary_Minus(Object a)
         {
             var result = SplitValueThreshold(a);
             result.DecimalValue = -result.DecimalValue;
+            return result;
+        }
+        public IValueWithTreshold IAF_N_Unary_Plus(Object a)
+        {
+            var result = SplitValueThreshold(a);
+            result.DecimalValue = result.DecimalValue;
             return result;
         }
         //public decimal N_Unary_Plus(decimal a)
@@ -199,13 +245,13 @@ namespace LogicalModel.Validation
         //{
         //    return a == null;
         //}
-        public ValueWithTreshold abs(Object a)
+        public ValueWithTreshold IAF_abs(Object a)
         {
             var result = SplitValueThreshold(a);
             if (result.DecimalValue < 0) { result.DecimalValue = result.DecimalValue * -1; }
             return result;
         }
-        public ValueWithTreshold sum(params IValueWithTreshold[] facts)
+        public ValueWithTreshold IAF_sum(params IValueWithTreshold[] facts)
         {
             var aggregated = new ValueWithTreshold();
             foreach (var fact in facts) 
@@ -217,7 +263,7 @@ namespace LogicalModel.Validation
             return aggregated;
         }
 
-        public ValueWithTreshold sum(params Object[] items)
+        public ValueWithTreshold IAF_sum(params Object[] items)
         {
             var casteditems = items.Select(i => SplitValueThreshold(i)).ToList();
             var aggregated = new ValueWithTreshold();
@@ -230,7 +276,7 @@ namespace LogicalModel.Validation
             return aggregated;
         }
 
-        public ValueWithTreshold max(params Object[] parameters)
+        public ValueWithTreshold IAF_max(params Object[] parameters)
         {
             var items = parameters.Select(i => SplitValueThreshold(i)).ToList();
             var max = items.Max(i=>i.DecimalValue);
@@ -238,11 +284,6 @@ namespace LogicalModel.Validation
             return result;
         }
 
-        //private decimal Invert(decimal a)
-        //{
-        //    return -a;
-        //}
-        
 
 
     }

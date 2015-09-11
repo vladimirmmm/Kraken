@@ -173,7 +173,7 @@ namespace Model.InstanceModel
 
             if (Taxonomy != null)
             {
-                Console.WriteLine("Validating Instance started");
+                Logger.WriteLine("Validating Instance started");
                 messages.Add(String.Format("Validation started at {0:" + Utilities.Converters.DateTimeFormat + "}", DateTime.Now));
                 var schemaset = new XmlSchemaSet();
                 var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
@@ -206,7 +206,7 @@ namespace Model.InstanceModel
                 }
 
 
-                Console.WriteLine("Validating Instance finished");
+                Logger.WriteLine("Validating Instance finished");
             }
             else
             {
@@ -217,8 +217,8 @@ namespace Model.InstanceModel
 
         public void OnValidated(Object sender,ValidationEventArgs e) 
         {
-            Console.WriteLine("Xml Validation:");
-            Console.WriteLine(e.Message);
+            Logger.WriteLine("Xml Validation:");
+            Logger.WriteLine(e.Message);
         }
 
         private void Test() 

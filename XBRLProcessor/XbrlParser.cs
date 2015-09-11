@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace XBRLProcessor
 {
@@ -21,6 +22,7 @@ namespace XBRLProcessor
             this.Syntax.ParameterSeparator = ",";
             this.Syntax.CodeItemSeparator = " ";
             this.Syntax.StringDelimiter = "'";
+            this.Syntax.StringDelimiter2 = "\"";
             this.Syntax.Spacing = " ";
             this.Syntax.If = "if";
             this.Syntax.Then = "then";
@@ -100,7 +102,7 @@ namespace XBRLProcessor
                         }
                         else
                         {
-                            Console.WriteLine("Operator not found!");
+                            Logger.WriteLine("Operator not found!");
                         }
                     }
                 }
@@ -177,11 +179,13 @@ namespace XBRLProcessor
             }
             else
             {
-                if (item.IndexOf(Syntax.StringDelimiter) < item.IndexOf(Syntax.ParameterSeparator))
+                //if (item.IndexOf(Syntax.StringDelimiter) < item.IndexOf(Syntax.ParameterSeparator))
+                var enumeration = GetEnumeration(item);
+                if (enumeration.Length>1)
                 {
-                    var parameters = item.Split(new string[] { Syntax.ParameterSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    //var parameters = item.Split(new string[] { Syntax.ParameterSeparator }, StringSplitOptions.RemoveEmptyEntries);
                     var listexpression = new ListExpression();
-                    foreach (var pm in parameters)
+                    foreach (var pm in enumeration)
                     {
 
                         var itemexpression = GetSimpleExpression(pm);
@@ -205,18 +209,95 @@ namespace XBRLProcessor
                     svalue = trimmed.Trim(Syntax.StringDelimiter.ToCharArray());
                     result.IsString = true;
                 }
+                if ( trimmed.StartsWith(Syntax.StringDelimiter2) && trimmed.EndsWith(Syntax.StringDelimiter2))
+                {
+                    svalue = trimmed.Trim(Syntax.StringDelimiter2.ToCharArray());
+                    result.IsString = true;
+                }
                 if (trimmed.StartsWith(Syntax.ParameterSpecifier)) 
                 {
                     result.IsParameter = true;
                     svalue = trimmed.Substring(Syntax.ParameterSpecifier.Length);
                     result.Parameters.Add(svalue);
                 }
-                result.Value = svalue;
+                result.Value = svalue.Trim();
 
             }
             return result;
         }
 
+        private bool IsEnumeration(string item) 
+        {
+            var items = item.Split(new string[] { Syntax.ParameterSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            if (items.Length == 1) { return false; }
+            foreach (var itempart in items) 
+            {
+                if (itempart.IndexOf(Syntax.StringDelimiter) > -1 ) 
+                {
+                    if (Utilities.Strings.ContainsCount(Syntax.StringDelimiter, itempart) % 2 == 1) 
+                    {
+                        return false;
+                    }
+                }
+                if (itempart.IndexOf(Syntax.StringDelimiter2) > -1)
+                {
+                    if (Utilities.Strings.ContainsCount(Syntax.StringDelimiter2, itempart) % 2 == 1)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private string RemoveSeparatorsBetween(string item, char between, char separator, string replacement) 
+        {
+            var result = "";
+            var iswithin = false;
+            foreach (char c in item) 
+            {
+                var toadd = c.ToString();
+                if (c == between) 
+                {
+                    iswithin = !iswithin;
+                }
+                if (c == separator && iswithin) 
+                {
+                    toadd = replacement;
+                }
+                result += toadd;
+            }
+            return result;
+        }
+        
+        private string[] GetEnumeration(string item) 
+        {
+            if (item.IndexOf(Syntax.ParameterSeparator) == -1) 
+            {
+                return new string[] { item };
+            }
+            char separator = Syntax.ParameterSeparator[0];
+            char d1 = Syntax.StringDelimiter[0];
+            char d2 = Syntax.StringDelimiter2[0];
+            var replacement = "@@DX@";
+            var strx = RemoveSeparatorsBetween(item, d1, separator, replacement);
+            strx = RemoveSeparatorsBetween(item, d2, separator, replacement);
+            //item = item.Replace(Syntax.StringDelimiter2, Syntax.StringDelimiter);
+            var items = item.Split(new string[] { Syntax.ParameterSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < items.Length; i++) 
+            {
+                items[i] = items[i].Replace(replacement, Syntax.ParameterSeparator);
+            }
+            return items;
+        }
+
+        public void Testx()
+        {
+            var str = "a,kutya,is\"ko,\"la,'egy','erdekes,\"hely,\",\",mint'olyan,'\"";
+            var strx = RemoveSeparatorsBetween(str, '"', ',', "@@DX@");
+            strx = RemoveSeparatorsBetween(strx, '\'', ',', "@@DX@");
+            var items = GetEnumeration(strx);
+        }
         #region Translate
 
 

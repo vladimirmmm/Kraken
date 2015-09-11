@@ -77,14 +77,15 @@ namespace LogicalModel
         public string FactKey 
         {
             get {
-                var sb = new StringBuilder();
-                sb.AppendFormat("{0},", this.Concept);
-                var dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-                foreach (var dim in dimensions)
-                {
-                    sb.AppendFormat("{0},", dim.DomainMemberFullName);
-                }
-                return sb.ToString();
+                //var sb = new StringBuilder();
+                //sb.AppendFormat("{0},", this.Concept);
+                //var dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+                //foreach (var dim in dimensions)
+                //{
+                //    sb.AppendFormat("{0},", dim.DomainMemberFullName);
+                //}
+                //return sb.ToString();
+                return this.GetFactKey();
             }
         }
         public Cell() 

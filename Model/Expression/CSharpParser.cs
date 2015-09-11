@@ -23,6 +23,7 @@ namespace LogicalModel.Expressions
             this.Syntax.ParameterSeparator = ",";
             this.Syntax.CodeItemSeparator = " ";
             this.Syntax.StringDelimiter = "\"";
+            this.Syntax.StringDelimiter2 = "\"";
             this.Syntax.Spacing = " ";
             this.Syntax.If = "if";
             this.Syntax.Then = "";
@@ -52,28 +53,35 @@ namespace LogicalModel.Expressions
             this.Syntax.Operators.AddItem(OperatorEnum.OrAlso, " || ");
             this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
 
-            this.Syntax.AddFunction("iaf:numeric-add", (Functions i) => i.N_Add(0));
-            this.Syntax.AddFunction("iaf:numeric-equal", (Functions i) => i.N_Equals(1, 1));
-            this.Syntax.AddFunction("iaf:numeric-less-than", (Functions i) => i.N_Less(1, 1));
-            this.Syntax.AddFunction("iaf:numeric-less-equal-than", (Functions i) => i.N_LessEqual(1,1));
-            this.Syntax.AddFunction("iaf:numeric-greater-than", (Functions i) => i.N_Greater(1,1));
-            this.Syntax.AddFunction("iaf:numeric-greater-equal-than", (Functions i) => i.N_GreaterEqual(1,1));
-            this.Syntax.AddFunction("iaf:numeric-equal-treshold", (Functions i) => i.N_Equals_Treshold(1,1));
-            this.Syntax.AddFunction("iaf:numeric-less-than-treshold", (Functions i) => i.N_Less_Treshold(1,1));
-            this.Syntax.AddFunction("iaf:numeric-less-equal-than-treshold", (Functions i) => i.N_LessEqual_Treshold(1,1));
-            this.Syntax.AddFunction("iaf:numeric-greater-than-treshold",(Functions i) => i.N_Greater_Treshold(1,1));
-            this.Syntax.AddFunction("iaf:numeric-greater-equal-than-treshold", (Functions i) => i.N_GreaterEqual_Treshold(1,1));
-            this.Syntax.AddFunction("iaf:numeric-subtract", (Functions i) => i.N_Subtract(1,1));
-            this.Syntax.AddFunction("iaf:numeric-divide", (Functions i) => i.N_Divide(1,1));
-            this.Syntax.AddFunction("iaf:numeric-multiply", (Functions i) => i.N_Multiply(1,1));
-            this.Syntax.AddFunction("iaf:numeric-unary-minus", (Functions i) => i.N_Unary_Minus(1));
-            this.Syntax.AddFunction("iaf:numeric-unary-plus", (Functions i) => i.N_Unary_Plus(1));
+            this.Syntax.AddFunction("iaf:numeric-add", (Functions i) => i.IAF_N_Add(null, null));
+            this.Syntax.AddFunction("iaf:numeric-equal", (Functions i) => i.IAF_N_Equals(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-less-than", (Functions i) => i.IAF_N_Less(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-less-equal-than", (Functions i) => i.IAF_N_LessEqual(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-greater-than", (Functions i) => i.IAF_N_Greater(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-greater-equal-than", (Functions i) => i.IAF_N_GreaterEqual(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-equal-treshold", (Functions i) => i.IAF_N_Equals_Treshold(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-less-than-treshold", (Functions i) => i.IAF_N_Less_Treshold(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-less-equal-than-treshold", (Functions i) => i.IAF_N_LessEqual_Treshold(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-greater-than-treshold", (Functions i) => i.IAF_N_Greater_Treshold(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-greater-equal-than-treshold", (Functions i) => i.IAF_N_GreaterEqual_Treshold(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-subtract", (Functions i) => i.IAF_N_Subtract(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-divide", (Functions i) => i.IAF_N_Divide(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-multiply", (Functions i) => i.IAF_N_Multiply(1, 1));
+            this.Syntax.AddFunction("iaf:numeric-unary-minus", (Functions i) => i.IAF_N_Unary_Minus(1));
+            this.Syntax.AddFunction("iaf:numeric-unary-plus", (Functions i) => i.IAF_N_Unary_Plus(1));
+            this.Syntax.AddFunction("iaf:abs", (Functions i) => i.IAF_abs(0));
+            this.Syntax.AddFunction("iaf:sum", (Functions i) => i.IAF_sum(0));
+            this.Syntax.AddFunction("iaf:max", (Functions i) => i.IAF_max(0));
             this.Syntax.AddFunction("xs:qname", (Functions i) => i.XS_QName(""));
+            this.Syntax.AddFunction("xs:string", (Functions i) => i.XS_String(""));
+            this.Syntax.AddFunction("matches", (Functions i) => i.RegexpMatches("",""));
             this.Syntax.AddFunction("not", (Functions i) => i.not(true));
             this.Syntax.AddFunction("empty", (Functions i) => i.empty(null));
-            this.Syntax.AddFunction("iaf:abs", (Functions i) => i.abs(0));
-            this.Syntax.AddFunction("iaf:sum", (Functions i) => i.sum(0));
-            this.Syntax.AddFunction("iaf:max", (Functions i) => i.max(0));
+            this.Syntax.AddFunction("exists", (Functions i) => i.Exists(null));
+
+            this.Syntax.AddFunction("abs", (Functions i) => i.abs(0));
+            this.Syntax.AddFunction("sum", (Functions i) => i.sum(0));
+            this.Syntax.AddFunction("max", (Functions i) => i.max(0));
         }
 
         public override String Translate(Expression expr) 
@@ -94,6 +102,7 @@ namespace LogicalModel.Expressions
                     if (!expr.IsParameter && !expr.IsString) 
                     {
                         //this is for decimal;
+                        
                         return expr.StringValue + "m";
                     }
                 }
@@ -152,11 +161,12 @@ namespace LogicalModel.Expressions
             foreach (var pm in rule.Parameters) 
             {
 
-                sb.AppendFormat("{0}{0}{0}var {3}{1} = parameters.FirstOrDefault(i => i.Name == \"{1}\").{2};\r\n", tab, pm.Name, pm.TypeString, Syntax.ParameterSpecifier);
+                //sb.AppendFormat("{0}{0}{0}var {3}{1} = parameters.FirstOrDefault(i => i.Name == \"{1}\").{2};\r\n", tab, pm.Name, pm.TypeString, Syntax.ParameterSpecifier);
+                sb.AppendFormat("{0}{0}{0}var {3}{1} = parameters.FirstOrDefault(i => i.Name == \"{1}\");\r\n", tab, pm.Name, pm.TypeString, Syntax.ParameterSpecifier);
             }
             if (body.Contains(Parser.FunctionNotFound)) 
             {
-                Console.WriteLine(String.Format("Rule {0} contains unimplemented function(s)!", rule.ID));
+                Logger.WriteLine(String.Format("Rule {0} contains unimplemented function(s)!", rule.ID));
                 body = "true";
             }
             sb.AppendLine(tab + tab + tab + "return " + body + Syntax.StatementEnd);

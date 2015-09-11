@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Utilities;
 using XBRLProcessor.Enums;
 using XBRLProcessor.Mapping;
@@ -150,12 +151,12 @@ namespace XBRLProcessor.Model
                             }
                             else
                             {
-                                Console.WriteLine("Multiple Members Detected");
+                                Logger.WriteLine("Multiple Members Detected");
                             }
                         }
                         if (typedDimension != null)
                         {
-                            Console.WriteLine("Typed Dimension Detected");
+                            Logger.WriteLine("Typed Dimension Detected");
 
                         }
                         li.Dimensions.Add(logicaldimension);
@@ -189,6 +190,33 @@ namespace XBRLProcessor.Model
 
             }
 
+            var layoutfilename = Utilities.Strings.GetFileName(this.LayoutPath);
+            XmlNamespaceManager nsmanager = null;
+            var layoutdoc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == layoutfilename);
+            if (layoutdoc != null) 
+            {
+                nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(layoutdoc.XmlDocument);
+            }
+            var d_con = new Dictionary<string,string>();
+            foreach (var li in logicaltable.LayoutItems) 
+            {
+                var concept = li.Item.Concept;
+                if (concept != null)
+                {
+                    var nsprefix = concept.Namespace;
+                    if (!d_con.ContainsKey(nsprefix))
+                    {
+                        var ns = nsmanager.LookupNamespace(nsprefix);
+                        var nsdoc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
+                        if (nsdoc != null)
+                        {
+                            d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
+                        }
+                    }
+                    concept.Namespace = d_con[nsprefix];
+                }
+            }
+
             logicaltable.LayoutRoot = Hierarchy<LogicalModel.LayoutItem>.GetHierarchy(Arcs, logicaltable.LayoutItems,
                 (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
                 (i, a) => { i.Item.Order = a.Order; i.Item.Axis = a is TableBreakDownArc ? ((TableBreakDownArc)a).Axis.ToString() : ""; });
@@ -204,6 +232,7 @@ namespace XBRLProcessor.Model
             var rootlocator = new Locator();
             rootlocator.ID = "Root";
             var rootNode = new Hierarchy<Locator>(rootlocator);
+            DefinitionItems.Clear();
             DefinitionItems.Add(rootNode);
 
          
@@ -215,7 +244,7 @@ namespace XBRLProcessor.Model
             }
             foreach (var definitionlink in DefinitionLinks)
             {
-                var locatorswithroles = definitionlink.DefinitionRoot.Where(i => !String.IsNullOrEmpty(i.Item.TargetRole)).ToList();
+                var locatorswithroles = definitionlink.DefinitionRoot.Where(i => !String.IsNullOrEmpty(i.Item.TargetRole));
                 foreach (var l in locatorswithroles) 
                 {
                     var ss = DefinitionLinks.FirstOrDefault(i => i.Role == l.Item.TargetRole).DefinitionRoot;
@@ -236,6 +265,15 @@ namespace XBRLProcessor.Model
                     else
                     {
                         //no domain member found
+                    }
+                }
+                else 
+                {
+                    var hasall = definitionlink.DefinitionArcs.Any(i => i.RoleType == ArcRoleType.all);
+                    if (hasall)
+                    {
+                        rootNode.Children.Add(definitionlink.DefinitionRoot);
+                        definitionlink.DefinitionRoot.Parent = rootNode;
                     }
                 }
             
@@ -270,10 +308,10 @@ namespace XBRLProcessor.Model
                 }
 
                 //map the dimensions
-                var domains = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.dimension_domain).Where(i => i.Children.Count > 0).ToList();
+                var domains = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.dimension_domain).Where(i => i.Children.Count > 0);
                 domains = domains.Where(i => i.Children.FirstOrDefault(j => !j.Item.Element.IsDefaultMember) != null).ToList();
 
-                var hypercubeitems = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.hypercube_dimension).ToList(); //.Where(i => i.Children.Count > 0)
+                var hypercubeitems = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.hypercube_dimension); //.Where(i => i.Children.Count > 0)
                 foreach (var hypercubeitem in hypercubeitems) 
                 {
                     var logicalhypercubeitem = new LogicalModel.Dimensions.DimensionItem();
@@ -290,14 +328,14 @@ namespace XBRLProcessor.Model
                         var domainref = hypercubeitem.Item.Element.TypedDomainRef;
                         if (!String.IsNullOrEmpty(domainref))
                         {
-                            var se_dim_doc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == hypercubeitem.Item.Element.Namespace);
+                            var se_dim_doc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == hypercubeitem.Item.Element.Namespace);
                             //TODO
                             var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
                             var localrelpath = Utilities.Strings.GetRelativePath(LogicalModel.TaxonomyEngine.LocalFolder, path);
                             var se_domain_doc = this.Taxonomy.FindDocument(localrelpath);
 
                             var refid = domainref.Substring(domainref.IndexOf("#") + 1);
-                            var se_domain_key = se_domain_doc.TargetNamespace + ":" + refid;
+                            var se_domain_key = se_domain_doc.TargetNamespacePrefix + ":" + refid;
                             var se_domain = Taxonomy.SchemaElementDictionary[se_domain_key];
 
                             if (se_domain != null)

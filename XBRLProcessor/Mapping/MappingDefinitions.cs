@@ -392,7 +392,9 @@ namespace XBRLProcessor.Mapping
             toitem.Role = item.Role;
             if (String.IsNullOrEmpty(item.NamespaceFolder))
             {
-                item.NamespaceFolder = item.Namespace.Replace(XbrlEngine.CurrentEngine.CurrentTaxonomy.Prefix, "");
+                item.NamespaceFolder = item.Namespace.IndexOf("_") > -1 ? item.Namespace.Substring(item.Namespace.LastIndexOf("_") + 1) : item.Namespace;
+
+                //item.NamespaceFolder = item.Namespace.Replace(XbrlEngine.CurrentEngine.CurrentTaxonomy.Prefix, "");
             }
             toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(
                 LogicalModel.Label.GetKey(item.NamespaceFolder, toitem.ID)

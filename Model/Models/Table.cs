@@ -79,7 +79,7 @@ namespace LogicalModel
         }
 
         public Taxonomy Taxonomy = null;
-        public static Func<String, Label> LabelAccessor = null;
+        public static Func<String,bool, Label> LabelAccessor = null;
         private List<Dimension> _Dimensions = new List<Dimension>();
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
 
@@ -362,7 +362,7 @@ namespace LogicalModel
                     sb_fact.AppendLine();
                 }
             }
-            //Console.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
+            //Logger.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
             //var factpath = HtmlPath.Replace(".html", "-facts.txt");
             //var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
             //Utilities.FS.WriteAllText(FactPath, sb_fact.ToString());
@@ -372,6 +372,10 @@ namespace LogicalModel
        
         private void SetExtensions()
         {
+            if (this.Name.Contains("RDP-R13")) 
+            {
+
+            }
             if (extensionnode != null)
             {
                 BuildLevels(Z_Axis, extensionnode);
@@ -396,11 +400,24 @@ namespace LogicalModel
                                 li.Table = this;
                                 var dim = new Dimension();
                                 dim.DimensionItem = dimension.DimensionItemFullName;
-                                dim.Domain = dm.Domain.ID;
-                                dim.DomainMember = dm.Name;
-                                li.Dimensions.Add(dim);
-                                li.LabelID = dm.ID;
-                                var domainfolder = dim.Domain.StartsWith(Taxonomy.Prefix) ? dim.Domain.Substring(Taxonomy.Prefix.Length) : dim.Domain;
+                                if (Taxonomy.IsTyped(dm.Domain.Namespace))
+                                {
+                                    dim.Domain = dm.Domain.ToString();
+                                    dim.DomainMember = "";
+                                    li.Dimensions.Add(dim);
+                                    li.LabelID = dm.ID;
+                                    li.LabelCode = dim.Domain;
+                                }
+                                else
+                                {
+                                    dim.Domain = dm.Domain.ID;
+                                    dim.DomainMember = dm.Name;
+                                    li.Dimensions.Add(dim);
+                                    li.LabelID = dm.ID;
+                                }
+                                //var x = Taxonomy.Prefix
+                                //var domainfolder = dim.Domain.StartsWith(Taxonomy.Prefix) ? dim.Domain.Substring(Taxonomy.Prefix.Length) : dim.Domain;
+                                var domainfolder = dim.Domain.IndexOf("_") > -1 ? dim.Domain.Substring(dim.Domain.LastIndexOf("_")+1) : dim.Domain;
                                 var labelkey = Label.GetKey(domainfolder, dm.ID);
                                 li.Label = this.Taxonomy.FindLabel(labelkey);
                            
@@ -439,20 +456,51 @@ namespace LogicalModel
      
         }
 
+
+        private void FixLabelCodes(List<Hierarchy<LayoutItem>> items,string format) 
+        {
+            var ix = 1;
+            foreach (var hli in items) 
+            {
+                if (!hli.Item.IsDynamic && String.IsNullOrEmpty(hli.Item.LabelCode)) 
+                {
+                    hli.Item.LabelCode = String.Format(format, ix);
+                    ix++;
+                }
+            }
+        }
+
+        private void FixNamespaces(List<Hierarchy<LayoutItem>> items)
+        {
+            foreach (var hli in items)
+            {
+                if (hli.Item.Concept != null)
+                {
+                    var concept = hli.Item.Concept;
+                   
+                    var ce = this.Taxonomy.Concepts.FirstOrDefault(i=>i.Name==concept.Name);
+                    if (ce != null && concept.Namespace!=ce.Namespace)
+                    {
+                        concept.Namespace = ce.Namespace;
+                    }
+                }
+            }
+        }
+
         public void LoadLayout()
         {
-            Console.WriteLine(String.Format("Layout for {0}", this.ID));
+            Logger.WriteLine(String.Format("Layout for {0}", this.ID));
             X_Axis.Clear();
             Y_Axis.Clear();
             Z_Axis.Clear();
   
             rowsnode = GetAxisNode("y");
             columnsnode = GetAxisNode("x");
-            var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();
+            var aspects = rowsnode.Where(i => i.Item.IsAspect);
 
     
             var ix=0;
-            var columnAxisnode = columnsnode.Where(i => !String.IsNullOrEmpty(i.Item.Axis)).FirstOrDefault();
+            var columnAxisnode = columnsnode.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
             var aspect_row_dimension = new List<Dimension>();
             foreach (var aspect in aspects)
             {
@@ -489,7 +537,15 @@ namespace LogicalModel
             Columns = columnsnode.GetLeafs();
     
             Rows = rowsnode.ToHierarchy().Where(i => i.Item.IsVisible).ToList();
-            Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode) || i.Item.IsDynamic).ToList();
+            //Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode) || i.Item.IsDynamic).ToList();
+            Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
+
+            FixLabelCodes(Columns, "{0:D4}");
+            FixLabelCodes(Rows, "{0:D4}");
+
+            //FixNamespaces(Columns);
+            //FixNamespaces(Rows);
+
             var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
             if (xRows.Count > 1) 
             {
@@ -562,6 +618,10 @@ namespace LogicalModel
                             if (xcell.Row.In("010","020","030") && xcell.Column == "140") 
                             {
                             }
+                            if (this.Name.Contains("RDP-R13"))
+                            {
+
+                            }
                             if (this.Taxonomy.Facts.ContainsKey(xcell.FactKey))
                             {
 
@@ -581,6 +641,10 @@ namespace LogicalModel
                             }
                             else
                             {
+                                if (xcell.FactKey.Contains("eba_typ")) 
+                                {
+
+                                }
                                 if (cell.LayoutColumn.Item.IsAspect)
                                 {
                                     cell.Dimensions = cell.LayoutColumn.Item.Dimensions;
@@ -660,7 +724,7 @@ namespace LogicalModel
 
         public string GetTableHtml()
         {
-            if (this.ID.Contains("08"))
+            if (this.Name.Contains("RDP-R13"))
             {
 
             }

@@ -12,22 +12,7 @@ namespace LogicalModel.Validation
     public class ValidationParameter
     {
         public string Name { get; set; }
-        /*
-        private List<FactGroup> _FactGroups = new List<FactGroup>();
-        public List<FactGroup> FactGroups { get { return _FactGroups; } set { _FactGroups = value; } }
-        */
-        /*
-        private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
-        public Dictionary<string, FactGroup> FactGroups
-        {
-            get { return _FactGroups; }
-            set
-            {
-                _FactGroups = value;
-
-            }
-        }
-        */
+  
         private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
         public Dictionary<string, FactGroup> FactGroups
         {
@@ -109,6 +94,16 @@ namespace LogicalModel.Validation
 
         }
 
+        [JsonIgnore]
+        public bool BooleanValue
+        {
+            get
+            {
+                return StringValue=="true";
+            }
+
+        }
+
         public decimal DecimalValue
         {
             get { return decimal.Parse(this.StringValue); }
@@ -171,34 +166,178 @@ namespace LogicalModel.Validation
                 return ValuesWithTresholds.FirstOrDefault();
             }
         }
-    }
-    /*
-    public class ValidationParameter<T> : ValidationParameter
-    {
-        public ValidationParameter(string name)
-            : base(name)
+
+        public void ClearObjects()
         {
-            this.Name = name;
-        }
-        public T Value
-        {
-            get
+            foreach (var fg in FactGroups.Values) 
             {
-                if (typeof(T) == typeof(decimal))
+                fg.ClearObjects();
+                foreach (var fact in fg.Facts) 
                 {
-                    Object o = decimal.Parse(this.StringValue);
-                    return (T)o;
+                    fact.ClearObjects();
                 }
-                if (typeof(T) == typeof(string))
-                {
-                    Object o = this.StringValue;
-                    return (T)o;
-                }
-                return default(T);
             }
         }
+
+        public static bool operator ==(ValidationParameter lhs, decimal rhs)
+        {
+            return Equals(lhs.DecimalValue, rhs);
+        }
+        public static bool operator !=(ValidationParameter lhs, decimal rhs)
+        {
+            return !Equals(lhs.DecimalValue, rhs);
+        }
+        public static bool operator ==(decimal lhs, ValidationParameter rhs)
+        {
+            return Equals(lhs, rhs.DecimalValue);
+        }
+        public static bool operator !=(decimal lhs, ValidationParameter rhs)
+        {
+            return !Equals(lhs, rhs.DecimalValue);
+        }
+
+        
+        public static bool operator >=(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue>= rhs;
+        }
+        public static bool operator <=(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue<= rhs;
+        }
+        public static bool operator >=(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs >= rhs.DecimalValue;
+        }
+        public static bool operator <=(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs <= rhs.DecimalValue;
+        }
+
+
+        public static bool operator >(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue>rhs;
+        }
+        public static bool operator <(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue< rhs;
+        }
+        public static bool operator >(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs>rhs.DecimalValue;
+        }
+        public static bool operator <(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs< rhs.DecimalValue;
+        }
+
+        public static decimal operator +(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue + rhs;
+        }
+        public static decimal operator -(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue - rhs;
+        }
+        public static decimal operator +(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs + rhs.DecimalValue;
+        }
+        public static decimal operator -(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs - rhs.DecimalValue;
+        }
+
+
+        public static bool operator ==(ValidationParameter lhs, bool rhs)
+        {
+            return Equals(lhs.BooleanValue, rhs);
+        }
+        public static bool operator !=(ValidationParameter lhs, bool rhs)
+        {
+            return !Equals(lhs.BooleanValue, rhs);
+        }
+        public static bool operator ==(bool lhs, ValidationParameter rhs)
+        {
+            return Equals(lhs, rhs.BooleanValue);
+        }
+        public static bool operator !=(bool lhs, ValidationParameter rhs)
+        {
+            return !Equals(lhs, rhs.BooleanValue);
+        }
+
+        public static bool operator ==(ValidationParameter lhs, string rhs)
+        {
+            return Equals(lhs.StringValue, rhs);
+        }
+        public static bool operator !=(ValidationParameter lhs, string rhs)
+        {
+            return !Equals(lhs.StringValue, rhs);
+        }
+        public static bool operator ==(string lhs, ValidationParameter rhs)
+        {
+            return Equals(lhs, rhs.StringValue);
+        }
+        public static bool operator !=(string lhs, ValidationParameter rhs)
+        {
+            return !Equals(lhs, rhs.StringValue);
+        }
+
+
+        public static bool operator ==(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return Equals(lhs.StringValue, rhs.StringValue);
+        }
+        public static bool operator !=(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return !Equals(lhs.StringValue, rhs.StringValue);
+        }
+
+        public static decimal operator +(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.DecimalValue+ rhs.DecimalValue;
+        }
+        public static decimal operator -(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.DecimalValue - rhs.DecimalValue;
+        }
+
+
+
+        public static bool operator >=(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            //return !Equals(lhs.DecimalValue, rhs.DecimalValue) || !Equals(lhs.Treshold, rhs.Treshold);
+            if (lhs.Type == rhs.Type) 
+            {
+                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue >= rhs.DecimalValue; }      
+            }
+            return false;
+        }
+        public static bool operator <=(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            if (lhs.Type == rhs.Type)
+            {
+                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue <= rhs.DecimalValue; }
+            }
+            return false;
+        }
+        public static bool operator >(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            if (lhs.Type == rhs.Type)
+            {
+                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue > rhs.DecimalValue; }
+            }
+            return false;
+        }
+        public static bool operator <(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            if (lhs.Type == rhs.Type)
+            {
+                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue < rhs.DecimalValue; }
+            }
+            return false;
+        }
     }
-
-    */
-
+   
 }

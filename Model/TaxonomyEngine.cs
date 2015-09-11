@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel
 {
@@ -67,7 +68,7 @@ namespace LogicalModel
             {
                 CurrentEngine = this;
             }
-            Console.WriteLine(LocalFolder);
+            Logger.WriteLine(LocalFolder);
         }
         public virtual bool LoadInstance(string filepath) 
         {

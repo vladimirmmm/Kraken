@@ -79,6 +79,7 @@
     <Compile Include="TaxonomyEngine.cs" />
     <Compile Include="Validation\FactFunctions.cs" />
     <Compile Include="Validation\Functions.cs" />
+    <Compile Include="Validation\ParameterFunctions.cs" />
     <Compile Include="Validation\Test.cs" />
     <Compile Include="Validation\ValidationParameter.cs" />
     <Compile Include="Validation\ValidationRule.cs" />
@@ -233,6 +234,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Scripts\AppItems.ts" />
+    <TypeScriptCompile Include="Scripts\Binding.ts" />
     <TypeScriptCompile Include="Scripts\Instance.ts" />
     <TypeScriptCompile Include="Scripts\Linq.ts" />
     <TypeScriptCompile Include="Scripts\Models.ts" />

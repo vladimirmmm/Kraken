@@ -24,15 +24,15 @@
 <div>
     <div class="listpager pagination">
     </div>
-    <table class="list">
+    <table class="list" binding-items="this">
         <tr binding-type="template">
             <td>
-                <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.ShowFactDetails('{Key}', '{Key}'); Select(this);]">
-                    <span>bind[{Key}]></span>
+                <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.ShowFactDetails('{PropertyName}', '{PropertyName}'); Select(this);]">
+                    <span>bind[{PropertyName}]></span>
                 </a>
             </td>
             <td>
-                <ul binding-items="Value">
+                <ul binding-items="this">
                     <li binding-type="template">
                         <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.NavigateTo('{this}'); Select(this);]">
                             bind[this]
@@ -40,7 +40,7 @@
                     </li>
                 </ul>
             </td>
-      
+
 
         </tr>
     </table>

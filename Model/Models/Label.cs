@@ -71,7 +71,7 @@ namespace LogicalModel
         {
             var l = new Label();
             l.FileName = domain;
-            l.Lang = "en";
+            l.Lang = Taxonomy.Lang;
             l.LocalID = localID;
             return l.Key;
 
@@ -80,7 +80,7 @@ namespace LogicalModel
         {
             var l = new Label();
             l.FileName = ns;
-            l.Lang = "en";
+            l.Lang = Taxonomy.Lang;
             l.LocalID = localID;
             return l.Key;
 
@@ -90,7 +90,7 @@ namespace LogicalModel
             var l = new Label();
          
             l.FileName = fileid;
-            l.Lang = "en";
+            l.Lang = Taxonomy.Lang;
             l.LocalID = localID;
             return l.Key;
         }

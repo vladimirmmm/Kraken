@@ -157,10 +157,11 @@ namespace LogicalModel.Validation
             {
 
             }
-            foreach (var factgroup in factgroups.Values)
+            foreach (var factgroupkey in factgroups.Keys)
             {
+                var factgroup = factgroups[factgroupkey];
                 //var firstfact = factgroup.Facts.FirstOrDefault();
-                factgroup.FactString = factgroup.GetFactString();
+                factgroup.FactString = factgroupkey;//factgroup.GetFactString();
                 var vruleresult = new ValidationRuleResult();
                 results.Add(vruleresult);
                 vruleresult.ID = this.ID;
@@ -222,7 +223,7 @@ namespace LogicalModel.Validation
                     {
                         if (parameterfactgroup.Facts.Count > 1)
                         {
-                            Console.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
+                            Logger.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
                         }
                         else
                         {
@@ -544,7 +545,7 @@ namespace LogicalModel.Validation
                             {
                                 if (rp.StringValue.Length > 29 || !Utilities.Strings.IsDigitsOnly(rp.StringValue, '.', '-'))
                                 {
-                                    Console.WriteLine(String.Format("Invalid Value Detected: {0}", rp.StringValue));
+                                    Logger.WriteLine(String.Format("Invalid Value Detected: {0}", rp.StringValue));
                                     rp.StringValue = "";
                                 }
                             }
@@ -581,8 +582,8 @@ namespace LogicalModel.Validation
                     foreach (var find in allfinds) 
                     {
                         var hasdata = false;
-                        var tg = Taxonomy.Module.TableGroups.FirstOrDefault(i => i.FilingIndicator == find);
-                        foreach (var tableid in tg.TableIDs)
+                        var tg = Taxonomy.Module.TableGroups.FirstOrDefault(i => i.Item.FilingIndicator == find);
+                        foreach (var tableid in tg.Item.TableIDs)
                         {
                             var tbl = Taxonomy.Tables.FirstOrDefault(i => i.ID == tableid);
 

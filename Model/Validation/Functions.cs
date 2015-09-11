@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LogicalModel.Validation
@@ -13,6 +14,7 @@ namespace LogicalModel.Validation
         decimal DecimalValue { get; set; }
         decimal Treshold { get; set; }
     }
+
     public class ValueWithTreshold :IValueWithTreshold
     {
         private object _ObjectValue;
@@ -186,6 +188,22 @@ namespace LogicalModel.Validation
         {
             return a;
         }
+        public string XS_String(String a)
+        {
+            return a;
+        }
+
+        public Boolean RegexpMatches(string a, string pattern)
+        {
+            var regexp = new Regex(pattern);
+            return regexp.Matches(a).Count > 1;
+        }
+    
+        //public bool Exists(string v)
+        //{
+
+        //    return !String.IsNullOrEmpty(v);
+        //}
 
         public bool not(bool a)
         {
@@ -212,8 +230,8 @@ namespace LogicalModel.Validation
         {
             return -a;
         }
-        
 
+      
 
     }
 }

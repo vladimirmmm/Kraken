@@ -10,43 +10,44 @@ namespace LogicalModel
     {
         public Boolean IsTyped { get; set; }
         private String _DimensionItem = "";
+        private String _Domain = "";
+        private String _DomainMember = "";
+        //private string _DomainMemberFullName = "";
+
         public String DimensionItem
         {
             get { return _DimensionItem; }
             set
             {
                 _DimensionItem = value;
-                SetDomainMemberFullName();
+                //SetDomainMemberFullName();
 
             }
         }
 
-        private String _Domain= "";
         public String Domain
         {
             get { return _Domain; }
             set
             {
                 _Domain = value;
-                SetDomainMemberFullName();
+                //SetDomainMemberFullName();
 
             }
         }
 
 
-        private String _DomainMember = "";
         public String DomainMember
         {
             get { return _DomainMember; }
             set
             {
                 _DomainMember = value;
-                SetDomainMemberFullName();
+                //SetDomainMemberFullName();
             }
         }
 
-        private string _DomainMemberFullName = "";
-
+        /*
         private void SetDomainMemberFullName() 
         {
             var setted = false;
@@ -65,13 +66,25 @@ namespace LogicalModel
                 _DomainMemberFullName = String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
             }
         }
+        */
         public string DomainMemberFullName 
         {
             get 
             {
-                return _DomainMemberFullName;
+                var doimainmember = DomainMember;
+                if (!string.IsNullOrEmpty(doimainmember))
+                {
+                    doimainmember = ":" + DomainMember;
+                }
+                return String.Format("[{0}]{1}{2}", DimensionItem, Domain, doimainmember);
+                //if (DomainMember.IndexOf(":") > -1) 
+                //{
+                    
+                //}
+                //return _DomainMemberFullName;
             }
         }
+        
         public string DimensionItemWithDomain
         {
             get { return String.Format("[{0}]{1}", DimensionItem, Domain); }
@@ -90,6 +103,28 @@ namespace LogicalModel
         public string ToStringForKey() 
         {
             var item = "";
+            if (this.Domain.IndexOf(":")>-1) 
+            {
+                this.IsTyped = Taxonomy.IsTyped(this.Domain);
+            }
+            if (this.IsTyped )
+            {
+                //var domain = this.Domain;
+                //var ix = this.Domain.IndexOf(":");
+                //var ix2 = this.Domain.IndexOf(":", ix + 1);
+                //if (ix2 > -1) 
+                //{
+                //    domain = domain.Remove(ix2);
+                //}
+                item = String.Format("[{0}]{1}", this.DimensionItem, this.Domain);
+
+            }
+            else 
+            {
+                item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+
+            }
+            /*
             if (this.IsTyped  )
             {
                 if (this.Domain == "eba_typ")
@@ -106,6 +141,7 @@ namespace LogicalModel
             {
                 item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
             }
+             */
             return item.Trim();
         }
 

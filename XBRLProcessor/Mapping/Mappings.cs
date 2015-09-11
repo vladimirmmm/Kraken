@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Collections;
+using Utilities;
 
 namespace XBRLProcessor.Mapping
 {
@@ -57,7 +58,7 @@ namespace XBRLProcessor.Mapping
             }
             else
             {
-                Console.WriteLine("Mapping not found for " + node.Name);
+                Logger.WriteLine("Mapping not found for " + node.Name);
             }
             return null;
         }
@@ -71,7 +72,7 @@ namespace XBRLProcessor.Mapping
             }
             else
             {
-                Console.WriteLine("Mapping not found for " + node.Name);
+                Logger.WriteLine("Mapping not found for " + node.Name);
             }
             return null;
         }
@@ -85,7 +86,7 @@ namespace XBRLProcessor.Mapping
             }
             else 
             {
-                Console.WriteLine("Mapping not found for " + node.Name);
+                Logger.WriteLine("Mapping not found for " + node.Name);
             }
             return null;
         }
@@ -359,18 +360,18 @@ namespace XBRLProcessor.Mapping
             var action = set.Compile();
           // var inst = new Foo();
            // action(inst, "abc");
-           // Console.WriteLine(inst.Bar); // show it working
+           // Logger.WriteLine(inst.Bar); // show it working
 
             //==== reflection
             MethodInfo setMethod = ((PropertyInfo)member.Member).GetSetMethod();
            // setMethod.Invoke(inst, new object[] { "def" });
-          //  Console.WriteLine(inst.Bar); // show it working
+          //  Logger.WriteLine(inst.Bar); // show it working
 
             //==== Delegate.CreateDelegate
             action = (Action<TClass, PropertyType>)
                 Delegate.CreateDelegate(typeof(Action<TClass, PropertyType>), setMethod);
            // action(inst, "ghi");
-           // Console.WriteLine(inst.Bar); // show it working
+           // Logger.WriteLine(inst.Bar); // show it working
 
             return action;
         }
@@ -428,7 +429,7 @@ namespace XBRLProcessor.Mapping
                     }
                     else 
                     {
-                        Console.WriteLine("Can't Find mapping for node " + childnode.Name);
+                        Logger.WriteLine("Can't Find mapping for node " + childnode.Name);
                     }
                     value = null;
                 }
@@ -518,7 +519,7 @@ namespace XBRLProcessor.Mapping
                     }
                     catch (Exception ex) 
                     {
-                        Console.WriteLine("Mapping: " + ex.Message);
+                        Logger.WriteLine("Mapping: " + ex.Message);
                     }
                 }
                 //prop.SetValue(instance, value, null);
