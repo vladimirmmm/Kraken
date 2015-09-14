@@ -151,8 +151,12 @@ var Model;
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.DomainMemberFullName);
+                var dimstr = dimension.DomainMemberFullName;
+                dimstr = FactBase.Format(dimstr, ref);
+                result += Format("{0},", dimstr);
             });
             return result;
         };
@@ -162,8 +166,12 @@ var Model;
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.ToStringForKey);
+                var dimstr = dimension.ToStringForKey;
+                dimstr = FactBase.Format(dimstr, ref);
+                result += Format("{0},", dimstr);
             });
             return result;
         };
@@ -196,9 +204,17 @@ var Model;
             }
             var dimparts = parts;
             dimparts.splice(0, toskip);
+            var lastdimns = "";
             dimparts.forEach(function (dimpart) {
                 var dimitem = TextBetween(dimpart, "[", "]");
                 var domainpart = dimpart.substring(dimitem.length + 2);
+                var dimitemns = dimitem.substr(0, dimitem.indexOf(":"));
+                if (dimitemns == "*") {
+                    dimitem = Replace(dimitem, "*", lastdimns);
+                }
+                else {
+                    lastdimns = dimitemns;
+                }
                 var domain = domainpart;
                 var member = "";
                 var dim = new Dimension();
@@ -219,6 +235,16 @@ var Model;
                 dim.DomainMember = member;
                 me.Dimensions.push(dim);
             });
+        };
+        FactBase.Format = function (item, lastdimns) {
+            var dimns = TextBetween(item, "[", ":");
+            if (lastdimns.Value != dimns) {
+                lastdimns.Value = dimns;
+            }
+            else {
+                item = Replace(item, dimns, "*");
+            }
+            return item;
         };
         return FactBase;
     })();
@@ -449,3 +475,4 @@ var Model;
     })(Identifiable);
     Model.TableInfo = TableInfo;
 })(Model || (Model = {}));
+//# sourceMappingURL=Models.js.map

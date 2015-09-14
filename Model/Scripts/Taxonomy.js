@@ -5,6 +5,7 @@ var Control;
             this.Taxonomy = new Model.Taxonomy();
             this.ValidationRules = [];
             this.TableStructure = null;
+            this.CurrentFacts = null;
             this.LPageSize = 10;
             this.PageSize = 20;
             this.s_fact_id = "T_Facts";
@@ -23,6 +24,7 @@ var Control;
             this.s_units_selector = "";
             this.s_find_selector = "";
             this.s_general_selector = "";
+            this.FactServiceFunction = null;
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_label_selector = "#" + this.s_label_id;
             this.s_validation_selector = "#" + this.s_validation_id;
@@ -70,10 +72,10 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
-            AjaxRequest("Table/List", "get", "json", null, function (data) {
+            AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
                 me.TableStructure = data;
                 ForAll(me.TableStructure, "Children", function (item) {
-                    if (!IsNull(item.Item)) {
+                    if (!IsNull(item) && !IsNull(item.Item)) {
                         item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
                     }
@@ -98,13 +100,18 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
-            AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
-                //Notify("factsize " + sizeof(data));
-                //me.Taxonomy.Facts = data;
-                clearobject(data);
-            }, function (error) {
-                console.log(error);
+            me.FactServiceFunction = new FunctionWithCallback(function (fwc, args) {
+                var p = args[0];
+                AjaxRequest("Taxonomy/Facts", "get", "json", p, function (data) {
+                    me.CurrentFacts = data.Items;
+                    fwc.Callback(data);
+                }, null);
             });
+            //AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
+            //    //Notify("factsize " + sizeof(data));
+            //    me.Taxonomy.Facts = data;
+            //    //clearobject(data);
+            //}, function (error) { console.log(error); });
         };
         TaxonomyContainer.prototype.LoadValidationResults = function (onloaded) {
             var me = this;
@@ -151,6 +158,12 @@ var Control;
                 me.ShowValidationResults();
             }
             if (contentid == me.s_fact_id) {
+                var eventhandlers = {
+                    onloading: function (data) {
+                        //EnumerateObject(data, me,(item, itemname) => { item["PropertyName"] = itemname; });
+                    }
+                };
+                LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
             }
         };
         TaxonomyContainer.prototype.ClearFilterLabels = function () {
@@ -200,6 +213,7 @@ var Control;
             var eventhandlers = { onpaging: function () {
                 me.CloseRuleDetail();
             } };
+            me.CloseRuleDetail();
             LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize, eventhandlers);
         };
         TaxonomyContainer.prototype.ClearFilterFacts = function () {
@@ -229,8 +243,9 @@ var Control;
         };
         TaxonomyContainer.prototype.ShowFactDetails = function (factkey, factstring) {
             var me = this;
-            if (factkey in me.Taxonomy.Facts) {
-                var cells = me.Taxonomy.Facts[factkey];
+            var factx = me.CurrentFacts.AsLinq().FirstOrDefault(function (i) { return i.Key == factkey; });
+            if (!IsNull(factx)) {
+                var cells = factx.Value;
                 var fact = new Model.InstanceFact();
                 fact.FactString = factkey;
                 Model.FactBase.LoadFromFactString(fact);
@@ -295,6 +310,11 @@ var Control;
                 }
                 parameter.Value = strvalue;
             });
+        };
+        TaxonomyContainer.prototype.CloseRuleDetail = function () {
+            var me = this;
+            me.SelFromValidation(s_detail_selector).hide();
+            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
         };
         TaxonomyContainer.prototype.ShowRuleDetail = function (ruleid) {
             var me = this;
@@ -361,14 +381,9 @@ var Control;
             return "";
             //return "";
         };
-        TaxonomyContainer.prototype.CloseRuleDetail = function () {
-            var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
-        };
         TaxonomyContainer.prototype.NavigateTo = function (cell) {
             var me = this;
-            AjaxRequest("Table/Get", "get", "text/html", { cell: cell }, function (data) {
+            AjaxRequest("Taxonomy/Table", "get", "text/html", { cell: cell }, function (data) {
                 $(s_tableframe_selector).attr("src", data);
             }, function (error) {
                 console.log(error);
@@ -379,3 +394,4 @@ var Control;
     Control.TaxonomyContainer = TaxonomyContainer;
 })(Control || (Control = {}));
 var s_tableframe_selector = "#tableframe";
+//# sourceMappingURL=Taxonomy.js.map

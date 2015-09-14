@@ -13,6 +13,36 @@ using UI.Services;
 
 namespace UI
 {
+    public class UIService 
+    {
+        public Func<bool> DispatcherCheckAccess = () => true;
+        public Action<Action> DispatcherInvoke = (action) => { };
+        public Action Close = () => { };
+        public Action ShowSettings = () => { };
+        public Action<string> BrowserNavigate = (url) => { };
+        public Action BrowserRefresh = () => { };
+        public Action<string, string> BrowserInvokeScript = (script, parameters) => { };
+        public Action<MenuCommand, MenuItem> LoadMenu = (command, item) => { };
+
+
+    }
+
+    public class WindowUIService : UIService
+    {
+        public WindowUIService(MainWindow mw)
+        {
+            DispatcherCheckAccess = () => { return mw.Dispatcher.CheckAccess(); };
+            DispatcherInvoke = (action) => { mw.Dispatcher.Invoke(action); };
+            BrowserInvokeScript = (script, parameters) => { mw.Browser.InvokeScript(script, parameters); };
+            BrowserNavigate = (url) => { mw.Browser.Navigate(url); };
+            BrowserRefresh = () => { mw.Browser.Refresh(); };
+            LoadMenu = (command, item) => { mw.LoadMenu(command, item); };
+            Close = () => { mw.Close(); };
+            ShowSettings = () => { mw.ShowSettings(); };
+
+        }
+    }
+
     public class Features
     {
         public MenuCommand CommandContainer = null;
@@ -24,12 +54,12 @@ namespace UI
         private const string RegKey_Recent_Taxonomies = "Recent_Taxonomies";
         private const string RegKey_Recent_Instances = "Recent_Instances";
 
-        public MainWindow UI = null;
+        public UIService UI = null;
         public Settings Settings = Settings.Current;
         public List<String> RecentInstances = new List<string>();
         public List<String> RecentTaxonomies = new List<string>();
 
-        public Features(MainWindow ui) 
+        public Features(UIService ui) 
         {
             this.UI = ui;
             this.DataService = new Services.DataService(Engine);
@@ -60,7 +90,7 @@ namespace UI
         
         public void Load()
         {
-            UI.TB_TaxonomyPath.Text = GetRegValue(RegSettingsPath + "LastTaxonomy"); //@"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2014-07-31\mod\corep_ind.xsd";
+            //UI.TB_TaxonomyPath.Text = GetRegValue(RegSettingsPath + "LastTaxonomy"); //@"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2014-07-31\mod\corep_ind.xsd";
             CommandContainer = new MenuCommand("root", "",
                 new MenuCommand("File", "",
                     new MenuCommand("O_tax", "Open Taxonomy", (o) => { OpenTaxonomy(); }),
@@ -94,7 +124,7 @@ namespace UI
                         )
                     ),
                new MenuCommand("Tools", "",
-                    new MenuCommand("Settings", "", (o) => { ShowSettings(); }),
+                    new MenuCommand("Settings", "", (o) => { UI.ShowSettings(); }),
                     new MenuCommand("Debug UI", "", (o) => { DebugUI(); })
                     ),
                new MenuCommand("Help", "",
@@ -192,7 +222,7 @@ namespace UI
 
         public void ShowTab(object treeitemobj)
         {
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             {
                 var ti = treeitemobj as ControlNode;
                 var p = ti.Parent;
@@ -206,18 +236,18 @@ namespace UI
                     tabid = String.Format("{0}_{1}", p.Title.ToLower(), ti.Title.ToLower());
 
                 }
-                foreach (TabItem item in UI.TabControl_Left.Items)
-                {
-                    if (item.Header.ToString().ToLower() == tabid)
-                    {
-                        UI.TabControl_Left.SelectedItem = item;
-                        break;
-                    }
-                }
+                //foreach (TabItem item in UI.TabControl_Left.Items)
+                //{
+                //    if (item.Header.ToString().ToLower() == tabid)
+                //    {
+                //        UI.TabControl_Left.SelectedItem = item;
+                //        break;
+                //    }
+                //}
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { ShowTab(treeitemobj); });
+                UI.DispatcherInvoke(() => { ShowTab(treeitemobj); });
             }
      
         }
@@ -238,8 +268,8 @@ namespace UI
                 table.EnsureHtmlLayout();
                 var url = String.Format("{0}#ext={1};cell=R{2}_C{3};", table.FullHtmlPath, extension, row, column);
                 
-                UI.Browser.Navigate(url);
-                UI.TB_Title.Text = String.Format("{0} - {1}", table.ID, table.FullHtmlPath);
+                UI.BrowserNavigate(url);
+                //UI.TB_Title.Text = String.Format("{0} - {1}", table.ID, table.FullHtmlPath);
             }
         }
    
@@ -285,7 +315,7 @@ namespace UI
                 var m = new MenuCommand(item, Utilities.Strings.GetFileName(item), (o) => { OpenTaxonomy(item); });
                 recent_taxonomy.Children.Add(m);
             }
-            LoadMenu(CommandContainer, null);
+            UI.LoadMenu(CommandContainer, null);
         }
 
         public void OpenTaxonomy()
@@ -366,13 +396,13 @@ namespace UI
         public void UIReload() 
         {
 
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             {
-                UI.Browser.Refresh();
+                UI.BrowserRefresh();
             }
             else 
             {
-                UI.Dispatcher.Invoke(() => { LoadInstanceToUI(); });
+                UI.DispatcherInvoke(() => { LoadInstanceToUI(); });
             }
         }
         public void CloseInstance()
@@ -421,7 +451,7 @@ namespace UI
 
         public void ToUI(Message msg) 
         {
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             {
                 lock (BrowserLocker)
                 {
@@ -445,7 +475,7 @@ namespace UI
                         //sb_json.Append(data);
                         //data=null;
                         //sb_json.Append(parts[1]);
-                        UI.Browser.InvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
+                        UI.BrowserInvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
                     }
                     catch (Exception ex) 
                     {
@@ -456,7 +486,7 @@ namespace UI
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { ToUI(msg); });
+                UI.DispatcherInvoke(() => { ToUI(msg); });
             }
         }
 
@@ -475,31 +505,31 @@ namespace UI
         }
         public void LoadInstanceToUI()
         {
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             {
-                UI.TB_Title.Text = Engine.CurrentInstance.FullPath;
+                //UI.TB_Title.Text = Engine.CurrentInstance.FullPath;
                 //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
                 //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { LoadInstanceToUI(); });
+                UI.DispatcherInvoke(() => { LoadInstanceToUI(); });
             }
         }
 
         public void LoadTaxonomyToUI()
         {
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             {
-                UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
-                UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
-                UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
+                //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
+                //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
+                //UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
                 ShowInBrowser(Engine.HtmlPath); 
 
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { LoadTaxonomyToUI(); });
+                UI.DispatcherInvoke(() => { LoadTaxonomyToUI(); });
             }
         }
 
@@ -508,7 +538,7 @@ namespace UI
             if (searchpattern.Length > 1)
             {
                 var labels = Engine.CurrentTaxonomy.TaxonomyLabels.Where(i => i.DisplayName.Contains(searchpattern));
-                LoadToLV(labels, UI.LV_labels);
+                //LoadToLV(labels, UI.LV_labels);
             }
         }
         public void SearchFacts(string searchpattern)
@@ -517,7 +547,7 @@ namespace UI
             {
                 var labels = Engine.CurrentTaxonomy.Facts.Where(i => i.Key.Contains(searchpattern));
                 var items = labels.SelectMany(i=>i.Value);
-                LoadToLV(items, UI.LV_Facts);
+                //LoadToLV(items, UI.LV_Facts);
             }
         }
         public void SearchCells(string searchpattern)
@@ -525,7 +555,7 @@ namespace UI
             if (searchpattern.Length > 1)
             {
                 var labels = Engine.CurrentTaxonomy.Cells.Where(i => i.Key.Contains(searchpattern)).SelectMany(i => i.Value);
-                LoadToLV(labels, UI.LV_Cells);
+                //LoadToLV(labels, UI.LV_Cells);
             }
         }
 
@@ -534,105 +564,23 @@ namespace UI
             if (searchpattern.Length > 1)
             {
                 //var labels = list.Where(i => i.Key.Contains(searchpattern)).labels.SelectMany(i => i.Value);
-                LoadToLV(items(), UI.LV_Facts);
+                //LoadToLV(items(), UI.LV_Facts);
             }
         }
 
         public void LoadToLV(IEnumerable items, ListView lv) 
         {
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             { 
                lv.ItemsSource = items;
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { LoadToLV(items, lv); });
+                UI.DispatcherInvoke(() => { LoadToLV(items, lv); });
             }
         }
         
-        public void LoadMenu(MenuCommand command, MenuItem menuitem)
-        {
-            if (UI.Dispatcher.CheckAccess())
-            {
-                ItemCollection itemcollection = null;
-                if (menuitem == null) { itemcollection = UI.Menu.Items;
-                UI.Menu.Items.Clear();
-                }
-                else
-                {
-                    itemcollection = menuitem.Items;
-                }
-
-                foreach (var c in command.Children)
-                {
-                    var m = new MenuItem();
-                    m.Header = c.DisplayName.Replace("_","__");
-                    m.IsEnabled = c.Enabled;
-                    if (c.Children.Count == 0)
-                    {
-                        m.Click += (s, e) => { c.ExecuteAsync(); };
-                    }
-                    itemcollection.Add(m);
-                    LoadMenu(c, m);
-                }
-            }
-            else 
-            {
-                UI.Dispatcher.Invoke(() => { LoadMenu(command,menuitem); });
-
-            }
-
-        }
-        public void ShowSettings() 
-        {
-            if (UI.Dispatcher.CheckAccess())
-            {
-                var window = new SettingsWindow();
-                window.SetFeatures(this);
-                window.Show();
-            }
-            else
-            {
-                UI.Dispatcher.Invoke(() => { ShowSettings(); });
-
-            }
-        }
-        public void LoadFeatures(ControlNode cnode, TreeViewItem uiitem)
-        {
-            if (UI.Dispatcher.CheckAccess())
-            {
-                ItemCollection itemcollection = null;
-                if (uiitem == null)
-                {
-                    itemcollection = UI.Tree_Control.Items;
-                    UI.Tree_Control.Items.Clear();
-                }
-                else
-                {
-                    itemcollection = uiitem.Items;
-                }
-
-                foreach (var c in cnode.Children)
-                {
-                    var m = new TreeViewItem();
-                    m.Header = c.Title.Replace("_", "__");
-                    //m.IsEnabled = c.Enabled;
-                    //if (c.Children.Count == 0)
-                    //{
-                        m.MouseLeftButtonUp += (s, e) => { c.ExecuteAsync(); };
-                    //}
-                    itemcollection.Add(m);
-                    LoadFeatures(c, m);
-                }
-            }
-            else
-            {
-                UI.Dispatcher.Invoke(() => { LoadFeatures(cnode, uiitem); });
-
-            }
-
-        }
-
+       
         public void LoadTaxonomy(string path) 
         {
             Engine.LoadTaxonomy(path);
@@ -716,25 +664,25 @@ namespace UI
 
         public void Search(string p)
         {
-            var context = UI.Tree_Control.SelectedItem as ControlNode;
-            if (context.Title == "Facts")
-            {
+            //var context = UI.Tree_Control.SelectedItem as ControlNode;
+            //if (context.Title == "Facts")
+            //{
                 
-            }
+            //}
         }
 
         public void ShowInBrowser(string path) 
         {
-            if (UI.Dispatcher.CheckAccess())
+            if (UI.DispatcherCheckAccess())
             {
      
-                UI.Browser.Navigate(path);
-                UI.TB_Title.Text = path;
+                UI.BrowserNavigate(path);
+                //UI.TB_Title.Text = path;
               
             }
             else
             {
-                UI.Dispatcher.Invoke(() => { ShowInBrowser(path); });
+                UI.DispatcherInvoke(() => { ShowInBrowser(path); });
             }
         }
 

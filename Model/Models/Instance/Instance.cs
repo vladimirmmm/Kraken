@@ -14,6 +14,7 @@ namespace LogicalModel
     public class Instance
     {
         private String _FullPath = "";
+        [JsonProperty]
         public String FullPath { get { return _FullPath; } set { _FullPath = value; } }
 
         private String _ModulePath = "";
@@ -293,8 +294,11 @@ namespace LogicalModel
                         reportdict[reportid] = reportdict[reportid] + 1;
 
                     }
-                    
 
+
+                }
+                else 
+                {
                 }
             }
             foreach (var cellsofreport in DynamicCellDictionary)

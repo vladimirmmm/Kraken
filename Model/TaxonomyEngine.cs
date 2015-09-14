@@ -47,7 +47,9 @@ namespace LogicalModel
                 if (String.IsNullOrEmpty(_LocalFolder))
                 {
                     var appdatafolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    var name = Assembly.GetEntryAssembly().GetName().Name;
+                    var entryassembly = Assembly.GetEntryAssembly();
+                    var name = "X-TreeMe";
+                    if (entryassembly != null) { name = Assembly.GetEntryAssembly().GetName().Name; }
                     var folder = String.Format(@"{0}\{1}\", appdatafolder, name);
                     //Utilities.FS.DirectoryCopy(PreparedFolder, folder, true, false);
                     var taxfolder = folder + "Taxonomies\\";

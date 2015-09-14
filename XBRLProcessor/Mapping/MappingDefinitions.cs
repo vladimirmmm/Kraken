@@ -219,7 +219,7 @@ namespace XBRLProcessor.Mapping
                  //Logical
                  Mappings.Map<Dimension>("<xbrldi:explicitMember>",
                     Mappings.PropertyMap("dimension", (Dimension i) => i.DimensionItem),
-                    Mappings.PropertyMap("@content", (Dimension i) => i.DomainMember)
+                    Mappings.PropertyMap("@content", (Dimension i) => i.DomainAndMember)
                  ),
                 Mappings.Map<Dimension>("<xbrldi:typedMember>",
                     Mappings.PropertyMap("#true", (Dimension i) => i.IsTyped),

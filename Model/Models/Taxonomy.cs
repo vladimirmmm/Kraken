@@ -261,9 +261,15 @@ namespace LogicalModel
         {
             var result = false;
             var ns = domain.Contains(":") ? new QualifiedName(domain).Namespace : domain;
-            if (TaxonomyEngine.CurrentEngine.CurrentTaxonomy.TypedDimensions.ContainsKey(ns)) 
+            if (TaxonomyEngine.CurrentEngine != null &&
+                TaxonomyEngine.CurrentEngine.CurrentTaxonomy != null &&
+                TaxonomyEngine.CurrentEngine.CurrentTaxonomy.TypedDimensions.ContainsKey(ns))
             {
                 result = true;
+            }
+            else 
+            {
+                return Utilities.Strings.ContainsCount(":", domain) > 1;
             }
             return result;
         }

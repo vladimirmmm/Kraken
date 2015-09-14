@@ -12,7 +12,7 @@ namespace LogicalModel
         private String _DimensionItem = "";
         private String _Domain = "";
         private String _DomainMember = "";
-        //private string _DomainMemberFullName = "";
+  
 
         public String DimensionItem
         {
@@ -20,8 +20,6 @@ namespace LogicalModel
             set
             {
                 _DimensionItem = value;
-                //SetDomainMemberFullName();
-
             }
         }
 
@@ -31,11 +29,9 @@ namespace LogicalModel
             set
             {
                 _Domain = value;
-                //SetDomainMemberFullName();
 
             }
         }
-
 
         public String DomainMember
         {
@@ -43,45 +39,36 @@ namespace LogicalModel
             set
             {
                 _DomainMember = value;
-                //SetDomainMemberFullName();
             }
         }
 
-        /*
-        private void SetDomainMemberFullName() 
+        public String DomainAndMember
         {
-            var setted = false;
-            if (String.IsNullOrEmpty(DomainMember))
+            get { return String.Format("{0}:{1}",Domain,DomainMember); }
+            set
             {
-                _DomainMemberFullName =  String.Format("[{0}]{1}", DimensionItem, Domain);
-                setted = true;
-            }
-            if (String.IsNullOrEmpty(Domain))
-            {
-                _DomainMemberFullName = String.Format("[{0}]{1}", DimensionItem, DomainMember);
-                setted = true;
-            }
-            if (!setted)
-            {
-                _DomainMemberFullName = String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
+                var parts = value.Split(new string[]{":"},StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2)
+                {
+                    _Domain = parts[0];
+                    _DomainMember = parts[1];
+                }
+                else 
+                {
+                }
             }
         }
-        */
+  
         public string DomainMemberFullName 
         {
             get 
             {
                 var doimainmember = DomainMember;
-                if (!string.IsNullOrEmpty(doimainmember))
+                if (string.IsNullOrEmpty(doimainmember))
                 {
-                    doimainmember = ":" + DomainMember;
+                    return String.Format("[{0}]{1}", DimensionItem, Domain);
                 }
-                return String.Format("[{0}]{1}{2}", DimensionItem, Domain, doimainmember);
-                //if (DomainMember.IndexOf(":") > -1) 
-                //{
-                    
-                //}
-                //return _DomainMemberFullName;
+                return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, doimainmember);
             }
         }
         
@@ -99,23 +86,27 @@ namespace LogicalModel
         {
             return String.Format("[{0}]{1}:{2}", DimensionItem, Domain, DomainMember);
         }
+        public string ToStringForKey() {
+            return ToStringForKey("");
+        }
 
-        public string ToStringForKey() 
+        public string ToStringForKey(string lastnamespace) 
         {
             var item = "";
             if (this.Domain.IndexOf(":")>-1) 
             {
                 this.IsTyped = Taxonomy.IsTyped(this.Domain);
             }
+            if (this.Domain.IndexOf(":") > -1 && !String.IsNullOrEmpty(this.DomainMember))
+            {
+                this.IsTyped = true;
+            }
+            //var dimensionitem = lastnamespace == "" ? this.DimensionItem : this.DimensionItem.Replace(lastnamespace, "*");
+            var dimensionitem = this.DimensionItem;
+
             if (this.IsTyped )
             {
-                //var domain = this.Domain;
-                //var ix = this.Domain.IndexOf(":");
-                //var ix2 = this.Domain.IndexOf(":", ix + 1);
-                //if (ix2 > -1) 
-                //{
-                //    domain = domain.Remove(ix2);
-                //}
+           
                 item = String.Format("[{0}]{1}", this.DimensionItem, this.Domain);
 
             }
@@ -124,24 +115,7 @@ namespace LogicalModel
                 item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
 
             }
-            /*
-            if (this.IsTyped  )
-            {
-                if (this.Domain == "eba_typ")
-                {
-                    item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
-
-                }
-                else
-                {
-                    item = String.Format("[{0}]{1}", this.DimensionItem, this.Domain);
-                }
-            }
-            else
-            {
-                item = String.Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
-            }
-             */
+          
             return item.Trim();
         }
 

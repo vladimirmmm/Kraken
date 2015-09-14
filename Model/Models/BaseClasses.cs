@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel.Base
 {
@@ -106,11 +107,13 @@ namespace LogicalModel.Base
                 SetFromString(value);
             }
         }
+        
         public void SetFactString()
         {
             Dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
             _FactString = "";
         }
+        
         public string GetFactString() 
         {
             var sb = new StringBuilder();
@@ -118,9 +121,11 @@ namespace LogicalModel.Base
             {
                 sb.Append(Concept + ",");//>
             }
+            var lastdimns = "";
             foreach (var dimension in Dimensions)
             {
-                sb.Append(dimension.DomainMemberFullName.Trim() + ",");//|
+                var dimstr = dimension.DomainMemberFullName.Trim();
+                sb.Append(Format(dimstr, ref lastdimns) + ",");
             }
             return sb.ToString();
         }
@@ -130,6 +135,7 @@ namespace LogicalModel.Base
             _FactKey = "";
         }
         private string _FactKey = "";
+        
         public string GetFactKey()
         {
             if (this.Dimensions.Count == 0 && this.Concept == null)
@@ -143,15 +149,45 @@ namespace LogicalModel.Base
                 {
                     sb.Append(Concept + ",");
                 }
+                var lastdimns = "";
                 foreach (var dimension in Dimensions)
                 {
-                    sb.Append(dimension.ToStringForKey() + ",");
+                    var dimstr = dimension.ToStringForKey().Trim();
+                    sb.Append(Format(dimstr, ref lastdimns) + ",");
                 }
                 _FactKey = sb.ToString();
-                ClearObjects();
+                //ClearObjects();
             }
 
             return _FactKey;
+
+        }
+
+        private void test() 
+        {
+            var fact = new LogicalModel.Base.FactBase();
+            //fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[eba_dim:LEC]eba_typ:LE,[eba_dim:MCY]eba_MC:x27,[eba_dim:TRI]eba_TR:x6,");
+            fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[*:LEC]eba_typ:LE:1234,[*:MCY]eba_MC:x27,[*:TRI]eba_TR:x6,");
+            var k1 = fact.GetFactKey();
+            var s1 = fact.GetFactString();
+            fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[eba_dim:LEC]eba_typ:LE:1234,[eba_dim:MCY]eba_MC:x27,[eba_dim:TRI]eba_TR:x6,");
+            var k2 = fact.GetFactKey();
+            var s2 = fact.GetFactString();
+        }
+
+        private static string Format(string item, ref string lastdimns)
+        {
+            var dimns = item.TextBetween("[", ":");
+            if (lastdimns != dimns)
+            {
+                lastdimns = dimns;
+            }
+            else
+            {
+                item = item.Replace(dimns, "*");
+
+            }
+            return item;
 
         }
 
@@ -172,10 +208,21 @@ namespace LogicalModel.Base
                 }
             }
             var dimparts = parts.Skip(toskip).ToList();
+            var lastdimns = "";
             foreach (var dimpart in dimparts)
             {
                 var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
                 var domainpart = dimpart.Substring(dimitem.Length + 2);
+
+                var dimitemns = dimitem.Remove(dimitem.IndexOf(":"));
+                if (dimitemns == "*")
+                {
+                    dimitem = dimitem.Replace("*", lastdimns);
+                }
+                else 
+                {
+                    lastdimns = dimitemns;
+                }
                 var domain = domainpart;
                 var member = "";
                 var dim = new Dimension();
@@ -185,13 +232,20 @@ namespace LogicalModel.Base
                     var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
                     if (domainparts.Length == 2)
                     {
-                        domain = domainparts[0];
-                        member = domainparts[1];
+                        if (Taxonomy.IsTyped(domainpart))
+                        {
+                            domain = domainpart;
+
+                        }
+                        else
+                        {
+                            domain = domainparts[0];
+                            member = domainparts[1];
+
+                        }
                         dim.IsTyped = Taxonomy.IsTyped(domain);
-                        //if (domain == "eba_typ") 
-                        //{
-                        //    dim.IsTyped = true;
-                        //}
+
+                   
                     }
                     if (domainparts.Length == 3)
                     {
@@ -205,6 +259,8 @@ namespace LogicalModel.Base
                 dim.DomainMember = member;
                 this.Dimensions.Add(dim);
             }
+            this._FactString = item;
+            this._FactKey = "";
         }
 
         public bool HasTypedDimension() 
@@ -245,7 +301,8 @@ namespace LogicalModel.Base
     {
         private List<FactBase> _Facts = new List<FactBase>();
         [JsonProperty]
-        public List<FactBase> Facts {
+        public List<FactBase> Facts { get { return _Facts; } set { _Facts = value; } }
+        public List<FactBase> FullFacts {
             get { return GetFullFacts(); } 
            // set { _Facts = value; } 
         }
@@ -255,9 +312,18 @@ namespace LogicalModel.Base
             _Facts = facts;
         }
 
+        public void AddFact(FactBase fact) 
+        {
+            _Facts.Add(fact);
+        }
+
         protected List<FactBase> GetFullFacts() 
         {
-            var newfacts=new List<FactBase>();
+            var newfacts = new List<FactBase>();
+            if (this.Dimensions.Count == 0 && this.Concept == null)
+            {
+                LoadObjects();
+            }
             foreach (var fact in _Facts)
             {
                 var newfact = new FactBase();

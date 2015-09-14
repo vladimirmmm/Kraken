@@ -128,9 +128,13 @@ namespace Model.InstanceModel
                     factstring += dimitem;
                     factkey += dimension.IsTyped ? dimitemforkey : dimitem;
                 }
-
-                logicalfact.FactString = factstring;
-                logicalfact.FactKey = factkey;
+                logicalfact.SetFromString(factstring);
+                if (logicalfact.Concept == null) 
+                {
+                }
+                //logicalfact.FactString = factstring;
+                logicalfact.FactKey = logicalfact.GetFactKey();
+                logicalfact.FactString = logicalfact.GetFactString();
                 logicalfact.Value = xbrlfact.Value;
                 this.Facts.Add(logicalfact);
                 if (!this.FactDictionary.ContainsKey(logicalfact.FactKey))

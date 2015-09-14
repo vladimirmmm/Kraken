@@ -357,10 +357,15 @@ namespace LogicalModel
                         key += dimkeypart;
 
                     }
-
+                    var tempfact = new FactBase();
+                    tempfact.SetFromString(key);
+                    key = tempfact.GetFactKey();
                     if (!this.Taxonomy.Facts.ContainsKey(key)) 
                     {
                         this.Taxonomy.Facts.Add(key, new List<String>());
+                        if (key.Contains("eba_typ"))
+                        {
+                        }
                     }
                     sb_fact.AppendLine();
                 }

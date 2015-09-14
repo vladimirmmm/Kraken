@@ -1,3 +1,9 @@
+var Refrence = (function () {
+    function Refrence(reference) {
+        this.Value = reference;
+    }
+    return Refrence;
+})();
 function CreateMsg(category) {
     var msg = new General.Message();
     msg.Category = category;
@@ -345,11 +351,62 @@ function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
                 CallFunction(events, "onpaging");
                 LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
                 CallFunction(events, "onpaged");
+                return false;
             },
         });
     }
     else {
     }
+}
+var FunctionWithCallback = (function () {
+    function FunctionWithCallback(f) {
+        this.Func = null;
+        this.Callback = function (data) {
+            console.log("No CallbackDefined");
+        };
+        this.Func = f;
+    }
+    FunctionWithCallback.prototype.Call = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        if (IsFunction(this.Func)) {
+            this.Func(this, args);
+        }
+    };
+    return FunctionWithCallback;
+})();
+function LoadPageAsync($bindtarget, $pager, functionwithcallback, page, pagesize, events) {
+    var me = this;
+    var startix = pagesize * page;
+    var endix = startix + pagesize;
+    functionwithcallback.Callback = function (result) {
+        CallFunction(events, "onloading", result.Items);
+        BindX($bindtarget, result.Items);
+        CallFunction(events, "onloaded", result.Items);
+        if ($pager.length == 0 || 1 == 1) {
+            $pager.pagination(result.Total, {
+                items_per_page: pagesize,
+                current_page: page ? page : 0,
+                link_to: "",
+                prev_text: "Prev",
+                next_text: "Next",
+                ellipse_text: "...",
+                prev_show_always: true,
+                next_show_always: true,
+                callback: function (pageix) {
+                    CallFunction(events, "onpaging");
+                    LoadPageAsync($bindtarget, $pager, functionwithcallback, pageix, pagesize, events);
+                    CallFunction(events, "onpaged");
+                    return false;
+                },
+            });
+        }
+        else {
+        }
+    };
+    functionwithcallback.Call({ page: page, pagesize: pagesize });
 }
 function CallFunction(eventcontainer, eventname, args) {
     if (!IsNull(eventcontainer)) {
@@ -417,7 +474,7 @@ function Communication_Listener(data) {
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
 }
-function AjaxRequestComplex(url, method, contenttype, parameters, success, error) {
+function AjaxRequestComplexX(url, method, contenttype, parameters, success, error) {
     var requestid = Guid();
     var requesthandler = { error: error, success: success, Id: requestid, succeded: false };
     var kv = new General.KeyValue();
@@ -431,6 +488,27 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
     msg.Id = requestid;
     msg.ContentType = contenttype;
     Communication_ToApp(msg);
+    return requesthandler;
+}
+function AjaxRequestComplex(url, method, contenttype, parameters, success, error) {
+    var requestid = Guid();
+    var requesthandler = { error: error, success: success, Id: requestid, succeded: false };
+    var kv = new General.KeyValue();
+    kv.Key = requestid;
+    kv.Value = requesthandler;
+    requests.push(kv);
+    //var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
+    var msg = CreateAjaxMsg();
+    msg.Url = url;
+    msg.Parameters = parameters;
+    msg.Id = requestid;
+    msg.ContentType = contenttype;
+    if ('Notify' in window.external) {
+        Communication_ToApp(msg);
+    }
+    else {
+        Ajax("Instance/Index", "get", { msg: msg }, AjaxResponse, contenttype);
+    }
     return requesthandler;
 }
 function AjaxResponse(message) {
@@ -1490,3 +1568,4 @@ var resourcemanager = { Get: function (key, culture) {
     return key;
 } };
 var activeItem = null;
+//# sourceMappingURL=Utils.js.map

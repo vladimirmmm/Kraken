@@ -15,6 +15,10 @@ namespace XBRLProcessor.Model
     {
         public List<LogicalModel.Base.FactGroup> GetGroups()
         {
+            if (this.ID.Contains("0218")) 
+            {
+
+            }
             var rule_conceptfilters = this.ValidationRoot.Children.Where(i => i.Item is ConceptFilter).Select(s => s.Item as ConceptFilter).ToList();
             var rule_dimensionfilters = this.ValidationRoot.Children.Where(i => i.Item is DimensionFilter).Select(s => s.Item as DimensionFilter).ToList();
             
@@ -37,6 +41,27 @@ namespace XBRLProcessor.Model
             {
 
             }
+            var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
+
+            //if (rule_dimensionfilters.Count == 0 && rule_conceptfilters.Count > 0) 
+            //{
+            //    var cf= rule_concepts.FirstOrDefault();
+
+            //    var x = new DimensionFilter();
+            //    var facts = this.Taxonomy.Facts.Where(i => i.Key.StartsWith(cf.Content)).Select(i=>i.Key).ToList();
+            //    foreach (var factkey in facts) 
+            //    {
+            //        var fact = new LogicalModel.Base.FactBase();
+            //        fact.SetFromString(factkey);
+            //        foreach (var dim in fact.Dimensions) 
+            //        { 
+
+            //        }
+            //    }
+            //    rule_dimensionfilters.Add(x);
+            //    x.Complement = true;
+
+            //}
             var complementedrulefilters = rule_dimensionfilters.Where(i => i.Complement).ToList();
             foreach (var complementedrulefilter in complementedrulefilters)
             {
@@ -45,11 +70,7 @@ namespace XBRLProcessor.Model
                 {
 
                     var dimensiondomain = explicitdimfilter.Members.FirstOrDefault().QName.Domain;
-                    //TODOX
-                    //if (dimensiondomain.StartsWith(this.Taxonomy.Prefix)) 
-                    //{
-                    //    dimensiondomain = dimensiondomain.Substring(this.Taxonomy.Prefix.Length);
-                    //}
+
                     dimensiondomain = dimensiondomain.IndexOf("_") > -1 ? dimensiondomain.Substring(dimensiondomain.LastIndexOf("_") + 1) : dimensiondomain;
 
                     var dimensiondomainitems = this.Taxonomy.Hierarchies.Where(i => i.Item.Name == dimensiondomain).SelectMany(i => i.Children).Select(i=>i.Item.Content).Distinct().ToList();
@@ -70,7 +91,6 @@ namespace XBRLProcessor.Model
             rule_dimensionfilters = rule_dimensionfilters.Where(i => !i.Complement).ToList();
          
 
-            var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
             var rule_dimensions = rule_dimensionfilters.Select(i => Mapping.Mappings.ToLogicalDimensions(i)).ToList();
 
             var simple_rule_dimensions = rule_dimensions.Where(i => i.Count() == 1).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
@@ -326,7 +346,7 @@ namespace XBRLProcessor.Model
             var log = false;
             foreach (var factgroup in parameter.FactGroups.Values) 
             {
-                foreach (var fact in factgroup.Facts)
+                foreach (var fact in factgroup.FullFacts)
                 {
                     var cellslist = new List<List<String>>();
                     var factkey = fact.GetFactKey();
@@ -438,7 +458,7 @@ namespace XBRLProcessor.Model
         
         public void SetFacts(LogicalModel.Base.FactGroup factgroup) 
         {
-            foreach (var fact in factgroup.Facts) 
+            foreach (var fact in factgroup.FullFacts) 
             {
                 LogicalModel.Dimension.MergeDimensions(fact.Dimensions, factgroup.Dimensions);
                 if (fact.Concept == null) 

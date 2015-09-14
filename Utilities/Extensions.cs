@@ -21,9 +21,12 @@ namespace Utilities
         public static bool In<T>(this T obj, params String[] values)
         {
             var stringval = String.Format("{0}", obj);
+            if (obj == null) { obj = (T)new Object(); }
             for (int i = 0; i < values.Length; i++)
             {
-                if (String.Equals(stringval, values[i]))
+                //if (String.Equals(obj, values[i]))
+                //    return true;
+                if (obj.Equals(values[i]))
                     return true;
             }
             return false;

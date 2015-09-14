@@ -1,7 +1,11 @@
 ﻿module Model {
 
-    interface Dictionary<T> {
+    export interface Dictionary<T> {
         [key: string]: T;
+    }
+    export interface KeyValuePair<K,V> {
+        Key: K;
+        Value: V;
     }
     //interface Dictionary<T,K> {
     //    [key: K]: T;
@@ -135,8 +139,14 @@
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
+
             this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.DomainMemberFullName);
+                var dimstr = dimension.DomainMemberFullName;
+                dimstr = FactBase.Format(dimstr, ref);
+
+                result += Format("{0},", dimstr);
             });
             return result;
         }
@@ -148,8 +158,12 @@
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.ToStringForKey);
+                var dimstr = dimension.ToStringForKey;
+                dimstr = FactBase.Format(dimstr, ref);
+                result += Format("{0},", dimstr);
             });
             return result;
         }
@@ -181,9 +195,20 @@
             }
             var dimparts = parts;
             dimparts.splice(0, toskip);
+            var lastdimns = "";
+
             dimparts.forEach(function (dimpart) { 
                 var dimitem = TextBetween(dimpart, "[", "]");
                 var domainpart = dimpart.substring(dimitem.length + 2);
+
+                var dimitemns = dimitem.substr(0, dimitem.indexOf(":"));
+                if (dimitemns == "*") {
+                    dimitem = Replace(dimitem,"*", lastdimns);
+                }
+                else {
+                    lastdimns = dimitemns;
+                }
+
                 var domain = domainpart;
                 var member = "";
                 var dim = new Dimension();
@@ -205,6 +230,20 @@
                 dim.DomainMember = member;
                 me.Dimensions.push(dim);
             });
+        }
+
+        public static Format(item: string, lastdimns: Refrence<string>) {
+
+            var dimns = TextBetween(item, "[", ":");
+            if (lastdimns.Value != dimns) {
+                lastdimns.Value = dimns;
+            }
+            else {
+                item = Replace(item, dimns, "*");
+
+            }
+            return item;
+
         }
     }
 
@@ -336,6 +375,7 @@
         public ReportingCurrency: string;
         public Entity: Entity;
         public TaxonomyModuleReference: string;
+        public FullPath: string;
         public FactDictionary: Object = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
     }   

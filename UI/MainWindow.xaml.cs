@@ -44,30 +44,83 @@ namespace UI
             ofs.UIAction=fromJS;
             Browser.ObjectForScripting = ofs;
             var mw =this;
-            this.Features = new Features(this);
+            var ui = new WindowUIService(this);
+      
+            this.Features = new Features(ui);
 
-            this.Features.LoadMenu(this.Features.CommandContainer, null);
-            this.Features.LoadFeatures(this.Features.FeatureContainer, null);
+            LoadMenu(this.Features.CommandContainer, null);
+            //this.Features.LoadFeatures(this.Features.FeatureContainer, null);
 
             //tet();
 
         }
 
+        public void ShowSettings()
+        {
+            if (this.Dispatcher.CheckAccess())
+            {
+                var window = new SettingsWindow();
+                window.SetFeatures(Features);
+                window.Show();
+            }
+            else
+            {
+                this.Dispatcher.Invoke(() => { ShowSettings(); });
+
+            }
+        }
+
+        public void LoadMenu(MenuCommand command, MenuItem menuitem)
+        {
+            if (this.Dispatcher.CheckAccess())
+            {
+                ItemCollection itemcollection = null;
+                if (menuitem == null)
+                {
+                    itemcollection = this.Menu.Items;
+                    this.Menu.Items.Clear();
+                }
+                else
+                {
+                    itemcollection = menuitem.Items;
+                }
+
+                foreach (var c in command.Children)
+                {
+                    var m = new MenuItem();
+                    m.Header = c.DisplayName.Replace("_", "__");
+                    m.IsEnabled = c.Enabled;
+                    if (c.Children.Count == 0)
+                    {
+                        m.Click += (s, e) => { c.ExecuteAsync(); };
+                    }
+                    itemcollection.Add(m);
+                    LoadMenu(c, m);
+                }
+            }
+            else
+            {
+                this.Dispatcher.Invoke(() => { LoadMenu(command, menuitem); });
+
+            }
+
+        }
         public void tet()
         {
             var l = new List<LogicalModel.Base.FactBase>();
-            for (int i = 0; i < 200000; i++)
+            var c =  200000;
+            for (int i = 0; i < c; i++)
             {
                 var fact = new LogicalModel.Base.FactBase();
                 //fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[eba_dim:LEC]eba_typ:LE,[eba_dim:MCY]eba_MC:x27,[eba_dim:TRI]eba_TR:x6,");
-                fact.SetFromString("eba_met:mi235,[:BAS]eba_BA:x9,[:LEC]eba_typ:LE,[:MCY]eba_MC:x27,[:TRI]eba_TR:x6,");
- 
+                fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[*:LEC]eba_typ:LE:1234,[*:MCY]eba_MC:x27,[*:TRI]eba_TR:x6,");
+              
                 l.Add(fact);
             }
 
             var x = 0;
             Logger.WriteLine("take!!");
-            System.Threading.Thread.Sleep(20 * 1000);
+            //System.Threading.Thread.Sleep(20 * 1000);
 
             foreach (var fact in l)
             {
@@ -157,16 +210,7 @@ namespace UI
 
         void Browser_LoadCompleted(object sender, NavigationEventArgs e)
         {
-            if (TabControl_Left.SelectedIndex == 1) 
-            {
-            }
 
-            //mshtml.HTMLDocument doc;
-            //doc = (mshtml.HTMLDocument)Browser.Document;
-            //mshtml.HTMLDocumentEvents2_Event iEvent;
-            //iEvent = (mshtml.HTMLDocumentEvents2_Event)doc;
-            //iEvent.onclick += new mshtml.HTMLDocumentEvents2_onclickEventHandler(HtmlDocumentClickEventHandler);
-  
         }
 
         private bool HtmlDocumentClickEventHandler(mshtml.IHTMLEventObj pEvtObj)
@@ -326,20 +370,20 @@ namespace UI
 
         private void TB_FactFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Features.SearchFacts(TB_FactFilter.Text);
+            //Features.SearchFacts(TB_FactFilter.Text);
         }
 
         private void TB_CellFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Features.SearchCells(TB_CellFilter.Text);
+            //Features.SearchCells(TB_CellFilter.Text);
         }
 
         private void TB_GeneralFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (TB_GeneralFilter.Text.Length > 1) 
-            {
-                Features.Search(TB_GeneralFilter.Text);
-            }
+            //if (TB_GeneralFilter.Text.Length > 1) 
+            //{
+            //    Features.Search(TB_GeneralFilter.Text);
+            //}
         }
 
         private void B_Browser_Back_Click(object sender, RoutedEventArgs e)

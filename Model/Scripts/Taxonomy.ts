@@ -4,7 +4,7 @@
         public Taxonomy: Model.Taxonomy = new Model.Taxonomy();
         public ValidationRules: Model.ValidationRule[] = [];
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
-
+        public CurrentFacts: Model.KeyValuePair<string, string[]>[] = null;
         public LPageSize: number = 10;
         public PageSize: number = 20;
 
@@ -28,6 +28,8 @@
         private s_units_selector: string = "";
         private s_find_selector: string = "";
         private s_general_selector: string = "";
+
+        private FactServiceFunction: FunctionWithCallback = null;
 
         constructor() {
             this.s_fact_selector = "#" + this.s_fact_id;
@@ -85,10 +87,10 @@
                 BindX($("#TaxonomyInfo"), me.Taxonomy.Module)
             }, function (error) { console.log(error); });
 
-            AjaxRequest("Table/List", "get", "json", null, function (data) {
+            AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
                 me.TableStructure = data;
                 ForAll(me.TableStructure, "Children", function (item: Model.Hierarchy<Model.TableInfo>) {
-                    if (!IsNull(item.Item)) {
+                    if (!IsNull(item) && !IsNull(item.Item)) {
                         item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
                     }
@@ -111,11 +113,20 @@
                 me.Taxonomy.Labels = data;
             }, function (error) { console.log(error); });
         
-            AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
-                //Notify("factsize " + sizeof(data));
-                //me.Taxonomy.Facts = data;
-                clearobject(data);
-            }, function (error) { console.log(error); });
+            me.FactServiceFunction = new FunctionWithCallback(
+                (fwc:FunctionWithCallback, args:any) => {
+                    var p = <Model.Dictionary<any>>args[0];
+                    AjaxRequest("Taxonomy/Facts", "get", "json", p,
+                        function (data: DataResult) {
+                            me.CurrentFacts = <Model.KeyValuePair<string, string[]>[]>data.Items;
+                            fwc.Callback(data);
+                    }, null);
+                });
+            //AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
+            //    //Notify("factsize " + sizeof(data));
+            //    me.Taxonomy.Facts = data;
+            //    //clearobject(data);
+            //}, function (error) { console.log(error); });
         }
 
         public LoadValidationResults(onloaded: Function) {
@@ -164,7 +175,13 @@
                 me.ShowValidationResults();
             }
             if (contentid == me.s_fact_id) {
-                //LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Taxonomy.Facts, 0, me.PageSize);
+                var eventhandlers = {
+                    onloading: (data: any) => {
+                        //EnumerateObject(data, me,(item, itemname) => { item["PropertyName"] = itemname; });
+                    }
+
+                };
+                LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
 
             }
         }
@@ -221,7 +238,7 @@
             //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
             //}
             var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
-
+            me.CloseRuleDetail();
             LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize, eventhandlers);
 
         }
@@ -260,9 +277,9 @@
 
         public ShowFactDetails(factkey: string, factstring: string) {
             var me = this;
-        
-            if (factkey in me.Taxonomy.Facts) {
-                var cells: string[] = me.Taxonomy.Facts[factkey];
+            var factx = me.CurrentFacts.AsLinq<Model.KeyValuePair<string, string[]>>().FirstOrDefault(i=>i.Key==factkey);
+            if (!IsNull(factx)) {
+                var cells: string[] = factx.Value;
 
                 var fact = new Model.InstanceFact();
                 fact.FactString = factkey;
@@ -341,7 +358,12 @@
                 parameter.Value = strvalue;
             });
         }
+        public CloseRuleDetail() {
+            var me = this;
+            me.SelFromValidation(s_detail_selector).hide();
+            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
 
+        }
         public ShowRuleDetail(ruleid: string) {
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
@@ -418,16 +440,11 @@
             //return "";
         }
 
-        public CloseRuleDetail() {
-            var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
 
-        }
 
         public NavigateTo(cell: string) {
             var me = this;
-            AjaxRequest("Table/Get", "get", "text/html", { cell: cell }, function (data) {
+            AjaxRequest("Taxonomy/Table", "get", "text/html", { cell: cell }, function (data) {
                 $(s_tableframe_selector).attr("src", data);
             }, function (error) { console.log(error); });
         }

@@ -10,28 +10,29 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
+    public class PublicContractResolver : DefaultContractResolver
+    {
+
+        protected override List<MemberInfo> GetSerializableMembers(Type objectType)
+        {
+            var flags = BindingFlags.Instance | BindingFlags.Public;
+            var members = objectType.GetProperties(flags).Cast<MemberInfo>().ToList();
+            return members;
+        }
+
+        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+        {
+
+            IList<JsonProperty> props = base.CreateProperties(type, memberSerialization);
+            props = props.Where(p => p.Writable && p.PropertyName != "Parent").ToList();
+            return props;
+
+        }
+    }
     public class Converters
     {
         private static CultureInfo dci = new CultureInfo("en-US");
-        class PublicContractResolver : DefaultContractResolver
-        {
-
-            protected override List<MemberInfo> GetSerializableMembers(Type objectType)
-            {
-                var flags = BindingFlags.Instance | BindingFlags.Public;
-                var members = objectType.GetProperties(flags).Cast<MemberInfo>().ToList();
-                return members;
-            }
-
-            protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
-            {
-
-                IList<JsonProperty> props = base.CreateProperties(type, memberSerialization);
-                props = props.Where(p => p.Writable && p.PropertyName != "Parent").ToList();
-                return props;
-
-            }
-        }
+    
 
 
         public static String ToJson(object obj) 

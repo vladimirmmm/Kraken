@@ -60,7 +60,8 @@ namespace LogicalModel.Validation
         }
         public ValueWithTreshold IAF_sum(params ValidationParameter[] parameters)
         {
-            return IAF_sum(parameters.SelectMany(i => i.ValuesWithTresholds.ToArray()));
+            var items = parameters.SelectMany(i => i.ValuesWithTresholds).ToArray();
+            return IAF_sum(items);
         }
         public ValueWithTreshold IAF_max(params ValidationParameter[] parameters)
         {

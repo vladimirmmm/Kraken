@@ -58,6 +58,11 @@ namespace LogicalModel.Validation
                 result.DecimalValue = (decimal)item ;
                 result.Treshold = 0;
             }
+            if (item is ValidationParameter)
+            {
+                var p = (ValidationParameter)item;
+                result = p.ValueWithTreshold;
+            }
             if (item is ValueWithTreshold)
             {
                 return SplitValueThreshold(item as ValueWithTreshold);
@@ -72,6 +77,8 @@ namespace LogicalModel.Validation
         }
 
         
+        //public bool HasInvalidItem
+
         public ValueWithTreshold IAF_N_Add(Object a, Object b)
         {
             var v_a = SplitValueThreshold(a);
@@ -192,8 +199,10 @@ namespace LogicalModel.Validation
             var deltaB = v_b.Treshold;
             if (B == 0) 
             {
+                throw new DivideByZeroException();
                 return new ValueWithTreshold(decimal.MaxValue, 0);
             }
+            //if (B == 0) {  }
             var AdivB = A / B;
             var J0 = (A + deltaA) / (B + deltaB);
             var J1 = (A + deltaA) / (B - deltaB);

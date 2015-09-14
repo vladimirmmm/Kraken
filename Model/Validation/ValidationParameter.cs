@@ -9,6 +9,19 @@ using System.Threading.Tasks;
 
 namespace LogicalModel.Validation
 {
+    public static class Extensions 
+    {
+        public static bool In(this ValidationParameter obj, params String[] values)
+        {
+            var stringval = obj.StringValue;
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (String.Equals(stringval, values[i]))
+                    return true;
+            }
+            return false;
+        }
+    }
     public class ValidationParameter
     {
         public string Name { get; set; }
@@ -172,13 +185,21 @@ namespace LogicalModel.Validation
             foreach (var fg in FactGroups.Values) 
             {
                 fg.ClearObjects();
-                foreach (var fact in fg.Facts) 
+                foreach (var fact in fg.FullFacts) 
                 {
                     fact.ClearObjects();
                 }
             }
         }
-
+        public override bool Equals(object obj)
+        {
+            if (typeof(string) == (obj == null ? typeof(object) : obj.GetType())) 
+            {
+                return this.StringValue == String.Format("{0}", obj);
+            }
+            return base.Equals(obj);
+        }
+   
         public static bool operator ==(ValidationParameter lhs, decimal rhs)
         {
             return Equals(lhs.DecimalValue, rhs);

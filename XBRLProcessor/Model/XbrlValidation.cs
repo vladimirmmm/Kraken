@@ -104,10 +104,32 @@ namespace XBRLProcessor.Model
             sb.AppendLine(logicalrule.DisplayText);
             sb.AppendLine(this.ValueAssertion.Test);
 
-            var factgroups = GetGroups();
-            if (this.ID.Contains("0671"))
+            //
+            if (this.ID.Contains("3684"))
             {
             }
+            var factgroups = GetGroups();
+            if (factgroups.Count == 1 &&  factgroups.FirstOrDefault().Concept!=null && factgroups.FirstOrDefault().GetFactKey().IndexOf("[") < 0) 
+            {
+                var factkey = factgroups.FirstOrDefault().GetFactKey();
+                var factsofconcept = Taxonomy.Facts.Where(i => i.Key.StartsWith(factkey)).ToList();
+                if (factsofconcept.Count > 0) 
+                {
+                    factgroups.Clear();
+                }
+                foreach (var factkvp in factsofconcept)
+                {
+                    var factgroup = new LogicalModel.Base.FactGroup();
+                    factgroup.SetFromString(factkvp.Key);
+                    factgroups.Add(factgroup);
+
+                    var fb = new LogicalModel.Base.FactBase();
+                    fb.SetFromString(factkvp.Key);
+                    factgroup.Facts.Add(fb);
+                }
+
+            }
+       
             foreach (var fv in factvariables) 
             {
                 var factvariable = fv.Item as FactVariable;
@@ -129,7 +151,7 @@ namespace XBRLProcessor.Model
                     //SetFacts(parameterfactgroup);
                     parameterfactgroup.SetFacts(facts);
                     
-                    var xfirstfact = parameterfactgroup.Facts.FirstOrDefault();
+                    var xfirstfact = parameterfactgroup.FullFacts.FirstOrDefault();
                     if (xfirstfact != null) 
                     {
                         if (xfirstfact.Dimensions.Count == 0 && xfirstfact.Concept == null) 
@@ -141,7 +163,7 @@ namespace XBRLProcessor.Model
 
 
                 var type = LogicalModel.TypeEnum.Numeric;
-                var firstfact = parameter.FactGroups.Values.FirstOrDefault().Facts.FirstOrDefault();
+                var firstfact = parameter.FactGroups.Values.FirstOrDefault().FullFacts.FirstOrDefault();
                 if (firstfact != null && firstfact.Concept != null)
                 {
                     //if (firstfact.Concept.ID.StartsWith("ei"))

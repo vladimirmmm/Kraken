@@ -23,6 +23,15 @@ interface JQuery
 interface External {
     Notify(obj: any)
 }
+
+class Refrence<T> {
+    public Value: T;
+
+    constructor(reference: T)
+    {
+        this.Value=reference;
+    }
+}
 function CreateMsg(category: string): General.Message {
     var msg = new General.Message();
     msg.Category = category;
@@ -442,13 +451,78 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, 
                     CallFunction(events, "onpaging");
                     LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
                     CallFunction(events, "onpaged");
-
+                    return false;
                 },
             });
     } else
     {
         //console.log("")
     }
+
+}
+class FunctionWithCallback {
+    public Func: Function = null;
+    public Callback: Function = (data) => { console.log("No CallbackDefined")};
+
+    constructor(f: Function)
+    {
+        this.Func = f;
+    }
+
+    public Call(...args:any[]) {
+        if (IsFunction(this.Func)) {
+            this.Func(this, args);
+        }
+    }
+
+}
+interface DataResult
+{
+    Total: number;
+    Items: any[];
+    Item: any;
+}
+function LoadPageAsync($bindtarget: JQuery, $pager: JQuery, 
+    functionwithcallback:FunctionWithCallback,
+    page: number, pagesize: number, events?: Object)
+{
+    var me = this;
+    var startix = pagesize * page;
+    var endix = startix + pagesize;
+    functionwithcallback.Callback = (result: DataResult) => {
+
+        CallFunction(events, "onloading", result.Items);
+        BindX($bindtarget, result.Items);
+        CallFunction(events, "onloaded", result.Items);
+
+        if ($pager.length == 0 || 1 == 1) {
+            $pager.pagination(result.Total,
+                {
+                    items_per_page: pagesize,
+                    current_page: page ? page : 0,
+                    link_to: "",
+                    prev_text: "Prev",
+                    next_text: "Next",
+                    ellipse_text: "...",
+                    prev_show_always: true,
+                    next_show_always: true,
+                    callback: function (pageix) {
+                        CallFunction(events, "onpaging");
+                        LoadPageAsync($bindtarget, $pager, functionwithcallback,
+                            pageix, pagesize, events);
+                        CallFunction(events, "onpaged");
+                        return false;
+                    },
+                });
+        } else {
+            //console.log("")
+        }
+    };
+
+    functionwithcallback.Call({ page: page, pagesize: pagesize});
+  
+
+    
 
 }
 
@@ -498,6 +572,7 @@ function asyncFunc(func:Function) {
         func();
     }, 10);
 }
+
 function Communication_Listener(data: string) {
     //Notify("Communication_Listener_Start");
     var message: General.Message = <General.Message>JSON.parse(data);
@@ -538,7 +613,7 @@ function AjaxRequest(url: string, method: string, contenttype: string, parameter
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
 }
 
-function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
+function AjaxRequestComplexX(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
  
 
     var requestid = Guid();
@@ -556,6 +631,32 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
     Communication_ToApp(msg);
     return requesthandler;
 
+} 
+
+function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
+
+
+    var requestid = Guid();
+
+    var requesthandler = <RequestHandler>{ error: error, success: success, Id: requestid, succeded: false };
+    var kv = new General.KeyValue();
+    kv.Key = requestid;
+    kv.Value = requesthandler;
+    requests.push(kv);
+
+    //var notification = { url: url, parameters: parameters, requestid: requestid, contenttype: contenttype };
+    var msg = CreateAjaxMsg();
+    msg.Url = url;
+    msg.Parameters = parameters;
+    msg.Id = requestid;
+    msg.ContentType = contenttype;
+   
+    if ('Notify' in window.external) {
+        Communication_ToApp(msg);
+    } else {
+        Ajax("Instance/Index", "get",(<Dictionary>{ msg: msg }), AjaxResponse, contenttype);
+    }
+    return requesthandler;
 } 
 
 function AjaxResponse(message: General.Message)
