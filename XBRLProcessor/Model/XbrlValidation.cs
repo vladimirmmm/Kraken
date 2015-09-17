@@ -14,17 +14,21 @@ namespace XBRLProcessor.Model
     public partial class XbrlValidation
     {
         public XbrlTaxonomy Taxonomy = null;
-        public string ID 
-        {
-            get {
-                return ValueAssertion != null? ValueAssertion.ID:"";
-            }
-        }
+        //public string ID 
+        //{
+        //    get {
+        //        return ValueAssertion != null? ValueAssertion.ID:"";
+        //    }
+        //}
         public List<Arc> Arcs = new List<Arc>();
         public List<XbrlIdentifiable> Identifiables = new List<XbrlIdentifiable>();
 
 
-        public ValueAssertion ValueAssertion {get; set;}
+        public XbrlIdentifiable AssertionSet { get; set; }
+
+        private List<ValueAssertion> _ValueAssertions = new List<ValueAssertion>();
+        public List<ValueAssertion> ValueAssertions { get { return _ValueAssertions; } set { _ValueAssertions = value; } }
+
 
         private List<VariableArc> _VariableArcs = new List<VariableArc>();
         public List<VariableArc> VariableArcs { get { return _VariableArcs; } set { _VariableArcs = value; } }
@@ -38,6 +42,12 @@ namespace XBRLProcessor.Model
 
         private List<DimensionFilter> _DimensionFilters = new List<DimensionFilter>();
         public List<DimensionFilter> DimensionFilters { get { return _DimensionFilters; } set { _DimensionFilters = value; } }
+
+        private List<TupleFilter> _TupleFilters = new List<TupleFilter>();
+        public List<TupleFilter> TupleFilters { get { return _TupleFilters; } set { _TupleFilters = value; } }
+
+        private List<GeneralFilter> _GeneralFilters = new List<GeneralFilter>();
+        public List<GeneralFilter> GeneralFilters { get { return _GeneralFilters; } set { _GeneralFilters = value; } }
 
 
         private List<ConceptFilter> _ConceptFilters = new List<ConceptFilter>();
@@ -62,9 +72,14 @@ namespace XBRLProcessor.Model
             Arcs.AddRange(this.VariableArcs);
             Arcs.AddRange(this.VariableFilterArcs);
             Arcs.AddRange(this.VariableSetFilterArcs); //.Where(i=>i.Complement=false));
-
-            Identifiables.Add(this.ValueAssertion);
+            if (this.AssertionSet != null)
+            {
+                Identifiables.Add(this.AssertionSet);
+            }
+            Identifiables.AddRange(this.ValueAssertions);
             Identifiables.AddRange(this.DimensionFilters);
+            Identifiables.AddRange(this.TupleFilters);
+            Identifiables.AddRange(this.GeneralFilters);
             Identifiables.AddRange(this.ConceptFilters);
             Identifiables.AddRange(this.AspectFilters);
             Identifiables.AddRange(this.FactVariables);
@@ -90,25 +105,26 @@ namespace XBRLProcessor.Model
            
         }
 
-        public LogicalModel.Validation.ValidationRule GetLogicalRule() 
+        public LogicalModel.Validation.ValidationRule GetLogicalRule(Hierarchy<XbrlIdentifiable> hrule) 
         {
             var logicalrule = new LogicalModel.Validation.ValidationRule();
-            logicalrule.ID = this.ID;
-            logicalrule.LabelID = this.ValueAssertion.LabelID;
-            logicalrule.OriginalExpression = this.ValueAssertion.Test;
+            var valueassertion = hrule.Item as ValueAssertion;
+            logicalrule.ID = valueassertion.ID;
+            logicalrule.LabelID = valueassertion.LabelID;
+            logicalrule.OriginalExpression = valueassertion.Test;
             logicalrule.SetTaxonomy(this.Taxonomy);
 
-            var factvariables = ValidationRoot.Where(i => i.Item is FactVariable);
+            var factvariables = hrule.Where(i => i.Item is FactVariable);
  
             var sb = new StringBuilder();
             sb.AppendLine(logicalrule.DisplayText);
-            sb.AppendLine(this.ValueAssertion.Test);
+            sb.AppendLine(valueassertion.Test);
 
             //
-            if (this.ID.Contains("3684"))
+            if (valueassertion.ID.Contains("3684"))
             {
             }
-            var factgroups = GetGroups();
+            var factgroups = GetGroups(hrule);
             if (factgroups.Count == 1 &&  factgroups.FirstOrDefault().Concept!=null && factgroups.FirstOrDefault().GetFactKey().IndexOf("[") < 0) 
             {
                 var factkey = factgroups.FirstOrDefault().GetFactKey();
@@ -135,7 +151,7 @@ namespace XBRLProcessor.Model
                 var factvariable = fv.Item as FactVariable;
                 //var name = fv.Item.ID.Substring(fv.Item.ID.LastIndexOf(".") + 1);
                 var name = factvariable.Name;
-                var parameter = new LogicalModel.Validation.ValidationParameter(name);
+                var parameter = new LogicalModel.Validation.ValidationParameter(name, logicalrule.ID);
                 parameter.BindAsSequence = factvariable.BindAsSequence;
                 parameter.FallBackValue = factvariable.FallbackValue;
              
@@ -203,17 +219,17 @@ namespace XBRLProcessor.Model
                 
 
             }
-            if (this.ValueAssertion.Test.Contains("$ReportingLevel"))
+            if (valueassertion.Test.Contains("$ReportingLevel"))
             {
-                var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel");
+                var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel", logicalrule.ID);
                 p_rl1.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("_con") ? "con" : "ind";
                 p_rl1.Type = LogicalModel.TypeEnum.String;
                 p_rl1.IsGeneral = true;
                 logicalrule.Parameters.Add(p_rl1);
             }
-            if (this.ValueAssertion.Test.Contains("$AccountingStandard"))
+            if (valueassertion.Test.Contains("$AccountingStandard"))
             {
-                var p_rl2 = new LogicalModel.Validation.ValidationParameter("AccountingStandard");
+                var p_rl2 = new LogicalModel.Validation.ValidationParameter("AccountingStandard", logicalrule.ID);
                 p_rl2.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("GAAP") ? "GAAP" : "IFRS";
                 p_rl2.Type = LogicalModel.TypeEnum.String;
                 p_rl2.IsGeneral = true;
@@ -247,12 +263,14 @@ namespace XBRLProcessor.Model
             return items;
         }
 
-        public void Clear() 
+        public void ClearObjects() 
         {
             this.Arcs.Clear();
+            this.ValueAssertions.Clear();
             this.Identifiables.Clear();
             this.AspectFilters.Clear();
-   
+            this.GeneralFilters.Clear();
+            this.TupleFilters.Clear();
             this.VariableArcs.Clear();
             this.VariableFilterArcs.Clear();
             this.VariableSetFilterArcs.Clear();
@@ -260,6 +278,7 @@ namespace XBRLProcessor.Model
             this.DimensionFilters.Clear();
             this.Filters.Clear();
             this.FactVariables.Clear();
+            this.AssertionSet = null;
 
             this.ValidationRoot = null;
 

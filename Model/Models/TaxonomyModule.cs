@@ -52,7 +52,7 @@ namespace LogicalModel
         }
         public void LoadSettings() 
         {
-            var itemtypes = this.Taxonomy.Concepts.Select(i => i.ItemType).Distinct().ToList();
+            var itemtypes = this.Taxonomy.Concepts.Select(i => i.Value.ItemType).Distinct().ToList();
             foreach (var itemtype in itemtypes)
             {
                 var itsetting = new ItemTypeSetting();

@@ -486,7 +486,7 @@ namespace LogicalModel
                 {
                     var concept = hli.Item.Concept;
                    
-                    var ce = this.Taxonomy.Concepts.FirstOrDefault(i=>i.Name==concept.Name);
+                    var ce = this.Taxonomy.Concepts.Values.FirstOrDefault(i=>i.Name==concept.Name);
                     if (ce != null && concept.Namespace!=ce.Namespace)
                     {
                         concept.Namespace = ce.Namespace;
@@ -696,10 +696,10 @@ namespace LogicalModel
             if (regenerate || !System.IO.File.Exists(FullHtmlPath))
             {
                 var taxscriptincludes = "";
-                foreach (var taxfile in Taxonomy.TaxFiles)
-                {
-                    taxscriptincludes += String.Format("<script src=\"{0}\" type=\"text/javascript\" ></script>\r\n", taxfile);
-                }
+                //foreach (var taxfile in Taxonomy.TaxFiles)
+                //{
+                //    taxscriptincludes += String.Format("<script src=\"{0}\" type=\"text/javascript\" ></script>\r\n", taxfile);
+                //}
 
                 var folder = Utilities.Strings.GetFolder(FullHtmlPath);
                 var htmlbuilder = new StringBuilder();

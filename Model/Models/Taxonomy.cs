@@ -41,7 +41,7 @@ namespace LogicalModel
         public TaxonomyModule Module = new TaxonomyModule();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
-        public List<Concept> Concepts = new List<Concept>();
+        public Dictionary<string, Concept> Concepts = new Dictionary<string,Concept>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
 
         public List<Element> SchemaElements = new List<Element>();
@@ -200,8 +200,6 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Layout\\"; }
         }
-
-        public List<string> TaxFiles = new List<string>();
 
         public Taxonomy(string entrypath) 
         {
@@ -484,7 +482,7 @@ namespace LogicalModel
 
         public void TaxonomyToUI()
         {
-            TaxFiles.Clear();
+     
             //TaxFiles.Add(JsonFileToJsVarible(TaxonomyFactsPath, "", "tax_facts"));
             /*
              TaxFiles.Add(JsonFileToJsVarible(TaxonomyHierarchyPath, "", "tax_hierarchies"));
@@ -755,7 +753,7 @@ namespace LogicalModel
                     concept.Namespace = conceptelement.Namespace;
                     concept.ItemType = conceptelement.Type.IndexOf(":") > -1 ? conceptelement.Type.Substring(conceptelement.Type.IndexOf(":") + 1) : conceptelement.Type;
 
-                    this.Concepts.Add(concept);
+                    this.Concepts.Add(concept.Content, concept);
                 }
 
 
@@ -767,7 +765,7 @@ namespace LogicalModel
             {
 
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyConceptPath);
-                this.Concepts = Utilities.Converters.JsonTo<List<Concept>>(jsoncontent);
+                this.Concepts = Utilities.Converters.JsonTo<Dictionary<string,Concept>>(jsoncontent);
 
             }
             Logger.WriteLine("Load Concepts completed");
@@ -824,6 +822,15 @@ namespace LogicalModel
         {
 
         }
+
+        public virtual void ClearValidationObjects() 
+        {
+            foreach (var rule in this.ValidationRules)
+            {
+                rule.ClearObjects();
+            }
+        }
+
         public virtual Instance GetNewInstance()
         {
             return new Instance();

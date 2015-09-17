@@ -326,6 +326,10 @@ namespace LogicalModel.Base
             }
             foreach (var fact in _Facts)
             {
+                if (fact.Dimensions.Count == 0 && fact.Concept == null)
+                {
+                    fact.LoadObjects();
+                }
                 var newfact = new FactBase();
                 newfacts.Add(newfact);
                 newfact.Dimensions.AddRange(fact.Dimensions);

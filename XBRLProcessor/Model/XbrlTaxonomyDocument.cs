@@ -62,106 +62,45 @@ namespace XBRLProcessor.Models
         }
 
         private List<XmlNodeHandler> structurehandlers = new List<XmlNodeHandler>();
+        private Dictionary<string, bool> _RelativeReferencedFiles = new Dictionary<string, bool>();
+        public List<String> RelativeReferencedFiles = new List<String>();
 
         public XbrlTaxonomyDocument() 
         {
-
+            AddHandlers();
         }
 
         public XbrlTaxonomyDocument(string filename)
         {
             _FileName = filename;
+            AddHandlers();
         }
 
         public XbrlTaxonomyDocument(XbrlTaxonomy taxonomy, string filepath)
         {
             this.Taxonomy = taxonomy;
+            AddHandlers();
             LoadTaxonomyDocument(filepath, null);
         }
 
         public XbrlTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent)
         {
             this.Taxonomy = parent.Taxonomy;
+            AddHandlers();
             LoadTaxonomyDocument(filepath, parent);
          
         }
 
-        public bool LoadTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent) 
+        private void AddHandlers() 
         {
-            var result = true;
-            MarkupPath = filepath;
-            var sourcepath = filepath;
-            if (parent != null)
-            {
-                if (Utilities.Strings.IsRelativePath(MarkupPath))
-                {
-                    sourcepath = Utilities.Strings.ResolveRelativePath(parent.SourceFolder, MarkupPath);
-                }
-            }
-
-            var localpath = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, sourcepath);
-
-            SetLocalPath(localpath);
-            SetSourcePath(sourcepath);
-            try
-            {
-                Utilities.Strings.CopyToLocal(sourcepath, localpath, false);
-                LoadDocument();
-
-            }
-            catch (Exception ex) 
-            {
-                Logger.WriteLine(String.Format("Can't get source file {0}. Error: {1}", sourcepath, ex));
-                result = false;
-            }
-
             structurehandlers.Add(new XmlNodeHandler(Tags.Links, LoadLink));
-
             structurehandlers.Add(new XmlNodeHandler(Tags.Imports, LoadImport));
-            return result;
-        }
-
-        public override void LoadReferences()
-        {
-            if (XmlDocument != null)
-            {
-                var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
-                _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
-                this.Taxonomy.SetTargetNamespace(this);
-                foreach (var handler in structurehandlers)
-                {
-                    var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));
-                    foreach (var subtag in subtags)
-                    {
-                        handler.Handle(subtag, this);
-                    }
-
-                }
-            }
-        }
-
-        public bool LoadLink(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
-        {
-            var result = true;
-            var path = Xml.Attr(node, Attributes.XlinkHref);
-            LoadTaxonomyDocument(path);
-
-            return result;
-        }
-
-        public bool LoadImport(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
-        {
-            var result = true;
-            var path = Xml.Attr(node, Attributes.SchemaLocation);
-            LoadTaxonomyDocument(path);
-            return result;
-
         }
 
         public void LoadTaxonomyDocument(string path)
         {
             //remove hash
-            
+
             if (path.Contains("#"))
             {
                 path = path.Remove(path.IndexOf("#"));
@@ -205,6 +144,108 @@ namespace XBRLProcessor.Models
             }
         }
 
+
+        public bool LoadTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent) 
+        {
+            var result = true;
+            MarkupPath = filepath;
+            var sourcepath = filepath;
+            if (parent != null)
+            {
+                if (Utilities.Strings.IsRelativePath(MarkupPath))
+                {
+                    sourcepath = Utilities.Strings.ResolveRelativePath(parent.SourceFolder, MarkupPath);
+                }
+            }
+
+            var localpath = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, sourcepath);
+
+            SetLocalPath(localpath);
+            SetSourcePath(sourcepath);
+             //moved to FileManager.cs
+            try
+            {
+                Utilities.Strings.CopyToLocal(sourcepath, localpath, false);
+                LoadDocument();
+
+            }
+            catch (Exception ex) 
+            {
+                Logger.WriteLine(String.Format("Can't get source file {0}. Error: {1}", sourcepath, ex));
+                result = false;
+            }
+          
+
+            return result;
+        }
+
+        public override void LoadReferences()
+        {
+            if (XmlDocument != null)
+            {
+                var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
+                _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
+                this.Taxonomy.SetTargetNamespace(this);
+                foreach (var handler in structurehandlers)
+                {
+                    var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));
+                    foreach (var subtag in subtags)
+                    {
+                        handler.Handle(subtag, this);
+                    }
+
+                }
+                var fm = new LogicalModel.Helpers.FileManager();
+                var redownload = LogicalModel.Settings.Current.ReDownloadFiles;
+                //redownload = true;
+                RelativeReferencedFiles = _RelativeReferencedFiles.Select(i => i.Key).ToList();
+                _RelativeReferencedFiles.Clear();
+                //var localfiles = RelativeReferencedFiles.AsParallel().Select(i => fm.GetFile(this, i, redownload)).ToList();
+                var localfiles = Utilities.Threading.ExecuteParalell(RelativeReferencedFiles, i => fm.GetFile(this, i, redownload)).ToList();
+                localfiles = localfiles.Where(i => !String.IsNullOrEmpty(i)).ToList();
+                foreach (var file in localfiles)
+                {
+                    LogicalModel.Helpers.FileManager.AddDocument(file);
+                }
+                foreach (var file in RelativeReferencedFiles)
+                {
+                    LoadTaxonomyDocument(file);
+                }
+                RelativeReferencedFiles.Clear();
+            }
+        }
+        private void AddRelativeReferencedFiles(string path)
+        {
+            if (path.Contains("#"))
+            {
+                path = path.Remove(path.IndexOf("#"));
+            }
+            if (!_RelativeReferencedFiles.ContainsKey(path)) 
+            {
+                _RelativeReferencedFiles.Add(path, true);
+            }
+        }
+        //TODO
+        public bool LoadLink(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
+        {
+            var result = true;
+            var path = Xml.Attr(node, Attributes.XlinkHref);
+            AddRelativeReferencedFiles(path);
+
+            return result;
+        }
+
+        public bool LoadImport(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
+        {
+            var result = true;
+            var path = Xml.Attr(node, Attributes.SchemaLocation);
+            AddRelativeReferencedFiles(path);
+
+            return result;
+
+        }
+
+       
         public override void LoadDocument()
         {
             XmlDocument.LoadXml(System.IO.File.ReadAllText(LocalPath));
@@ -214,8 +255,12 @@ namespace XBRLProcessor.Models
         public override void ClearDocument()
         {
             base.ClearDocument();
+            Utilities.Xml.ClearDocument(this.XmlDocument);
             this._XmlDocument = null;
+
         }
+
+       
 
     }
 }

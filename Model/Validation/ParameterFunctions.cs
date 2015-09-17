@@ -141,6 +141,10 @@ namespace LogicalModel.Validation
         {
             return XS_String(a.StringValue);
         }
+        public bool XS_Boolean(ValidationParameter a)
+        {
+            return XS_Boolean(a.StringValue);
+        }
 
         public Boolean RegexpMatches(ValidationParameter a, string pattern)
         {

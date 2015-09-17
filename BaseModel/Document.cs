@@ -15,8 +15,10 @@ namespace BaseModel
      
         protected string _SourceFolder = "";
         public string SourceFolder { get { return _SourceFolder; } }
+        
 
-        public List<String> _ReferencedFiles = new List<String>();
+
+        private List<String> _ReferencedFiles = new List<String>();
         public List<String> ReferencedFiles
         {
             get { return _ReferencedFiles; }

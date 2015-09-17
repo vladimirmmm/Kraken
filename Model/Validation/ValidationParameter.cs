@@ -25,7 +25,7 @@ namespace LogicalModel.Validation
     public class ValidationParameter
     {
         public string Name { get; set; }
-  
+        public string RuleID = null;
         private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
         public Dictionary<string, FactGroup> FactGroups
         {
@@ -124,11 +124,16 @@ namespace LogicalModel.Validation
 
         public string[] StringValues = new string[] { };
         public decimal[] DecimalValues = new decimal[] { };
-     
+        
+        //public ValidationParameter()
+        //{
+         
+        //}
 
-        public ValidationParameter(string name)
+        public ValidationParameter(string name, string ruleID)
         {
             this.Name = name;
+            this.RuleID = ruleID;
         }
 
 
@@ -185,7 +190,7 @@ namespace LogicalModel.Validation
             foreach (var fg in FactGroups.Values) 
             {
                 fg.ClearObjects();
-                foreach (var fact in fg.FullFacts) 
+                foreach (var fact in fg.Facts) 
                 {
                     fact.ClearObjects();
                 }

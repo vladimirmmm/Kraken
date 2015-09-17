@@ -42,10 +42,7 @@ namespace XBRLProcessor.Models
             get { return (XbrlTaxonomyDocument)base.EntryDocument; }
             set { base.EntryDocument = value; }
         }
-        public List<XbrlTable> TaxonomyTables = new List<XbrlTable>();
-        public List<XbrlValidation> Validations = new List<XbrlValidation>();
-
-      
+    
 
         public XbrlTaxonomy(string entrypath)
             : base(entrypath)
@@ -469,15 +466,17 @@ namespace XBRLProcessor.Models
                             var parent = item.Parent.Item;
                             var parentLabelID = parent.LabelID.ToLower();
                             var parentLabelCode = parent.LabelCode.ToLower();
-                            if (item.Children.Count == 0 && !tablegroups.Any(i=>i.ID==item.Item.ID))
-                            {
-                                parent.TableIDs.Add(item.Item.ID);
-                            }
+                          
                             var find = filingindicators.FirstOrDefault(i => parentLabelID.Contains(i.ToLower()));
                             if (find == null)
                             {
                                 find = filingindicators.FirstOrDefault(i => parentLabelCode.Contains(i.ToLower()));
 
+                            }
+                            if (item.Children.Count == 0 && !tablegroups.Any(i => i.ID == item.Item.ID))
+                            {
+                                parent.TableIDs.Add(item.Item.ID);
+                                parent.FilingIndicator = find;
                             }
                             item.Item.FilingIndicator = find;
                         }
@@ -586,7 +585,10 @@ namespace XBRLProcessor.Models
 
             if (!System.IO.File.Exists(TaxonomyValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
-                var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
+                //var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
+                var validationdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("va:valueAssertion")).ToList();
+
+                //
                 var validations = new List<XbrlValidation>();
                 var sb = new StringBuilder();
                 var parser = new XbrlFormulaParser();
@@ -601,30 +603,49 @@ namespace XBRLProcessor.Models
                     var validation = new XbrlValidation();
                     validation.Taxonomy = this;
                     Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
-                    if (validation.ValueAssertion != null)
+                    validation.LoadValidationHierarchy();
+                    var assertions = new List<Hierarchy<XbrlIdentifiable>>();
+                    if (validation.ValidationRoot != null)
                     {
-                   
-                        validation.LoadValidationHierarchy();
-                      
-                        var logicalrule = validation.GetLogicalRule();
-                        if (logicalrule.FunctionName.Contains("desprvbbkvbasis6")) 
+                        if (validation.ValidationRoot.Item is ValueAssertion)
+                        {
+                            assertions.Add(validation.ValidationRoot);
+                        }
+                        else
+                        {
+                            assertions.AddRange(validation.ValidationRoot.Children);
+                        }
+                        foreach (var assertion in assertions)
                         {
 
+                            var valueassertion = assertion.Item as ValueAssertion;
+                            if (valueassertion != null)
+                            {
+                                var logicalrule = validation.GetLogicalRule(assertion);
+                                if (logicalrule.FunctionName.Contains("desprvbbkvbasis6"))
+                                {
+
+                                }
+                                validations.Add(validation);
+                                logicalrule.RootExpression = parser.ParseExpression(valueassertion.Test);
+                                var translated = csparser.GetFunction(logicalrule);
+                                //clear the rule
+                                logicalrule.RootExpression = null;
+
+                                logicalrule.FunctionString = translated;
+                                this.ValidationRules.Add(logicalrule);
+
+                                var tree = parser.GetTreeString(valueassertion.Test);
+                                sb.AppendLine(valueassertion.ID);
+                                sb.AppendLine(valueassertion.Test);
+                                sb.AppendLine(assertion.ToHierarchyString(i => i.ToString()));
+                                logicalrule.ClearObjects();
+
+                            }
+
                         }
-                        validations.Add(validation);
-                        logicalrule.RootExpression = parser.ParseExpression(validation.ValueAssertion.Test);
-                        var translated = csparser.GetFunction(logicalrule);
-                        //clear the rule
-                        logicalrule.RootExpression = null;
-
-                        logicalrule.FunctionString = translated;
-                        this.ValidationRules.Add(logicalrule);
-           
-                        var tree = parser.GetTreeString(validation.ValueAssertion.Test);
-                        sb.AppendLine(validation.ID);
-                        sb.AppendLine(validation.ValueAssertion.Test);
-                        sb.AppendLine(validation.ValidationRoot.ToHierarchyString(i => i.ToString()));
-
+                        validdoc.ClearDocument();
+                   
                     }
                 }
 
@@ -634,27 +655,24 @@ namespace XBRLProcessor.Models
                 {
                     Utilities.FS.WriteAllText(expressionfile, sb.ToString());
                 }
-                foreach (var v in ValidationRules) 
-                {
-                    v.ClearObjects();
-                    
-                }
-                Validations.Clear();
-                GC.Collect();
-
+                ClearValidationObjects();
+     
                 var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
                 Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
-
+                jsoncontent = null;
+             
             }
             else 
             {
                 var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
                 this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
-
-                var jsoncontent2 = System.IO.File.ReadAllText(this.TaxonomySimpleValidationPath);
-                this.SimpleValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.SimpleValidationRule>>(jsoncontent);
-                
-
+                jsoncontent = null;
+                if (System.IO.File.Exists(this.TaxonomySimpleValidationPath))
+                {
+                    var jsoncontent2 = System.IO.File.ReadAllText(this.TaxonomySimpleValidationPath);
+                    this.SimpleValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.SimpleValidationRule>>(jsoncontent2);
+                    jsoncontent2 = null;
+                }
                 foreach (var rule in this.ValidationRules) 
                 {
                     rule.SetTaxonomy(this);
@@ -670,68 +688,29 @@ namespace XBRLProcessor.Models
                 
            
             }
+
             if (!System.IO.File.Exists(TaxonomySimpleValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 var jsoncontent = Utilities.Converters.ToJson(this.SimpleValidationRules);
                 Utilities.FS.WriteAllText(this.TaxonomySimpleValidationPath, jsoncontent);
             }
-                foreach (var rule in this.ValidationRules) 
-                {
-                    rule.ClearObjects();
 
-                    //var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
-
-                }
-            GC.Collect();
-            //GenerateCSFile();
-            //CompileCSFile();
+            ClearValidationObjects();
+ 
             base.GenerateValidationFunctions();
             base.LoadValidationFunctions();
-            /*
-            var factgroups = new List<string>();
-            foreach (var v in ValidationRules)
-            {
-                foreach (var p in v.Parameters)
-                {
-                    var factgroupsofp = p.FactGroups.Select(i => i.Key);
-                    var sbx = new StringBuilder();
-                    foreach (var fact in factgroupsofp)
-                    {
-                        sbx.Append(fact + "\r\n");
-                    }
-                    factgroups.Add(sbx.ToString());
-                }
-                var tocompare = "";
-                var isdifferent = false;
-                foreach (var fs in factgroups)
-                {
-                    if (!String.IsNullOrEmpty(fs))
-                    {
-                        if (string.IsNullOrEmpty(tocompare))
-                        {
-                            tocompare = fs;
-                        }
-                        else
-                        {
-                            if (tocompare != fs)
-                            {
-                                isdifferent = true;
-                            }
-                        }
-                    }
-                }
-                if (isdifferent)
-                {
-
-                }
-                
-            }
-             * */
-            //fore
+            
             Logger.WriteLine("Loading Validations completed");
 
         }
-        
+
+        public override void ClearValidationObjects()
+        {
+            base.ClearValidationObjects();
+            GC.Collect();
+
+        }
+
         
         #region Handlers
 
@@ -878,7 +857,7 @@ namespace XBRLProcessor.Models
 
                 this.Module.TablePaths.Add(logicaltable.JsonFileName);
                 this.Tables.Add(logicaltable);
-                this.TaxonomyTables.Add(table);
+                //this.TaxonomyTables.Add(table);
             }
 
             return result;
@@ -960,15 +939,26 @@ namespace XBRLProcessor.Models
         }
 
         #endregion
+        internal void ClearXmlObjects()
+        {
+            Utilities.Xml.ClearNamespaceCache();
 
+            this.EntryDocument.ClearDocument();
+            foreach (var doc in this.TaxonomyDocuments)
+            {
+                doc.ClearDocument();
+            }
+        }
         internal void ClearObjects()
         {
+            ClearXmlObjects();
+
             this.Module.Clear();
             this.Facts.Clear();
             this.ValidationRules.Clear();
             this.Tables.Clear();
             this.TaxonomyDocumentDictionary.Clear();
-            this.TaxFiles.Clear();
+
             this.SchemaElements.Clear();
             this.SchemaElementDictionary.Clear();
             this.TaxonomyLabels.Clear();
@@ -984,16 +974,16 @@ namespace XBRLProcessor.Models
             GC.Collect();
         }
 
-        public override void ClearTablesAfterLoad()
-        {
-            foreach (var xbrltable in TaxonomyTables) 
-            {
-                xbrltable.Clear();
-            }
-            TaxonomyTables.Clear();
-            GC.Collect();
+        //public override void ClearTablesAfterLoad()
+        //{
+        //    foreach (var xbrltable in TaxonomyTables) 
+        //    {
+        //        xbrltable.Clear();
+        //    }
+        //    TaxonomyTables.Clear();
+        //    GC.Collect();
     
-        }
+        //}
 
         public override LogicalModel.Instance GetNewInstance()
         {

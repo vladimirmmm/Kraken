@@ -50,6 +50,8 @@
     <Compile Include="Model\DefinitionModel\Filter\ConceptFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\DimensionFilter.cs" />
     <Compile Include="Model\DefinitionModel\Filter\Filters.cs" />
+    <Compile Include="Model\DefinitionModel\Filter\GeneralFilter.cs" />
+    <Compile Include="Model\DefinitionModel\Filter\TupleFilter.cs" />
     <Compile Include="Model\DefinitionModel\Formula\DimensionAspect.cs" />
     <Compile Include="Model\DefinitionModel\Hier.cs" />
     <Compile Include="Model\DefinitionModel\ValidationClasses.cs" />

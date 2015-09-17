@@ -147,8 +147,11 @@ namespace LogicalModel
                 var find = this.FilingIndicators.FirstOrDefault(i => i == table.FilingIndicator);
                 if (find == null)
                 {
-                    MissingFilingindicators.Add(table.FilingIndicator);
-                    sb_missingfind.Append(table.FilingIndicator+", ");
+                    if (!MissingFilingindicators.Contains(table.FilingIndicator))
+                    {
+                        MissingFilingindicators.Add(table.FilingIndicator);
+                        sb_missingfind.Append(table.FilingIndicator + ", ");
+                    }
                 }
             }
             AddMessage(messages, String.Format("Taxonomy Module Reference: {0}\r\n", this.TaxonomyModuleReference));

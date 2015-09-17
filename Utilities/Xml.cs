@@ -28,6 +28,24 @@ namespace Utilities
 
         public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
         public static Dictionary<String, String> Namespaces = new Dictionary<String,String>();
+
+        public static void ClearNamespaceCache() 
+        {
+            Namespaces.Clear();
+            NamespaceDictionary.Clear();
+
+        }
+
+
+        public static void ClearDocument(XmlDocument document)
+        {
+            if (NamespaceDictionary.ContainsKey(document)) 
+            {
+                NamespaceDictionary.Remove(document);
+            }
+
+        }
+
         private static Object DictionaryLocker = new Object();
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
         {
@@ -213,6 +231,10 @@ namespace Utilities
                     return result;
                     //return node.OwnerDocument.SelectNodes("xffgh");
                 }
+            }
+            if (XPath.Contains("*")) 
+            {
+
             }
             var nodes = node.SelectNodes(XPath, manager); //.SelectNodes(XPath, manager);
             foreach (XmlNode xnode in nodes) 

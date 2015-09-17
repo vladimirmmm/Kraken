@@ -138,7 +138,6 @@ namespace XBRLProcessor
         {
             if (CurrentTaxonomy != null) 
             {
-                Utilities.Xml.NamespaceDictionary.Clear();
                 CurrentXbrlTaxonomy.ClearObjects();
                 CurrentTaxonomy = null;
             }
@@ -152,6 +151,12 @@ namespace XBRLProcessor
 
                 CurrentTaxonomy = new XbrlTaxonomy(filepath);
                 CurrentTaxonomy.TaxonomyToUI();
+                LogicalModel.Helpers.FileManager.Clear();
+
+                ////Test
+                //LogicalModel.Settings.Current.ReloadFullTaxonomy = true;
+                //LogicalModel.Settings.Current.ReDownloadFiles= true;
+                ////End test
                 CurrentTaxonomy.LoadAllReferences();
 
                 CheckMapping();
@@ -168,13 +173,9 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
                 CurrentTaxonomy.LoadValidationFunctions();
-                
-                CurrentTaxonomy.EntryDocument.ClearDocument();
-                foreach (var doc in CurrentTaxonomy.TaxonomyDocuments) 
-                {
-                    doc.ClearDocument();
-                }
-                Utilities.Xml.NamespaceDictionary.Clear();
+
+                CurrentXbrlTaxonomy.ClearXmlObjects();
+            
                 
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;

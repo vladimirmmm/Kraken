@@ -192,7 +192,10 @@ namespace LogicalModel.Validation
         {
             return a;
         }
-
+        public bool XS_Boolean(String a)
+        {
+            return bool.Parse(a);
+        }
         public Boolean RegexpMatches(string a, string pattern)
         {
             var regexp = new Regex(pattern);

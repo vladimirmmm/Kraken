@@ -18,7 +18,9 @@ namespace Utilities
             System.Net.HttpWebRequest loHttp = (HttpWebRequest)System.Net.HttpWebRequest.Create(lcUrl);
 
             // *** Set properties
-            loHttp.Timeout = 9000;
+            var timeout = 120; //seconds
+            loHttp.Timeout = timeout * 1000;
+            loHttp.ReadWriteTimeout = timeout * 1000;
 
             loHttp.UserAgent = "Code Sample Web Client";
             Logger.WriteLine(String.Format("Downlading {0}", path));

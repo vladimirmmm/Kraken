@@ -10,7 +10,7 @@ using XBRLProcessor.Model.Base;
 
 namespace XBRLProcessor.Model
 {
-    public class XbrlHierarchy<TClass> where TClass : IdentifiablewithLabel
+    public class XbrlHierarchy<TClass> where TClass : IdentifiablewithLabel,new()
     {
         public List<TClass> Items = new List<TClass>();
         public List<Arc> Arcs = new List<Arc>();

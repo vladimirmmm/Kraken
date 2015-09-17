@@ -347,7 +347,7 @@ namespace Model.InstanceModel
             foreach (var fact in Facts)
             {
                 var concept = fact.Concept;
-                var taxconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Content == concept.Content);
+                var taxconcept = Taxonomy.Concepts[concept.Content];
 
                 var itemtypesetting = Taxonomy.Module.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == taxconcept.ItemType);
                 var unitid = itemtypesetting.UnitID;

@@ -8,7 +8,7 @@ using Utilities;
 
 namespace BaseModel
 {
-    public class Hierarchy<TClass> where TClass:class
+    public class Hierarchy<TClass> where TClass:class,new()
     {
         
         private TClass _Item = null;
@@ -155,6 +155,10 @@ namespace BaseModel
                 foreach (var child in this.Children)
                 {
                     result = child.FirstOrDefault(func);
+                    if (result != null)
+                    {
+                        return result;
+                    }
                 }
             }
             return result;
@@ -263,6 +267,7 @@ namespace BaseModel
             if (roots.Count > 1)
             {
                 root = new Hierarchy<TClass>();
+                root.Item = new TClass();
                 root.Children.AddRange(roots);
                 foreach (var subroot in roots) 
                 {
@@ -380,7 +385,7 @@ namespace BaseModel
             return list;
         }
 
-        public Hierarchy<TargetClass> Cast<TargetClass>(Func<TClass,TargetClass> castexpression) where TargetClass:class
+        public Hierarchy<TargetClass> Cast<TargetClass>(Func<TClass,TargetClass> castexpression) where TargetClass:class,new()
         {
             var result = new Hierarchy<TargetClass>();
             result.Item = castexpression(this.Item);

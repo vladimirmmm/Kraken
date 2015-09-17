@@ -74,6 +74,7 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("iaf:max", (Functions i) => i.IAF_max(0));
             this.Syntax.AddFunction("xs:qname", (Functions i) => i.XS_QName(""));
             this.Syntax.AddFunction("xs:string", (Functions i) => i.XS_String(""));
+            this.Syntax.AddFunction("xs:boolean", (Functions i) => i.XS_Boolean(""));
             this.Syntax.AddFunction("matches", (Functions i) => i.RegexpMatches("",""));
             this.Syntax.AddFunction("not", (Functions i) => i.not(true));
             this.Syntax.AddFunction("empty", (Functions i) => i.empty(null));
@@ -133,7 +134,7 @@ namespace LogicalModel.Expressions
                     }
                     else 
                     {
-                        fname = String.Format("{0}-{1}", FunctionNotFound, expression.Name);
+                        fname = String.Format("<<{0}: {1}>>", FunctionNotFound, expression.Name);
 
                     }
                     sb.Append(String.Format("{0}({1})", fname, Translate(expression as ListExpression)));
@@ -166,7 +167,7 @@ namespace LogicalModel.Expressions
             }
             if (body.Contains(Parser.FunctionNotFound)) 
             {
-                Logger.WriteLine(String.Format("Rule {0} contains unimplemented function(s)!", rule.ID));
+                Logger.WriteLine(String.Format("Rule {0} contains unimplemented function(s) {1}!", rule.ID, body.TextBetween("<<" + Parser.FunctionNotFound, ">>")));
                 body = "true";
             }
             sb.AppendLine(tab + tab + tab + "return " + body + Syntax.StatementEnd);

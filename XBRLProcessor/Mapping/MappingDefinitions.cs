@@ -204,8 +204,27 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<df:member>", (ExplicitDimensionFilter i) => i.Members)
                  ),
 
-                  Mappings.Map<TypedDimensionFilter>("<df:typedDimension>"),
-
+                 Mappings.Map<TypedDimensionFilter>("<df:typedDimension>"),
+                  // general f
+                 Mappings.Map<GeneralFilter>("<gf:general>",
+                    Mappings.PropertyMap("test", (GeneralFilter i) => i.Test)
+                 ),
+                 //
+                 //tuplefilters
+                 Mappings.Map<ParentFilter>("<tf:parentFilter>",
+                    Mappings.PropertyMap("/@content", (ParentFilter i) => i.Parents)
+                 ),
+                 Mappings.Map<AncestorFilter>("<tf:ancestorFilter>",
+                    Mappings.PropertyMap("/@content", (AncestorFilter i) => i.Ancestors)
+                 ),
+                 Mappings.Map<SiblingFilter>("<tf:siblingFilter>",
+                    Mappings.PropertyMap("variable", (SiblingFilter i) => i.Variable)
+                 ),
+                    Mappings.Map<LocationFilter>("<tf:locationFilter>",
+                    Mappings.PropertyMap("variable", (LocationFilter i) => i.Variable),
+                    Mappings.PropertyMap("location", (LocationFilter i) => i.Location)
+                 ),
+                 //
                   Mappings.Map<FactVariable>("<variable:factVariable>"),
 
                   Mappings.Map<Variable>("<variable>",
@@ -285,15 +304,21 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<link:definitionLink>", (Hier i) => i.DefinitionLinks)
                  ),
                  //validation
+                  Mappings.Map<XbrlIdentifiable>("<val:assertionSet>",
+                    Mappings.PropertyMap("id", (XbrlIdentifiable i) => i.ID)
+                 ),
                  Mappings.Map<XbrlValidation>("<validation>",
+                    Mappings.PropertyMap("<val:assertionSet>", (XbrlValidation i) => i.AssertionSet),
                     Mappings.PropertyMap("<variable:variableArc>", (XbrlValidation i) => i.VariableArcs),
                     Mappings.PropertyMap("<variable:variableFilterArc>", (XbrlValidation i) => i.VariableFilterArcs),
                     Mappings.PropertyMap("<variable:variableSetFilterArc>", (XbrlValidation i) => i.VariableSetFilterArcs),
                     Mappings.PropertyMap("<df:explicitDimension>", (XbrlValidation i) => i.DimensionFilters),
+                    Mappings.PropertyMap("<tf:*>", (XbrlValidation i) => i.TupleFilters),
+                    Mappings.PropertyMap("<gf:general>", (XbrlValidation i) => i.GeneralFilters),
                     Mappings.PropertyMap("<df:typedDimension>", (XbrlValidation i) => i.DimensionFilters),
                     Mappings.PropertyMap("<cf:conceptName>", (XbrlValidation i) => i.ConceptFilters),
                     Mappings.PropertyMap("<acf:aspectCover>", (XbrlValidation i) => i.AspectFilters),
-                    Mappings.PropertyMap("<va:valueAssertion>", (XbrlValidation i) => i.ValueAssertion),
+                    Mappings.PropertyMap("<va:valueAssertion>", (XbrlValidation i) => i.ValueAssertions),
                     Mappings.PropertyMap("<bf:orFilter>", (XbrlValidation i) => i.Filters),
                     Mappings.PropertyMap("<bf:andFilter>", (XbrlValidation i) => i.Filters),
                     Mappings.PropertyMap("<variable:factVariable>", (XbrlValidation i) => i.FactVariables)

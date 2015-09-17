@@ -13,21 +13,21 @@ namespace XBRLProcessor.Model
 {
     public partial class XbrlValidation
     {
-        public List<LogicalModel.Base.FactGroup> GetGroups()
+        public List<LogicalModel.Base.FactGroup> GetGroups(Hierarchy<XbrlIdentifiable> hrule)
         {
-            if (this.ID.Contains("0218")) 
+            if (hrule.Item.ID.Contains("0218")) 
             {
 
             }
-            var rule_conceptfilters = this.ValidationRoot.Children.Where(i => i.Item is ConceptFilter).Select(s => s.Item as ConceptFilter).ToList();
-            var rule_dimensionfilters = this.ValidationRoot.Children.Where(i => i.Item is DimensionFilter).Select(s => s.Item as DimensionFilter).ToList();
-            
-            var rule_orfilters = this.ValidationRoot.Children.Where(i => i.Item is OrFilter).ToList();
-            var rule_andfilters = this.ValidationRoot.Children.Where(i => i.Item is AndFilter).ToList();
+            var rule_conceptfilters = hrule.Children.Where(i => i.Item is ConceptFilter).Select(s => s.Item as ConceptFilter).ToList();
+            var rule_dimensionfilters = hrule.Children.Where(i => i.Item is DimensionFilter).Select(s => s.Item as DimensionFilter).ToList();
+
+            var rule_orfilters = hrule.Children.Where(i => i.Item is OrFilter).ToList();
+            var rule_andfilters = hrule.Children.Where(i => i.Item is AndFilter).ToList();
             //TODO
             if (rule_orfilters.Count > 0)
             {
-                var rule_orfilteritems = this.ValidationRoot.Children.Where(i => i.Item is OrFilter).ToList();
+                var rule_orfilteritems = hrule.Children.Where(i => i.Item is OrFilter).ToList();
 
                 var mainorfilter = new Hierarchy<XbrlIdentifiable>();
                 mainorfilter.Children.AddRange(rule_orfilteritems);
@@ -102,9 +102,19 @@ namespace XBRLProcessor.Model
                 complex_rule_dimensions.Add(new List<LogicalModel.Dimension>());
             }
 
+            //getting the concept for the rule
             var factgroups = new List<LogicalModel.Base.FactGroup>();
+            var conceptsfound = new List<LogicalModel.Concept>();
+            foreach (var conceptrule in rule_concepts) 
+            {
+                if (this.Taxonomy.Concepts.ContainsKey(conceptrule.Content)){
+                    var existingconcept = this.Taxonomy.Concepts[conceptrule.Content];
+                    conceptsfound.Add(existingconcept);
+                }
+            }
+            LogicalModel.Concept concept = conceptsfound.SingleOrDefault();
+            //
 
-            var concept = rule_concepts.SingleOrDefault();
             foreach (var complex_fact_dimensions in complex_rule_dimensions)
             {
                 var factgroup = new LogicalModel.Base.FactGroup();
@@ -353,7 +363,7 @@ namespace XBRLProcessor.Model
                     if (Taxonomy.Facts.ContainsKey(factkey))
                     {
                         var cells = Taxonomy.Facts[factkey];
-                        if (this.ID.Contains("0602"))
+                        if (parameter.RuleID.Contains("0602"))
                         {
                             cellslist.Add(cells.Select(i => i + " {" + factkey + "} ").ToList());
                         }
@@ -365,7 +375,7 @@ namespace XBRLProcessor.Model
                         {
                             if (log)
                             {
-                                c_sb.AppendLine(this.ID + " fact found but no cells! " + factkey);
+                                c_sb.AppendLine(parameter.RuleID + " fact found but no cells! " + factkey);
                             }
                         }
                     }
@@ -400,10 +410,10 @@ namespace XBRLProcessor.Model
                             {
                                 if (log)
                                 {
-                                    c_sb.AppendLine(this.ID + " for parameter " + parameter.Name + " no cells were found! " + s_fact);
+                                    c_sb.AppendLine(parameter.RuleID + " for parameter " + parameter.Name + " no cells were found! " + s_fact);
                                 }
                             }
-                            if (this.ID.Contains("0602"))
+                            if (parameter.RuleID.Contains("0602"))
                             {
                                 cellslist.Add(cells.Select(i => i + " {" + factkey + "} ").ToList());
                             }
@@ -417,7 +427,7 @@ namespace XBRLProcessor.Model
                         {
                             if (log)
                             {
-                                c_sb.AppendLine(this.ID + " fact for parameter " + parameter.Name + " not found! " + factkey);
+                                c_sb.AppendLine(parameter.RuleID + " fact for parameter " + parameter.Name + " not found! " + factkey);
                             }
                         }
 
@@ -446,7 +456,7 @@ namespace XBRLProcessor.Model
             {
                 if (log)
                 {
-                    c_sb.AppendLine("None of the Fact Groups can be found for " + this.ID + " - " + parameter.Name);
+                    c_sb.AppendLine("None of the Fact Groups can be found for " + parameter.RuleID + " - " + parameter.Name);
                 }
             }
             if (c_sb.Length > 0)
