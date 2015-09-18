@@ -9,6 +9,24 @@ namespace Utilities
 {
     public class FS
     {
+        public static bool FileExists(string path) 
+        {
+            if (path.Contains("{0}")) 
+            {
+                var folder = Utilities.Strings.GetFolder(path);
+                if (System.IO.Directory.Exists(folder))
+                {
+                    var filename = Utilities.Strings.GetFileName(path);
+                    var pattern = filename.Replace("{0}", "*");
+                    return System.IO.Directory.GetFiles(folder, pattern).Any();
+                }
+                else 
+                {
+                    return false;
+                }
+            }
+            return System.IO.File.Exists(path);
+        }
         public static void EnsurePath(string path) 
         {
             var folder = Strings.GetFolder(path);

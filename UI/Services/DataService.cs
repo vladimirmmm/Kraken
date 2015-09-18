@@ -185,8 +185,8 @@ namespace UI.Services
                                     ht.Item.Name = Utilities.Strings.TrimTo(name, 40);
                                     ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
                                     ht.Item.Type = "table";
-
-                                    foreach (var ext in tbl.Extensions)
+                                    var extensions = tbl.Extensions.Where(i=>i.LabelCode!=Table.DefaultExtensionCode).ToList();
+                                    foreach (var ext in extensions)
                                     {
                                         var extinfo = new TableInfo();
                                         extinfo.ID = String.Format("{0}<{1}>", tbl.ID, ext.LabelCode);

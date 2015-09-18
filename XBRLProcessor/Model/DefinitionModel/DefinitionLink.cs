@@ -37,14 +37,15 @@ namespace Model.DefinitionModel
 
         public void LoadHierarchy()
         {
-            Arcs.AddRange(DefinitionArcs);
+            //Arcs.AddRange(DefinitionArcs);
+            DefinitionItems.Clear();
             foreach (var locator in Locators) 
             {
                 var hi = new Hierarchy<Locator>(locator);
                 DefinitionItems.Add(hi);
 
             }
-            DefinitionRoot = Hierarchy<Locator>.GetHierarchy(Arcs, DefinitionItems,
+            DefinitionRoot = Hierarchy<Locator>.GetHierarchy(DefinitionArcs, DefinitionItems,
                                (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
                                (i, a) => { 
                                    i.Order = a.Order;

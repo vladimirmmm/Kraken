@@ -164,13 +164,17 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "SchemaElements.json"; }
         }
-        public string TaxonomyValidationPath
+        //public string TaxonomyValidationPath
+        //{
+        //    get { return ModuleFolder + "Validations.json"; }
+        //}
+        public string TaxonomyValidationPathFormat
         {
-            get { return ModuleFolder + "Validations.json"; }
+            get { return ModuleFolder + "Validations\\Validations_{0}.json"; }
         }
         public string TaxonomySimpleValidationPath
         {
-            get { return ModuleFolder + "SimpleValidations.json"; }
+            get { return ModuleFolder + "Validations\\SimpleValidations.json"; }
         }
         public string TaxonomySettingsPath
         {
@@ -178,12 +182,12 @@ namespace LogicalModel
         }
         public string TaxonomyValidationCsPath
         {
-            get { return ModuleFolder + "Validations.cs"; }
+            get { return ModuleFolder + "Validations\\Validations.cs"; }
         }
 
         public string TaxonomyValidationDotNetLibPath
         {
-            get { return ModuleFolder + "Validations.dll"; }
+            get { return ModuleFolder + "Validations\\Validations.dll"; }
         }
 
         public string CurrentInstancePath
@@ -899,10 +903,12 @@ namespace LogicalModel
 
         public void Clear_Validations()
         {
-            Utilities.FS.DeleteFile(TaxonomySimpleValidationPath);
-            Utilities.FS.DeleteFile(TaxonomyValidationPath);
-            Utilities.FS.DeleteFile(TaxonomyValidationCsPath);
-            Utilities.FS.DeleteFile(TaxonomyValidationDotNetLibPath);
+            var validationFolder = Utilities.Strings.GetFolder(TaxonomySimpleValidationPath);
+            var valfiles = System.IO.Directory.GetFiles(validationFolder);
+            foreach (var valfile in valfiles) 
+            {
+                Utilities.FS.DeleteFile(valfile);
+            }
         }
         
         #endregion

@@ -38,6 +38,7 @@ namespace LogicalModel.Helpers
         {
             this.Taxonomy = Taxonomy;
         }
+
         public string GetFile(Document parentdocument, string filepath, bool downloadifexists = false) 
         {
             var sourcepath = filepath;
@@ -71,9 +72,45 @@ namespace LogicalModel.Helpers
             }
             return "";
         }
+        
         public void GetFiles(string[] files, bool downloadifexists = false)
         {
 
         }
+
+        public static void SaveToJson<T>(IEnumerable<T> items, string pathformat, int itemsperpart=100) 
+        {
+            int pageCount = (items.Count() + itemsperpart - 1) / itemsperpart;
+            for (int i = 0; i < pageCount; i++) 
+            {
+                var startix = i * itemsperpart;
+
+                var json = Utilities.Converters.ToJson(items.Skip(startix).Take(itemsperpart));
+                var filepath = String.Format(pathformat, i);
+                Utilities.FS.WriteAllText(filepath, json);
+      
+            }
+        }
+
+        public static void SetFromJson<T>(ICollection<T> target, string pathformat) 
+        {
+            var folder = Utilities.Strings.GetFolder(pathformat);
+            var filename = Utilities.Strings.GetFileName(pathformat);
+            var searchpattern = filename.Replace("{0}", "*");
+            var files = System.IO.Directory.GetFiles(folder, searchpattern);
+            target.Clear();
+            foreach (var file in files) 
+            {
+
+                var items = new List<T>();
+                var json = System.IO.File.ReadAllText(file);
+                items = Utilities.Converters.JsonTo<List<T>>(json);
+                foreach (var item in items) 
+                {
+                    target.Add(item);
+                }
+            }
+        }
+
     }
 }

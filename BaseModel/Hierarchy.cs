@@ -181,6 +181,7 @@ namespace BaseModel
             Hierarchy<TClass> root = Items.FirstOrDefault();
             foreach (var arc in Arcs)
             {
+                /*
                 var parents = Items.Where(i => FromExpression(i, arc));
                 var children = Items.Where(i => ToExpression(i, arc));
                 var childtemplate = children.FirstOrDefault();
@@ -204,15 +205,35 @@ namespace BaseModel
                     }
                     else
                     {
-                        if (child != null)
-                        {
-                            root = child;
-                        }
+                        //if (child != null)
+                        //{
+                        //    root = child;
+                        //}
                     }
                 }
+                */
+                var parents = Items.Where(i => FromExpression(i, arc));
+                var children = Items.Where(i => ToExpression(i, arc));
+                var child = children.FirstOrDefault();
+                var parent = parents.FirstOrDefault();
+                if (child == null || parent == null)
+                {
+
+                }
+                if (children.Count()>1 || parents.Count()>1)
+                {
+
+                }
+                else 
+                {
+                    child.Parent = parent;
+                    OrderExpression(child, arc);
+                    parent.Children.Add(child);
+                }
+ 
 
             }
-
+            root = Items.FirstOrDefault(i => i.Parent == null);
 
             return root;
         }

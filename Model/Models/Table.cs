@@ -39,6 +39,7 @@ namespace LogicalModel
         private int cellpadding = 15;
         private int titlecellminwidth = 300; 
         private string _HtmlPath = "";
+        public static string DefaultExtensionCode = "000";
         public string Name { get; set; }
         public string FilingIndicator { get; set; }
         public string HtmlPath 
@@ -387,13 +388,33 @@ namespace LogicalModel
             if (extensionnode != null)
             {
                 BuildLevels(Z_Axis, extensionnode);
-                var leafs = extensionnode.GetLeafs();
-                var extensions = new List<LayoutItem>();
-                if (leafs.Count == 1)
-                //if (extensionnode.Children.Count == 1)
+                var leafs = extensionnode.GetLeafs().Where(i => i.Parent != null).ToList();
+                var abstractleafs = leafs.Where(i => i.Parent.Item.IsAbstract).ToList();
+
+                var nonabstractleafs = leafs.Where(i => !i.Parent.Item.IsAbstract).ToList();
+
+                var tempfact = new FactBase();
+                foreach (var abstractleaf in abstractleafs) 
                 {
+                    MergeDimensions(tempfact.Dimensions, abstractleaf.Item.Dimensions);
+                    tempfact.Concept = tempfact.Concept == null ? abstractleaf.Item.Concept : tempfact.Concept;
+                }
+                //foreach (var nonabstractleaf in nonabstractleafs) 
+                //{
+                //    MergeDimensions(nonabstractleaf.Item.Dimensions, tempfact.Dimensions);
+                //    nonabstractleaf.Item.Concept = tempfact.Concept == null ? tempfact.Concept : nonabstractleaf.Item.Concept;
+             
+                //}
+
+                var extensions = new List<LayoutItem>();
+                //if (extensionnode.Children.Count == 1)
+                //if (leafs.Count == 1)
+                if (nonabstractleafs.Count==1)
+                {
+                    var nonabstractleaf = nonabstractleafs.FirstOrDefault();
                     //var extension = leafs.FirstOrDefault();
-                    var extension = extensionnode.Children.FirstOrDefault();
+                    //var extension = extensionnode.Children.FirstOrDefault();
+                    var extension = nonabstractleaf.Parent;
                     if (extension.Item.IsAspect)
                     {
                         var dimension = extension.Item.Dimensions.FirstOrDefault();
@@ -425,12 +446,30 @@ namespace LogicalModel
                                 }
                                 //var x = Taxonomy.Prefix
                                 //var domainfolder = dim.Domain.StartsWith(Taxonomy.Prefix) ? dim.Domain.Substring(Taxonomy.Prefix.Length) : dim.Domain;
-                                var domainfolder = dim.Domain.IndexOf("_") > -1 ? dim.Domain.Substring(dim.Domain.LastIndexOf("_")+1) : dim.Domain;
+                                var domainfolder = dim.Domain.IndexOf("_") > -1 ? dim.Domain.Substring(dim.Domain.LastIndexOf("_") + 1) : dim.Domain;
                                 var labelkey = Label.GetKey(domainfolder, dm.ID);
                                 li.Label = this.Taxonomy.FindLabel(labelkey);
-                           
+                                if (String.IsNullOrEmpty(li.LabelCode))
+                                {
+                                    li.LabelCode = li.LabelID;
+                                }
+                                MergeDimensions(li.Dimensions, tempfact.Dimensions);
+                                li.Concept = li.Concept == null ? tempfact.Concept : li.Concept;
+             
                                 extensions.Add(li);
                             }
+                        }
+                    }
+                    else 
+                    {
+                        var li = GetDefaultExtension();
+                        var firstleaf = leafs.FirstOrDefault();
+                        if (firstleaf != null)
+                        {
+                            var extli = firstleaf.Item;
+                            li.Dimensions.AddRange(extli.Dimensions);
+                            li.Concept = extli.Concept;
+                            extensions.Add(li);
                         }
                     }
                 }
@@ -440,6 +479,12 @@ namespace LogicalModel
                     foreach (var leaf in leafs)
                     {
                         var li = leaf.Item;
+                        if (String.IsNullOrEmpty(li.LabelCode)) 
+                        {
+
+                            li.LabelCode = li.LabelID;
+                        }
+
                         extensions.Add(li);
                     }
                 }
@@ -495,6 +540,18 @@ namespace LogicalModel
             }
         }
 
+        private LayoutItem GetDefaultExtension() 
+        {
+            var li = new LayoutItem();
+            li.ID = "";
+            var label = new Label();
+            label.Code = DefaultExtensionCode;
+            label.Lang = "en";
+            label.Content = "Default";
+            li.Label = label;
+            return li;
+        }
+
         public void LoadLayout()
         {
             Logger.WriteLine(String.Format("Layout for {0}", this.ID));
@@ -504,6 +561,9 @@ namespace LogicalModel
   
             rowsnode = GetAxisNode("y");
             columnsnode = GetAxisNode("x");
+            extensionnode = GetAxisNode("z");
+            //extensionnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "z", StringComparison.InvariantCultureIgnoreCase)); //TODO Axis should be used
+
             var aspects = rowsnode.Where(i => i.Item.IsAspect);
 
     
@@ -531,7 +591,6 @@ namespace LogicalModel
 
             }
 
-            extensionnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "z", StringComparison.InvariantCultureIgnoreCase)); //TODO Axis should be used
             if (this.ID.Contains("08")) 
             {
 
@@ -578,12 +637,7 @@ namespace LogicalModel
                 var exts = Extensions.ToList();
                 if (exts.Count == 0)
                 {
-                    var li = new LayoutItem();
-                    li.ID = "";
-                    var label = new Label();
-                    label.Code = "000";
-                    label.Lang = "en";
-                    li.Label = label;
+                    var li = GetDefaultExtension();
                     exts.Add(li);
                 }
                 var factmap = new Dictionary<string, Dictionary<string,string>>();
@@ -865,14 +919,20 @@ namespace LogicalModel
             while (currentrow != null)
             {
                 MergeDimensions(cell.Dimensions, currentrow.Item.Dimensions);
-
+                if (cell.Concept == null) 
+                {
+                    cell.Concept = currentrow.Item.Concept;
+                }
                 currentrow = currentrow.Parent;
             }
             var currentcol = cell.LayoutColumn.Parent;
             while (currentcol != null)
             {
                 MergeDimensions(cell.Dimensions, currentcol.Item.Dimensions);
-
+                if (cell.Concept == null)
+                {
+                    cell.Concept = currentcol.Item.Concept;
+                }
                 currentcol = currentcol.Parent;
             }
             cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMemeber).OrderBy(i=>i.DomainMemberFullName).ToList();

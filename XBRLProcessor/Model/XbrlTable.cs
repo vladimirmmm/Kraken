@@ -384,7 +384,8 @@ namespace XBRLProcessor.Model
                         logicaldomain.LabelID = domain.Item.LabelID;
                         logicalhypercubeitem.Domains.Add(logicaldomain);
                         
-                        foreach (var domainmember in domain.Children) 
+                        var domainmembers = domain.Children;//.Where(i=>!i.Item.Element.IsDefaultMember).ToList();
+                        foreach (var domainmember in domainmembers) 
                         {
 
                                 var logicalmember = new LogicalModel.Dimensions.DimensionMember();

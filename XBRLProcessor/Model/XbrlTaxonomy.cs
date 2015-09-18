@@ -583,7 +583,7 @@ namespace XBRLProcessor.Models
             Logger.WriteLine("Loading Validations started");
             //System.Threading.Thread.Sleep(20 * 1000);
 
-            if (!System.IO.File.Exists(TaxonomyValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
+            if (!Utilities.FS.FileExists(TaxonomyValidationPathFormat) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 //var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
                 var validationdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("va:valueAssertion")).ToList();
@@ -657,16 +657,18 @@ namespace XBRLProcessor.Models
                 }
                 ClearValidationObjects();
      
-                var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
-                Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
-                jsoncontent = null;
+                LogicalModel.Helpers.FileManager.SaveToJson(this.ValidationRules,this.TaxonomyValidationPathFormat);
+                //var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
+                //Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
+                //jsoncontent = null;
              
             }
             else 
             {
-                var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
-                this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
-                jsoncontent = null;
+                //var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
+                //this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
+                //jsoncontent = null;
+                LogicalModel.Helpers.FileManager.SetFromJson(this.ValidationRules, this.TaxonomyValidationPathFormat);
                 if (System.IO.File.Exists(this.TaxonomySimpleValidationPath))
                 {
                     var jsoncontent2 = System.IO.File.ReadAllText(this.TaxonomySimpleValidationPath);
@@ -833,7 +835,9 @@ namespace XBRLProcessor.Models
               
 
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
-
+                if (definitiondocument.LocalPath.Contains("02.01.04.01")) 
+                {
+                }
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
 
