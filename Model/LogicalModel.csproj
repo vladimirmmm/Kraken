@@ -62,6 +62,7 @@
     <Compile Include="Models\Instance\Instance.cs" />
     <Compile Include="Models\TableGroup.cs" />
     <Compile Include="Models\Table\Cell.cs" />
+    <Compile Include="Models\Table\TableHelpers.cs" />
     <Compile Include="Models\Taxonomy.cs" />
     <Compile Include="Models\TaxonomyDocument.cs" />
     <Compile Include="Models\Label.cs" />

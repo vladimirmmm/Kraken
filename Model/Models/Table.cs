@@ -104,8 +104,8 @@ namespace LogicalModel
 
         private List<Hierarchy<LayoutItem>> Rows = new List<Hierarchy<LayoutItem>>();
         private List<Hierarchy<LayoutItem>> Columns = new List<Hierarchy<LayoutItem>>();
-        private List<LayoutItem> _Extensions = new List<LayoutItem>();
-        public List<LayoutItem> Extensions 
+        private Hierarchy<LayoutItem> _Extensions = new Hierarchy<LayoutItem>();
+        public Hierarchy<LayoutItem> Extensions 
         {
             get { return _Extensions; }
             set { _Extensions = value; }
@@ -392,6 +392,8 @@ namespace LogicalModel
                 var abstractleafs = leafs.Where(i => i.Parent.Item.IsAbstract).ToList();
 
                 var nonabstractleafs = leafs.Where(i => !i.Parent.Item.IsAbstract).ToList();
+             
+
 
                 var tempfact = new FactBase();
                 foreach (var abstractleaf in abstractleafs) 
@@ -618,15 +620,15 @@ namespace LogicalModel
             {
 
             }
-            if (Extensions.Count == 0)
+            if (Extensions.Children.Count == 0)
             {
                 SetExtensions();
             }
             else 
             {
-                foreach (var Extension in Extensions)
+                foreach (var Extension in Extensions.All())
                 {
-                    Extension.Table = this;
+                    Extension.Item.Table = this;
                 }
             }
             var factdeflist = new List<String>();
