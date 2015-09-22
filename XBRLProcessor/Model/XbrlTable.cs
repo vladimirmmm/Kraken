@@ -13,6 +13,7 @@ using XBRLProcessor.Enums;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
 using XBRLProcessor.Model.DefinitionModel;
+using XBRLProcessor.Model.DefinitionModel.Filter;
 using XBRLProcessor.Model.DefinitionModel.Formula;
 using XBRLProcessor.Models;
 
@@ -103,6 +104,8 @@ namespace XBRLProcessor.Model
 
         public void LoadLayoutHierarchy(LogicalModel.Table logicaltable)
         {
+            Identifiables.Clear();
+            Arcs.Clear();
             Identifiables.AddRange(Tables);
             Identifiables.AddRange(BreakDowns);
             Identifiables.AddRange(RuleNodes);
@@ -122,6 +125,15 @@ namespace XBRLProcessor.Model
                 li.LabelID = identifiable.LabelID;
                 li.LoadLabel(Taxonomy);
 
+                var df = identifiable as ExplicitDimensionFilter;
+                if (df != null) 
+                {
+                    var member = df.Members.FirstOrDefault();
+                    if (member != null) 
+                    {
+                        li.Role = member.LinkRole;
+                    }
+                }
 
                 var rule = identifiable as RuleNode;
                 if (rule != null)
@@ -177,11 +189,13 @@ namespace XBRLProcessor.Model
                         var dimitem = hc.DimensionItems.FirstOrDefault(i=>i.FullName==logicaldimension.DimensionItem);
                         if (dimitem!=null && dimitem.Domains.Count>0)
                         {
-                            logicaldimension.Domain = dimitem.Domains.FirstOrDefault().FullName;
+                            //logicaldimension.Domain = dimitem.Domains.FirstOrDefault().FullName;
+                            var domain = dimitem.Domains.FirstOrDefault();
+                            logicaldimension.Domain = LogicalModel.Taxonomy.IsTyped(domain.FullName) ? domain.FullName : domain.ID;
 
                         }
                     }
-
+                    logicaldimension.SetTyped();
                     li.Dimensions.Add(logicaldimension);
 
 

@@ -17,8 +17,12 @@ namespace LogicalModel
         public int Order = 0;
         public bool IsDynamic = false;
         public bool IsVisible = true;
+
         private string _Axis = "";
         public string Axis { get { return _Axis; } set { _Axis = value; } }
+
+        private string _Role = "";
+        public string Role { get { return _Role; } set { _Role = value; } }
 
         private string _ID = "";
         public string ID { get { return _ID; } set { _ID = value; } }
@@ -132,6 +136,7 @@ namespace LogicalModel
             this.Dimensions = item.Dimensions;
             this.Label = item.Label;
             this.Order = item.Order;
+            this.Role = item.Role;
         }
 
 

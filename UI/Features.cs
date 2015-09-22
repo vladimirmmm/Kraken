@@ -264,7 +264,7 @@ namespace UI
             var table = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.ID.ToLower() == report);
             if (table != null) 
             {
-                table.CurrentExtension = table.Extensions.FirstOrDefault(i => i.LabelCode == extension);
+                // table.CurrentExtension = table.Extensions.FirstOrDefault(i => i.LabelCode == extension);
                 table.EnsureHtmlLayout();
                 var url = String.Format("{0}#ext={1};cell=R{2}_C{3};", table.FullHtmlPath, extension, row, column);
                 

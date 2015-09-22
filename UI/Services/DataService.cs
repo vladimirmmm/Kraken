@@ -185,6 +185,8 @@ namespace UI.Services
                                     ht.Item.Name = Utilities.Strings.TrimTo(name, 40);
                                     ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
                                     ht.Item.Type = "table";
+                                    //TODO EXT
+                                    /*
                                     var extensions = tbl.Extensions.Where(i=>i.LabelCode!=Table.DefaultExtensionCode).ToList();
                                     foreach (var ext in extensions)
                                     {
@@ -196,15 +198,9 @@ namespace UI.Services
                                         hext.Item.Type = "extension";
                                         ht.Children.Add(hext);
                                     }
+                                    */
                                 }
-                                //if (tables.Count() == 1)
-                                //{
-                                //    h.Children.Add(htg.Children.FirstOrDefault());
-                                //}
-                                //else
-                                //{
-                                //    h.Children.Add(htg);
-                                //}
+
 
 
                             }
@@ -228,7 +224,10 @@ namespace UI.Services
             var url = "";
             if (table != null)
             {
-                table.CurrentExtension = table.Extensions.FirstOrDefault(i => i.LabelCode == extension);
+                var hext = table.Extensions.FirstOrDefault(i => i.Item.LabelCode == extension);
+                if (hext!=null){
+                   // table.CurrentExtension = hext.Item;
+                }
                 table.EnsureHtmlLayout();
                 url = String.Format("{0}#ext={1};cell=R{2}_C{3};", table.FullHtmlPath, extension, row, column);
 

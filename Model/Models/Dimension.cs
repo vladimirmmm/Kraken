@@ -89,11 +89,9 @@ namespace LogicalModel
         public string ToStringForKey() {
             return ToStringForKey("");
         }
-
-        public string ToStringForKey(string lastnamespace) 
+        public void SetTyped() 
         {
-            var item = "";
-            if (this.Domain.IndexOf(":")>-1) 
+            if (this.Domain.IndexOf(":") > -1)
             {
                 this.IsTyped = Taxonomy.IsTyped(this.Domain);
             }
@@ -101,6 +99,11 @@ namespace LogicalModel
             {
                 this.IsTyped = true;
             }
+        }
+        public string ToStringForKey(string lastnamespace) 
+        {
+            var item = "";
+            SetTyped();
             //var dimensionitem = lastnamespace == "" ? this.DimensionItem : this.DimensionItem.Replace(lastnamespace, "*");
             var dimensionitem = this.DimensionItem;
 

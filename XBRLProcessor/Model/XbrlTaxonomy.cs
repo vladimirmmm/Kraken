@@ -835,7 +835,7 @@ namespace XBRLProcessor.Models
               
 
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
-                if (definitiondocument.LocalPath.Contains("25.01.08.01")) 
+                if (definitiondocument.LocalPath.Contains("33.01.01.01")) 
                 {
                 }
                 table.LoadDefinitionHierarchy(logicaltable);

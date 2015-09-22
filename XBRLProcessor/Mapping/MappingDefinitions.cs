@@ -108,7 +108,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                 ),
 
-                  Mappings.Map<DimensionAspect>("<table:dimensionAspect>", 
+                Mappings.Map<DimensionAspect>("<table:dimensionAspect>", 
                     Mappings.PropertyMap("includeUnreportedValue", (DimensionAspect i) => i.IncludeUnreportedValue)
                 ),
 

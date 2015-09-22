@@ -59,9 +59,12 @@ namespace LogicalModel
 
         public static Hierarchy<LayoutItem> CombineExtensionNodes(List<Hierarchy<LayoutItem>> nodes,Table table) 
         {
+            var sets = new List<List<LayoutItem>>();
+
             var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();
             var typednode = typednodes.FirstOrDefault();
             var normalnodes = nodes.Except(typednodes);
+
             //set the aspectnodes if any
             foreach (var normalnode in normalnodes) 
             {
@@ -77,15 +80,15 @@ namespace LogicalModel
                         parentnode.Children.Add(hli);
                     }
                 }
+                sets.Add(parentnode.Children.Select(i => i.Item).ToList());
+
             }
 
             normalnodes = normalnodes.OrderBy(i => i.Children.Count).ToList();
-            var sets = new List<List<LayoutItem>>();
             if (typednodes.Count > 0)
             {
                 foreach (var normalnode in normalnodes)
                 {
-                    sets.Add(normalnode.Children.Select(i => i.Item).ToList());
                     Dimension.MergeDimensions(normalnode.Item.Dimensions, typednode.Item.Dimensions);
                     if (normalnode.Item.Concept == null)
                     {
@@ -94,17 +97,43 @@ namespace LogicalModel
                 }
             }
             var combinations = Utilities.MathX.CartesianProduct(sets);
-            var extensionnode = new Hierarchy<LayoutItem>(new LayoutItem());
+            var extensionlist = new List<LayoutItem>();
             foreach (var combination in combinations) 
             {
-                AddCombinationTo(combination, extensionnode);
+               // AddCombinationTo(combination, extensionnode);
+                AddCombinationTo(combination, extensionlist);
             }
+            var placholder = new LayoutItem();
+            placholder.LabelCode = "";
+            placholder.LabelContent = "Default";
+            placholder.IsPlaceholder = true;
+            var extensionnode = new Hierarchy<LayoutItem>(placholder);
+            extensionnode.Children.AddRange(extensionlist.Select(i=>new Hierarchy<LayoutItem>(i)));
             if (typednodes.Count > 1) 
             {
                 throw new NotImplementedException("Multiple TypedDimension nodes on z axis");
             }
+
             return extensionnode;
         }
+
+        private static void AddCombinationTo(IEnumerable<LayoutItem> combination, List<LayoutItem> target) 
+        {
+            var li = new LayoutItem();
+            foreach (var item in combination) 
+            {
+                Dimension.MergeDimensions(li.Dimensions, item.Dimensions);
+                //if (li.Concept == null) { li.Concept = item.Concept; }
+            }
+            foreach (var dim in li.Dimensions) 
+            {
+                li.LabelCode = li.LabelCode + "|" + dim.DomainMember;
+            }
+            li.LabelContent = li.LabelCode;
+            target.Add(li);
+
+        }
+
         private static void AddCombinationTo(IEnumerable<LayoutItem> combination, Hierarchy<LayoutItem> target)
         {
             var count = combination.Count();
