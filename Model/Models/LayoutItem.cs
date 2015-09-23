@@ -2,21 +2,37 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel
 {
+    public enum LayoutItemCategory
+    {
+        Unknown = 0,
+        Aspect = 1,
+        Rule = 2,
+        BreakDown = 3,
+        Dynamic = 4,
+        Filter = 5,
+    }
     public class LayoutItem 
     {
         public string RowSpan = "";
         public string ColSpan = "";
         private Table _Table = null;
         public int Order = 0;
-        public bool IsDynamic = false;
-        public bool IsVisible = true;
+        //private bool _IsVisible = true;
+        //[DefaultValue(true)]
+        //public bool IsVisible { get { return _IsVisible; }
+        //    set { 
+        //        _IsVisible = value; 
+        //    } 
+        //}
 
         private string _Axis = "";
         public string Axis { get { return _Axis; } set { _Axis = value; } }
@@ -37,8 +53,8 @@ namespace LogicalModel
         //private bool _IsAbstract = false;
         //public bool IsAbstract { get { return _IsAbstract; } set { _IsAbstract = value; } }
 
-        private bool _IsAspect = false;
-        public bool IsAspect { get { return _IsAspect; } set { _IsAspect = value; } }
+        private LayoutItemCategory _Category = LayoutItemCategory.Unknown;
+        public LayoutItemCategory Category { get { return _Category; } set { _Category = value; } }
 
         public Label Label = null;
 
@@ -130,7 +146,7 @@ namespace LogicalModel
         {
             this.ID = item.ID;
             this.IsAbstract = item.IsAbstract;
-            this.IsAspect = item.IsAspect;
+            this.Category = item.Category;
             this.Axis = item.Axis;
             this.Concept = item.Concept;
             this.Dimensions = item.Dimensions;
@@ -148,6 +164,38 @@ namespace LogicalModel
             this.Label = Taxonomy.FindLabel(key);
             //this.Label = Taxonomy.TaxonomyLabels.FirstOrDefault(i => i.LocalID == this.LabelID);
 
+        }
+
+        public bool IsAspect
+        {
+            get
+            {
+                return Category == LayoutItemCategory.Aspect;
+            }
+        }
+
+        public bool IsVisible
+        {
+            get
+            {
+                return Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect);
+            }
+        }
+        public bool IsStructural
+        {
+            get
+            {
+                return Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, 
+                    LayoutItemCategory.BreakDown, LayoutItemCategory.Dynamic);
+            }
+        }
+
+        public bool IsDynamic
+        {
+            get
+            {
+                return Category == LayoutItemCategory.Dynamic;
+            }
         }
     }
 }

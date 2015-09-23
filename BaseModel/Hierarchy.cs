@@ -86,16 +86,16 @@ namespace BaseModel
             return count;
         }
 
-        public int GetLeafCount(Hierarchy<TClass> item, int level = 0)
+        public int GetLeafCount(Func<Hierarchy<TClass>, bool> filter, int level = 0)
         {
-            item = item == null ? this : item;
             var leafcount = 0;
-            foreach (var child in item.Children)
+            foreach (var child in this.Children)
             {
-                leafcount += GetLeafCount(child, level + 1);
+                leafcount += child.GetLeafCount(filter, level + 1);
 
             }
-            if (item.Children.Count == 0)
+           // if (this.Children.Count == 0)
+            if (!this.Children.Any(filter))
             {
                 return 1;
             }
@@ -181,37 +181,7 @@ namespace BaseModel
             Hierarchy<TClass> root = Items.FirstOrDefault();
             foreach (var arc in Arcs)
             {
-                /*
-                var parents = Items.Where(i => FromExpression(i, arc));
-                var children = Items.Where(i => ToExpression(i, arc));
-                var childtemplate = children.FirstOrDefault();
-
-                var nullchild = children.FirstOrDefault(i => i.Parent == null);
-                var child = childtemplate.Parent == null ? childtemplate :
-                    nullchild != null ? nullchild :
-                    new Hierarchy<TClass>(childtemplate);
-                if (parents.ToList().Count > 1 || children.ToList().Count > 1)
-                {
-             
-                }
-                foreach (var parent in parents)
-                {
-                    if (parent != null && child != null)
-                    {
-                        child.Parent = parent;
-                        OrderExpression(child, arc);
-                        parent.Children.Add(child);
-
-                    }
-                    else
-                    {
-                        //if (child != null)
-                        //{
-                        //    root = child;
-                        //}
-                    }
-                }
-                */
+               
                 var parents = Items.Where(i => FromExpression(i, arc));
                 var children = Items.Where(i => ToExpression(i, arc));
                 var child = children.FirstOrDefault();
@@ -255,13 +225,7 @@ namespace BaseModel
                 var parents = hierarchylist.Where(i => FromExpression(i, arc)).ToList();
                 var children = hierarchylist.Where(i => ToExpression(i, arc)).ToList();
                 var child = children.FirstOrDefault();
-                /*
-                var childtemplate = children.FirstOrDefault();
-                var nullchild = hierarchylist.FirstOrDefault(i => i.Parent == null);
-                var child = childtemplate.Parent == null ? childtemplate :
-                    nullchild != null ? nullchild :
-                    new Hierarchy<TClass>(childtemplate);
-                */
+            
                 if (parents.ToList().Count > 1 || children.ToList().Count > 1)
                 {
        
@@ -276,12 +240,6 @@ namespace BaseModel
 
                     }
                 }
-                //if (parents.Count == 0) 
-                //{
-                //    root = child;
-
-                //}
-                //root = hierarchylist.FirstOrDefault(i => i.Parent == null);
                
             }
             var roots = hierarchylist.Where(i => i.Parent == null).ToList();
@@ -309,13 +267,13 @@ namespace BaseModel
             return root;
         }
 
-        public int GetSubLevelCount(int level = 0)
+        public int GetSubLevelCount(Func<Hierarchy<TClass>, bool> filter, int level = 0)
         {
             var item = this;
             int max = level;
-            foreach (var child in item.Children)
+            foreach (var child in item.Children.Where(i=>filter(i)))
             {
-                var clevel = child.GetSubLevelCount( level + 1);
+                var clevel = child.GetSubLevelCount(filter, level + 1);
                 if (clevel > max)
                 {
                     max = clevel;
@@ -393,13 +351,13 @@ namespace BaseModel
             return sb.ToString();
         }
 
-        public List<Hierarchy<TClass>> ToHierarchy(bool childfirst=false)
+        public List<Hierarchy<TClass>> ToHierarchyList(bool childfirst=false)
         {
             var list = new List<Hierarchy<TClass>>();
             if (!childfirst) { list.Add(this); }
             foreach (var child in this.Children)
             {
-                list.AddRange(child.ToHierarchy(childfirst));
+                list.AddRange(child.ToHierarchyList(childfirst));
             }
             if (childfirst) { list.Add(this); }
 

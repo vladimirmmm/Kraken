@@ -787,26 +787,6 @@ namespace LogicalModel
         {
 
         }
-        //public virtual void LoadTableGroups()
-        //{
-        //    Logger.WriteLine("Load TableGroups");
-
-        //    if (!System.IO.File.Exists(TaxonomyTableGroupPath) || Settings.Current.ReloadFullTaxonomyButStructure)
-        //    {
-        //        PopulateTableGroups();
-        //        var jsoncontent = Utilities.Converters.ToJson(this.Module.TableGroups);
-        //        Utilities.FS.WriteAllText(TaxonomyTableGroupPath, jsoncontent);
-        //    }
-        //    else
-        //    {
-
-        //        var jsoncontent = System.IO.File.ReadAllText(TaxonomyTableGroupPath);
-        //        this.Module.TableGroups = Utilities.Converters.JsonTo<List<TableGroup>>(jsoncontent);
-
-        //    }
-        //    Logger.WriteLine("Load TableGroups completed");
-        //}
-
 
         public virtual void LoadInstance(string filepath)
         {
@@ -884,6 +864,8 @@ namespace LogicalModel
         public void Clear_Tables()
         {
             Utilities.FS.DeleteFile(TaxonomyModulePath);
+            Clear_Layout();
+            Clear_Facts();
         }
 
         public void Clear_Layout()

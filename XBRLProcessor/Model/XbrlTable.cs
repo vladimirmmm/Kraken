@@ -125,19 +125,27 @@ namespace XBRLProcessor.Model
                 li.LabelID = identifiable.LabelID;
                 li.LoadLabel(Taxonomy);
 
-                var df = identifiable as ExplicitDimensionFilter;
+                var df = identifiable as DimensionFilter;
                 if (df != null) 
                 {
-                    var member = df.Members.FirstOrDefault();
-                    if (member != null) 
+                    li.Category = LogicalModel.LayoutItemCategory.Filter;
+
+                    var dfexp = df as ExplicitDimensionFilter;
+                    if (dfexp != null)
                     {
-                        li.Role = member.LinkRole;
+                        var member = dfexp.Members.FirstOrDefault();
+                        if (member != null)
+                        {
+                            li.Role = member.LinkRole;
+                        }
                     }
                 }
 
                 var rule = identifiable as RuleNode;
                 if (rule != null)
                 {
+                    li.Category = LogicalModel.LayoutItemCategory.Rule;
+
                     if (rule.Concept != null)
                     {
                         li.Concept = Mappings.ToLogical(rule.Concept); //rule.Concept.QName.Content;
@@ -180,7 +188,7 @@ namespace XBRLProcessor.Model
                 if (aspect != null)
                 {
 
-                    li.IsAspect = true;
+                    li.Category = LogicalModel.LayoutItemCategory.Aspect;
                     var logicaldimension = new LogicalModel.Dimension();
                     logicaldimension.DimensionItem = aspect.DimensionAspect.Content;
                     var hc = logicaltable.HyperCubes.FirstOrDefault(i => i.DimensionItems.Any(j => j.FullName == logicaldimension.DimensionItem));
@@ -200,6 +208,13 @@ namespace XBRLProcessor.Model
 
 
                 }
+                var breakdown = identifiable as BreakDown;
+
+                if (breakdown != null)
+                {
+                    li.Category = LogicalModel.LayoutItemCategory.BreakDown;
+                }
+
                 logicaltable.LayoutItems.Add(hi);
 
             }

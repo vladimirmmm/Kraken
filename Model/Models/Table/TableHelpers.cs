@@ -12,7 +12,7 @@ namespace LogicalModel
         public static List<LayoutItem> GetAspectItems(Hierarchy<LayoutItem> hli, Table table)
         {
             var results = new List<LayoutItem>();
-            if (hli.Item.IsAspect)
+            if (hli.Item.Category==LayoutItemCategory.Aspect)
             {
                 var dimension = hli.Item.Dimensions.FirstOrDefault();
                 var hypercubes = table.HyperCubes.Where(i => i.DimensionItems.Any(j => j.FullName == dimension.DimensionItemFullName)).ToList();

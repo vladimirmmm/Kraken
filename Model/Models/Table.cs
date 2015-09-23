@@ -154,8 +154,8 @@ namespace LogicalModel
             {
                 AddLevelitem(lvlitem, item);
             }
-
-            foreach (var child in item.Children)
+            var children = item.Children.Where(i => i.Item.IsStructural).ToList();
+            foreach (var child in children)
             {
                 child.Parent = item;
                 BuildLevels(AxisLevels, child, childfirst, level + 1);
@@ -176,20 +176,20 @@ namespace LogicalModel
             {
                 root = item;
             }
-            var lc = item.GetLeafCount(null);
+            var lc = item.GetLeafCount(i=>i.Item.IsStructural);
             var level = item.GetLevel(root);
-            var totallevelcount = root.GetSubLevelCount();
-            var sublevelcount = totallevelcount - level + 1;
+            var totallevelcount = root.GetSubLevelCount(i=>i.Item.IsStructural);
+            var sublevelcount = totallevelcount - level;
 
             var colspan = lc > 1 ? String.Format("colspan=\"{0}\"", lc) : "";
             item.Item.ColSpan = colspan;
-
-            if (item.Children.Count == 0)
+            var children = item.Children.Where(i => i.Item.IsStructural).ToList();
+            if (children.Count == 0)
             {
-                var rowspan = sublevelcount > 0 ? String.Format("rowspan=\"{0}\"", sublevelcount) : "";
+                var rowspan = sublevelcount > 0 ? String.Format("rowspan=\"{0}\"", sublevelcount+1) : "";
                 item.Item.RowSpan = rowspan;
             }
-            foreach (var child in item.Children) 
+            foreach (var child in children) 
             {
                 SetSpans(child, root);
             }
@@ -202,7 +202,7 @@ namespace LogicalModel
             {
                 root = item;
             }
-            int totallevelcount = root.GetSubLevelCount();
+            int totallevelcount = root.GetSubLevelCount(i => i.Item.IsStructural);
             var placeholderitem = new LayoutItem(item.Item);
             placeholderitem.LabelContent = " ";
             placeholderitem.IsPlaceholder = true;
@@ -216,22 +216,49 @@ namespace LogicalModel
             var placeholder = new Hierarchy<LayoutItem>(placeholderitem);
 
 
-            if (!childfirst && !item.Item.IsAbstract && item.Children.Count>  0)
+            if (!childfirst && ShouldAddPlaceholder(item))
             {
-                if (String.IsNullOrEmpty(item.Item.Axis))
-                {
-                    AddPlaceHolderIfNotExists(item, placeholder, 0);
-                }
+
+                AddPlaceHolderIfNotExists(item, placeholder, 0);
+
             }
             foreach (var child in item.Children)
             {
                 FixLayoutItem(child, root, childfirst);
             }
-            if (childfirst && !item.Item.IsAbstract && item.Children.Count > 0)
+            if (childfirst && ShouldAddPlaceholder(item))
             {
                 AddPlaceHolderIfNotExists(item, placeholder, -1);
 
             }
+        }
+
+        private bool ShouldAddPlaceholder(Hierarchy<LayoutItem> item) 
+        {
+            var result = false;
+            if (!item.Item.IsAbstract && item.Item.IsVisible) 
+            { 
+                if (item.Children.Count>0)
+                {
+                    if (String.IsNullOrEmpty(item.Item.Axis))
+                    { 
+
+                    }
+                    else 
+                    { 
+
+                    }
+                    var isallabstarct = item.FirstOrDefault(i =>
+                        !i.Item.IsAbstract 
+                        && i.Item.IsVisible 
+                        && i!=item) == null;
+                    if (!isallabstarct) 
+                    {
+                        result = true;
+                    }
+                } 
+            }
+            return result;
         }
 
         private void AddPlaceHolderIfNotExists(Hierarchy<LayoutItem> target, Hierarchy<LayoutItem> placeholder, int ix)
@@ -506,14 +533,14 @@ namespace LogicalModel
         {
             var nodes = LayoutRoot.Where(i => String.Equals(i.Item.Axis, axis, StringComparison.InvariantCultureIgnoreCase)).OrderBy(i => i.Order).ToList();
             var axislayoutitem = new LayoutItem();
-            axislayoutitem.IsVisible = false;
+            axislayoutitem.Category=LayoutItemCategory.BreakDown;
             axislayoutitem.ID = String.Format("Axis {0}", axis);
             axislayoutitem.IsAbstract = true;
             var axisnode = new Hierarchy<LayoutItem>(axislayoutitem);
             foreach (var node in nodes) 
             {
                 axisnode.Children.Add(node);
-                node.Item.IsVisible = false;
+                node.Item.Category = LayoutItemCategory.BreakDown;
             }
             return axisnode;
      
@@ -592,6 +619,7 @@ namespace LogicalModel
                 }
                 columnAxisnode.Children.Insert(ix, aspect);
                 rowsnode.Remove(aspect.Parent);
+                aspect.Parent = columnAxisnode;
                 ix++;
                 aspect_row_dimension.AddRange(aspect.Item.Dimensions);
                 //aspect.Item.Dimensions.Clear();
@@ -599,9 +627,10 @@ namespace LogicalModel
             if (rowsnode.Children.Count == 0) 
             {
                 var dynrow_li = new LayoutItem();
-                dynrow_li.IsDynamic = true;
+
                 dynrow_li.ID = "dynrow";
                 dynrow_li.Dimensions = aspect_row_dimension;
+                dynrow_li.Category = LayoutItemCategory.Dynamic;
                 var dyn_h = new Hierarchy<LayoutItem>(dynrow_li);
                 rowsnode = dyn_h;
 
@@ -616,10 +645,13 @@ namespace LogicalModel
 
             BuildLevels(X_Axis, columnsnode);
             BuildLevels(Y_Axis, rowsnode);
-
-            Columns = columnsnode.GetLeafs();
+            Func<Hierarchy<LayoutItem>, bool> IsChildren = i => 
+                ( !i.Children.Any(j => j.Item.IsVisible) && i.Item.IsVisible) 
+                && i!=columnsnode;
+            Columns = columnsnode.Where(i=>IsChildren(i));
+            
     
-            Rows = rowsnode.ToHierarchy().Where(i => i.Item.IsVisible).ToList();
+            Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural).ToList();
             //Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode) || i.Item.IsDynamic).ToList();
             Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
 
@@ -758,9 +790,11 @@ namespace LogicalModel
                                 }
                                 else
                                 {
-                                    if (cell.LayoutColumn.Item.IsAspect)
+                                    var aspectcolumnitem = cell.LayoutColumn.Item;
+                                    aspectcolumnitem = aspectcolumnitem.IsAspect ? aspectcolumnitem : cell.LayoutColumn.Parent.Item;
+                                    if (aspectcolumnitem.IsAspect)
                                     {
-                                        cell.Dimensions = cell.LayoutColumn.Item.Dimensions;
+                                        cell.Dimensions = aspectcolumnitem.Dimensions;
                                     }
                                     else
                                     {
@@ -863,20 +897,19 @@ namespace LogicalModel
             var sb = new StringBuilder();
             sb.AppendLine("<table>");
             sb.AppendLine("<thead>");
-            var xlevelcount = X_Axis.Count;
-            var ylevelcount = rowsnode.GetSubLevelCount() + 1;
-            var xleafcount = columnsnode.GetLeafCount(null);
-            var max_y = Y_Axis.Max(i => i.Value.Count);
-            var max_x = X_Axis.Max(i => i.Value.Count) + xleafcount;
+            var collevelnr= X_Axis.Count;
+            var rowlevelnr= rowsnode.GetSubLevelCount(i=>i.Item.IsStructural) + 1;
+            //var xleafcount = columnsnode.GetLeafCount(null);
 
-            sb.AppendLine(String.Format("<tr><th class=\"left\" colspan=\"{1}\"><h1>{0}<h1></th></tr>", LayoutRoot.Item.LabelContent, xleafcount + ylevelcount + 1));
+
+            sb.AppendLine(String.Format("<tr><th class=\"left\" colspan=\"{1}\"><h1>{0}<h1></th></tr>", LayoutRoot.Item.LabelContent, rowlevelnr + Columns.Count + 1));
             var columncoderow = "";
             foreach (var lvl in X_Axis)
             {
                 sb.AppendLine("<tr>");
                 if (lvl.Key == 0)
                 {
-                    sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", ylevelcount + 1, xlevelcount + 1, rowsnode.Item.LabelContent));
+                    sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", rowlevelnr + 1, collevelnr + 1, rowsnode.Item.LabelContent));
 
                 }
       
@@ -885,7 +918,7 @@ namespace LogicalModel
                 {
                     var cssclass = "class=\"\"";
 
-                    if (item.Children.Count > 0) {
+                    if (item.Children.Where(i=>i.Item.IsStructural).Count() > 0) {
                         cssclass = cssclass.Replace("=\"", "=\"haschild ");
 
                     }
