@@ -418,115 +418,6 @@ namespace LogicalModel
 
                 this.Extensions = TableHelpers.CombineExtensionNodes(leafs, this);
             }
-            /*
-            if (extensionnode != null)
-            {
-                BuildLevels(Z_Axis, extensionnode);
-                var leafs = extensionnode.GetLeafs().Where(i => i.Parent != null).ToList();
-                var abstractleafs = leafs.Where(i => i.Parent.Item.IsAbstract).ToList();
-
-                var nonabstractleafs = leafs.Where(i => !i.Parent.Item.IsAbstract).ToList();
-             
-
-
-                var tempfact = new FactBase();
-                foreach (var abstractleaf in abstractleafs) 
-                {
-                    MergeDimensions(tempfact.Dimensions, abstractleaf.Item.Dimensions);
-                    tempfact.Concept = tempfact.Concept == null ? abstractleaf.Item.Concept : tempfact.Concept;
-                }
-                //foreach (var nonabstractleaf in nonabstractleafs) 
-                //{
-                //    MergeDimensions(nonabstractleaf.Item.Dimensions, tempfact.Dimensions);
-                //    nonabstractleaf.Item.Concept = tempfact.Concept == null ? tempfact.Concept : nonabstractleaf.Item.Concept;
-             
-                //}
-
-                var extensions = new List<LayoutItem>();
-                //if (extensionnode.Children.Count == 1)
-                //if (leafs.Count == 1)
-                if (nonabstractleafs.Count==1)
-                {
-                    var nonabstractleaf = nonabstractleafs.FirstOrDefault();
-                    //var extension = leafs.FirstOrDefault();
-                    //var extension = extensionnode.Children.FirstOrDefault();
-                    var extension = nonabstractleaf.Parent;
-                    if (extension.Item.IsAspect)
-                    {
-                        var dimension = extension.Item.Dimensions.FirstOrDefault();
-                        var hypercubes = HyperCubes.Where(i => i.DimensionItems.Any(j => j.FullName == dimension.DimensionItemFullName)).ToList();
-                        var domains = hypercubes.SelectMany(i => i.DimensionItems.Where(j => j.FullName == dimension.DimensionItemFullName)).SelectMany(k => k.Domains).ToList();
-                        var distinctdomains = domains.Distinct().ToList();
-                        if (distinctdomains.Count == 1)
-                        {
-                            foreach (var dm in distinctdomains.FirstOrDefault().DomainMembers)
-                            {
-                                var li = new LayoutItem();
-                                li.Table = this;
-                                var dim = new Dimension();
-                                dim.DimensionItem = dimension.DimensionItemFullName;
-                                if (Taxonomy.IsTyped(dm.Domain.Namespace))
-                                {
-                                    dim.Domain = dm.Domain.ToString();
-                                    dim.DomainMember = "";
-                                    li.Dimensions.Add(dim);
-                                    li.LabelID = dm.ID;
-                                    li.LabelCode = dim.Domain;
-                                }
-                                else
-                                {
-                                    dim.Domain = dm.Domain.ID;
-                                    dim.DomainMember = dm.Name;
-                                    li.Dimensions.Add(dim);
-                                    li.LabelID = dm.ID;
-                                }
-                                //var x = Taxonomy.Prefix
-                                //var domainfolder = dim.Domain.StartsWith(Taxonomy.Prefix) ? dim.Domain.Substring(Taxonomy.Prefix.Length) : dim.Domain;
-                                var domainfolder = dim.Domain.IndexOf("_") > -1 ? dim.Domain.Substring(dim.Domain.LastIndexOf("_") + 1) : dim.Domain;
-                                var labelkey = Label.GetKey(domainfolder, dm.ID);
-                                li.Label = this.Taxonomy.FindLabel(labelkey);
-                                if (String.IsNullOrEmpty(li.LabelCode))
-                                {
-                                    li.LabelCode = li.LabelID;
-                                }
-                                MergeDimensions(li.Dimensions, tempfact.Dimensions);
-                                li.Concept = li.Concept == null ? tempfact.Concept : li.Concept;
-             
-                                extensions.Add(li);
-                            }
-                        }
-                    }
-                    else 
-                    {
-                        var li = GetDefaultExtension();
-                        var firstleaf = leafs.FirstOrDefault();
-                        if (firstleaf != null)
-                        {
-                            var extli = firstleaf.Item;
-                            li.Dimensions.AddRange(extli.Dimensions);
-                            li.Concept = extli.Concept;
-                            extensions.Add(li);
-                        }
-                    }
-                }
-                else
-                {
-                    SetDimensions(leafs);
-                    foreach (var leaf in leafs)
-                    {
-                        var li = leaf.Item;
-                        if (String.IsNullOrEmpty(li.LabelCode)) 
-                        {
-
-                            li.LabelCode = li.LabelID;
-                        }
-
-                        extensions.Add(li);
-                    }
-                }
-                this.Extensions = extensions;
-            }
-            */
         }
 
         private Hierarchy<LayoutItem> GetAxisNode(string axis) 
@@ -577,7 +468,7 @@ namespace LogicalModel
             }
         }
 
-        private LayoutItem GetDefaultExtension() 
+        public LayoutItem GetDefaultExtension() 
         {
             var li = new LayoutItem();
             li.ID = "";
@@ -599,10 +490,8 @@ namespace LogicalModel
             rowsnode = GetAxisNode("y");
             columnsnode = GetAxisNode("x");
             extensionnode = GetAxisNode("z");
-            //extensionnode = LayoutRoot.Find(i => String.Equals(i.Item.Axis, "z", StringComparison.InvariantCultureIgnoreCase)); //TODO Axis should be used
 
             var aspects = rowsnode.Where(i => i.Item.IsAspect);
-
     
             var ix=0;
             var columnAxisnode = columnsnode.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
@@ -652,14 +541,10 @@ namespace LogicalModel
             
     
             Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural).ToList();
-            //Rows = Rows.Where(i => !String.IsNullOrEmpty(i.Item.LabelCode) || i.Item.IsDynamic).ToList();
             Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
 
             FixLabelCodes(Columns, "{0:D4}");
             FixLabelCodes(Rows, "{0:D4}");
-
-            //FixNamespaces(Columns);
-            //FixNamespaces(Rows);
 
             var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
             if (xRows.Count > 1) 
@@ -687,6 +572,10 @@ namespace LogicalModel
                 {
                     var li = GetDefaultExtension();
                     exts.Add(li);
+                }
+                foreach (var ext in exts) 
+                {
+                    Dimension.MergeDimensions(ext.Dimensions, this.Extensions.Item.Dimensions);
                 }
                 var factmap = new Dictionary<string, Dictionary<string,string>>();
                 foreach (var ext in exts)
@@ -879,11 +768,11 @@ namespace LogicalModel
         public string GetStyle() 
         {
             var sb = new StringBuilder();
-            sb.AppendLine(String.Format("td.data{{ min-width:{0}px; }}", datacellminwidth));
-            sb.AppendLine(String.Format("th.title{{ min-width:{0}px; }}", titlecellminwidth));
-            sb.AppendLine(String.Format("th.pad{{ min-width:{0}px; }}", cellpadding));
+            //sb.AppendLine(String.Format(".report td.data{{ min-width:{0}px; }}", datacellminwidth));
+            //sb.AppendLine(String.Format(".report th.title{{ min-width:{0}px; }}", titlecellminwidth));
+            //sb.AppendLine(String.Format(".report th.pad{{ min-width:{0}px; }}", cellpadding));
             var tableminwidth=this.Columns.Count * datacellminwidth + Y_Axis.Count * cellpadding + titlecellminwidth;
-            sb.AppendLine(String.Format("table {{ min-width:{0}px; }}", tableminwidth));
+            sb.AppendLine(String.Format("table.report {{ min-width:{0}px; }}", tableminwidth));
             return sb.ToString();
         }
 
@@ -895,14 +784,14 @@ namespace LogicalModel
             }
             
             var sb = new StringBuilder();
-            sb.AppendLine("<table>");
+            sb.AppendLine("<table class=\"report\">");
             sb.AppendLine("<thead>");
             var collevelnr= X_Axis.Count;
             var rowlevelnr= rowsnode.GetSubLevelCount(i=>i.Item.IsStructural) + 1;
             //var xleafcount = columnsnode.GetLeafCount(null);
 
 
-            sb.AppendLine(String.Format("<tr><th class=\"left\" colspan=\"{1}\"><h1>{0}<h1></th></tr>", LayoutRoot.Item.LabelContent, rowlevelnr + Columns.Count + 1));
+            sb.AppendLine(String.Format("<tr><th class=\"left\" colspan=\"{1}\"><h1>{0}</h1></th></tr>", LayoutRoot.Item.LabelContent, rowlevelnr + Columns.Count + 1));
             var columncoderow = "";
             foreach (var lvl in X_Axis)
             {
@@ -1041,7 +930,7 @@ namespace LogicalModel
             cell.Dimensions = cell.Dimensions.Distinct().ToList();
         }
         
-        private void SetDimensions(List<Hierarchy<LayoutItem>> items)
+        public void SetDimensions(List<Hierarchy<LayoutItem>> items)
         {
             foreach (var item in items)
             {

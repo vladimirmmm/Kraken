@@ -1236,6 +1236,7 @@ var Editor = (function () {
         this.ValueSetter = null;
         this.TargetValueGetter = null;
         this.TargetValueSetter = null;
+        this.CustomTrigger = null;
         this.$Target = null;
         this.$Me = null;
         this.HtmlFormat = HtmlFormat;
@@ -1254,7 +1255,7 @@ var Editor = (function () {
         this.Original_Value = TargetValueGetter().trim();
         this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
         //setting UI
-        var containerwidth = Target.width() - (Target.padding("left") + Target.padding("right"));
+        var containerwidth = -2 + Target.width() - (Target.padding("left") + Target.padding("right"));
         var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
         var containerfontfamily = Target.css('font-family');
         var containerfontsize = Target.css('font-size');
@@ -1270,9 +1271,8 @@ var Editor = (function () {
         this.$Target.html('');
         this.$Me.appendTo(this.$Target);
         this.$Target.addClass(Editor.editclass);
-        this.$Me.blur(function () {
-            me.Save();
-        });
+        if (IsNull(this.CustomTrigger)) {
+        }
         this.$Me.keypress(function (e) {
             if (e.which == 13) {
                 me.Save();

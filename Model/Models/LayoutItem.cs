@@ -25,14 +25,7 @@ namespace LogicalModel
         public string RowSpan = "";
         public string ColSpan = "";
         private Table _Table = null;
-        public int Order = 0;
-        //private bool _IsVisible = true;
-        //[DefaultValue(true)]
-        //public bool IsVisible { get { return _IsVisible; }
-        //    set { 
-        //        _IsVisible = value; 
-        //    } 
-        //}
+        public int Order = 0;   
 
         private string _Axis = "";
         public string Axis { get { return _Axis; } set { _Axis = value; } }

@@ -186,7 +186,17 @@ namespace UI.Services
                                     ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
                                     ht.Item.Type = "table";
                                     //TODO EXT
-                                    /*
+                                    var extensions = tbl.Extensions.Cast<TableInfo>(i => {
+                                        var ti = new TableInfo();
+                                        ti.ID = String.Format("{0}<{1}>", tbl.ID, i.LabelCode);
+                                        ti.Name = i.LabelContent;
+                                        ti.Description = i.LabelContent;
+                                        ti.Type = "extension";
+                                        return ti;
+                                    });
+                                    ht.Children.Add(extensions);
+
+                                 /*
                                     var extensions = tbl.Extensions.Where(i=>i.LabelCode!=Table.DefaultExtensionCode).ToList();
                                     foreach (var ext in extensions)
                                     {
@@ -198,7 +208,7 @@ namespace UI.Services
                                         hext.Item.Type = "extension";
                                         ht.Children.Add(hext);
                                     }
-                                    */
+                                 */
                                 }
 
 

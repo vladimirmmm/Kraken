@@ -59,11 +59,14 @@ namespace LogicalModel
 
         public static Hierarchy<LayoutItem> CombineExtensionNodes(List<Hierarchy<LayoutItem>> nodes,Table table) 
         {
+            var placholder = table.GetDefaultExtension();
+            placholder.Category = LayoutItemCategory.BreakDown;
+
             var sets = new List<List<LayoutItem>>();
 
             var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();
             var typednode = typednodes.FirstOrDefault();
-            var normalnodes = nodes.Except(typednodes);
+            var normalnodes = nodes.Except(typednodes).ToList();
 
             //set the aspectnodes if any
             foreach (var normalnode in normalnodes) 
@@ -80,12 +83,20 @@ namespace LogicalModel
                         parentnode.Children.Add(hli);
                     }
                 }
-                sets.Add(parentnode.Children.Select(i => i.Item).ToList());
+                if (!parentnode.Item.IsAbstract)
+                {
+                    sets.Add(parentnode.Children.Select(i => i.Item).ToList());
+                }
+                else 
+                {
+                    Dimension.MergeDimensions(placholder.Dimensions, normalnode.Item.Dimensions);
+
+                }
 
             }
-
+       
             normalnodes = normalnodes.OrderBy(i => i.Children.Count).ToList();
-            if (typednodes.Count > 0)
+            if (typednode!=null)
             {
                 foreach (var normalnode in normalnodes)
                 {
@@ -98,17 +109,35 @@ namespace LogicalModel
             }
             var combinations = Utilities.MathX.CartesianProduct(sets);
             var extensionlist = new List<LayoutItem>();
+          
             foreach (var combination in combinations) 
             {
-               // AddCombinationTo(combination, extensionnode);
-                AddCombinationTo(combination, extensionlist);
+                if (combination.Count() > 0)
+                {
+                    // AddCombinationTo(combination, extensionnode);
+                    AddCombinationTo(combination, extensionlist);
+                }
             }
-            var placholder = new LayoutItem();
-            placholder.LabelCode = "";
-            placholder.LabelContent = "Default";
-            placholder.IsPlaceholder = true;
+
+
             var extensionnode = new Hierarchy<LayoutItem>(placholder);
-            extensionnode.Children.AddRange(extensionlist.Select(i=>new Hierarchy<LayoutItem>(i)));
+            var nodecontainer = extensionnode;
+            if (typednode != null)
+            {
+                var dynamicli = new LayoutItem();
+                dynamicli.LabelCode = "";
+                dynamicli.LabelContent = "Dynamic";
+                dynamicli.Category = LayoutItemCategory.Dynamic;
+                var dynamicnode = new Hierarchy<LayoutItem>(dynamicli);
+
+                extensionnode.Children.Add(dynamicnode);
+                dynamicnode.Parent = extensionnode;
+                nodecontainer = dynamicnode;
+
+            }
+
+
+            nodecontainer.Children.AddRange(extensionlist.Select(i => new Hierarchy<LayoutItem>(i)));
             if (typednodes.Count > 1) 
             {
                 throw new NotImplementedException("Multiple TypedDimension nodes on z axis");
@@ -120,17 +149,29 @@ namespace LogicalModel
         private static void AddCombinationTo(IEnumerable<LayoutItem> combination, List<LayoutItem> target) 
         {
             var li = new LayoutItem();
+            li.Category = LayoutItemCategory.Rule;
             foreach (var item in combination) 
             {
                 Dimension.MergeDimensions(li.Dimensions, item.Dimensions);
-                //if (li.Concept == null) { li.Concept = item.Concept; }
-            }
-            foreach (var dim in li.Dimensions) 
-            {
-                li.LabelCode = li.LabelCode + "|" + dim.DomainMember;
-            }
-            li.LabelContent = li.LabelCode;
+            }       
+
             target.Add(li);
+            if (combination.Count() == 1) 
+            {
+                var item = combination.FirstOrDefault();
+                if (item.Category != LayoutItemCategory.Aspect)
+                {
+                    li.Label = item.Label;
+                    li.LabelCode = item.LabelCode;
+                    li.LabelContent = item.LabelContent;
+                }
+                else 
+                {
+                    li.LabelCode = String.Format("-{0:D5}", target.Count);
+                    li.LabelContent = String.Format("Extension {0}", target.Count);
+                }
+            }
+
 
         }
 

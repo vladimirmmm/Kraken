@@ -18,6 +18,7 @@ interface JQuery
     resizable(options?: any);
     colResizable(options?: any);
     resizableColumns(options?: any);
+    datepicker(options?: any);
 }
 
 interface External {
@@ -1451,6 +1452,7 @@ class Editor
     public ValueSetter: Function = null;
     public TargetValueGetter: Function = null;
     public TargetValueSetter: Function = null;
+    public CustomTrigger: Function = null;
     public $Target: JQuery = null; 
     public $Me: JQuery = null; 
     public Current_Value: string;
@@ -1465,11 +1467,11 @@ class Editor
         this.ValueSetter = ValueSetter;
     }
 
-    public Save()
-    {
-        this.TargetValueSetter(this.ValueGetter(this.$Me));
+    public Save() {
+        this.TargetValueSetter(this.ValueGetter(this.$Me))
         this.$Target.removeClass(Editor.editclass);
         this.$Me.remove();
+
     }
 
     public Load(Target: JQuery, TargetValueGetter: Function, TargetValueSetter: Function)
@@ -1481,7 +1483,7 @@ class Editor
         this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
 
         //setting UI
-        var containerwidth = Target.width() - (Target.padding("left") + Target.padding("right"));
+        var containerwidth = -2 + Target.width() - (Target.padding("left") + Target.padding("right"));
         var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
         var containerfontfamily = Target.css('font-family');
         var containerfontsize = Target.css('font-size');
@@ -1500,8 +1502,9 @@ class Editor
         this.$Me.appendTo(this.$Target);
         this.$Target.addClass(Editor.editclass);
 
-
-        this.$Me.blur(function () { me.Save(); });
+        if (IsNull(this.CustomTrigger)) {
+            //this.$Me.blur(function () { me.Save(); });
+        }
         this.$Me.keypress(function (e) {
             if (e.which == 13) {
                 me.Save();

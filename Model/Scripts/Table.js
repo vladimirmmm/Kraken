@@ -3,13 +3,15 @@ var UI;
     var Table = (function () {
         function Table() {
             this.Cells = [];
-            this.Extensions = [];
+            //public Extensions: Model.Hierarchy<Model.LayoutItem> = null;
+            this.ExtensionsRoot = null;
+            this.Extensions = null;
             this.FactMap = {};
             this.CurrentExtension = null;
             this.Instance = null;
             this.$TemplateRow = null;
             this.Concepts = [];
-            this.Hierarchies = [];
+            this.Hierarchies = null;
             this.ConceptValues = [];
             this.Current_CellID = "";
             this.Current_ExtensionCode = "";
@@ -24,16 +26,8 @@ var UI;
         }
         Table.prototype.SetExternals = function () {
             this.FactMap = window["FactMap"];
-            this.Extensions = window["Extensions"];
-            if (this.Extensions.length == 0) {
-                var code = "000";
-                var li = new Model.LayoutItem();
-                var label = new Model.Label();
-                label.Code = code;
-                li.Label = label;
-                li.LabelCode = code;
-                this.Extensions.push(li);
-            }
+            this.ExtensionsRoot = window["Extensions"];
+            this.Extensions = Model.Hierarchy.ToArray(this.ExtensionsRoot).AsLinq().Where(function (i) { return In(i.Category, 2 /* Rule */, 3 /* BreakDown */); }).Select(function (i) { return i; });
         };
         Table.prototype.GetData = function () {
             var me = this;
@@ -49,19 +43,19 @@ var UI;
             }, function (error) {
                 console.log(error);
             }));
-            AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
+            waiter.WaitFor(AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Concepts = data;
-                me.Concepts = me.Concepts.AsLinq().Where(function (i) { return i.Domain != null; }).ToArray();
+                //me.Concepts = me.Concepts.AsLinq<Model.Concept>().Where(i=> i.Domain != null).ToArray();
                 waiter.Check();
             }, function (error) {
                 console.log(error);
-            });
-            AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
+            }));
+            waiter.WaitFor(AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
                 me.Hierarchies = data;
                 waiter.Check();
             }, function (error) {
                 console.log(error);
-            });
+            }));
             waiter.Start();
         };
         Table.prototype.SetNavigation = function () {
@@ -79,8 +73,10 @@ var UI;
                 this.Current_ExtensionCode = extcode;
             }
             else {
-                this.Current_ExtensionCode = this.Extensions[0].LabelCode;
+                this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
             }
+            var code = this.Current_ExtensionCode;
+            this.CurrentExtension = this.Extensions.FirstOrDefault(function (i) { return i.LabelCode == code; });
         };
         Table.prototype.LoadToUI = function () {
             var me = this;
@@ -127,8 +123,8 @@ var UI;
                     if (hier != null) {
                         var clkp = new Model.ConceptLookUp();
                         clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
-                        hier["ToArray"] = htemp.ToArray; //() => htemp.ToArray.apply(hier);
-                        var items = hier.ToArray();
+                        //hier["ToArray"] = Model.Hierarchy.ToArray(htemp); //() => htemp.ToArray.apply(hier);
+                        var items = Model.Hierarchy.ToArray(hier);
                         items.forEach(function (item, index) {
                             if (index > 0) {
                                 var v = {};
@@ -164,14 +160,36 @@ var UI;
                 if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
                     $target.click(function () {
                         if (!$target.hasClass(Editor.editclass)) {
-                            var editor = null;
+                            var typeclass = "";
                             if (factitems[0].indexOf(":ei") > -1) {
+                                typeclass = "ei";
+                            }
+                            if (factitems[0].indexOf(":di") > -1) {
+                                typeclass = "di";
+                            }
+                            var editor = null;
+                            if (typeclass == "ei") {
                                 editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)), function (i) { return i.val(); }, function (i, val) {
                                     i.val(val);
                                 });
                             }
-                            else {
-                                editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+                            if (typeclass == "di") {
+                                editor = new Editor('<input type="text" class="celleditor datepicker" value="" />', function (i) {
+                                    return i.val();
+                                }, function (i, val) {
+                                    i.datepicker({
+                                        dateFormat: "yy-mm-dd",
+                                        onSelect: function () {
+                                            editor.Save();
+                                        }
+                                    });
+                                    i.val(val);
+                                });
+                                editor.CustomTrigger = function () {
+                                };
+                            }
+                            if (typeclass == "") {
+                                editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
                             }
                             editor.Load($target, function () { return $target.html(); }, function () {
                                 $target.html(editor.ValueGetter(editor.$Me));
@@ -317,7 +335,7 @@ var UI;
             var url = window.location.pathname;
             var reportname = url.substring(url.lastIndexOf('/') + 1);
             reportname = reportname.replace(".html", "");
-            var extensioncode = IsNull(me.Current_ExtensionCode) ? this.Extensions[0].LabelCode : me.Current_ExtensionCode;
+            var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
             var reportkey = Format("{0}|{1}", reportname, extensioncode);
             var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
             var rows = GetProperties(rowidcontainer);
@@ -406,10 +424,10 @@ var UI;
             });
         };
         Table.prototype.SetExtensionByCode = function (code) {
-            if (this.Extensions.length > 0) {
-                var ext = this.Extensions[0];
+            if (this.Extensions.Count() > 0) {
+                var ext = this.Extensions.FirstOrDefault();
                 if (!IsNull(code)) {
-                    ext = this.Extensions.AsLinq().FirstOrDefault(function (i) { return i.LabelCode == code; });
+                    ext = this.Extensions.FirstOrDefault(function (i) { return i.LabelCode == code; });
                 }
                 if (!IsNull(ext)) {
                     this.LoadExtension(ext);
@@ -420,11 +438,6 @@ var UI;
             var cells = JSON.parse(item);
             this.LoadCells(cells);
         };
-        //public SetInstance(item) {
-        //    var instance = <Model.Instance>JSON.parse(item);
-        //    //f
-        //    this.LoadInstance(instance);
-        //}
         Table.prototype.HashChanged = function () {
             ShowNotification("Navigation occured: " + window.location.hash);
             var currentextensioncode = this.Current_ExtensionCode;

@@ -7,10 +7,7 @@
         Key: K;
         Value: V;
     }
-    //interface Dictionary<T,K> {
-    //    [key: K]: T;
-    //}
-
+  
     export class Hierarchy<T>
     {
         public Children: Hierarchy<T>[] = [];
@@ -18,20 +15,27 @@
         public Order: number;
         public Item: T = null;
 
-        public ToArray(): T[]
+        public static ToArray<TClass>(hierarchy: Hierarchy<TClass>): TClass[]
         {
             var me = this;
-            var items: T[] = [];
-            items.push(this.Item);
-            this.Children.forEach(function (item) {
+            var items: TClass[] = [];
+            items.push(hierarchy.Item);
+            hierarchy.Children.forEach(function (item) {
                 if ("ToArray" in item == false)
                 {
                     item["ToArray"] = me.ToArray;
                 }
-                items = items.concat(item.ToArray());
+                items = items.concat(Hierarchy.ToArray(item));
             });
             return items; 
         }
+
+        //public FirstOrDefault(func:Function): T
+        //{
+        //    var T = null;
+
+        //    return T;
+        //}
     }
 
     export class Dimension {
@@ -320,10 +324,19 @@
         }
 
     }
+    export enum LayoutItemCategory {
+        Unknown = 0,
+        Aspect = 1,
+        Rule = 2,
+        BreakDown = 3,
+        Dynamic = 4,
+        Filter = 5,
+    }
 
     export class LayoutItem extends FactBase {
         public ID: string;
         public Axis: string;
+        public Category: LayoutItemCategory = LayoutItemCategory.Unknown;
         public Label: Label;
 
         public get LabelContent() {

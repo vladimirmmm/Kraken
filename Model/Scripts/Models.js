@@ -6,24 +6,21 @@ var __extends = this.__extends || function (d, b) {
 };
 var Model;
 (function (Model) {
-    //interface Dictionary<T,K> {
-    //    [key: K]: T;
-    //}
     var Hierarchy = (function () {
         function Hierarchy() {
             this.Children = [];
             this.Parent = null;
             this.Item = null;
         }
-        Hierarchy.prototype.ToArray = function () {
+        Hierarchy.ToArray = function (hierarchy) {
             var me = this;
             var items = [];
-            items.push(this.Item);
-            this.Children.forEach(function (item) {
+            items.push(hierarchy.Item);
+            hierarchy.Children.forEach(function (item) {
                 if ("ToArray" in item == false) {
                     item["ToArray"] = me.ToArray;
                 }
-                items = items.concat(item.ToArray());
+                items = items.concat(Hierarchy.ToArray(item));
             });
             return items;
         };
@@ -323,10 +320,20 @@ var Model;
         return InstanceFact;
     })(FactBase);
     Model.InstanceFact = InstanceFact;
+    (function (LayoutItemCategory) {
+        LayoutItemCategory[LayoutItemCategory["Unknown"] = 0] = "Unknown";
+        LayoutItemCategory[LayoutItemCategory["Aspect"] = 1] = "Aspect";
+        LayoutItemCategory[LayoutItemCategory["Rule"] = 2] = "Rule";
+        LayoutItemCategory[LayoutItemCategory["BreakDown"] = 3] = "BreakDown";
+        LayoutItemCategory[LayoutItemCategory["Dynamic"] = 4] = "Dynamic";
+        LayoutItemCategory[LayoutItemCategory["Filter"] = 5] = "Filter";
+    })(Model.LayoutItemCategory || (Model.LayoutItemCategory = {}));
+    var LayoutItemCategory = Model.LayoutItemCategory;
     var LayoutItem = (function (_super) {
         __extends(LayoutItem, _super);
         function LayoutItem() {
             _super.apply(this, arguments);
+            this.Category = 0 /* Unknown */;
         }
         Object.defineProperty(LayoutItem.prototype, "LabelContent", {
             get: function () {

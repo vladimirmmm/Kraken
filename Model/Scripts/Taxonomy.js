@@ -271,12 +271,13 @@ var Control;
             var $extensioncontainers = $(".extension").parent();
             var $tablecontainers = $(".table").parent();
             var childidentifier = $childrencontainer.parent().attr("title");
-            Notify(Format("id: {0} type: {1}", id, ttype));
+            //Notify(Format("id: {0} type: {1}", id, ttype));
             //$tablecontainers.hide();
             if (In(ttype, "table", "tablegroup")) {
                 if ($childrencontainer.css("display") == "none") {
                     $extensioncontainers.hide();
                     $childrencontainer.show();
+                    $(".extension", $childrencontainer).parents().show();
                 }
                 else {
                     $childrencontainer.hide();

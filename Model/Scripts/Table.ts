@@ -3,14 +3,16 @@ module UI {
 
     export class Table {
         public Cells: Model.Cell[] = [];
-        public Extensions: Model.LayoutItem[] = [];
+        //public Extensions: Model.Hierarchy<Model.LayoutItem> = null;
+        public ExtensionsRoot: Model.Hierarchy<Model.LayoutItem> = null;
+        public Extensions: TSLinq.Linq<Model.LayoutItem> = null;
         public FactMap: Object = {};
         public CurrentExtension: Model.LayoutItem = null;
         private Instance: Model.Instance = null;
         public $TemplateRow: JQuery = null;
 
         public Concepts: Model.Concept[] = [];
-        public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = [];
+        public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = null;
         public ConceptValues: Model.ConceptLookUp[] = [];
         
         private Current_CellID: string = "";
@@ -32,17 +34,13 @@ module UI {
         {
 
             this.FactMap = window["FactMap"];
-            this.Extensions = window["Extensions"];
-            if (this.Extensions.length == 0)
-            {
-                var code = "000";
-                var li = new Model.LayoutItem();
-                var label = new Model.Label();
-                label.Code = code;
-                li.Label = label;
-                li.LabelCode = code;
-                this.Extensions.push(li);
-            }
+            this.ExtensionsRoot = window["Extensions"];
+            this.Extensions = Model.Hierarchy.ToArray(this.ExtensionsRoot)
+                .AsLinq<Model.LayoutItem>()
+                .Where(i=> In(i.Category,
+                Model.LayoutItemCategory.Rule,
+                Model.LayoutItemCategory.BreakDown))
+                .Select(i=> i);
      
         }
 
@@ -58,17 +56,18 @@ module UI {
                 waiter.Check();
             }, function (error) { console.log(error); }));
 
-            AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
+            waiter.WaitFor(AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Concepts = data
-                me.Concepts = me.Concepts.AsLinq<Model.Concept>().Where(i=> i.Domain != null).ToArray();
+                //me.Concepts = me.Concepts.AsLinq<Model.Concept>().Where(i=> i.Domain != null).ToArray();
 
                 waiter.Check();
 
-            }, function (error) { console.log(error); });
-            AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
+            }, function (error) { console.log(error); }));
+            waiter.WaitFor(AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
                 me.Hierarchies = data;
                 waiter.Check();
-            }, function (error) { console.log(error); });
+            }, function (error) { console.log(error); }));
+
             waiter.Start();
 
         }
@@ -89,8 +88,10 @@ module UI {
             }
             else
             {
-                this.Current_ExtensionCode = this.Extensions[0].LabelCode;
+                this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
             }
+            var code = this.Current_ExtensionCode;
+            this.CurrentExtension = this.Extensions.FirstOrDefault(i=> i.LabelCode == code);
         }
 
         public LoadToUI()
@@ -155,8 +156,8 @@ module UI {
                     if (hier != null) {
                         var clkp = new Model.ConceptLookUp();
                         clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
-                        hier["ToArray"] = htemp.ToArray; //() => htemp.ToArray.apply(hier);
-                        var items = hier.ToArray();
+                        //hier["ToArray"] = Model.Hierarchy.ToArray(htemp); //() => htemp.ToArray.apply(hier);
+                        var items = Model.Hierarchy.ToArray(hier);
                         items.forEach(function (item, index) {
                             if (index > 0) {
                                 var v = {};
@@ -193,19 +194,53 @@ module UI {
                 {
                     concept = factitems[0];
                 }
+    
                 if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
+             
                     $target.click(function () {
                         if (!$target.hasClass(Editor.editclass)) {
-
+                            var typeclass = "";
+                            if (factitems[0].indexOf(":ei") > -1) {
+                                typeclass = "ei";
+                            }
+                            if (factitems[0].indexOf(":di") > -1) {
+                                typeclass = "di";
+                            }
                             var editor: Editor = null;
-                            if (factitems[0].indexOf(":ei") >-1) {
-                                editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
+                            if (typeclass=="ei") {
+                                editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)),
+                                    (i: JQuery) => i.val(),
+                                    (i: JQuery, val: any) => { i.val(val); });
 
-                            } else {
-                                editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(),(i: JQuery, val: any) => i.val(val));
+                            } 
+                            if (typeclass == "di") {
+                                editor = new Editor('<input type="text" class="celleditor datepicker" value="" />',
+                                    (i: JQuery) => {
+                                        return i.val();
+                                    },
+                                    (i: JQuery, val: any) => {
+                                        i.datepicker({
+                                            dateFormat: "yy-mm-dd",
+                                            onSelect: function () {
+                                                editor.Save();
+                                            }
+                                        });
+                                        i.val(val);
+                                    });
+                                editor.CustomTrigger = () => { };
+
+                            } 
+                            if (typeclass == "") 
+                            {
+                                editor = new Editor('<input type="text" class="celleditor " value="" />',
+                                    (i: JQuery) => i.val(),
+                                    (i: JQuery, val: any) => i.val(val));
                             }
 
-                            editor.Load($target,() => $target.html(),() => { $target.html(editor.ValueGetter(editor.$Me)); me.ManageRows(); });
+                            editor.Load($target,
+                                () => $target.html(),
+                                () => { $target.html(editor.ValueGetter(editor.$Me)); me.ManageRows(); }
+                                );
                         }
 
                     });
@@ -282,8 +317,6 @@ module UI {
         {
             this.Cells = cells;
         }
-
-
 
         public LoadExtension(li: Model.LayoutItem) {
             this.CurrentExtension = li;
@@ -379,7 +412,7 @@ module UI {
             var url = window.location.pathname;
             var reportname = url.substring(url.lastIndexOf('/') + 1);
             reportname = reportname.replace(".html", "");
-            var extensioncode = IsNull(me.Current_ExtensionCode) ? this.Extensions[0].LabelCode : me.Current_ExtensionCode;
+            var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
 
 
             var reportkey = Format("{0}|{1}", reportname, extensioncode);
@@ -494,10 +527,10 @@ module UI {
         
         public SetExtensionByCode(code: string)
         {
-            if (this.Extensions.length > 0) {
-                var ext = this.Extensions[0];
+              if (this.Extensions.Count() > 0) {
+                  var ext = this.Extensions.FirstOrDefault();
                 if (!IsNull(code)) {
-                    ext = this.Extensions.AsLinq<Model.LayoutItem>().FirstOrDefault(i=> i.LabelCode == code);
+                    ext = this.Extensions.FirstOrDefault(i=> i.LabelCode == code);
 
                 }
                 if (!IsNull(ext)) {
@@ -513,12 +546,6 @@ module UI {
             this.LoadCells(cells);
         }
 
-        //public SetInstance(item) {
-        //    var instance = <Model.Instance>JSON.parse(item);
-        //    //f
-        //    this.LoadInstance(instance);
-        //}
-
         public HashChanged() {
             ShowNotification("Navigation occured: "+window.location.hash);
             var currentextensioncode = this.Current_ExtensionCode;
@@ -530,11 +557,6 @@ module UI {
             }
      
         }
-
-        //public TestInstance()
-        //{
-        //    this.LoadInstance(window[var_currentinstance]);
-        //}
   
     }
 
