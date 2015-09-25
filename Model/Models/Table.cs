@@ -130,7 +130,7 @@ namespace LogicalModel
             get { return _LayoutCells; }
             set { _LayoutCells = value; }
         }
-
+        protected List<String> FactKeys = new List<string>();
         public int InstanceFactsCount
         {
             get;
@@ -332,6 +332,7 @@ namespace LogicalModel
         {
             var slices = new List<IEnumerable<QualifiedName>>();
             var sb_fact = new StringBuilder();
+            FactKeys.Clear();
             if (this.ID.Contains("29")) 
             {
 
@@ -388,6 +389,7 @@ namespace LogicalModel
                     var tempfact = new FactBase();
                     tempfact.SetFromString(key);
                     key = tempfact.GetFactKey();
+                    FactKeys.Add(key);
                     if (!this.Taxonomy.Facts.ContainsKey(key)) 
                     {
                         this.Taxonomy.Facts.Add(key, new List<String>());
@@ -480,6 +482,18 @@ namespace LogicalModel
             return li;
         }
 
+        public LayoutItem GetRootExtension()
+        {
+            var li = new LayoutItem();
+            li.ID = "";
+            var label = new Label();
+            label.Code = "";
+            label.Lang = "en";
+            label.Content = "Extensions";
+            li.Label = label;
+            return li;
+        }
+
         public void LoadLayout()
         {
             Logger.WriteLine(String.Format("Layout for {0}", this.ID));
@@ -540,7 +554,7 @@ namespace LogicalModel
             Columns = columnsnode.Where(i=>IsChildren(i));
             
     
-            Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural).ToList();
+            Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural && !i.Item.IsAbstract).ToList();
             Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
 
             FixLabelCodes(Columns, "{0:D4}");
@@ -567,10 +581,13 @@ namespace LogicalModel
   
             if (LayoutCells.Count == 0)
             {
-                var exts = Extensions.Where(i=>!i.Item.IsPlaceholder).Select(i=>i.Item).ToList();
+                var exts = Extensions
+                    .Where(i => i.Item.Category == LayoutItemCategory.Rule || (i.Item.Category == LayoutItemCategory.Dynamic && i.Children.Count==0))
+                    .Select(i=>i.Item).ToList();
                 if (exts.Count == 0)
                 {
                     var li = GetDefaultExtension();
+                    Dimension.MergeDimensions(li.Dimensions, Extensions.Item.Dimensions);
                     exts.Add(li);
                 }
                 foreach (var ext in exts) 
@@ -687,6 +704,9 @@ namespace LogicalModel
                                     }
                                     else
                                     {
+                                        if (this.ID.Contains("25.01.08.01")) 
+                                        {
+                                        }
                                         cell.IsBlocked = true;
                                         if (!blocked.ContainsKey(cell.ToString()))
                                         {
@@ -703,7 +723,7 @@ namespace LogicalModel
                 var jscontent = "var FactMap = " + jsoncontent + ";\r\n";
                 jscontent += "var Extensions = " + Utilities.Converters.ToJson(Extensions) + ";";
                 System.IO.File.WriteAllText(FactMapPath, jscontent);
-                System.IO.File.WriteAllText(this.FullHtmlPath.Replace(".html", "_layout.txt"), LayoutRoot.ToHierarchyString(i => i.ID + " code: " + i.LabelCode + " >>> " + i.FactString));
+                System.IO.File.WriteAllText(this.FullHtmlPath.Replace(".html", "_layout.txt"), LayoutRoot.ToHierarchyString(i => (String.IsNullOrEmpty(i.Axis) ? "" : i.Axis + " ") + i.ID + " code: " + i.LabelCode + " >>> " + i.FactString));
 
             }
 

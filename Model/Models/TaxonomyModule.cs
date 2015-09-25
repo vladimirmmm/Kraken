@@ -19,6 +19,7 @@ namespace LogicalModel
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public String SchemaRef { get; set; }
+        public String LocalPath { get; set; }
 
         private List<String> _TablePaths = new List<string>();
         public List<String> TablePaths 

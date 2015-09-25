@@ -1255,30 +1255,48 @@ var Editor = (function () {
         this.Original_Value = TargetValueGetter().trim();
         this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
         //setting UI
-        var containerwidth = -2 + Target.width() - (Target.padding("left") + Target.padding("right"));
-        var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
+        var t_width = Target.width();
+        var t_height = Target.height();
+        var t_l_padding = Target.padding("left");
+        var t_r_padding = Target.padding("right");
+        var t_t_padding = Target.padding("top");
+        var t_b_padding = Target.padding("bottom");
+        var t_tagname = Target.prop("tagName");
+        //Notify(Format("t_width: {0}; t_height: {1}; t_l_padding: {2}, t_r_padding: {3}; t_t_padding: {4}; t_b_padding: {5};",
+        //    t_width, t_height, t_l_padding, t_r_padding, t_t_padding, t_b_padding));
+        var containerwidth = t_width; // - (t_l_padding + t_r_padding);
+        //Notify(Format("   containerwidth: {0}; t_tagname: {1}; $Me.tagname: {2}",
+        //    containerwidth, t_tagname, this.$Me.prop("tagName")));
+        var containerheight = t_height - (t_t_padding + t_b_padding);
         var containerfontfamily = Target.css('font-family');
         var containerfontsize = Target.css('font-size');
         var containerlineheight = Target.css('line-height');
+        var containerbackgroundcolor = Target.parent().css('background-color');
         this.$Me.width(containerwidth);
         this.$Me.height(containerheight);
         this.$Me.css('font-family', containerfontfamily);
         this.$Me.css('font-size', containerfontsize);
         this.$Me.css('line-height', containerlineheight);
+        //this.$Me.css('background-color', containerbackgroundcolor);
         //end setting UI
         this.ValueSetter(this.$Me, this.Original_Value);
         this.$Target = Target;
         this.$Target.html('');
         this.$Me.appendTo(this.$Target);
         this.$Target.addClass(Editor.editclass);
-        if (IsNull(this.CustomTrigger)) {
-        }
         this.$Me.keypress(function (e) {
             if (e.which == 13) {
                 me.Save();
             }
         });
         this.$Me.focus();
+        if (IsNull(this.CustomTrigger)) {
+            this.$Me.blur(function () {
+                //Notify("blurred");
+                me.Save();
+                return true;
+            });
+        }
     };
     Editor.editclass = "editing";
     return Editor;
@@ -1429,9 +1447,10 @@ function Access(obj, key) {
     if (key == "this") {
         return obj;
     }
-    return key.split(".").reduce(function (o, x) {
+    var result = key.split(".").reduce(function (o, x) {
         return (typeof o == "undefined" || o === null) ? o : o[x];
     }, obj);
+    return IsNull(result) ? "" : result;
 }
 function OuterHtml(item) {
     return item[0].outerHTML;

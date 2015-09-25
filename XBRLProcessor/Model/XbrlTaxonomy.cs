@@ -316,6 +316,7 @@ namespace XBRLProcessor.Models
                 this.Module.ID = modulelement.Name;
                 this.Module.Name = l != null ? l.Content : modulelement.Name;
                 this.Module.SchemaRef = this.SourceTaxonomyPath;
+                this.Module.LocalPath = this.EntryDocument.LocalPath;
 
             }
         }

@@ -143,12 +143,29 @@ namespace UI.Services
                                 ti.ID = i.ID;// String.IsNullOrEmpty(i.FilingIndicator) ? i.ID : i.FilingIndicator;
                                 ti.Tables = i.TableIDs;
                                 //var name = String.IsNullOrEmpty(i.LabelCode) ? i.LabelContent : i.LabelCode;
-                                var name = i.LabelContent;
-                                ti.Name = name;
+                                var name = String.IsNullOrEmpty(i.FilingIndicator) ? i.LabelContent : i.FilingIndicator;
+                                ti.Name = Utilities.Strings.TrimTo(name, 40);
                                 ti.Description = i.LabelContent;
                                 ti.Type = "tablegroup";
                                 return ti;
                             });
+                            //tablegroups.Where(i =>
+                            //{
+                            //    bool x = true;
+                            //    if (i.Item.Type == "tablegroup")
+                            //    {
+                            //        if (i.Children.Count == 1) 
+                            //        {
+                            //            var child = i.Children.FirstOrDefault();
+                            //            if (child.Item.Type == "tablegroup") 
+                            //            {
+                            //                //i.Children.Clear();
+                            //                //i.Children.AddRange(child.Children);
+                            //            }
+                            //        }
+                            //    }
+                            //    return x;
+                            //});
                             var tgs = tablegroups.All();
                             //var tgsitems = Engine.CurrentTaxonomy.Module.TableGroups.Where(i => i.Item.TableIDs.Count > 0);
                             //var tgs = tgsitems.Select(i => { 
@@ -194,7 +211,9 @@ namespace UI.Services
                                         ti.Type = "extension";
                                         return ti;
                                     });
-                                    ht.Children.Add(extensions);
+                                    //extensions.Item.Type = "extension";
+                                    //foreach(var ext in extensions.ch)
+                                    ht.Children.AddRange(extensions.Children);
 
                                  /*
                                     var extensions = tbl.Extensions.Where(i=>i.LabelCode!=Table.DefaultExtensionCode).ToList();

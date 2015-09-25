@@ -462,6 +462,7 @@
         public FromDate: Date;
         public ToDate: Date;
         public SchemaRef: string;
+        public LocalPath: string;
 
     }
     export class TaxonomyProperties {

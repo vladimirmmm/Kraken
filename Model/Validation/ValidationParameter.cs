@@ -204,7 +204,37 @@ namespace LogicalModel.Validation
             }
             return base.Equals(obj);
         }
-   
+
+        #region boolean
+
+        public static bool operator |(ValidationParameter lhs, bool rhs)
+        {
+            return lhs.BooleanValue | rhs;
+        }
+        public static bool operator |(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.BooleanValue | rhs.BooleanValue;
+        }
+        public static bool operator |(bool lhs, ValidationParameter rhs)
+        {
+            return lhs | rhs.BooleanValue;
+        }
+
+        public static bool operator &(ValidationParameter lhs, bool rhs)
+        {
+            return lhs.BooleanValue & rhs;
+        }
+        public static bool operator &(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.BooleanValue & rhs.BooleanValue;
+        }
+        public static bool operator &(bool lhs, ValidationParameter rhs)
+        {
+            return lhs & rhs.BooleanValue;
+        }
+
+        #endregion
+
         public static bool operator ==(ValidationParameter lhs, decimal rhs)
         {
             return Equals(lhs.DecimalValue, rhs);

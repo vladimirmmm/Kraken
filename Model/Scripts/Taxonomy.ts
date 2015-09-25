@@ -85,6 +85,7 @@
             AjaxRequest("Taxonomy/Get", "get", "json", null, function (data) {
                 me.Taxonomy.Module = data;
                 BindX($("#TaxonomyInfo"), me.Taxonomy.Module)
+                BindX($("#TaxonomyGeneral"), me.Taxonomy.Module)
             }, function (error) { console.log(error); });
 
             AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
@@ -122,11 +123,7 @@
                             fwc.Callback(data);
                     }, null);
                 });
-            //AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
-            //    //Notify("factsize " + sizeof(data));
-            //    me.Taxonomy.Facts = data;
-            //    //clearobject(data);
-            //}, function (error) { console.log(error); });
+      
         }
 
         public LoadValidationResults(onloaded: Function) {
@@ -155,12 +152,14 @@
                 }
             });
         }
+
         public LoadContentToUI( sender: any) {
             var me = this;
             ShowContentBySender(sender);
             var target = $(sender).attr("activator-for");
             me.LoadContentToUIX(target, sender);
         }
+
         public LoadContentToUIX(contentid: string, sender: any) {
             var me = this;
            
@@ -209,7 +208,6 @@
 
                 query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
             }
-            //var context_id = f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1 ? "" : f_context.trim();
 
             LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
 
@@ -309,21 +307,21 @@
             var $sender = $(sender);
             var $parent = $(sender).parent("li");
             var $childrencontainer = $parent.children("ul").first();
-            var $extensioncontainers = $(".extension").parent();
+            var $extensioncontainers = $(".table>.treeview");
+            var $extensioncontainer = $parent.children(".treeview").first();
             var $tablecontainers = $(".table").parent();
             var childidentifier = $childrencontainer.parent().attr("title");
-            //Notify(Format("id: {0} type: {1}", id, ttype));
-            //$tablecontainers.hide();
+            
             if (In(ttype, "table", "tablegroup")) {
+                $extensioncontainers.hide();
                 
-                if ($childrencontainer.css("display") == "none") {
-                    $extensioncontainers.hide();
-                    $childrencontainer.show();
-                    $(".extension", $childrencontainer).parents().show();
+                if ($extensioncontainer.css("display") == "none") {
+                    $extensioncontainer.show();
+                    //$(".extension", $childrencontainer).parents().show();
                 }
                 else
                 {
-                    $childrencontainer.hide();
+                    $extensioncontainer.hide();
 
                 }
             }
@@ -359,12 +357,14 @@
                 parameter.Value = strvalue;
             });
         }
+
         public CloseRuleDetail() {
             var me = this;
             me.SelFromValidation(s_detail_selector).hide();
             $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
 
         }
+
         public ShowRuleDetail(ruleid: string) {
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
@@ -440,8 +440,6 @@
             return "";
             //return "";
         }
-
-
 
         public NavigateTo(cell: string) {
             var me = this;

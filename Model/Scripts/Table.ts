@@ -198,6 +198,7 @@ module UI {
                 if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
              
                     $target.click(function () {
+                        //Notify("clicked")
                         if (!$target.hasClass(Editor.editclass)) {
                             var typeclass = "";
                             if (factitems[0].indexOf(":ei") > -1) {

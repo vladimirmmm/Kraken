@@ -69,6 +69,7 @@ var Control;
             AjaxRequest("Taxonomy/Get", "get", "json", null, function (data) {
                 me.Taxonomy.Module = data;
                 BindX($("#TaxonomyInfo"), me.Taxonomy.Module);
+                BindX($("#TaxonomyGeneral"), me.Taxonomy.Module);
             }, function (error) {
                 console.log(error);
             });
@@ -107,11 +108,6 @@ var Control;
                     fwc.Callback(data);
                 }, null);
             });
-            //AjaxRequest("Taxonomy/Facts", "get", "json", null, function (data) {
-            //    //Notify("factsize " + sizeof(data));
-            //    me.Taxonomy.Facts = data;
-            //    //clearobject(data);
-            //}, function (error) { console.log(error); });
         };
         TaxonomyContainer.prototype.LoadValidationResults = function (onloaded) {
             var me = this;
@@ -186,7 +182,6 @@ var Control;
             if (!IsNull(f_key)) {
                 query = query.Where(function (i) { return i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length; });
             }
-            //var context_id = f_context.indexOf(" ") > -1 || f_context.indexOf("\n") > -1 ? "" : f_context.trim();
             LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
         };
         TaxonomyContainer.prototype.ClearFilterValidations = function () {
@@ -268,19 +263,17 @@ var Control;
             var $sender = $(sender);
             var $parent = $(sender).parent("li");
             var $childrencontainer = $parent.children("ul").first();
-            var $extensioncontainers = $(".extension").parent();
+            var $extensioncontainers = $(".table>.treeview");
+            var $extensioncontainer = $parent.children(".treeview").first();
             var $tablecontainers = $(".table").parent();
             var childidentifier = $childrencontainer.parent().attr("title");
-            //Notify(Format("id: {0} type: {1}", id, ttype));
-            //$tablecontainers.hide();
             if (In(ttype, "table", "tablegroup")) {
-                if ($childrencontainer.css("display") == "none") {
-                    $extensioncontainers.hide();
-                    $childrencontainer.show();
-                    $(".extension", $childrencontainer).parents().show();
+                $extensioncontainers.hide();
+                if ($extensioncontainer.css("display") == "none") {
+                    $extensioncontainer.show();
                 }
                 else {
-                    $childrencontainer.hide();
+                    $extensioncontainer.hide();
                 }
             }
             if (In(ttype, "table", "extension")) {

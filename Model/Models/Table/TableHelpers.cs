@@ -24,6 +24,7 @@ namespace LogicalModel
                     {
                         var li = new LayoutItem();
                         li.Table = table;
+                        li.Category = LayoutItemCategory.Rule;
                         var dim = new Dimension();
                         dim.DimensionItem = dimension.DimensionItemFullName;
                         if (Taxonomy.IsTyped(dm.Domain.Namespace))
@@ -59,14 +60,37 @@ namespace LogicalModel
 
         public static Hierarchy<LayoutItem> CombineExtensionNodes(List<Hierarchy<LayoutItem>> nodes,Table table) 
         {
-            var placholder = table.GetDefaultExtension();
-            placholder.Category = LayoutItemCategory.BreakDown;
+            var rootextensionli = table.GetRootExtension();
+            rootextensionli.Category = LayoutItemCategory.BreakDown;
+            var extensionnode = new Hierarchy<LayoutItem>(rootextensionli);
+            var nodecontainer = extensionnode;
 
             var sets = new List<List<LayoutItem>>();
-
-            var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();
-            var typednode = typednodes.FirstOrDefault();
+            if (table.ID.Contains("25.02.04.01"))
+            {
+            }
+            var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();           
             var normalnodes = nodes.Except(typednodes).ToList();
+
+            //add dynamic nodes based on typed nodes
+            if (typednodes.Count > 0)
+            {
+                var dynamicli = new LayoutItem();
+                dynamicli.LabelCode = "";
+                dynamicli.LabelContent = "Dynamic";
+                dynamicli.Category = LayoutItemCategory.Dynamic;
+                var dynamicnode = new Hierarchy<LayoutItem>(dynamicli);
+
+                foreach (var typednode in typednodes) 
+                {
+                    Dimension.MergeDimensions(dynamicli.Dimensions, typednode.Item.Dimensions);
+                }
+
+                extensionnode.Children.Add(dynamicnode);
+                dynamicnode.Parent = extensionnode;
+                nodecontainer = dynamicnode;
+
+            }
 
             //set the aspectnodes if any
             foreach (var normalnode in normalnodes) 
@@ -89,52 +113,32 @@ namespace LogicalModel
                 }
                 else 
                 {
-                    Dimension.MergeDimensions(placholder.Dimensions, normalnode.Item.Dimensions);
-
+                    Dimension.MergeDimensions(rootextensionli.Dimensions, normalnode.Item.Dimensions);
                 }
 
             }
-       
+            //Create combinations from normalnodes
             normalnodes = normalnodes.OrderBy(i => i.Children.Count).ToList();
-            if (typednode!=null)
-            {
-                foreach (var normalnode in normalnodes)
-                {
-                    Dimension.MergeDimensions(normalnode.Item.Dimensions, typednode.Item.Dimensions);
-                    if (normalnode.Item.Concept == null)
-                    {
-                        normalnode.Item.Concept = typednode.Item.Concept;
-                    }
-                }
-            }
             var combinations = Utilities.MathX.CartesianProduct(sets);
             var extensionlist = new List<LayoutItem>();
-          
             foreach (var combination in combinations) 
             {
                 if (combination.Count() > 0)
                 {
-                    // AddCombinationTo(combination, extensionnode);
                     AddCombinationTo(combination, extensionlist);
                 }
             }
-
-
-            var extensionnode = new Hierarchy<LayoutItem>(placholder);
-            var nodecontainer = extensionnode;
-            if (typednode != null)
+            //set typed dimensions on normal nodes
+            foreach (var extension in extensionlist) 
             {
-                var dynamicli = new LayoutItem();
-                dynamicli.LabelCode = "";
-                dynamicli.LabelContent = "Dynamic";
-                dynamicli.Category = LayoutItemCategory.Dynamic;
-                var dynamicnode = new Hierarchy<LayoutItem>(dynamicli);
-
-                extensionnode.Children.Add(dynamicnode);
-                dynamicnode.Parent = extensionnode;
-                nodecontainer = dynamicnode;
-
+                Dimension.MergeDimensions(extension.Dimensions, rootextensionli.Dimensions);
+                if (nodecontainer.Item.Category ==LayoutItemCategory.Dynamic)
+                {
+                    Dimension.MergeDimensions(extension.Dimensions, nodecontainer.Item.Dimensions);
+                }
             }
+       
+       
 
 
             nodecontainer.Children.AddRange(extensionlist.Select(i => new Hierarchy<LayoutItem>(i)));
