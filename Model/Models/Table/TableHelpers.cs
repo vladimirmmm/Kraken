@@ -64,9 +64,9 @@ namespace LogicalModel
             rootextensionli.Category = LayoutItemCategory.BreakDown;
             var extensionnode = new Hierarchy<LayoutItem>(rootextensionli);
             var nodecontainer = extensionnode;
-
             var sets = new List<List<LayoutItem>>();
-            if (table.ID.Contains("25.02.04.01"))
+
+            if (table.ID.Contains("09"))
             {
             }
             var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();           
@@ -93,30 +93,57 @@ namespace LogicalModel
             }
 
             //set the aspectnodes if any
+            var firstnode = nodes.FirstOrDefault();
+            if (firstnode != null)
+            {
+                var axisroot = firstnode.Parents().LastOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
+
+                var aspectnodes = axisroot.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
+                foreach (var aspectnode in aspectnodes)
+                {
+                    var aspectnodeitems = GetAspectItems(aspectnode, table);
+                    if (aspectnodeitems.Count != 0)
+                    {
+                        aspectnode.Children.Clear();
+
+                        foreach (var aspectnodeitem in aspectnodeitems)
+                        {
+                            var hli = new Hierarchy<LayoutItem>(aspectnodeitem);
+                            hli.Parent = aspectnode;
+                            aspectnode.Children.Add(hli);
+                        }
+                    }
+            
+
+                }
+                foreach (var axischildren in axisroot.Children)
+                {
+                    var axischildrennodes = axischildren.Where(i => i.Item.IsVisible && i.Item.Category!=LayoutItemCategory.Aspect).ToList();
+                    if (axischildrennodes.Count > 200)
+                    {
+
+                    }
+                    sets.Add(axischildrennodes.Select(i => i.Item).ToList());
+
+                }
+            }
+
+            //add root filters from abstractnodes
+            var abstractnodes = normalnodes.Where(i => i.Item.IsAbstract).ToList();
+            foreach (var abstractnode in abstractnodes) 
+            {
+                Dimension.MergeDimensions(rootextensionli.Dimensions, abstractnode.Item.Dimensions);
+            }
+            normalnodes = normalnodes.Except(abstractnodes).ToList();
+
+            //set the combination set
             foreach (var normalnode in normalnodes) 
             {
-                var parentnode = normalnode.Parent;
-                var aspectnodes = GetAspectItems(parentnode, table);
-                if (aspectnodes.Count != 0) 
-                {
-                    parentnode.Children.Clear();
-                    foreach (var aspectnode in aspectnodes) 
-                    {
-                        var hli = new Hierarchy<LayoutItem>(aspectnode);
-                        hli.Parent = parentnode;
-                        parentnode.Children.Add(hli);
-                    }
-                }
-                if (!parentnode.Item.IsAbstract)
-                {
-                    sets.Add(parentnode.Children.Select(i => i.Item).ToList());
-                }
-                else 
-                {
-                    Dimension.MergeDimensions(rootextensionli.Dimensions, normalnode.Item.Dimensions);
-                }
-
+                table.SetDimensions(normalnode);
+                //sets.Add(normalnode.Children.Select(i => i.Item).ToList());
+                //sets.Add(new List<LayoutItem>(){ normalnode.Item});
             }
+
             //Create combinations from normalnodes
             normalnodes = normalnodes.OrderBy(i => i.Children.Count).ToList();
             var combinations = Utilities.MathX.CartesianProduct(sets);
@@ -136,6 +163,7 @@ namespace LogicalModel
                 {
                     Dimension.MergeDimensions(extension.Dimensions, nodecontainer.Item.Dimensions);
                 }
+
             }
        
        

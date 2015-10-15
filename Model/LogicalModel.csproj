@@ -173,6 +173,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\colResizable-1.5.min.js" />
+    <Content Include="Scripts\Formatter.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Instance.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -189,6 +192,9 @@
     <Content Include="Scripts\jquery.pagination.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\JqueryUtils.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Linq.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -199,6 +205,9 @@
     <Content Include="Scripts\Table.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\TableManager.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Taxonomy.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -206,6 +215,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Table.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Test.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="UI.html">
@@ -239,9 +251,11 @@
     <TypeScriptCompile Include="Scripts\AppItems.ts" />
     <TypeScriptCompile Include="Scripts\Binding.ts" />
     <TypeScriptCompile Include="Scripts\Instance.ts" />
+    <TypeScriptCompile Include="Scripts\JqueryUtils.ts" />
     <TypeScriptCompile Include="Scripts\Linq.ts" />
     <TypeScriptCompile Include="Scripts\Models.ts" />
     <TypeScriptCompile Include="Scripts\Table.ts" />
+    <TypeScriptCompile Include="Scripts\TableManager.ts" />
     <TypeScriptCompile Include="Scripts\Taxonomy.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\Utils.ts" />
@@ -263,10 +277,10 @@
   <Target Name="BeforeBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y "$(ProjectDir)Scripts" "$(SolutionDir)UI\$(OutDir)\Scripts\"
-xcopy /E /Y "$(ProjectDir)Layout" "$(SolutionDir)UI\$(OutDir)\Layout\"
-xcopy /E /Y "$(ProjectDir)Table.css" "$(SolutionDir)UI\$(OutDir)\Table.css"
-xcopy /E /Y "$(ProjectDir)UI.html" "$(SolutionDir)UI\Bin\Debug\UI.html"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)UI\$(OutDir)Scripts\"
+xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)UI\$(OutDir)Layout\"
+xcopy /E /Y /I "$(ProjectDir)Table.css" "$(SolutionDir)UI\$(OutDir)"
+xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)UI\$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

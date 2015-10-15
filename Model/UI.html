@@ -16,14 +16,18 @@
     <script src="Scripts\Linq.js" type="text/javascript"></script>
     <script src="Scripts\AppItems.js" type="text/javascript"></script>
     <script src="Scripts\Utils.js" type="text/javascript"></script>
+    <script src="Scripts\JqueryUtils.js" type="text/javascript"></script>
+    <script src="Scripts\TableManager.js" type="text/javascript"></script>
+    
     <script src="Scripts\Binding.js" type="text/javascript"></script>
     <script src="Scripts\Models.js" type="text/javascript"></script>
+    <script src="Scripts\Table.js" type="text/javascript"></script>
     <script src="Scripts\Taxonomy.js" type="text/javascript"></script>
     <script src="Scripts\Instance.js" type="text/javascript"></script>
     <script src="Scripts\App.js" type="text/javascript"></script>
+    
 
-
-    <!--<script src="validationresult.js" type="text/javascript"></script>
+    <!--<script src="validationresult.js" s type="text/javascript"></script>
     <script src="currentinstance.js" type="text/javascript"></script>-->
     <title></title>
     <style>
@@ -43,7 +47,7 @@
 
         });
         $(window).on('hashchange', function () {
-            app.app.instancecontainer.HashChanged();
+            app.instancecontainer.HashChanged();
         });
 
     </script>
@@ -155,6 +159,7 @@
                     <td>
                         <div id="Table" class="">
                         </div>
+                        <script id="TableScript" type="text/javascript"></script>
                         <iframe id="tableframe" class="pivotitem"></iframe>
 
                     </td>

@@ -461,26 +461,26 @@ namespace LogicalModel
         
         public void ManageUIFiles() 
         {
-            if (!System.IO.Directory.Exists(TaxonomyLayoutFolder))
-            {
-                System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
-            }
+            //if (!System.IO.Directory.Exists(TaxonomyLayoutFolder))
+            //{
+            //    System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
+            //}
 
-            var scriptfiles = System.IO.Directory.GetFiles("Scripts");
-            foreach (var file in scriptfiles)
-            {
-                var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
-                ManageUIFile(filepath);
-            }
-            var layoutfiles = System.IO.Directory.GetFiles("Layout");
-            foreach (var file in layoutfiles)
-            {
-                var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
-                ManageUIFile(filepath);
-            }
+            //var scriptfiles = System.IO.Directory.GetFiles("Scripts");
+            //foreach (var file in scriptfiles)
+            //{
+            //    var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
+            //    ManageUIFile(filepath);
+            //}
+            //var layoutfiles = System.IO.Directory.GetFiles("Layout");
+            //foreach (var file in layoutfiles)
+            //{
+            //    var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
+            //    ManageUIFile(filepath);
+            //}
 
-            ManageUIFile(@"Table.css");
-            ManageUIFile(@"UI.html");
+            //ManageUIFile(@"Table.css");
+            //ManageUIFile(@"UI.html");
          
         }
 

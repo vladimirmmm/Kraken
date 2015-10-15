@@ -17,30 +17,48 @@ module UI {
         
         private Current_CellID: string = "";
         private Current_ExtensionCode: string = "";
+        private Current_ReportID: string = "";
         private IsInstanceLoaded: boolean = false;
         constructor()
         {
          
-            this.SetExternals();
-            this.SetNavigation();
-            this.SetExtensionByCode(this.Current_ExtensionCode);
-            this.Load();
-            this.HighlightCell();
-            this.GetData();
-            ShowNotification("Table instance loaded!");
+       
+        }
+
+        public LoadTable(reportid:string)
+        {
+            var me = this;
+           
+            AjaxRequest("Taxonomy/Table", "get", "text/html",
+                { item: "factmap", reportid: reportid },
+                function (data) {
+                    //_Html(_SelectFirst("#TableScript"), data);
+                    var jsonobj = JSON.parse(data);
+                    me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
+                    me.FactMap = jsonobj["FactMap"];
+
+                    me.Current_ReportID = reportid;
+
+                    me.SetExternals();
+                    me.Load();
+                    me.GetData();
+                    ShowNotification("Table instance loaded!");
+
+                },
+                function (error) { console.log(error); });
+
+
         }
  
         public SetExternals()
         {
-
-            this.FactMap = window["FactMap"];
-            this.ExtensionsRoot = window["Extensions"];
             this.Extensions = Model.Hierarchy.ToArray(this.ExtensionsRoot)
                 .AsLinq<Model.LayoutItem>()
                 .Where(i=> In(i.Category,
                 Model.LayoutItemCategory.Rule,
                 Model.LayoutItemCategory.BreakDown))
                 .Select(i=> i);
+            this.CurrentExtension = this.ExtensionsRoot.Item;
      
         }
 
@@ -48,7 +66,11 @@ module UI {
         {
             var me = this;
             me.IsInstanceLoaded = false;
-            var waiter: Waiter = new Waiter((i: RequestHandler) => i.succeded,() => { me.LoadConceptValues(); me.LoadToUI(); });
+            var waiter: Waiter = new Waiter((i: RequestHandler) => i.succeded,() => {
+                me.LoadConceptValues();
+                me.LoadToUI();
+                me.SetNavigation();
+            });
 
             //debugger;
             waiter.WaitFor(AjaxRequest("Instance/Get", "get", "json", null, function (data) {
@@ -57,7 +79,7 @@ module UI {
             }, function (error) { console.log(error); }));
 
             waiter.WaitFor(AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
-                me.Concepts = data
+                me.Concepts = <Model.Concept[]>GetPropertiesArray(data);
                 //me.Concepts = me.Concepts.AsLinq<Model.Concept>().Where(i=> i.Domain != null).ToArray();
 
                 waiter.Check();
@@ -74,24 +96,13 @@ module UI {
 
         public SetNavigation()
         {
-            var hash = window.location.hash;
-            if (hash.length > 0) {
-                if (hash[hash.length - 1] != ";") {
-                    hash = hash + ";";
-                }
-
-                var cellid = TextBetween(hash, "cell=", ";");
-                var extcode = TextBetween(hash, "ext=", ";");
-                if (extcode == "000") { extcode = "000"; }
-                this.Current_CellID = cellid;
-                this.Current_ExtensionCode = extcode;
-            }
-            else
-            {
+            var me = this;
+            if (IsNull(me.Current_ExtensionCode)) {
                 this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
             }
-            var code = this.Current_ExtensionCode;
-            this.CurrentExtension = this.Extensions.FirstOrDefault(i=> i.LabelCode == code);
+            me.SetExtensionByCode(this.Current_ExtensionCode);
+            me.HighlightCell();
+
         }
 
         public LoadToUI()
@@ -109,10 +120,7 @@ module UI {
         public Load()
         {
             var me = this;
-            $(window).on('hashchange', function () {
-                me.HashChanged();
-            });
-            $("table").on('click', 'tr', function () {
+            $("table.report").on('click', 'tr', function () {
                 $('tr', 'table').removeClass("selected");
                 $(this).addClass("selected");
             });
@@ -145,29 +153,31 @@ module UI {
                 });
                 me.Concepts.forEach(function (concept) {
                     Model.QualifiedName.Set(concept);
-                    Model.QualifiedName.Set(concept.Domain);
-                    concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
-                    var hiers = me.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
-                        .Where(i=> i.Item.Name == concept.Domain.Name
-                        && i.Item.Namespace == concept.Domain.Namespace
-                        && i.Item.Role == concept.HierarchyRole
-                        );
-                    var hier = hiers.FirstOrDefault();
-                    if (hier != null) {
-                        var clkp = new Model.ConceptLookUp();
-                        clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
-                        //hier["ToArray"] = Model.Hierarchy.ToArray(htemp); //() => htemp.ToArray.apply(hier);
-                        var items = Model.Hierarchy.ToArray(hier);
-                        items.forEach(function (item, index) {
-                            if (index > 0) {
-                                var v = {};
-                                Model.QualifiedItem.Set(item);
-                                var id = Format("{0}:{1}", item.Namespace, item.Name);
-                                clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
-                            }
-                        });
-                        clkp.OptionsHTML = ToOptionList(clkp.Values, true);
-                        me.ConceptValues.push(clkp);
+                    if (!IsNull(concept.Domain)) {
+                        Model.QualifiedName.Set(concept.Domain);
+                        concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
+                        var hiers = me.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
+                            .Where(i=> i.Item.Name == concept.Domain.Name
+                            && i.Item.Namespace == concept.Domain.Namespace
+                            && i.Item.Role == concept.HierarchyRole
+                            );
+                        var hier = hiers.FirstOrDefault();
+                        if (hier != null) {
+                            var clkp = new Model.ConceptLookUp();
+                            clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
+                            //hier["ToArray"] = Model.Hierarchy.ToArray(htemp); //() => htemp.ToArray.apply(hier);
+                            var items = Model.Hierarchy.ToArray(hier);
+                            items.forEach(function (item, index) {
+                                if (index > 0) {
+                                    var v = {};
+                                    Model.QualifiedItem.Set(item);
+                                    var id = Format("{0}:{1}", item.Namespace, item.Name);
+                                    clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                                }
+                            });
+                            clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                            me.ConceptValues.push(clkp);
+                        }
                     }
                 });
             }
@@ -548,14 +558,41 @@ module UI {
         }
 
         public HashChanged() {
-            ShowNotification("Navigation occured: "+window.location.hash);
-            var currentextensioncode = this.Current_ExtensionCode;
-            this.SetNavigation();
-            this.SetExtensionByCode(this.Current_ExtensionCode);  
-            this.HighlightCell();   
-            if (currentextensioncode != this.Current_ExtensionCode) {
-                this.GetData();
+            ShowNotification("Navigation occured: " + window.location.hash);
+            var me = this;
+            var hash = window.location.hash;
+            if (hash.length > 0) {
+                if (hash[hash.length - 1] != ";") {
+                    hash = hash + ";";
+                }
+
+                var reportid = TextBetween(hash, "report=", ";");
+                var cellid = TextBetween(hash, "cell=", ";");
+                var extcode = TextBetween(hash, "ext=", ";");
+
+                if (extcode == "000") { extcode = "000"; }
+
+                me.Current_CellID = cellid;
+                me.Current_ExtensionCode = extcode;
+                if (me.Current_ReportID != reportid) {
+                    me.Current_ReportID = reportid;
+                    me.LoadTable(reportid);
+                } else
+                {
+                    me.SetNavigation();
+
+                }
+
+
             }
+
+            var currentextensioncode = this.Current_ExtensionCode;
+            //this.SetNavigation();
+            //this.SetExtensionByCode(this.Current_ExtensionCode);  
+            //this.HighlightCell();   
+            //if (currentextensioncode != this.Current_ExtensionCode) {
+            //    this.GetData();
+            //}
      
         }
   

@@ -3,6 +3,7 @@ var Control;
     var TaxonomyContainer = (function () {
         function TaxonomyContainer() {
             this.Taxonomy = new Model.Taxonomy();
+            this.Table = new UI.Table();
             this.ValidationRules = [];
             this.TableStructure = null;
             this.CurrentFacts = null;
@@ -37,7 +38,14 @@ var Control;
                     me.SetHeight();
                 }, 200, "retek");
             });
+            $(window).on('hashchange', function () {
+                me.HashChanged();
+            });
         }
+        TaxonomyContainer.prototype.HashChanged = function () {
+            var me = this;
+            me.Table.HashChanged();
+        };
         TaxonomyContainer.prototype.SetHeight = function () {
             var bodyheight = $(window).height();
             var pivotheight = (bodyheight - 50) + "px";
@@ -202,9 +210,6 @@ var Control;
             if (!IsNull(f_ruleid)) {
                 query = query.Where(function (i) { return i.ID.indexOf(f_ruleid) > -1; });
             }
-            //if (!IsNull(f_key)) {
-            //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
-            //}
             var eventhandlers = { onpaging: function () {
                 me.CloseRuleDetail();
             } };
@@ -233,7 +238,9 @@ var Control;
             }
             if (!IsNull(f_cellid)) {
             }
-            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);
+            var parameters = { factstring: f_factstring, cellid: f_cellid };
+            LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, parameters, null);
+            //LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);
             me.HideFactDetails();
         };
         TaxonomyContainer.prototype.ShowFactDetails = function (factkey, factstring) {
@@ -257,6 +264,51 @@ var Control;
             var me = this;
             var $factdetail = me.SelFromFact(s_detail_selector);
             $factdetail.hide();
+        };
+        TaxonomyContainer.prototype.CloseRuleDetail = function () {
+            var me = this;
+            me.SelFromValidation(s_detail_selector).hide();
+            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
+        };
+        TaxonomyContainer.prototype.ShowRuleDetail = function (ruleid) {
+            var me = this;
+            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
+            var $valdetail = me.SelFromValidation(s_detail_selector);
+            if ($valdetail.is(':visible')) {
+                $valdetail.hide();
+            }
+            else {
+                if (ruleid == previousruleid) {
+                    $valdetail.show();
+                }
+            }
+            if (ruleid != previousruleid) {
+                var rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
+                BindX(me.SelFromValidation(s_parent_selector), rule);
+                AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
+                    var results = data;
+                    var eventhandlers = {
+                        onloading: function (data) {
+                            data.forEach(function (ruleresult) {
+                                TaxonomyContainer.SetValues(ruleresult);
+                            });
+                        }
+                    };
+                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1, eventhandlers);
+                }, function (error) {
+                    console.log(error);
+                });
+                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
+                $(".trimmed").click(function () {
+                    if ($(this).hasClass("hmax30")) {
+                        $(this).removeClass("hmax30");
+                    }
+                    else {
+                        $(this).addClass("hmax30");
+                    }
+                });
+                $valdetail.show();
+            }
         };
         TaxonomyContainer.prototype.TableInfoSelected = function (id, ttype, sender) {
             var me = this;
@@ -305,51 +357,6 @@ var Control;
                 parameter.Value = strvalue;
             });
         };
-        TaxonomyContainer.prototype.CloseRuleDetail = function () {
-            var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
-        };
-        TaxonomyContainer.prototype.ShowRuleDetail = function (ruleid) {
-            var me = this;
-            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
-            var $valdetail = me.SelFromValidation(s_detail_selector);
-            if ($valdetail.is(':visible')) {
-                $valdetail.hide();
-            }
-            else {
-                if (ruleid == previousruleid) {
-                    $valdetail.show();
-                }
-            }
-            if (ruleid != previousruleid) {
-                var rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
-                BindX(me.SelFromValidation(s_parent_selector), rule);
-                AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
-                    var results = data;
-                    var eventhandlers = {
-                        onloading: function (data) {
-                            data.forEach(function (ruleresult) {
-                                TaxonomyContainer.SetValues(ruleresult);
-                            });
-                        }
-                    };
-                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1, eventhandlers);
-                }, function (error) {
-                    console.log(error);
-                });
-                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
-                $(".trimmed").click(function () {
-                    if ($(this).hasClass("hmax30")) {
-                        $(this).removeClass("hmax30");
-                    }
-                    else {
-                        $(this).addClass("hmax30");
-                    }
-                });
-                $valdetail.show();
-            }
-        };
         TaxonomyContainer.prototype.GetCellValue = function (cellid) {
             return "";
         };
@@ -378,7 +385,17 @@ var Control;
         TaxonomyContainer.prototype.NavigateTo = function (cell) {
             var me = this;
             AjaxRequest("Taxonomy/Table", "get", "text/html", { cell: cell }, function (data) {
-                $(s_tableframe_selector).attr("src", data);
+                var itemparts = data.split("#");
+                if (itemparts.length > 1) {
+                    var url = itemparts[0];
+                    var hash = itemparts[1];
+                    AjaxRequest(url, "get", "text/html", null, function (data) {
+                        _Html(_SelectFirst("#Table"), data);
+                        window.location.hash = hash;
+                    }, function (error) {
+                        console.log(error);
+                    });
+                }
             }, function (error) {
                 console.log(error);
             });

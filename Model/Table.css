@@ -51,7 +51,7 @@ table.report tbody td.data {
         min-width:15px;
     }
     table.report tbody tr {
-        /*border:solid 1px;*/
+        border-top:solid 1px transparent;
     }
     table.report tbody tr:nth-child(2n-1) {
         background-color:#cecece;

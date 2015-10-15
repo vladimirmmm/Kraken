@@ -252,6 +252,7 @@ namespace XBRLProcessor.Model
             logicaltable.ID = logicaltable.LayoutRoot.Item.ID;
             logicaltable.Name = logicaltable.LayoutRoot.Item.LabelContent;
             logicaltable.SetHtmlPath();
+            System.IO.File.WriteAllText(logicaltable.FullHtmlPath.Replace(".html", "_layout.txt"), logicaltable.LayoutRoot.ToHierarchyString(i => (String.IsNullOrEmpty(i.Axis) ? "" : i.Axis + " ") + i.ID + " code: " + i.LabelCode + " >>> " + i.FactString));
 
         }
         

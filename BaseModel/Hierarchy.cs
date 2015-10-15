@@ -403,6 +403,18 @@ namespace BaseModel
             return current;
         }
 
+        public List<Hierarchy<TClass>> Parents()
+        {
+            var parents = new List<Hierarchy<TClass>>();
+            var parent = this.Parent;
+            while (parent != null)
+            {
+                parents.Add(parent);
+                parent = parent.Parent;
+            }
+            return parents;
+        }
+
         public void Clear()
         {
             this.Children.Clear();

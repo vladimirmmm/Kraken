@@ -171,7 +171,7 @@ namespace LogicalModel
         {
             get
             {
-                return Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect);
+                return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect);
             }
         }
         public bool IsStructural

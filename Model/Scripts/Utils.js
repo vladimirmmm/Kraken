@@ -35,26 +35,43 @@ function ShowHideChild(selector, sender) {
 }
 function SetPivots() {
     $("#maintable").resizableColumns();
-    //$("#maintable").colResizable({
-    //    liveDrag: false,
-    //});
-    //$("#pivot").splitPane({
-    //    type: "v",
-    //    outline: true,
-    //    minLeft: 100, sizeLeft: 150, minRight: 100,
-    //    resizeToWidth: true,
-    //    cookie: "vsplitter",
-    //    accessKey: 'I'
-    //});
-    /*
-    $(".pivotitem").click(function () {
-        Activate($(this));
+}
+var _Select = function (CssSelector, from) { return null; };
+var _SelectFirst = function (CssSelector, from) { return null; };
+var _AddEventHandler = function (element, eventname, handler) {
+};
+var _RemoveEventHandler = function (element, eventname, handler) {
+};
+var _EnsureEventHandler = function (element, eventname, handler) {
+};
+var _Attribute = function (element, attributename, attributevalue) { return ""; };
+var _Property = function (element, propertyname) { return ""; };
+var _Value = function (element, value) { return ""; };
+var _Html = function (element, html) { return ""; };
+var _Remove = function (element) {
+};
+var _Append = function (target, element) {
+};
+var _After = function (target, element) {
+};
+var _Before = function (target, element) {
+};
+var _HasClass = function (element, classname) { return false; };
+var _AddClass = function (element, classname) {
+};
+var _RemoveClass = function (element, classname) {
+};
+var _Css = function (element, value) {
+};
+var _Focus = function (element) {
+};
+var _Clone = function (element) { return null; };
+function ToElements(item) {
+    var items = [];
+    item.each(function (ix, element) {
+        items.push(element);
     });
-    var iframe = $($("#tableframe")[0]["contentWindow"].document);
-    $(iframe).click(function () {
-        Activate($("#tableframe").parent());
-    });
-    */
+    return items;
 }
 var waitForFinalEvent = (function () {
     var timers = {};
@@ -106,36 +123,6 @@ function GetFunctionBody(f) {
     var entire = f.toString();
     var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
     return result;
-}
-function Select(sender) {
-    var $command = $(sender);
-    var sel = "selected";
-    var $commands = $command.parent().children(); //a
-    $commands.removeClass(sel);
-    $command.addClass(sel);
-    var selectfromlist = function (item, items) {
-        if (item.length > 0) {
-            items.removeClass(sel);
-            item.addClass(sel);
-        }
-    };
-    var $list = $command.parents(".list").first();
-    if ($list.length == 1) {
-        var tag = $list.prop("tagName");
-        tag = tag.toLowerCase();
-        var $listitem = null;
-        var $listitems = null;
-        if (tag == "ul") {
-            $listitem = $command.parents("li").first();
-            $listitems = $list.children();
-        }
-        if (tag == "table") {
-            $listitem = $command.parents("tr").first();
-            $listitems = $("tr", $list);
-        }
-        selectfromlist($listitem, $listitems);
-    }
-    return sender;
 }
 function GetReturnStatement(f) {
     var body = GetFunctionBody(f);
@@ -247,36 +234,6 @@ try {
 }
 catch (err) {
 }
-function ShowContent(selector, sender) {
-    var id = selector.replace("#", "");
-    var $activator = $(sender); // $("[activator-for=" + id + "]");
-    Select($activator);
-    var $content = $(selector);
-    var $parents = ($activator.length == 0 ? $content : $activator).parents(s_contentcontainer_selector);
-    var $parent = $parents.first();
-    $parent.children(s_content_selector).hide();
-    if ($parent.length > 0) {
-        var id = $parent.attr("id");
-        ShowContentByID("#" + id);
-    }
-    if ($content.length == 0) {
-        ShowError("ShowContent: " + selector + " has not items!");
-    }
-    $content.show();
-    return $activator;
-}
-function ShowContentByID(selector) {
-    var id = selector.replace("#", "");
-    var $activator = $("[activator-for=" + id + "]").first();
-    ShowContent(selector, $activator);
-    return $activator;
-}
-function ShowContentBySender(sender) {
-    var $activator = $(sender);
-    var targetselector = "#" + $activator.attr("activator-for");
-    ShowContent(targetselector, sender);
-    return $activator;
-}
 function GetPart(data, startix, endix) {
     var part = [];
     if (IsArray(data)) {
@@ -328,35 +285,9 @@ function GetLength(data) {
     }
     return 0;
 }
-function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
-    var me = this;
-    var startix = pagesize * page;
-    var endix = startix + pagesize;
-    var itemspart = GetPart(data, startix, endix);
-    var datalength = GetLength(data);
-    CallFunction(events, "onloading", itemspart);
-    BindX($bindtarget, itemspart);
-    CallFunction(events, "onloaded", itemspart);
-    if ($pager.length == 0 || 1 == 1) {
-        $pager.pagination(datalength, {
-            items_per_page: pagesize,
-            current_page: page ? page : 0,
-            link_to: "",
-            prev_text: "Prev",
-            next_text: "Next",
-            ellipse_text: "...",
-            prev_show_always: true,
-            next_show_always: true,
-            callback: function (pageix) {
-                CallFunction(events, "onpaging");
-                LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
-                CallFunction(events, "onpaged");
-                return false;
-            },
-        });
-    }
-    else {
-    }
+function RemoveFrom(item, items) {
+    var ix = items.indexOf(item);
+    items.splice(ix, 1);
 }
 var FunctionWithCallback = (function () {
     function FunctionWithCallback(f) {
@@ -377,37 +308,6 @@ var FunctionWithCallback = (function () {
     };
     return FunctionWithCallback;
 })();
-function LoadPageAsync($bindtarget, $pager, functionwithcallback, page, pagesize, events) {
-    var me = this;
-    var startix = pagesize * page;
-    var endix = startix + pagesize;
-    functionwithcallback.Callback = function (result) {
-        CallFunction(events, "onloading", result.Items);
-        BindX($bindtarget, result.Items);
-        CallFunction(events, "onloaded", result.Items);
-        if ($pager.length == 0 || 1 == 1) {
-            $pager.pagination(result.Total, {
-                items_per_page: pagesize,
-                current_page: page ? page : 0,
-                link_to: "",
-                prev_text: "Prev",
-                next_text: "Next",
-                ellipse_text: "...",
-                prev_show_always: true,
-                next_show_always: true,
-                callback: function (pageix) {
-                    CallFunction(events, "onpaging");
-                    LoadPageAsync($bindtarget, $pager, functionwithcallback, pageix, pagesize, events);
-                    CallFunction(events, "onpaged");
-                    return false;
-                },
-            });
-        }
-        else {
-        }
-    };
-    functionwithcallback.Call({ page: page, pagesize: pagesize });
-}
 function CallFunction(eventcontainer, eventname, args) {
     if (!IsNull(eventcontainer)) {
         if (eventname in eventcontainer && IsFunction(eventcontainer[eventname])) {
@@ -555,57 +455,6 @@ function clearobject(item) {
         }
     }
 }
-function Ajax(url, method, parameters, generichandler, contentType) {
-    var result = {}; //new Engine.InfoContainer();
-    var _contentType = "text/html";
-    var _dataType = "";
-    var callback = function (result) {
-        return false;
-    };
-    var S_Callback = "callback";
-    if (!IsNull(parameters) && parameters[S_Callback] instanceof Function) {
-        callback = parameters[S_Callback];
-    }
-    if (contentType == "json") {
-        _contentType = "application/json; charset=UTF-8";
-        _dataType = "json";
-    }
-    var params = parameters;
-    if (method.toLowerCase() == "get") {
-        params = ToObjectX(parameters); //Clone(parameters);
-    }
-    if (method.toLowerCase() == "post") {
-        params = JSON.stringify(parameters);
-    }
-    StartProgress("ajax");
-    //_App.ProgressManager.StartProgress("ajax");
-    $.ajax({
-        url: GetBaseURL() + url,
-        contentType: _contentType,
-        dataType: _dataType,
-        type: method,
-        data: params,
-        cache: false,
-        success: function (data) {
-            StopProgress("ajax");
-            var Id = this.url.toString();
-            result = ResultFormatter(data);
-            console.log(Format("Request succeeded - {0}", Id));
-            generichandler(result);
-            callback(result);
-        },
-        error: function (exception) {
-            StopProgress("ajax");
-            var Id = this.url.toString();
-            var errorobj = GetErrorObj(exception, this.contentType);
-            var errormsg = Format("Request failed: {0}", errorobj.message);
-            //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
-            actioncenter.AddError(errormsg);
-            SetProperty(result, "Error", exception);
-            generichandler(result);
-        }
-    });
-}
 function GetErrorObj(exception, contenttype) {
     var exceptiontext = "responseJSON" in exception ? exception["responseJSON"] : "";
     var stacktrace = "";
@@ -648,7 +497,7 @@ function GetBaseURL() {
 }
 ;
 /*Strings*/
-function TextBetween(text, begintag, endtag) {
+function TextBetween(text, begintag, endtag, withtags) {
     var result = "";
     if (typeof text == "string") {
         var ixs = text.indexOf(begintag);
@@ -660,6 +509,9 @@ function TextBetween(text, begintag, endtag) {
             }
         }
     }
+    if (withtags) {
+        result = begintag + result + endtag;
+    }
     return result;
 }
 ;
@@ -667,8 +519,8 @@ function TextsBetween(text, begintag, endtag, withtags) {
     var result = [];
     while (text.indexOf(begintag) > -1 && text.indexOf(begintag) > -1) {
         var item = TextBetween(text, begintag, endtag);
-        var fullitem = begintag + item + endtag;
         if (withtags) {
+            var fullitem = begintag + item + endtag;
             result.push(fullitem);
         }
         else {
@@ -691,11 +543,45 @@ function Format() {
         }
     }
     var format = arguments[0];
-    return format.replace(/{(\d+)}/g, function (match, number) {
-        return typeof args[number] != 'undefined' ? args[number] : match;
+    format = Replace(format, "{{", "xF<w&");
+    format = Replace(format, "}}", "xF>w&");
+    var result = format;
+    var parts = TextsBetween(format, "{", "}", true);
+    parts.forEach(function (item, ix) {
+        var ix = -1;
+        var inner = item.substring(1, item.length - 1);
+        var partformat = "";
+        if (inner.indexOf(":") > -1) {
+            ix = Number(inner.substring(0, inner.indexOf(":")));
+            partformat = inner.substring(inner.indexOf(":") + 1);
+        }
+        else {
+            ix = Number(inner);
+        }
+        var arg = args[ix];
+        if (!IsNull(format)) {
+            if (arg instanceof Date) {
+                arg = FormatDate(arg, partformat);
+            }
+            if (IsNumeric(arg) && (!(arg instanceof Date))) {
+                if (partformat.toLowerCase().indexOf("d") == 0) {
+                    var padnr = Number(partformat.substring(1));
+                    arg = pad(Number(arg), padnr, "0", 0);
+                }
+            }
+        }
+        result = Replace(result, item, arg);
     });
+    return result;
 }
 ;
+function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+//string/number,length=2,char=0,0/false=Left-1/true=Right
+function pad(a, b, c, d) {
+    return a = (a || c || 0) + '', b = new Array((++b || 3) - a.length).join(c || 0), d ? a + b : b + a;
+}
 function Property(item, property, value) {
     if (typeof value === "undefined" && !IsNull(item)) {
         if (property in item) {
@@ -918,12 +804,6 @@ function HtmlToText(html) {
 function ToString(item) {
     return IsNull(item) ? "" : item.toString();
 }
-function HtmlEncode(value) {
-    return $('<div/>').text(value).html();
-}
-function HtmlDecode(value) {
-    return $('<div/>').html(value).text();
-}
 function Truncate(item, limit) {
     var result = "";
     if (IsNull(limit)) {
@@ -939,17 +819,6 @@ function Truncate(item, limit) {
     }
     return result;
 }
-function BindEvent(selector, events, handler) {
-    $(selector).unbind(events, handler).bind(events, handler);
-}
-;
-function UnBindEvent(selector, events) {
-    $(selector).unbind(events);
-}
-;
-function ShowHide(target) {
-    $(target).toggleClass("hidden");
-}
 /*End HTML*/
 /*DateTime*/
 function JsonToDate(item) {
@@ -962,15 +831,6 @@ function JsonToDate(item) {
 }
 function ToDate(item) {
     return FormatDate(JsonToDate(item));
-}
-function FormatDate(d, format) {
-    if (IsNull(format)) {
-        format = "yy/mm/dd hh:ii:ss";
-    }
-    if (IsNull(d)) {
-        return "";
-    }
-    return $.formatDateTime(format, d);
 }
 function ToNormalDate(item) {
     return FormatDate(JsonToDate(item));
@@ -991,24 +851,6 @@ function Res(key, culture) {
     var res = key;
     res = resourcemanager.Get(key, culture);
     return res;
-}
-function Attribute(obj, name, value) {
-    if (arguments.length == 3) {
-        $(obj).attr(name, value);
-    }
-    if (arguments.length == 2) {
-        return $(obj).attr(name);
-    }
-    return "";
-}
-function Content(obj, value) {
-    if (arguments.length == 2) {
-        $(obj).html(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).html();
-    }
-    return "";
 }
 /**End Proto/
 
@@ -1054,29 +896,6 @@ function parseExp(expression, model) {
 }
 ;
 /*End Expressions*/
-$.fn.serializeObject = function () {
-    var o = {};
-    var a = this.serializeArray();
-    //$.each(a, function () {
-    //    if (o[this.name] !== undefined) {
-    //        if (!o[this.name].push) {
-    //            o[this.name] = [o[this.name]];
-    //        }
-    //        o[this.name].push(this.value || '');
-    //    } else {
-    //        o[this.name] = this.value || '';
-    //    }
-    //});
-    //return o;
-    var paramObj = {};
-    $.each(a, function (_, kv) {
-        paramObj[kv.name] = kv.value;
-    });
-    return paramObj;
-};
-function SerializeForm(selector) {
-    return $(selector).serializeObject();
-}
 function FilesIntoUL(viewmodel) {
     var model = viewmodel.Items;
     var html = "";
@@ -1094,55 +913,6 @@ function FilesIntoUL(viewmodel) {
     html += "</ul>";
     return html;
 }
-$.fn.extend({
-    padding: function (direction) {
-        // calculate the values you need, using a switch statement
-        // or some other clever solution you figure out
-        // this now contains a wrapped set with the element you apply the 
-        // function on, and direction should be one of the four strings 'top', 
-        // 'right', 'left' or 'bottom'
-        // That means you could probably do something like (pseudo code):
-        var paddingvalue = this.css('padding-' + direction).trim();
-        var intPart = "";
-        var unit = paddingvalue.substring(paddingvalue.length - 2);
-        intPart = paddingvalue.replace(unit, "");
-        switch (unit) {
-            case 'px':
-                return Number(intPart);
-            case 'em':
-                return 0;
-            default:
-        }
-    }
-});
-$.fn.extend({
-    editable: function () {
-        var that = this, $edittextbox = $('<input type="text"></input>').css('min-width', that.width()), submitChanges = function () {
-            that.html($edittextbox.val());
-            that.show();
-            that.trigger('editsubmit', [that.html()]);
-            $(document).unbind('click', submitChanges);
-            $edittextbox.detach();
-        }, tempVal;
-        $edittextbox.click(function (event) {
-            event.stopPropagation();
-        });
-        that.dblclick(function (e) {
-            tempVal = that.html();
-            $edittextbox.val(tempVal).insertBefore(that).bind('keypress', function (e) {
-                if ($(this).val() !== '') {
-                    var code = (e.keyCode ? e.keyCode : e.which);
-                    if (code == 13) {
-                        submitChanges();
-                    }
-                }
-            });
-            that.hide();
-            $(document).click(submitChanges);
-        });
-        return that;
-    }
-});
 function browserSupportsWebWorkers() {
     //return typeof window.Worker === "function";
     return false;
@@ -1566,6 +1336,16 @@ function GetProperties(item) {
             kv.Key = propertyName;
             kv.Value = propertyValue;
             properties.push(kv);
+        }
+    }
+    return properties;
+}
+function GetPropertiesArray(item) {
+    var properties = [];
+    for (var propertyName in item) {
+        if (item.hasOwnProperty(propertyName)) {
+            var propertyValue = item[propertyName];
+            properties.push(propertyValue);
         }
     }
     return properties;

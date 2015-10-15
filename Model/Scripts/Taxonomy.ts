@@ -1,7 +1,7 @@
 ﻿module Control {
-    export class TaxonomyContainer
-    {
+    export class TaxonomyContainer {
         public Taxonomy: Model.Taxonomy = new Model.Taxonomy();
+        public Table: UI.Table = new UI.Table();
         public ValidationRules: Model.ValidationRule[] = [];
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
         public CurrentFacts: Model.KeyValuePair<string, string[]>[] = null;
@@ -43,15 +43,22 @@
             $(window).resize(function () {
                 waitForFinalEvent(function () {
                     me.SetHeight();
-                },200,"retek");
+                }, 200, "retek");
+            });
+
+            $(window).on('hashchange', function () {
+                me.HashChanged();
             });
         }
 
+        public HashChanged() {
+            var me = this;
+            me.Table.HashChanged();
+
+        }
 
 
-
-        private SetHeight()
-        {
+        private SetHeight() {
             var bodyheight = $(window).height();
             var pivotheight = (bodyheight - 50) + "px";
             $(".pivotitem").css("max-height", pivotheight);
@@ -113,17 +120,17 @@
             AjaxRequest("Taxonomy/Labels", "get", "json", null, function (data) {
                 me.Taxonomy.Labels = data;
             }, function (error) { console.log(error); });
-        
+
             me.FactServiceFunction = new FunctionWithCallback(
-                (fwc:FunctionWithCallback, args:any) => {
+                (fwc: FunctionWithCallback, args: any) => {
                     var p = <Model.Dictionary<any>>args[0];
                     AjaxRequest("Taxonomy/Facts", "get", "json", p,
                         function (data: DataResult) {
                             me.CurrentFacts = <Model.KeyValuePair<string, string[]>[]>data.Items;
                             fwc.Callback(data);
-                    }, null);
+                        }, null);
                 });
-      
+
         }
 
         public LoadValidationResults(onloaded: Function) {
@@ -136,8 +143,7 @@
                 CallFunctionVariable(onloaded);
             }, function (error) { console.log(error); });
         }
-        public ShowValidationResults()
-        {
+        public ShowValidationResults() {
             var me = this;
             var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
             me.CloseRuleDetail();
@@ -153,7 +159,7 @@
             });
         }
 
-        public LoadContentToUI( sender: any) {
+        public LoadContentToUI(sender: any) {
             var me = this;
             ShowContentBySender(sender);
             var target = $(sender).attr("activator-for");
@@ -162,7 +168,7 @@
 
         public LoadContentToUIX(contentid: string, sender: any) {
             var me = this;
-           
+
             if (contentid == "Taxonomy") {
 
             }
@@ -232,9 +238,7 @@
             if (!IsNull(f_ruleid)) {
                 query = query.Where(i=> i.ID.indexOf(f_ruleid) > -1);
             }
-            //if (!IsNull(f_key)) {
-            //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
-            //}
+      
             var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
             me.CloseRuleDetail();
             LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize, eventhandlers);
@@ -252,13 +256,12 @@
             var me = this;
             var f_factstring: string = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
             var f_cellid: string = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
-            var query:any = me.Taxonomy.Facts;
-       
+            var query: any = me.Taxonomy.Facts;
+
             if (!IsNull(f_factstring)) {
                 var results: any[] = [];
-                EnumerateObject(query,me, function (value:any, key: string) {
-                    if (key.toLowerCase().indexOf(f_factstring) > -1)
-                    {
+                EnumerateObject(query, me, function (value: any, key: string) {
+                    if (key.toLowerCase().indexOf(f_factstring) > -1) {
                         results.push(value);
                     }
                 });
@@ -267,15 +270,17 @@
             if (!IsNull(f_cellid)) {
                 //query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
             }
+            var parameters = { factstring: f_factstring, cellid: f_cellid };
+            LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, parameters, null);
        
 
-            LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);
+            //LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);
             me.HideFactDetails();
         }
 
         public ShowFactDetails(factkey: string, factstring: string) {
             var me = this;
-            var factx = me.CurrentFacts.AsLinq<Model.KeyValuePair<string, string[]>>().FirstOrDefault(i=>i.Key==factkey);
+            var factx = me.CurrentFacts.AsLinq<Model.KeyValuePair<string, string[]>>().FirstOrDefault(i=> i.Key == factkey);
             if (!IsNull(factx)) {
                 var cells: string[] = factx.Value;
 
@@ -286,11 +291,10 @@
                 var $factdetail = me.SelFromFact(s_detail_selector);
                 BindX($factdetail, fact);
                 $factdetail.show();
-            } else
-            {
+            } else {
                 Notify(Format("Fact {0} was not found!", factkey));
             }
-            
+
 
         }
 
@@ -299,63 +303,6 @@
             var $factdetail = me.SelFromFact(s_detail_selector);
             $factdetail.hide();
 
-        }
-
-        public TableInfoSelected(id: string, ttype: string, sender:any)
-        {
-            var me = this;
-            var $sender = $(sender);
-            var $parent = $(sender).parent("li");
-            var $childrencontainer = $parent.children("ul").first();
-            var $extensioncontainers = $(".table>.treeview");
-            var $extensioncontainer = $parent.children(".treeview").first();
-            var $tablecontainers = $(".table").parent();
-            var childidentifier = $childrencontainer.parent().attr("title");
-            
-            if (In(ttype, "table", "tablegroup")) {
-                $extensioncontainers.hide();
-                
-                if ($extensioncontainer.css("display") == "none") {
-                    $extensioncontainer.show();
-                    //$(".extension", $childrencontainer).parents().show();
-                }
-                else
-                {
-                    $extensioncontainer.hide();
-
-                }
-            }
-            if (In(ttype, "table", "extension")) 
-            {
-                me.NavigateTo(id);
-
-            }
-        }
-
-        public static SetValues(ruleresult: Model.ValidationRuleResult)
-        {
-            ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {
-                var strvalue = "";
-                var numericval = 0;
-                if (parameter.BindAsSequence) {
-                    var factsnr = parameter.Facts.length;
-                    var ix = 0;
-                    strvalue += "(";
-                    parameter.Facts.forEach(function (factstring: string) {
-                        var strval = TaxonomyContainer.GetFactValue(factstring);
-                        numericval += Number(strval);
-                        strvalue += strval;
-                        strvalue += ix < factsnr - 1 ? ", " : ")";
-                        ix++;
-                    });
-                    strvalue = numericval.toFixed(2).toString() + "  " + strvalue;
-                } else {
-                    if (parameter.Facts.length == 1) {
-                        strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
-                    }
-                }
-                parameter.Value = strvalue;
-            });
         }
 
         public CloseRuleDetail() {
@@ -372,21 +319,19 @@
             if ($valdetail.is(':visible')) {
                 $valdetail.hide();
             }
-            else
-            {
+            else {
                 if (ruleid == previousruleid) {
                     $valdetail.show();
                 }
             }
-            if (ruleid != previousruleid)
-            {
+            if (ruleid != previousruleid) {
                 var rule = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
 
                 BindX(me.SelFromValidation(s_parent_selector), rule);
 
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
                     var results = <Model.ValidationRuleResult[]>data;
-                 
+
                     var eventhandlers = {
                         onloading: (data: Model.ValidationRuleResult[]) => {
                             data.forEach(function (ruleresult: Model.ValidationRuleResult) {
@@ -412,8 +357,61 @@
             }
         }
 
-        public GetCellValue(cellid: string): string
-        {
+        public TableInfoSelected(id: string, ttype: string, sender: any) {
+            var me = this;
+            var $sender = $(sender);
+            var $parent = $(sender).parent("li");
+            var $childrencontainer = $parent.children("ul").first();
+            var $extensioncontainers = $(".table>.treeview");
+            var $extensioncontainer = $parent.children(".treeview").first();
+            var $tablecontainers = $(".table").parent();
+            var childidentifier = $childrencontainer.parent().attr("title");
+
+            if (In(ttype, "table", "tablegroup")) {
+                $extensioncontainers.hide();
+
+                if ($extensioncontainer.css("display") == "none") {
+                    $extensioncontainer.show();
+                }
+                else {
+                    $extensioncontainer.hide();
+
+                }
+            }
+            if (In(ttype, "table", "extension")) {
+                me.NavigateTo(id);
+
+            }
+        }
+
+        public static SetValues(ruleresult: Model.ValidationRuleResult) {
+            ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {
+                var strvalue = "";
+                var numericval = 0;
+                if (parameter.BindAsSequence) {
+                    var factsnr = parameter.Facts.length;
+                    var ix = 0;
+                    strvalue += "(";
+                    parameter.Facts.forEach(function (factstring: string) {
+                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        numericval += Number(strval);
+                        strvalue += strval;
+                        strvalue += ix < factsnr - 1 ? ", " : ")";
+                        ix++;
+                    });
+                    strvalue = numericval.toFixed(2).toString() + "  " + strvalue;
+                } else {
+                    if (parameter.Facts.length == 1) {
+                        strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
+                    }
+                }
+                parameter.Value = strvalue;
+            });
+        }
+
+
+
+        public GetCellValue(cellid: string): string {
             return "";
         }
 
@@ -432,8 +430,7 @@
                 } else {
                     return fact.Value;
                 }
-            } else
-            {
+            } else {
 
                 //Notify(Format("FactKey {0} was not found in the instance", factkey));
             }
@@ -444,8 +441,20 @@
         public NavigateTo(cell: string) {
             var me = this;
             AjaxRequest("Taxonomy/Table", "get", "text/html", { cell: cell }, function (data) {
-                $(s_tableframe_selector).attr("src", data);
-            }, function (error) { console.log(error); });
+                var itemparts = <string>data.split("#");
+
+                if (itemparts.length > 1) {
+                    var url = itemparts[0];
+                    var hash = itemparts[1];
+
+                    AjaxRequest(url, "get", "text/html", null, function (data) {
+                        _Html(_SelectFirst("#Table"), data);
+                        window.location.hash = hash;
+                    },
+                    function (error) { console.log(error); });
+                }
+            },
+            function (error) { console.log(error); });
         }
     }
 }
