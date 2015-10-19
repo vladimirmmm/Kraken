@@ -653,3 +653,8 @@ input[type=text].celleditor {
     margin: 0px;
     padding: 0px;
 }
+
+#ReportContainer {
+    overflow-x:auto;
+    overflow-y:auto;
+}

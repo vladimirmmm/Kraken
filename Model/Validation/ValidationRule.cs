@@ -153,7 +153,7 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().FactGroups;
-            if (this.ID.Contains("4012")) 
+            if (this.ID.Contains("0310")) 
             {
 
             }
@@ -324,7 +324,7 @@ namespace LogicalModel.Validation
 
         public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
-            if (this.ID.Contains("4006")) 
+            if (this.ID.Contains("0310")) 
             { 
             }
             var allresults = GetAllResults();

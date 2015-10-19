@@ -13,6 +13,15 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     {
         public DimensionQName Dimension { get; set; }
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(base.ToString());
+            sb.Append(" >> ");
+            sb.Append(this.Dimension.QName.Content);
+            return sb.ToString();
+        }
+
     }
     public class ExplicitDimensionFilter : DimensionFilter
     {
@@ -22,7 +31,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(this.Dimension.QName.Content);
+            sb.Append(base.ToString());
             sb.Append(" - {");
             foreach (var member in Members) 
             {
@@ -30,7 +39,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             }
             sb.Append("}");
 
-            return String.Format("{0} >> {1}", base.ToString(), sb.ToString());
+            return String.Format("{0}", sb.ToString());
         }
     }
 
@@ -38,6 +47,13 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     {
         private String _Test = "";
         public String Test { get { return _Test; } set { _Test = value; } }
+
+        //public override string ToString()
+        //{
+        //    var sb = new StringBuilder();
+        //    sb.Append(this.Dimension.QName.Content);
+        //    return sb.ToString();
+        //}
     }
 
     public class DimensionQName 

@@ -2,17 +2,16 @@
 module UI {
 
     export class Table {
+        public Taxonomy: Model.Taxonomy = null;
         public Cells: Model.Cell[] = [];
         //public Extensions: Model.Hierarchy<Model.LayoutItem> = null;
         public ExtensionsRoot: Model.Hierarchy<Model.LayoutItem> = null;
         public Extensions: TSLinq.Linq<Model.LayoutItem> = null;
         public FactMap: Object = {};
         public CurrentExtension: Model.LayoutItem = null;
-        private Instance: Model.Instance = null;
+        public Instance: Model.Instance = null;
         public $TemplateRow: JQuery = null;
 
-        public Concepts: Model.Concept[] = [];
-        public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = null;
         public ConceptValues: Model.ConceptLookUp[] = [];
         
         private Current_CellID: string = "";
@@ -66,31 +65,11 @@ module UI {
         {
             var me = this;
             me.IsInstanceLoaded = false;
-            var waiter: Waiter = new Waiter((i: RequestHandler) => i.succeded,() => {
-                me.LoadConceptValues();
-                me.LoadToUI();
-                me.SetNavigation();
-            });
 
-            //debugger;
-            waiter.WaitFor(AjaxRequest("Instance/Get", "get", "json", null, function (data) {
-                me.Instance = data;
-                waiter.Check();
-            }, function (error) { console.log(error); }));
-
-            waiter.WaitFor(AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
-                me.Concepts = <Model.Concept[]>GetPropertiesArray(data);
-                //me.Concepts = me.Concepts.AsLinq<Model.Concept>().Where(i=> i.Domain != null).ToArray();
-
-                waiter.Check();
-
-            }, function (error) { console.log(error); }));
-            waiter.WaitFor(AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
-                me.Hierarchies = data;
-                waiter.Check();
-            }, function (error) { console.log(error); }));
-
-            waiter.Start();
+            me.LoadConceptValues();
+            //me.LoadToUI();
+            me.SetNavigation();
+            
 
         }
 
@@ -101,6 +80,7 @@ module UI {
                 this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
             }
             me.SetExtensionByCode(this.Current_ExtensionCode);
+            me.LoadToUI();
             me.HighlightCell();
 
         }
@@ -120,6 +100,9 @@ module UI {
         public Load()
         {
             var me = this;
+            var uitablemanger = new Controls.TableManager();
+            var uitable = new Controls.Table(uitablemanger);
+            uitable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
             $("table.report").on('click', 'tr', function () {
                 $('tr', 'table').removeClass("selected");
                 $(this).addClass("selected");
@@ -143,20 +126,22 @@ module UI {
 
         public LoadConceptValues() {
             var me = this;
-            if (me.Hierarchies.length > 0 && me.Concepts.length > 0) {
+            var concepts: Model.Concept[] = <Model.Concept[]>GetPropertiesArray(me.Taxonomy.Concepts);
+
+            if (me.Taxonomy.Hierarchies.length > 0 && concepts.length > 0) {
        
                 me.ConceptValues = [];
                 var htemp = new Model.Hierarchy<Model.QualifiedItem>();
-                me.Hierarchies.forEach(function (hierarchy) {
+                me.Taxonomy.Hierarchies.forEach(function (hierarchy) {
                     Model.QualifiedItem.Set(hierarchy.Item);
 
                 });
-                me.Concepts.forEach(function (concept) {
+                concepts.forEach(function (concept) {
                     Model.QualifiedName.Set(concept);
                     if (!IsNull(concept.Domain)) {
                         Model.QualifiedName.Set(concept.Domain);
                         concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
-                        var hiers = me.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
+                        var hiers = me.Taxonomy.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
                             .Where(i=> i.Item.Name == concept.Domain.Name
                             && i.Item.Namespace == concept.Domain.Namespace
                             && i.Item.Role == concept.HierarchyRole
@@ -573,6 +558,9 @@ module UI {
                 if (extcode == "000") { extcode = "000"; }
 
                 me.Current_CellID = cellid;
+                if (me.Current_ExtensionCode != extcode) {
+                    me.IsInstanceLoaded = false;
+                }
                 me.Current_ExtensionCode = extcode;
                 if (me.Current_ReportID != reportid) {
                     me.Current_ReportID = reportid;

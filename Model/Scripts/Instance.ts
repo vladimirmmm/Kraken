@@ -129,6 +129,11 @@
                     }
                 }
             }
+
+            if (app.taxonomycontainer.Table != null)
+            {
+                app.taxonomycontainer.Table.Instance = me.Instance;
+            }
             me.FactsNr = this.Instance.Facts.length;
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
 

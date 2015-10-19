@@ -23,8 +23,8 @@ module Controls
         LoadToUI(data: Object);
         LoadPage(page: number, asyncdatagetter: Function, callback: Function);
 
-        LoadLayoutFromData(data: any);
-        LoadLayoutFromHtml(element: Element);
+        LoadLayoutFromData(data: any, table: Table);
+        LoadLayoutFromHtml(element: Element, table: Table);
         Validate(): boolean;
         Save(): boolean;
         EditCell(cell: Cell);
@@ -51,14 +51,13 @@ module Controls
 
         }
 
-        LoadLayoutFromData(data: any)
+        LoadLayoutFromData(data: any, table: Table)
         {
         }
 
-        LoadLayoutFromHtml(element: Element)
+        LoadLayoutFromHtml(element: Element, table:Table)
         {
             var me = this;
-            var table = this.Table;
             var rawrows = _Select("tr", element);
             var headerix = 0;
             var columncells: Element[] = []; 
@@ -74,7 +73,7 @@ module Controls
                     {
                         headerix = ix - 1;
                         var headerrow = rawrows[headerix];
-                        rowcells = _Select("th", rawrow);
+                        columncells = _Select("th", headerrow);
                     }
                     var rowcell = rawheadercells[rawheadercells.length - 1];
                     rowcells.push(rowcell);
@@ -83,7 +82,7 @@ module Controls
                     rawdatacells.forEach(function (cell, ix) {
                         var rowcode = _Html(rowcell).trim();
 
-                        var colcell = rowcells[ix];
+                        var colcell = columncells[ix]; //rowcells[ix];
                         var colcode = _Html(colcell).trim();
 
                         var cellid = Format("{0}|{1}", rowcode, colcode);
@@ -200,6 +199,12 @@ module Controls
         public static RowID_Format: string="R{0:D4}";
         public static ColumnID_Format: string="C{0:D4}";
 
+        constructor(manager: ITableManager)
+        {
+            this.Manager = manager;
+            manager.Table
+        }
+
         public ValidateRow(rowid: string): boolean
         {
             return true;
@@ -226,7 +231,7 @@ module Controls
 
         public LoadfromHtml(element:Element)
         {
-            this.Manager.LoadLayoutFromHtml(element);
+            this.Manager.LoadLayoutFromHtml(element,this);
         }
 
         public AddRow(index:number=-1):Row
@@ -254,11 +259,13 @@ module Controls
             this.LoadEventHandlers();
             return newrow;
         }
+
         public GetRowByID(id: string): Row
         {
             var row = this.Rows.AsLinq<Row>().FirstOrDefault(i=> i.RowID == id);
             return row;
         }
+
         public RemoveRowByID(rowid: string)
         {
             if (this.Rows.length > 1) {
@@ -281,6 +288,7 @@ module Controls
             CallFunctionVariable(me.Manager.OnRowRemoved, [row]);
             return true;
         }
+
         private SetRow(row: Row, element: Element)
         {
             var headercells = _Select("th", element);

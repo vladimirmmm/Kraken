@@ -33,11 +33,10 @@ var Controls;
         };
         TableManager.prototype.LoadPage = function (page, asyncdatagetter, callback) {
         };
-        TableManager.prototype.LoadLayoutFromData = function (data) {
+        TableManager.prototype.LoadLayoutFromData = function (data, table) {
         };
-        TableManager.prototype.LoadLayoutFromHtml = function (element) {
+        TableManager.prototype.LoadLayoutFromHtml = function (element, table) {
             var me = this;
-            var table = this.Table;
             var rawrows = _Select("tr", element);
             var headerix = 0;
             var columncells = [];
@@ -50,7 +49,7 @@ var Controls;
                     if (columncells.length < 1) {
                         headerix = ix - 1;
                         var headerrow = rawrows[headerix];
-                        rowcells = _Select("th", rawrow);
+                        columncells = _Select("th", headerrow);
                     }
                     var rowcell = rawheadercells[rawheadercells.length - 1];
                     rowcells.push(rowcell);
@@ -58,7 +57,7 @@ var Controls;
                     row.UIElement = rawrow;
                     rawdatacells.forEach(function (cell, ix) {
                         var rowcode = _Html(rowcell).trim();
-                        var colcell = rowcells[ix];
+                        var colcell = columncells[ix]; //rowcells[ix];
                         var colcode = _Html(colcell).trim();
                         var cellid = Format("{0}|{1}", rowcode, colcode);
                         var cellobj = new Cell();
@@ -142,7 +141,7 @@ var Controls;
     })();
     Controls.Column = Column;
     var Table = (function () {
-        function Table() {
+        function Table(manager) {
             this.Manager = null;
             this.ColumnHeader = null;
             this.RowHeader = null;
@@ -152,6 +151,8 @@ var Controls;
             this.HeaderRowCount = 0;
             this.HeaderColCount = 0;
             this.Keys = [];
+            this.Manager = manager;
+            manager.Table;
         }
         Table.prototype.ValidateRow = function (rowid) {
             return true;
@@ -173,7 +174,7 @@ var Controls;
             });
         };
         Table.prototype.LoadfromHtml = function (element) {
-            this.Manager.LoadLayoutFromHtml(element);
+            this.Manager.LoadLayoutFromHtml(element, this);
         };
         Table.prototype.AddRow = function (index) {
             if (index === void 0) { index = -1; }

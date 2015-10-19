@@ -620,6 +620,9 @@ namespace XBRLProcessor.Models
                         {
 
                             var valueassertion = assertion.Item as ValueAssertion;
+                            Utilities.FS.WriteAllText(TaxonomyValidationFolder + valueassertion.ID + ".txt",
+                            assertion.ToHierarchyString(i => i.ToString()));
+
                             if (valueassertion != null)
                             {
                                 var logicalrule = validation.GetLogicalRule(assertion);

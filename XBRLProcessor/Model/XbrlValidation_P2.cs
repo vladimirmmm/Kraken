@@ -15,7 +15,7 @@ namespace XBRLProcessor.Model
     {
         public List<LogicalModel.Base.FactGroup> GetGroups(Hierarchy<XbrlIdentifiable> hrule)
         {
-            if (hrule.Item.ID.Contains("0218")) 
+            if (hrule.Item.ID.Contains("0310")) 
             {
 
             }
@@ -43,25 +43,6 @@ namespace XBRLProcessor.Model
             }
             var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
 
-            //if (rule_dimensionfilters.Count == 0 && rule_conceptfilters.Count > 0) 
-            //{
-            //    var cf= rule_concepts.FirstOrDefault();
-
-            //    var x = new DimensionFilter();
-            //    var facts = this.Taxonomy.Facts.Where(i => i.Key.StartsWith(cf.Content)).Select(i=>i.Key).ToList();
-            //    foreach (var factkey in facts) 
-            //    {
-            //        var fact = new LogicalModel.Base.FactBase();
-            //        fact.SetFromString(factkey);
-            //        foreach (var dim in fact.Dimensions) 
-            //        { 
-
-            //        }
-            //    }
-            //    rule_dimensionfilters.Add(x);
-            //    x.Complement = true;
-
-            //}
             var complementedrulefilters = rule_dimensionfilters.Where(i => i.Complement).ToList();
             foreach (var complementedrulefilter in complementedrulefilters)
             {
@@ -127,6 +108,9 @@ namespace XBRLProcessor.Model
             }
 
             var rule_orfactgroups = new List<LogicalModel.Base.FactGroup>();
+
+            var ruleset =new List<List<LogicalModel.Base.FactBase>>();
+
             foreach (var rule_orfilter in rule_orfilters) 
             {
                 var rulefacts = new List<LogicalModel.Base.FactBase>();
@@ -150,30 +134,61 @@ namespace XBRLProcessor.Model
                         rulefacts.Add(fact);
                     }
                 }
-                var allfactgroups = new List<LogicalModel.Base.FactGroup>();
-                foreach (var rulefact in rulefacts)
+                ruleset.Add(rulefacts);
+            }
+
+            //    foreach (var rulefact in rulefacts)
+            //    {
+            //        var orrule_fg = new LogicalModel.Base.FactGroup();
+            //        orrule_fg.Concept = rulefact.Concept;
+            //        orrule_fg.Dimensions = rulefact.Dimensions;
+            //        foreach (var mainfactgroup in factgroups)
+            //        {
+            //            var x_fg = new LogicalModel.Base.FactGroup();
+            //            x_fg.Concept = mainfactgroup.Concept == null ? orrule_fg.Concept : mainfactgroup.Concept;
+            //            x_fg.Dimensions.AddRange(mainfactgroup.Dimensions);
+            //            LogicalModel.Dimension.MergeDimensions(x_fg.Dimensions, orrule_fg.Dimensions);
+            //            allfactgroups.Add(x_fg);
+                        
+            //        }
+            //    }
+             
+            //    return allfactgroups;
+            //}
+            var allfactgroups = new List<LogicalModel.Base.FactGroup>();
+
+            var factcombinations = Utilities.MathX.CartesianProductList(ruleset);
+
+            foreach (var factcombination in factcombinations)
+            {
+                var x_fg = new LogicalModel.Base.FactGroup();
+
+                foreach (var rulefact in factcombination)
                 {
-                    var orrule_fg = new LogicalModel.Base.FactGroup();
-                    orrule_fg.Concept = rulefact.Concept;
-                    orrule_fg.Dimensions = rulefact.Dimensions;
                     foreach (var mainfactgroup in factgroups)
                     {
-                        var x_fg = new LogicalModel.Base.FactGroup();
-                        x_fg.Concept = mainfactgroup.Concept == null ? orrule_fg.Concept : mainfactgroup.Concept;
-                        x_fg.Dimensions.AddRange(mainfactgroup.Dimensions);
-                        LogicalModel.Dimension.MergeDimensions(x_fg.Dimensions, orrule_fg.Dimensions);
-                        allfactgroups.Add(x_fg);
-                        
+                        LogicalModel.Base.FactBase.MergeFact(x_fg, mainfactgroup);
+
                     }
+                    LogicalModel.Base.FactBase.MergeFact(x_fg, rulefact);
+
                 }
-             
+
+                allfactgroups.Add(x_fg);
+
+            }
+            if (allfactgroups.Count > 0)
+            {
                 return allfactgroups;
             }
-            foreach (var fg in factgroups)
+            else
             {
-                fg.Dimensions = fg.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+                foreach (var fg in factgroups)
+                {
+                    fg.Dimensions = fg.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+                }
+                return factgroups;
             }
-            return factgroups;
         }
 
         public List<LogicalModel.Base.FactBase> GetFacts(Hierarchy<XbrlIdentifiable> fv) 

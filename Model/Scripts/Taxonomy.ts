@@ -88,7 +88,7 @@
         public SetExternals() {
             var me = this;
             me.SetHeight();
-
+            me.Table.Taxonomy = me.Taxonomy;
             AjaxRequest("Taxonomy/Get", "get", "json", null, function (data) {
                 me.Taxonomy.Module = data;
                 BindX($("#TaxonomyInfo"), me.Taxonomy.Module)
@@ -448,7 +448,8 @@
                     var hash = itemparts[1];
 
                     AjaxRequest(url, "get", "text/html", null, function (data) {
-                        _Html(_SelectFirst("#Table"), data);
+                        _Html(_SelectFirst("#ReportContainer"), data);
+                        Notify(Format("Loading {0}", url));
                         window.location.hash = hash;
                     },
                     function (error) { console.log(error); });
@@ -458,5 +459,5 @@
         }
     }
 }
-var s_tableframe_selector: string = "#tableframe";
+var s_tableframe_selector: string = "#ReportContainer";
 

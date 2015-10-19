@@ -472,6 +472,7 @@ namespace LogicalModel
         public LayoutItem GetDefaultExtension() 
         {
             var li = new LayoutItem();
+            li.Category = LayoutItemCategory.BreakDown;
             li.ID = "";
             var label = new Label();
             label.Code = DefaultExtensionCode;
@@ -485,8 +486,9 @@ namespace LogicalModel
         {
             var li = new LayoutItem();
             li.ID = "";
+            li.Category = LayoutItemCategory.BreakDown;
             var label = new Label();
-            label.Code = "";
+            label.Code = DefaultExtensionCode;
             label.Lang = "en";
             label.Content = "Extensions";
             li.Axis = "z";

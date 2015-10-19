@@ -107,6 +107,15 @@ namespace LogicalModel.Base
                 SetFromString(value);
             }
         }
+
+        public static void MergeFact(FactBase target, FactBase source)
+        {
+            if (target.Concept == null) 
+            {
+                target.Concept = source.Concept;
+            }
+            Dimension.MergeDimensions(target.Dimensions, source.Dimensions);
+        }
         
         public void SetFactString()
         {

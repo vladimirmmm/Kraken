@@ -168,6 +168,10 @@ namespace LogicalModel
         //{
         //    get { return ModuleFolder + "Validations.json"; }
         //}
+        public string TaxonomyValidationFolder
+        {
+            get { return ModuleFolder + "Validations\\"; }
+        }
         public string TaxonomyValidationPathFormat
         {
             get { return ModuleFolder + "Validations\\Validations_{0}.json"; }
