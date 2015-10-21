@@ -10,8 +10,11 @@ var UI;
             this.FactMap = {};
             this.CurrentExtension = null;
             this.Instance = null;
-            this.$TemplateRow = null;
+            this.TemplateRow = null;
+            this.TemplateCol = null;
             this.ConceptValues = [];
+            this.HtmlTemplate = "";
+            this.HtmlTemplatePath = "";
             this.Current_CellID = "";
             this.Current_ExtensionCode = "";
             this.Current_ReportID = "";
@@ -19,16 +22,24 @@ var UI;
         }
         Table.prototype.LoadTable = function (reportid) {
             var me = this;
-            AjaxRequest("Taxonomy/Table", "get", "text/html", { item: "factmap", reportid: reportid }, function (data) {
-                //_Html(_SelectFirst("#TableScript"), data);
+            var fload = function (data) {
                 var jsonobj = JSON.parse(data);
+                me.HtmlTemplatePath = jsonobj["HtmlTemplatePath"];
                 me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
                 me.FactMap = jsonobj["FactMap"];
-                me.Current_ReportID = reportid;
-                me.SetExternals();
-                me.Load();
-                me.GetData();
-                ShowNotification("Table instance loaded!");
+                AjaxRequest(me.HtmlTemplatePath, "get", "text/html", null, function (data) {
+                    _Html(_SelectFirst("#ReportContainer"), data);
+                    me.Current_ReportID = reportid;
+                    me.SetExternals();
+                    me.Load();
+                    me.GetData();
+                    ShowNotification("Table instance loaded!");
+                }, function (error) {
+                    console.log(error);
+                });
+            };
+            AjaxRequest("Taxonomy/Table", "get", "text/html", { item: "factmap", reportid: reportid }, function (data) {
+                fload(data);
             }, function (error) {
                 console.log(error);
             });
@@ -67,19 +78,29 @@ var UI;
             var uitablemanger = new Controls.TableManager();
             var uitable = new Controls.Table(uitablemanger);
             uitable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
+            _EnsureEventHandler(_Select("table.report tr"), "click", function () {
+                $('tr', 'table').removeClass("selected");
+                $(this).addClass("selected");
+            });
+            /*
             $("table.report").on('click', 'tr', function () {
                 $('tr', 'table').removeClass("selected");
                 $(this).addClass("selected");
             });
+            */
             this.LoadCellsFromHtml();
             this.SetCellEditors();
             var hash = window.location.hash;
         };
         Table.prototype.HighlightCell = function () {
-            $(".highlight").removeClass("highlight");
+            _RemoveClass(_Select(".highlight"), "highlight");
+            //$(".highlight").removeClass("highlight");
             var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
-            $("#" + cellselector).addClass("highlight");
-            $("#" + cellselector).focus();
+            var cells = _Select("#" + cellselector);
+            _AddClass(cells, "highlight");
+            //$("#" + cellselector).addClass("highlight");
+            _Focus(cells);
+            //$("#" + cellselector).focus();
         };
         Table.prototype.LoadConceptValues = function () {
             var me = this;
@@ -127,26 +148,41 @@ var UI;
         Table.prototype.SetCellEditors = function () {
             var me = this;
             var cellselector = ".data";
-            $(cellselector).off("click");
-            $(cellselector).each(function (ix, item) {
-                var $target = $(item);
-                var factitems = $target.attr("factstring").split(",");
+            var cells = _Select(cellselector);
+            _RemoveEventHandlers(cells, "click");
+            //$(cellselector).off("click");
+            //$(cellselector).each(function (ix, item) {
+            cells.forEach(function (item, ix) {
+                var target = item;
+                //var factitems = target.attr("factstring").split(",");
+                var factitems = _Attribute(target, "factstring").split(",");
                 var concept = "";
                 if (factitems[0].indexOf("[") == -1) {
                     concept = factitems[0];
                 }
-                if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
-                    $target.click(function () {
+                //if (!target.parent().hasClass("dynamic") && !target.hasClass("blocked")) {
+                if (!_HasClass(_Parent(target), "dynamic") && !_HasClass(target, "blocked")) {
+                    //target.click(function () {
+                    _AddEventHandler(target, "click", function () {
                         //Notify("clicked")
-                        if (!$target.hasClass(Editor.editclass)) {
+                        //if (!target.hasClass(Editor.editclass)) {
+                        if (!_HasClass(target, Editor.editclass)) {
                             var typeclass = "";
                             if (factitems[0].indexOf(":ei") > -1) {
                                 typeclass = "ei";
+                            }
+                            if (factitems[0].indexOf(":bi") > -1) {
+                                typeclass = "bi";
                             }
                             if (factitems[0].indexOf(":di") > -1) {
                                 typeclass = "di";
                             }
                             var editor = null;
+                            if (typeclass == "bi") {
+                                editor = new Editor('<select class="celleditor"><option>true</option><option>false</option></select>', function (i) { return i.val(); }, function (i, val) {
+                                    i.val(val);
+                                });
+                            }
                             if (typeclass == "ei") {
                                 editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)), function (i) { return i.val(); }, function (i, val) {
                                     i.val(val);
@@ -170,8 +206,8 @@ var UI;
                             if (typeclass == "") {
                                 editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
                             }
-                            editor.Load($target, function () { return $target.html(); }, function () {
-                                $target.html(editor.ValueGetter(editor.$Me));
+                            editor.Load(target, function () { return _Html(target); }, function () {
+                                _Html(target, editor.ValueGetter(editor.$Me));
                                 me.ManageRows();
                             });
                         }
@@ -181,26 +217,27 @@ var UI;
         };
         Table.prototype.ManageRows = function () {
             var me = this;
-            if (!IsNull(me.$TemplateRow)) {
-                var $parentrow = me.$TemplateRow.parent();
-                var $lastrow = $parentrow.find("tr:last");
-                var $selectedrow = $parentrow.find("tr.selected");
-                if ($selectedrow.length > 0 && $lastrow.length) {
-                    if (me.IsAllNull($selectedrow) && $lastrow[0] != $selectedrow[0]) {
-                        $selectedrow.remove();
+            if (!IsNull(me.TemplateRow)) {
+                var parentrow = _Parent(me.TemplateRow);
+                var lastrow = _FindFirst(parentrow, "tr:last");
+                var selectedrow = _FindFirst(parentrow, "tr.selected");
+                if (!IsNull(selectedrow) && !IsNull(lastrow)) {
+                    if (me.EmptyCellsOnly(selectedrow) && lastrow != selectedrow) {
+                        _Remove(selectedrow);
                     }
-                    if (!me.IsAllNull($lastrow)) {
-                        var $newrow = me.AddRow("newrow", false, 0);
+                    if (!me.EmptyCellsOnly(lastrow)) {
+                        var newrow = me.AddRow("newrow", false, 0);
                         me.SetCellEditors();
                     }
                 }
             }
         };
-        Table.prototype.IsAllNull = function ($row) {
-            var $cells = $("td", $row);
+        Table.prototype.EmptyCellsOnly = function (row) {
+            var cells = _Select("td", row);
             var isallnull = true;
-            $cells.each(function (ix, cell) {
-                if (!IsNull($(cell).html().trim())) {
+            cells.forEach(function (cellelement, ix) {
+                var value = _Html(cellelement).trim();
+                if (!IsNull(value)) {
                     isallnull = false;
                 }
             });
@@ -210,25 +247,25 @@ var UI;
             var me = this;
             var s_ix = 1;
             me.Cells = [];
-            $(".data").each(function (index, item) {
-                var $cell = $(item);
-                var layoutid = $cell.attr("id");
+            var datacells = _Select(".report .data");
+            datacells.forEach(function (cellelement, index) {
+                var layoutid = _Attribute(cellelement, "id");
                 var row = layoutid.split("|")[0];
                 var col = layoutid.split("|")[1];
                 row = row.substring(1);
                 col = col.substring(1);
                 var cell = new Model.Cell();
-                cell.IsBlocked = $cell.hasClass("blocked");
+                cell.IsBlocked = _HasClass(cellelement, "blocked");
                 if (!cell.IsBlocked) {
                     cell.Row = row;
                     cell.Column = col;
                     me.Cells.push(cell);
                 }
-                $cell.attr("title", layoutid + "\r\n" + $cell.attr("factstring"));
+                _Attribute(cellelement, "title", layoutid + "\r\n" + _Attribute(cellelement, "factstring"));
             });
-            var templaterow = $(".dynamic");
-            if (templaterow.length > 0) {
-                me.$TemplateRow = $(templaterow[0]);
+            var templaterow = _SelectFirst("tr.dynamic");
+            if (!IsNull(templaterow)) {
+                me.TemplateRow = templaterow;
                 me.AddRow("newrow", false, 0);
             }
         };
@@ -237,12 +274,12 @@ var UI;
         };
         Table.prototype.LoadExtension = function (li) {
             this.CurrentExtension = li;
-            $("#Extension").html(Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
-            $("#Extension").attr("title", li.FactString);
+            var extensionscell = _SelectFirst("#Extension");
+            _Html(extensionscell, Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
+            _Attribute(extensionscell, "title", li.FactString);
         };
         Table.prototype.LoadInstance = function (instance) {
             var me = this;
-            $("dynamicdata").remove();
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
@@ -273,18 +310,22 @@ var UI;
                                             var fact = facts[0];
                                             if (!IsNull(fact)) {
                                                 var selector = "#" + cell.LayoutID.replace("|", "\\|");
-                                                if ($(selector).length == 0) {
+                                                var cellelement = _SelectFirst(selector);
+                                                if (IsNull(cellelement)) {
                                                     ShowNotification(Format("No cell found with selector {0}", selector));
                                                 }
+                                                else {
+                                                    _Html(cellelement, fact.Value);
+                                                }
                                                 c++;
-                                                $(selector).html(fact.Value);
                                             }
                                         }
                                         else {
                                             //dynamic
                                             facts.forEach(function (factobj, index) {
                                                 var fact = Model.InstanceFact.Convert(factobj);
-                                                fact.Load();
+                                                //fact.Load();
+                                                Model.FactBase.LoadFromFactString(fact);
                                                 var typeddimensions = fact.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
                                                 var typedfacts = new Model.FactBase();
                                                 typedfacts.Dimensions = typeddimensions;
@@ -295,7 +336,8 @@ var UI;
                                                     cellid = cellid.replace("R", rowid);
                                                 }
                                                 var selector = "#" + cellid.replace("|", "\\|");
-                                                $(selector).html(fact.Value);
+                                                var cellelement = _SelectFirst(selector);
+                                                _Html(cellelement, fact.Value);
                                             });
                                         }
                                     }
@@ -310,96 +352,97 @@ var UI;
         };
         Table.prototype.SetDynamicRows = function () {
             var me = this;
+            var datarows = _Select("tr.dynamicdata");
+            _Remove(datarows);
             var cellobj = me.Cells[0];
             var url = window.location.pathname;
-            var reportname = url.substring(url.lastIndexOf('/') + 1);
-            reportname = reportname.replace(".html", "");
+            var reportid = me.Current_ReportID;
             var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
-            var reportkey = Format("{0}|{1}", reportname, extensioncode);
+            var reportkey = Format("{0}|{1}", reportid, extensioncode);
             var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
             var rows = GetProperties(rowidcontainer);
             rows.forEach(function (rowitem) {
-                var $row = me.AddRow("", true, rowitem.Value);
+                var row = me.AddRow("", true, rowitem.Value);
                 var fact = new Model.FactBase();
                 fact.FactString = rowitem.Key;
                 Model.FactBase.LoadFromFactString(fact);
-                $row.attr("factkey", rowitem.Key);
-                var cells = $("td", $row);
-                cells.each(function (index, cell) {
-                    var $cell = $(cell);
-                    var cellfactstring = $cell.attr("factstring");
+                _Attribute(row, "factkey", rowitem.Key);
+                var cells = _Select("td", row);
+                cells.forEach(function (cellelement, index) {
+                    var cellfactstring = _Attribute(cellelement, "factstring");
                     cellfactstring = Replace(cellfactstring.trim(), ",", "");
                     if (!IsNull(cellfactstring)) {
                         var dim = fact.Dimensions.AsLinq().FirstOrDefault(function (i) { return i.DomainMemberFullName.indexOf(cellfactstring) == 0; });
                         if (dim != null) {
                             var text = dim.DomainMember;
-                            $cell.text(text);
+                            _Text(cellelement, text);
                         }
                     }
                 });
             });
+            me.AddRow("newrow", false, 0);
         };
         Table.prototype.GetDynamicRowID = function (cellid, fact) {
             var me = this;
             var newrowneeded = false;
             var rownum = 1;
-            var $row = null;
+            var row = null;
             var factkey = "";
             if (fact != null) {
                 factkey = fact.GetFactString();
-                var $rows = $("tr", me.$TemplateRow.parent());
-                $row = $("tr[factkey='" + factkey + "']");
+                var rows = _Select("tr", _Parent(me.TemplateRow)); // $("tr", me.$TemplateRow.parent());
+                row = _SelectFirst("tr[factkey='" + factkey + "']");
             }
             if (fact != null) {
-                $row.attr("factkey", factkey);
-                var cells = $("td", $row);
-                cells.each(function (index, cell) {
-                    var $cell = $(cell);
-                    var cellfactstring = $cell.attr("factstring");
+                _Attribute(row, "factkey", factkey);
+                var cells = _Select("td", row);
+                cells.forEach(function (cellelement, index) {
+                    var cellfactstring = _Attribute(cellelement, "factstring");
                     cellfactstring = Replace(cellfactstring.trim(), ",", "");
                     if (!IsNull(cellfactstring)) {
                         var dim = fact.Dimensions.AsLinq().FirstOrDefault(function (i) { return i.DomainMemberFullName.indexOf(cellfactstring) == 0; });
                         if (dim != null) {
                             var text = dim.DomainMember;
-                            $cell.text(text);
+                            _Text(cellelement, text);
                         }
                     }
                 });
             }
-            return $row.attr("id");
+            return _Attribute(row, "id");
         };
         Table.prototype.AddRow = function (rowclass, beforelast, rownum) {
             var me = this;
             var id = Format("R{0}", rownum);
-            var $newrow = me.$TemplateRow.clone();
-            me.$TemplateRow.find("td").html("");
-            var $lastrow = me.$TemplateRow.parent().find("tr:last");
-            if (beforelast) {
-                $lastrow.before($newrow);
+            var newrow = null;
+            if (!IsNull(me.TemplateRow)) {
+                newrow = _Clone(me.TemplateRow);
+                _Html(_Find(me.TemplateRow, "td"), "");
+                var lastrow = _FindFirst(_Parent(me.TemplateRow), "tr:last");
+                if (beforelast) {
+                    _Before(lastrow, newrow);
+                }
+                else {
+                    _After(lastrow, newrow);
+                }
+                _Attribute(newrow, "id", id);
+                _AddClass(newrow, "dynamicdata");
+                _RemoveClass(newrow, "dynamic");
+                me.SetCellID(newrow);
+                if (!beforelast) {
+                    _Html(_Find(newrow, ".title"), "new row");
+                }
             }
-            else {
-                $lastrow.after($newrow);
-            }
-            $newrow.attr("id", id);
-            $newrow.addClass("dynamicdata");
-            $newrow.removeClass("dynamic");
-            me.SetCellID($newrow);
-            if (!beforelast) {
-                $newrow.find(".title").html("new row");
-            }
-            var $rows = $("tr", me.$TemplateRow.parent());
-            return $newrow;
+            return newrow;
         };
-        Table.prototype.SetCellID = function ($row) {
-            var cells = $("td", $row);
-            var rowid = $row.attr("id");
-            cells.each(function (index, cell) {
-                var $cell = $(cell);
-                var cellid = $cell.attr("id");
+        Table.prototype.SetCellID = function (row) {
+            var cells = _Select("td", row); // $("td", $row);
+            var rowid = _Attribute(row, "id");
+            cells.forEach(function (cellelement, index) {
+                var cellid = _Attribute(cellelement, "id");
                 cellid = cellid.substring(cellid.indexOf("|"));
                 cellid = rowid + cellid;
-                $cell.attr("id", cellid);
-                $cell.attr("title", cellid);
+                _Attribute(cellelement, "id", cellid);
+                _Attribute(cellelement, "title", cellid);
             });
         };
         Table.prototype.SetExtensionByCode = function (code) {

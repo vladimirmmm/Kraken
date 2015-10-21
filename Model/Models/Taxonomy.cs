@@ -122,10 +122,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Test.txt"; }
         }
-
+        public static string StructureFileName = "Structure.json";
         public string TaxonomyStructurePath
         {
-            get { return ModuleFolder + "Structure.json"; }
+            get { return ModuleFolder + StructureFileName; }
         }
         public string TaxonomyFactsPath
         {

@@ -447,12 +447,15 @@
                     var url = itemparts[0];
                     var hash = itemparts[1];
 
+                    window.location.hash = hash;
+                    /*
                     AjaxRequest(url, "get", "text/html", null, function (data) {
                         _Html(_SelectFirst("#ReportContainer"), data);
                         Notify(Format("Loading {0}", url));
                         window.location.hash = hash;
                     },
                     function (error) { console.log(error); });
+                    */
                 }
             },
             function (error) { console.log(error); });

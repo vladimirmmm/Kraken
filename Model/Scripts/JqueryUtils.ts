@@ -345,6 +345,28 @@ function Content(obj, value?: string): string {
     }
     return "";
 }
+function GetJqueryFunction(functionname: string): any {
+    var f = (obj: any, value: string): string => {
+        if (arguments.length == 2) {
+            $(obj)[functionname](value);
+        }
+        if (arguments.length == 1) {
+            return $(obj)[functionname]();
+        }
+        return value;
+    };
+    return f;
+
+}
+function CallJQueryFunction(obj, functionname:string, value?: string): string {
+    if (arguments.length == 2) {
+        $(obj)[functionname](value);
+    }
+    if (arguments.length == 1) {
+        return $(obj)[functionname]();
+    }
+    return "";
+}
 
 $.fn.serializeObject = function () {
     var o = {};
@@ -423,6 +445,104 @@ $.fn.extend({
     }
 });
 
+function BindVash(target: any, data: any, parent?: any) {
+    var fBind = (target, data, parent?) => this.Bind.call(this, target, data, parent);
+    var NoCheck = [];
+    var targetitem = $(target);
+    var bindattribute = "binding";
+    var attributespecifier = "=>";
+    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
+    var targets = [];
+    if (!IsNull($(target).attr(bindattribute))) { targets.push(target); }
+    jquerytargets.each(function (ix, item) {
+        targets.push(item);
+    });
+    //console.log(Format("Binding target: {0}", targets.length));
+    targets.forEach(function (item, ix) {
+        if (NoCheck.indexOf(item) == -1) {
+            var id = $(item).attr(bindattribute);
+            var targetattribute = "";
+            var formatString = "{0}";
+            var expr = id;
+            if (expr.indexOf(attributespecifier) > -1) {
+                var isplit = expr.split(attributespecifier);
+                if (isplit.length == 2) {
+                    targetattribute = isplit[0];
+                    expr = isplit[1];
+
+                }
+            }
+            var originalexpr = expr;
+            var expressions = [];
+            var i = 0;
+            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
+                expressions.push(expression);
+                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
+                i++;
+            }
+            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
+
+            if (expressions.length > 0) {
+                formatString = expr;//originalexpr.replace("{" + expr + "}", "{0}");
+            } else {
+                expressions.push(originalexpr);
+            }
+            var values = [];
+            expressions.forEach(function (expression) {
+                var val = null;
+                val = Access(data, expression);
+                if (typeof val == "string") {
+                    if (val.indexOf("/Date(") == 0) {
+                        val = ToDate(val);
+                    }
+                    else {
+                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    }
+                }
+                values.push(val)
+            });
+
+            var elementtemplate = $('[binding-type=template]', $(item)).first();
+            var newelementX = $(elementtemplate).clone(true, true);
+            newelementX.removeAttr("binding-type");
+
+            var firstvalue = values[0];
+            if (IsArray(firstvalue)) {
+
+                if (elementtemplate.length == 0) {
+                    console.log('no template found!');
+                }
+                $(item).empty();
+                elementtemplate.appendTo($(item));
+                var itemstoadd = [];
+                var bindattributeselector = "[" + bindattribute + "]";
+                firstvalue.forEach(function (childitem) {
+
+
+                    fBind(newelementX, childitem, firstvalue);
+                    itemstoadd.push(OuterHtml(newelementX));
+
+
+                });
+                //newelement.appendTo($(item));
+                $(item).append(itemstoadd.join('\n'));
+            } else {
+
+                if (IsNull(targetattribute)) {
+                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
+                        $(item).html(Format(formatString, values));
+                    }
+                }
+                else {
+                    $(item).attr(targetattribute, Format(formatString, values));
+
+                }
+
+            }
+        }
+    });
+}
+
 function _SetFunctions() {
     _Select = function (CssSelector: string, from?: HTMLElement) {
         if (IsNull(from)) {
@@ -444,21 +564,75 @@ function _SetFunctions() {
         return null;
     };
 
+    _Find = function (element:Element, CssSelector: string):Element[] {
+        return ToElements($(element).find(CssSelector));
+    };
 
-    _AddEventHandler = function (element: HTMLElement, eventname: string, handler: any) {
+    _FindFirst = function (element: Element, CssSelector: string): Element {
+        var elements = _Find(element, CssSelector);
+        if (elements.length > 0) {
+            return elements[0]
+        }
+        return null;
+    };
+
+    _Children = function (element: Element, CssSelector?: string): Element[] {
+        return ToElements($(element).children(CssSelector));
+    };
+
+    _FirstChildren = function (element: Element, CssSelector?: string): Element {
+        var elements = _Children(element, CssSelector);
+        if (elements.length > 0) {
+            return elements[0]
+        }
+        return null;
+    };
+
+    _Width = function (target: Element, value?: any): number {
+        if (!IsNull(value)) {
+            $(target).width(value);
+        }
+        return $(target).width();
+    };
+
+    _Height = function (target: Element, value?: any): number {
+        if (!IsNull(value)) {
+            $(target).width(value);
+        }
+        return $(target).width();
+    };
+
+    _Parent = function (target: Element, selector?: string):Element {
+        var parent = $(target).parent(selector)
+        return parent.length == 0 ? null : parent[0];
+    };
+
+    _Parents = function (target: Element, selector?: string): Element[] {
+        var parents = $(target).parents(selector)
+        return ToElements(parents);
+    };
+
+    _AddEventHandler = function (element: any, eventname: string, handler: any) {
         $(element).on(eventname, handler);
     };
 
-    _RemoveEventHandler = function (element: HTMLElement, eventname: string, handler: any) {
+    _RemoveEventHandler = function (element: any, eventname: string, handler: any) {
         $(element).unbind(eventname, handler);
     };
 
-    _EnsureEventHandler = function (element: HTMLElement, eventname: string, handler: any) {
+    _EnsureEventHandler = function (element: any, eventname: string, handler: any) {
         _RemoveEventHandler(element, eventname, handler);
         _AddEventHandler(element, eventname, handler);
     };
 
+    _RemoveEventHandlers = function (elements: any, eventname: string) {
+        $(elements).off(eventname);
+    };
+
+
+
     _Attribute = Attribute;
+    _RemoveAttribute = (target: any, attributename: string) => { $(target).removeAttr(attributename);};
 
     _Property = function (element: Element, propertyname: string) {
         return $(element).prop(propertyname);
@@ -467,21 +641,24 @@ function _SetFunctions() {
     _Value = Value;
 
     _Html = Content;
+    _Text = GetJqueryFunction("text");
 
-    _Remove = (element: Element) => { $(element).remove(); };
+    _Remove = (element: any) => { $(element).remove(); };
     _Append = (target: Element, element: Element) => { $(target).append(element); };
     _After = (target: Element, element: Element) => { $(target).after(element); };
     _Before = (target: Element, element: Element) => { $(target).before(element); };
 
-    _HasClass = (element: Element, classname: string): boolean => $(element).hasClass(classname);
-    _AddClass = (element: Element, classname: string) => { $(element).addClass(classname) };
-    _RemoveClass = (element: Element, classname: string) => { $(element).removeClass(classname) };
+    _HasClass = (element: any, classname: string): boolean => $(element).hasClass(classname);
+    _AddClass = (element: any, classname: string) => { $(element).addClass(classname) };
+    _RemoveClass = (element: any, classname: string) => { $(element).removeClass(classname) };
 
     _Css = Css;
 
 
     _Focus = (element: Element) => { $(element).focus(); };
-
+    _Show = (element: Element) => { $(element).show(); };
+    _Hide = (element: Element) => { $(element).hide(); };
+    _IsVisible = (element: Element): boolean => { return $(element).is(':visible'); };
     _Clone = (element: Element) : Element => $(element).clone()[0];
 }
 _SetFunctions();

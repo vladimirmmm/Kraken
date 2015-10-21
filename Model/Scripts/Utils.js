@@ -36,18 +36,34 @@ function ShowHideChild(selector, sender) {
 function SetPivots() {
     $("#maintable").resizableColumns();
 }
+HTMLElement.prototype.toString = function () {
+    var html = this.outerHTML;
+    var result = "<" + TextBetween(html, "<", ">") + ">";
+    return result;
+};
 var _Select = function (CssSelector, from) { return null; };
 var _SelectFirst = function (CssSelector, from) { return null; };
+var _Find = function (element, CssSelector) { return null; };
+var _FindFirst = function (element, CssSelector) { return null; };
+var _Parent = function (element, selector) { return null; };
+var _Parents = function (element, selector) { return []; };
+var _Children = function (element, CssSelector) { return null; };
+var _FirstChildren = function (element, CssSelector) { return null; };
 var _AddEventHandler = function (element, eventname, handler) {
 };
 var _RemoveEventHandler = function (element, eventname, handler) {
 };
+var _RemoveEventHandlers = function (element, eventname) {
+};
 var _EnsureEventHandler = function (element, eventname, handler) {
 };
 var _Attribute = function (element, attributename, attributevalue) { return ""; };
+var _RemoveAttribute = function (target, attributename) {
+};
 var _Property = function (element, propertyname) { return ""; };
 var _Value = function (element, value) { return ""; };
 var _Html = function (element, html) { return ""; };
+var _Text = function (element, text) { return ""; };
 var _Remove = function (element) {
 };
 var _Append = function (target, element) {
@@ -63,8 +79,15 @@ var _RemoveClass = function (element, classname) {
 };
 var _Css = function (element, value) {
 };
+var _Width = function (element, value) { return -1; };
+var _Height = function (element, value) { return -1; };
 var _Focus = function (element) {
 };
+var _Show = function (element) {
+};
+var _Hide = function (element) {
+};
+var _IsVisible = function (element) { return false; };
 var _Clone = function (element) { return null; };
 function ToElements(item) {
     var items = [];
@@ -1018,7 +1041,8 @@ var Editor = (function () {
         this.$Target.removeClass(Editor.editclass);
         this.$Me.remove();
     };
-    Editor.prototype.Load = function (Target, TargetValueGetter, TargetValueSetter) {
+    Editor.prototype.Load = function (TargetElement, TargetValueGetter, TargetValueSetter) {
+        var Target = $(TargetElement);
         var me = this;
         this.TargetValueGetter = TargetValueGetter;
         this.TargetValueSetter = TargetValueSetter;
@@ -1074,23 +1098,38 @@ var Editor = (function () {
 function MakeEditable2(cellselector) {
     $(cellselector).off("click");
     $(cellselector).click(function () {
+        var target = this;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+            editor.Load(target, function () { return _Html(target); }, function () { return _Html(target, editor.ValueGetter(editor.$Me)); });
+        }
+        /*
         var $target = $(this);
         if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
-            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(),(i: JQuery, val: any) => i.val(val));
+            editor.Load($target,() => $target.html(),() => $target.html(editor.ValueGetter(editor.$Me)));
         }
+        */
     });
 }
 function MakeEditable3(cellselector, optionObject) {
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
+        var target = this;
+        if (!_HasClass(target, Editor.editclass)) {
             var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)), function (i) { return i.val(); }, function (i, val) {
                 i.val(val);
             });
-            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+            editor.Load(target, function () { return _Html(target); }, function () { return _Html(target, editor.ValueGetter(editor.$Me)); });
         }
+        /*
+        var $target = $(this);
+        if (!$target.hasClass(Editor.editclass)) {
+  
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
+            editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
+        }
+        */
     });
 }
 var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs" };
@@ -1225,96 +1264,6 @@ function Access(obj, key) {
 function OuterHtml(item) {
     return item[0].outerHTML;
     //return item.wrapAll('<div>').parent().html(); 
-}
-function Bind(target, data, parent) {
-    var _this = this;
-    var fBind = function (target, data, parent) { return _this.Bind.call(_this, target, data, parent); };
-    var NoCheck = [];
-    var targetitem = $(target);
-    var bindattribute = "binding";
-    var attributespecifier = "=>";
-    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
-    var targets = [];
-    if (!IsNull($(target).attr(bindattribute))) {
-        targets.push(target);
-    }
-    jquerytargets.each(function (ix, item) {
-        targets.push(item);
-    });
-    //console.log(Format("Binding target: {0}", targets.length));
-    targets.forEach(function (item, ix) {
-        if (NoCheck.indexOf(item) == -1) {
-            var id = $(item).attr(bindattribute);
-            var targetattribute = "";
-            var formatString = "{0}";
-            var expr = id;
-            if (expr.indexOf(attributespecifier) > -1) {
-                var isplit = expr.split(attributespecifier);
-                if (isplit.length == 2) {
-                    targetattribute = isplit[0];
-                    expr = isplit[1];
-                }
-            }
-            var originalexpr = expr;
-            var expressions = [];
-            var i = 0;
-            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
-                expressions.push(expression);
-                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
-                i++;
-            }
-            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
-            if (expressions.length > 0) {
-                formatString = expr; //originalexpr.replace("{" + expr + "}", "{0}");
-            }
-            else {
-                expressions.push(originalexpr);
-            }
-            var values = [];
-            expressions.forEach(function (expression) {
-                var val = null;
-                val = Access(data, expression);
-                if (typeof val == "string") {
-                    if (val.indexOf("/Date(") == 0) {
-                        val = ToDate(val);
-                    }
-                    else {
-                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                    }
-                }
-                values.push(val);
-            });
-            var elementtemplate = $('[binding-type=template]', $(item)).first();
-            var newelementX = $(elementtemplate).clone(true, true);
-            newelementX.removeAttr("binding-type");
-            var firstvalue = values[0];
-            if (IsArray(firstvalue)) {
-                if (elementtemplate.length == 0) {
-                    console.log('no template found!');
-                }
-                $(item).empty();
-                elementtemplate.appendTo($(item));
-                var itemstoadd = [];
-                var bindattributeselector = "[" + bindattribute + "]";
-                firstvalue.forEach(function (childitem) {
-                    fBind(newelementX, childitem, firstvalue);
-                    itemstoadd.push(OuterHtml(newelementX));
-                });
-                //newelement.appendTo($(item));
-                $(item).append(itemstoadd.join('\n'));
-            }
-            else {
-                if (IsNull(targetattribute)) {
-                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
-                        $(item).html(Format(formatString, values));
-                    }
-                }
-                else {
-                    $(item).attr(targetattribute, Format(formatString, values));
-                }
-            }
-        }
-    });
 }
 function Replace(text, texttoreplace, textwithreplace) {
     /*

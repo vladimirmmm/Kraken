@@ -72,30 +72,52 @@ function SetPivots()
 
 }
 
+HTMLElement.prototype.toString = function () {
+    var html = (<HTMLElement>this).outerHTML;
+    var result = "<" + TextBetween(html, "<", ">") + ">";
+    return result;
+}
+
 var _Select = (CssSelector: string, from?: Element): Element[]=> null;
 var _SelectFirst = (CssSelector: string, from?: Element): Element=> null;
+var _Find = (element : Element, CssSelector: string): Element[]=> null;
+var _FindFirst = (element: Element, CssSelector: string): Element=> null;
+var _Parent = (element: Element, selector?: string): Element => null;
+var _Parents = (element: Element, selector?: string): Element[]=> [];
 
-var _AddEventHandler = (element: Element, eventname: string, handler: Function) => { };
-var _RemoveEventHandler = (element: Element, eventname: string, handler: Function) => { };
-var _EnsureEventHandler = (element: Element, eventname: string, handler: Function) => { };
+var _Children = (element: Element, CssSelector?: string): Element[]=> null;
+var _FirstChildren = (element: Element, CssSelector?: string): Element=> null;
 
-var _Attribute = (element: Element, attributename: string, attributevalue?: string): string => "";
-var _Property = (element: Element, propertyname: string): string => "";
-var _Value = (element: Element, value?: string): string => "";
-var _Html = (element: Element, html?: string): string => "";
+var _AddEventHandler = (element: any, eventname: string, handler: Function) => { };
+var _RemoveEventHandler = (element: any, eventname: string, handler: Function) => { };
+var _RemoveEventHandlers = (element: any, eventname: string) => { };
+var _EnsureEventHandler = (element: any, eventname: string, handler: Function) => { };
 
-var _Remove = (element: Element) => { };
+var _Attribute = (element: any, attributename: string, attributevalue?: string): string => "";
+var _RemoveAttribute = (target: any, attributename: string) => { };
+
+var _Property = (element: any, propertyname: string): string => "";
+var _Value = (element: any, value?: string): string => "";
+var _Html = (element: any, html?: string): string => "";
+var _Text = (element: any, text?: string): string => "";
+
+var _Remove = (element: any) => { };
 var _Append = (target: Element, element: Element) => { };
 var _After = (target: Element, element: Element) => { };
 var _Before = (target: Element, element: Element) => { };
 
 
-var _HasClass = (element: Element, classname: string): boolean => false;
-var _AddClass = (element: Element, classname: string) => { };
-var _RemoveClass = (element: Element, classname: string) => { };
-var _Css = (element: Element, value: string) => { };
+var _HasClass = (element: any, classname: string): boolean => false;
+var _AddClass = (element: any, classname: string) => { };
+var _RemoveClass = (element: any, classname: string) => { };
+var _Css = (element: any, value: string) => { };
+var _Width = (element: any, value?: any) : number => -1;
+var _Height = (element: any, value?: any) : number => -1;
 
-var _Focus = (element: Element) => { };
+var _Focus = (element: any) => { };
+var _Show = (element: any) => { };
+var _Hide = (element: any) => { };
+var _IsVisible = (element: any):boolean => false;
 var _Clone = (element: Element):Element => null;
 
 function ToElements(item: JQuery): Element[]
@@ -1219,8 +1241,9 @@ class Editor
 
     }
 
-    public Load(Target: JQuery, TargetValueGetter: Function, TargetValueSetter: Function)
+    public Load(TargetElement: Element, TargetValueGetter: Function, TargetValueSetter: Function)
     {
+        var Target = $(TargetElement);
         var me = this;
         this.TargetValueGetter = TargetValueGetter;
         this.TargetValueSetter = TargetValueSetter;
@@ -1283,23 +1306,37 @@ function MakeEditable2(cellselector)
 {
     $(cellselector).off("click");
     $(cellselector).click(function () {
+        var target = <Element>this;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
+            editor.Load(target,() => _Html(target), () => _Html(target, editor.ValueGetter(editor.$Me)));
+        }
+        /*
         var $target = $(this);
         if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
+            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(),(i: JQuery, val: any) => i.val(val));
             editor.Load($target,() => $target.html(),() => $target.html(editor.ValueGetter(editor.$Me)));
         }
+        */
     });
 }
 
 function MakeEditable3(cellselector, optionObject) {
     $(cellselector).off("click");
     $(cellselector).click(function () {
+        var target = <Element>this;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
+            editor.Load(target,() => _Html(target),() => _Html(target, editor.ValueGetter(editor.$Me)));
+        }
+        /*
         var $target = $(this);
         if (!$target.hasClass(Editor.editclass)) {
   
             var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
             editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
         }
+        */
     });
 }
 var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs"};
@@ -1460,103 +1497,7 @@ function OuterHtml(item: JQuery): string
     //return item.wrapAll('<div>').parent().html(); 
 }
 
-function Bind(target: any, data: any, parent?: any) {
-    var fBind = (target, data, parent?) => this.Bind.call(this, target, data, parent);
-    var NoCheck = [];
-    var targetitem = $(target);
-    var bindattribute = "binding";
-    var attributespecifier = "=>";
-    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
-    var targets = [];
-    if (!IsNull($(target).attr(bindattribute))) { targets.push(target); }
-    jquerytargets.each(function (ix, item) {
-        targets.push(item);
-    });
-    //console.log(Format("Binding target: {0}", targets.length));
-    targets.forEach(function (item, ix) {
-        if (NoCheck.indexOf(item) == -1) {
-            var id = $(item).attr(bindattribute);
-            var targetattribute = "";
-            var formatString = "{0}";
-            var expr = id;
-            if (expr.indexOf(attributespecifier) > -1) {
-                var isplit = expr.split(attributespecifier);
-                if (isplit.length == 2) {
-                    targetattribute = isplit[0];
-                    expr = isplit[1];
 
-                }
-            }
-            var originalexpr = expr;
-            var expressions = [];
-            var i = 0;
-            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
-                expressions.push(expression);
-                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
-                i++;
-            }
-            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
-
-            if (expressions.length > 0) {
-                formatString = expr;//originalexpr.replace("{" + expr + "}", "{0}");
-            } else {
-                expressions.push(originalexpr);
-            }
-            var values = [];
-            expressions.forEach(function (expression) {
-                var val = null;
-                val = Access(data, expression);
-                if (typeof val == "string") {
-                    if (val.indexOf("/Date(") == 0) {
-                        val = ToDate(val);
-                    }
-                    else {
-                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                    }
-                }
-                values.push(val)
-            });
-
-            var elementtemplate = $('[binding-type=template]', $(item)).first();
-            var newelementX = $(elementtemplate).clone(true, true);
-            newelementX.removeAttr("binding-type");
-
-            var firstvalue = values[0];
-            if (IsArray(firstvalue)) {
-
-                if (elementtemplate.length == 0) {
-                    console.log('no template found!');
-                }
-                $(item).empty();
-                elementtemplate.appendTo($(item));
-                var itemstoadd = [];
-                var bindattributeselector = "[" + bindattribute + "]";
-                firstvalue.forEach(function (childitem) {
-                 
-
-                    fBind(newelementX, childitem, firstvalue);
-                    itemstoadd.push(OuterHtml(newelementX));
-
-
-                });
-                //newelement.appendTo($(item));
-                $(item).append(itemstoadd.join('\n'));
-            } else {
-
-                if (IsNull(targetattribute)) {
-                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
-                        $(item).html(Format(formatString, values));
-                    }
-                }
-                else {
-                    $(item).attr(targetattribute, Format(formatString, values));
-
-                }
-
-            }
-        }
-    });
-}
 function Replace(text:string, texttoreplace:string, textwithreplace:string):string
 {
     /*

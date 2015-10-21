@@ -290,6 +290,27 @@ function Content(obj, value) {
     }
     return "";
 }
+function GetJqueryFunction(functionname) {
+    var f = function (obj, value) {
+        if (arguments.length == 2) {
+            $(obj)[functionname](value);
+        }
+        if (arguments.length == 1) {
+            return $(obj)[functionname]();
+        }
+        return value;
+    };
+    return f;
+}
+function CallJQueryFunction(obj, functionname, value) {
+    if (arguments.length == 2) {
+        $(obj)[functionname](value);
+    }
+    if (arguments.length == 1) {
+        return $(obj)[functionname]();
+    }
+    return "";
+}
 $.fn.serializeObject = function () {
     var o = {};
     var a = this.serializeArray();
@@ -351,6 +372,96 @@ $.fn.extend({
         return that;
     }
 });
+function BindVash(target, data, parent) {
+    var _this = this;
+    var fBind = function (target, data, parent) { return _this.Bind.call(_this, target, data, parent); };
+    var NoCheck = [];
+    var targetitem = $(target);
+    var bindattribute = "binding";
+    var attributespecifier = "=>";
+    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
+    var targets = [];
+    if (!IsNull($(target).attr(bindattribute))) {
+        targets.push(target);
+    }
+    jquerytargets.each(function (ix, item) {
+        targets.push(item);
+    });
+    //console.log(Format("Binding target: {0}", targets.length));
+    targets.forEach(function (item, ix) {
+        if (NoCheck.indexOf(item) == -1) {
+            var id = $(item).attr(bindattribute);
+            var targetattribute = "";
+            var formatString = "{0}";
+            var expr = id;
+            if (expr.indexOf(attributespecifier) > -1) {
+                var isplit = expr.split(attributespecifier);
+                if (isplit.length == 2) {
+                    targetattribute = isplit[0];
+                    expr = isplit[1];
+                }
+            }
+            var originalexpr = expr;
+            var expressions = [];
+            var i = 0;
+            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
+                expressions.push(expression);
+                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
+                i++;
+            }
+            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
+            if (expressions.length > 0) {
+                formatString = expr; //originalexpr.replace("{" + expr + "}", "{0}");
+            }
+            else {
+                expressions.push(originalexpr);
+            }
+            var values = [];
+            expressions.forEach(function (expression) {
+                var val = null;
+                val = Access(data, expression);
+                if (typeof val == "string") {
+                    if (val.indexOf("/Date(") == 0) {
+                        val = ToDate(val);
+                    }
+                    else {
+                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    }
+                }
+                values.push(val);
+            });
+            var elementtemplate = $('[binding-type=template]', $(item)).first();
+            var newelementX = $(elementtemplate).clone(true, true);
+            newelementX.removeAttr("binding-type");
+            var firstvalue = values[0];
+            if (IsArray(firstvalue)) {
+                if (elementtemplate.length == 0) {
+                    console.log('no template found!');
+                }
+                $(item).empty();
+                elementtemplate.appendTo($(item));
+                var itemstoadd = [];
+                var bindattributeselector = "[" + bindattribute + "]";
+                firstvalue.forEach(function (childitem) {
+                    fBind(newelementX, childitem, firstvalue);
+                    itemstoadd.push(OuterHtml(newelementX));
+                });
+                //newelement.appendTo($(item));
+                $(item).append(itemstoadd.join('\n'));
+            }
+            else {
+                if (IsNull(targetattribute)) {
+                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
+                        $(item).html(Format(formatString, values));
+                    }
+                }
+                else {
+                    $(item).attr(targetattribute, Format(formatString, values));
+                }
+            }
+        }
+    });
+}
 function _SetFunctions() {
     _Select = function (CssSelector, from) {
         if (IsNull(from)) {
@@ -367,6 +478,46 @@ function _SetFunctions() {
         }
         return null;
     };
+    _Find = function (element, CssSelector) {
+        return ToElements($(element).find(CssSelector));
+    };
+    _FindFirst = function (element, CssSelector) {
+        var elements = _Find(element, CssSelector);
+        if (elements.length > 0) {
+            return elements[0];
+        }
+        return null;
+    };
+    _Children = function (element, CssSelector) {
+        return ToElements($(element).children(CssSelector));
+    };
+    _FirstChildren = function (element, CssSelector) {
+        var elements = _Children(element, CssSelector);
+        if (elements.length > 0) {
+            return elements[0];
+        }
+        return null;
+    };
+    _Width = function (target, value) {
+        if (!IsNull(value)) {
+            $(target).width(value);
+        }
+        return $(target).width();
+    };
+    _Height = function (target, value) {
+        if (!IsNull(value)) {
+            $(target).width(value);
+        }
+        return $(target).width();
+    };
+    _Parent = function (target, selector) {
+        var parent = $(target).parent(selector);
+        return parent.length == 0 ? null : parent[0];
+    };
+    _Parents = function (target, selector) {
+        var parents = $(target).parents(selector);
+        return ToElements(parents);
+    };
     _AddEventHandler = function (element, eventname, handler) {
         $(element).on(eventname, handler);
     };
@@ -377,12 +528,19 @@ function _SetFunctions() {
         _RemoveEventHandler(element, eventname, handler);
         _AddEventHandler(element, eventname, handler);
     };
+    _RemoveEventHandlers = function (elements, eventname) {
+        $(elements).off(eventname);
+    };
     _Attribute = Attribute;
+    _RemoveAttribute = function (target, attributename) {
+        $(target).removeAttr(attributename);
+    };
     _Property = function (element, propertyname) {
         return $(element).prop(propertyname);
     };
     _Value = Value;
     _Html = Content;
+    _Text = GetJqueryFunction("text");
     _Remove = function (element) {
         $(element).remove();
     };
@@ -405,6 +563,15 @@ function _SetFunctions() {
     _Css = Css;
     _Focus = function (element) {
         $(element).focus();
+    };
+    _Show = function (element) {
+        $(element).show();
+    };
+    _Hide = function (element) {
+        $(element).hide();
+    };
+    _IsVisible = function (element) {
+        return $(element).is(':visible');
     };
     _Clone = function (element) { return $(element).clone()[0]; };
 }

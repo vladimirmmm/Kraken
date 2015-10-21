@@ -109,21 +109,22 @@ namespace UI
                     new MenuCommand("Test", "")
                     ),
                 new MenuCommand("Taxonomy", "",
-                    new MenuCommand("Refresh all (but Structure)", "", (o) => { Clear(ClearEnum.AllButStructure); }),
+                    new MenuCommand("Refresh all (but Structure)", "", (o) => { ClearTaxonomy(ClearEnum.AllButStructure); }),
                     new MenuCommand("Refresh", "",
-                        new MenuCommand("Refresh all", "", (o) => { Clear(ClearEnum.All); }),
-                        new MenuCommand("Structure", "", (o) => { Clear(ClearEnum.Structure); ; }),
-                        new MenuCommand("Tables", "", (o) => { Clear(ClearEnum.Tables); }),
-                        new MenuCommand("Layout (HTML)", "", (o) => { Clear(ClearEnum.Layout); }),
-                        new MenuCommand("SchemaElements", "", (o) => { Clear(ClearEnum.Elements); }),
-                        new MenuCommand("Hierarchies", "", (o) => { Clear(ClearEnum.Hierarchies); }),
-                        new MenuCommand("Concepts", "", (o) => { Clear(ClearEnum.Concepts); }),
-                        new MenuCommand("Labels", "", (o) => { Clear(ClearEnum.Labels); }),
-                        new MenuCommand("Facts", "", (o) => { Clear(ClearEnum.Facts); }),
-                        new MenuCommand("Validations", "", (o) => { Clear(ClearEnum.Validations); })
+                        new MenuCommand("Refresh all", "", (o) => { ClearTaxonomy(ClearEnum.All); }),
+                        new MenuCommand("Structure", "", (o) => { ClearTaxonomy(ClearEnum.Structure); ; }),
+                        new MenuCommand("Tables", "", (o) => { ClearTaxonomy(ClearEnum.Tables); }),
+                        new MenuCommand("Layout (HTML)", "", (o) => { ClearTaxonomy(ClearEnum.Layout); }),
+                        new MenuCommand("SchemaElements", "", (o) => { ClearTaxonomy(ClearEnum.Elements); }),
+                        new MenuCommand("Hierarchies", "", (o) => { ClearTaxonomy(ClearEnum.Hierarchies); }),
+                        new MenuCommand("Concepts", "", (o) => { ClearTaxonomy(ClearEnum.Concepts); }),
+                        new MenuCommand("Labels", "", (o) => { ClearTaxonomy(ClearEnum.Labels); }),
+                        new MenuCommand("Facts", "", (o) => { ClearTaxonomy(ClearEnum.Facts); }),
+                        new MenuCommand("Validations", "", (o) => { ClearTaxonomy(ClearEnum.Validations); })
                         )
                     ),
                new MenuCommand("Tools", "",
+                    new MenuCommand("Clear All Processed Files", "", (o) => { ClearProcessedTaxonmies(); }),
                     new MenuCommand("Settings", "", (o) => { UI.ShowSettings(); }),
                     new MenuCommand("Debug UI", "", (o) => { DebugUI(); })
                     ),
@@ -174,8 +175,24 @@ namespace UI
                 ShowInBrowser(Engine.HtmlPath); 
             }
         }
-
-        public void Clear(ClearEnum cleartype) 
+        public void ClearProcessedTaxonmies() 
+        {
+            var taxonomycontainerfolder = TaxonomyEngine.LocalFolder;
+            var files = System.IO.Directory.GetFiles(taxonomycontainerfolder, Taxonomy.StructureFileName, System.IO.SearchOption.AllDirectories);
+            foreach (var file in files) 
+            {
+                var folder = Utilities.Strings.GetFolder(file);
+                var subfiles = System.IO.Directory.GetFiles(folder);
+                
+                Utilities.Logger.WriteLine(String.Format("Deleting folder {0}",folder));
+                foreach (var subfile in subfiles) 
+                {
+                    Utilities.FS.DeleteFile(subfile);
+                }
+                Utilities.FS.DeleteFolder(folder);
+            }
+        }
+        public void ClearTaxonomy(ClearEnum cleartype) 
         {
             if (Engine.CurrentTaxonomy != null) 
             {

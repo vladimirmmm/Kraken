@@ -728,7 +728,8 @@ namespace LogicalModel
                 var jsoncontent = Utilities.Converters.ToJson(factmap);
                 //var jscontent = "var FactMap = " + jsoncontent.Replace("\r\n", "\\ \r\n") + ";";
                 var jscontent = "{\"FactMap\": " + jsoncontent + ", \r\n";
-                jscontent += "\"ExtensionsRoot\": " + Utilities.Converters.ToJson(Extensions) + "}";
+                jscontent += "\"ExtensionsRoot\": " + Utilities.Converters.ToJson(Extensions) + ", \r\n";
+                jscontent += "\"HtmlTemplatePath\": \"" + this.HtmlPath + "\"}";
                 System.IO.File.WriteAllText(FactMapPath, jscontent);
 
             }

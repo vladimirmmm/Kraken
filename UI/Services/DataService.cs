@@ -36,6 +36,17 @@ namespace UI.Services
             }
             else
             {
+                if (request.Url.EndsWith(".html")) 
+                {
+
+                    var table = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.HtmlPath == request.Url);
+                    if (table != null) {
+                        result.Data = Utilities.FS.ReadAllText(table.FullHtmlPath);
+                        
+                    }
+
+
+                }
                 var urlparts = request.Url.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
                 if (urlparts.Length == 2)
                 {

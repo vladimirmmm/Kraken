@@ -10,9 +10,13 @@ module UI {
         public FactMap: Object = {};
         public CurrentExtension: Model.LayoutItem = null;
         public Instance: Model.Instance = null;
-        public $TemplateRow: JQuery = null;
+        public TemplateRow: Element = null;
+        public TemplateCol: Element = null;
 
         public ConceptValues: Model.ConceptLookUp[] = [];
+
+        public HtmlTemplate: string = "";
+        public HtmlTemplatePath: string = "";
         
         private Current_CellID: string = "";
         private Current_ExtensionCode: string = "";
@@ -24,25 +28,39 @@ module UI {
        
         }
 
-        public LoadTable(reportid:string)
-        {
+        public LoadTable(reportid: string) {
             var me = this;
-           
+            var fload = function (data) {
+                var jsonobj = JSON.parse(data);
+                me.HtmlTemplatePath = jsonobj["HtmlTemplatePath"];
+
+                me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
+                me.FactMap = jsonobj["FactMap"];
+
+
+                AjaxRequest(me.HtmlTemplatePath, "get", "text/html", null, function (data)
+                    {
+                        _Html(_SelectFirst("#ReportContainer"), data);
+
+                        me.Current_ReportID = reportid;
+
+                        me.SetExternals();
+                        me.Load();
+                        me.GetData();
+                        ShowNotification("Table instance loaded!");
+                    },
+                    function (error) {
+                        console.log(error);
+                    }
+                );
+
+
+                
+            }
             AjaxRequest("Taxonomy/Table", "get", "text/html",
                 { item: "factmap", reportid: reportid },
                 function (data) {
-                    //_Html(_SelectFirst("#TableScript"), data);
-                    var jsonobj = JSON.parse(data);
-                    me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
-                    me.FactMap = jsonobj["FactMap"];
-
-                    me.Current_ReportID = reportid;
-
-                    me.SetExternals();
-                    me.Load();
-                    me.GetData();
-                    ShowNotification("Table instance loaded!");
-
+                    fload(data);
                 },
                 function (error) { console.log(error); });
 
@@ -103,10 +121,16 @@ module UI {
             var uitablemanger = new Controls.TableManager();
             var uitable = new Controls.Table(uitablemanger);
             uitable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
+            _EnsureEventHandler(_Select("table.report tr"), "click", function () {
+                $('tr', 'table').removeClass("selected");
+                $(this).addClass("selected");
+            });
+            /*
             $("table.report").on('click', 'tr', function () {
                 $('tr', 'table').removeClass("selected");
                 $(this).addClass("selected");
             });
+            */
             this.LoadCellsFromHtml();
             this.SetCellEditors();
 
@@ -117,11 +141,15 @@ module UI {
 
         public HighlightCell()
         {
-            $(".highlight").removeClass("highlight");
+            _RemoveClass(_Select(".highlight"), "highlight");
+            //$(".highlight").removeClass("highlight");
 
             var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
-            $("#" + cellselector).addClass("highlight");
-            $("#" + cellselector).focus();
+            var cells = _Select("#" + cellselector);
+            _AddClass(cells, "highlight");
+            //$("#" + cellselector).addClass("highlight");
+            _Focus(cells);
+            //$("#" + cellselector).focus();
         }
 
         public LoadConceptValues() {
@@ -180,29 +208,45 @@ module UI {
         {
             var me = this;
             var cellselector = ".data";
-            $(cellselector).off("click");
-            $(cellselector).each(function (ix, item) {
-                var $target = $(item);
-                var factitems = $target.attr("factstring").split(",");
+            var cells = _Select(cellselector);
+            _RemoveEventHandlers(cells, "click");
+            //$(cellselector).off("click");
+            //$(cellselector).each(function (ix, item) {
+            cells.forEach(function (item, ix) {
+                var target = <Element>item;
+                //var factitems = target.attr("factstring").split(",");
+                var factitems = _Attribute(target,"factstring").split(",");
                 var concept = "";
                 if (factitems[0].indexOf("[") == -1)
                 {
                     concept = factitems[0];
                 }
     
-                if (!$target.parent().hasClass("dynamic") && !$target.hasClass("blocked")) {
-             
-                    $target.click(function () {
+                //if (!target.parent().hasClass("dynamic") && !target.hasClass("blocked")) {
+                if (!_HasClass(_Parent(target), "dynamic") && !_HasClass(target,"blocked")) {
+                
+                    //target.click(function () {
+                    _AddEventHandler(target,"click", function () {
                         //Notify("clicked")
-                        if (!$target.hasClass(Editor.editclass)) {
+                        //if (!target.hasClass(Editor.editclass)) {
+                        if (!_HasClass(target, Editor.editclass)) {
                             var typeclass = "";
                             if (factitems[0].indexOf(":ei") > -1) {
                                 typeclass = "ei";
+                            }
+                            if (factitems[0].indexOf(":bi") > -1) {
+                                typeclass = "bi";
                             }
                             if (factitems[0].indexOf(":di") > -1) {
                                 typeclass = "di";
                             }
                             var editor: Editor = null;
+                            if (typeclass == "bi") {
+                                editor = new Editor('<select class="celleditor"><option>true</option><option>false</option></select>',
+                                    (i: JQuery) => i.val(),
+                                    (i: JQuery, val: any) => { i.val(val); });
+
+                            } 
                             if (typeclass=="ei") {
                                 editor = new Editor(Format('<select class="celleditor">{0}</select>', me.GetConcepOptions(concept)),
                                     (i: JQuery) => i.val(),
@@ -233,9 +277,9 @@ module UI {
                                     (i: JQuery, val: any) => i.val(val));
                             }
 
-                            editor.Load($target,
-                                () => $target.html(),
-                                () => { $target.html(editor.ValueGetter(editor.$Me)); me.ManageRows(); }
+                            editor.Load(target,
+                                () => _Html(target),
+                                () => { _Html(target, editor.ValueGetter(editor.$Me)); me.ManageRows(); }
                                 );
                         }
 
@@ -247,19 +291,19 @@ module UI {
         private ManageRows()
         {
             var me = this;
-            if (!IsNull(me.$TemplateRow)) {
-                var $parentrow = me.$TemplateRow.parent();
-                var $lastrow = $parentrow.find("tr:last");
-                var $selectedrow = $parentrow.find("tr.selected");
+            if (!IsNull(me.TemplateRow)) {
+                var parentrow = _Parent(me.TemplateRow);
+                var lastrow = _FindFirst(parentrow,"tr:last");
+                var selectedrow = _FindFirst(parentrow, "tr.selected");
 
-                if ($selectedrow.length > 0 && $lastrow.length) {
+                if (!IsNull(selectedrow) && !IsNull(lastrow)) {
             
-                    if (me.IsAllNull($selectedrow) && $lastrow[0] != $selectedrow[0]) {
-                        $selectedrow.remove();
+                    if (me.EmptyCellsOnly(selectedrow) && lastrow != selectedrow) {
+                        _Remove(selectedrow);
                     }
-                    if (!me.IsAllNull($lastrow)){
+                    if (!me.EmptyCellsOnly(lastrow)){
 
-                        var $newrow = me.AddRow("newrow", false, 0);
+                        var newrow = me.AddRow("newrow", false, 0);
                         me.SetCellEditors();
                     }
 
@@ -267,12 +311,13 @@ module UI {
             }
         }
 
-        private IsAllNull($row: JQuery): boolean
+        private EmptyCellsOnly(row: Element): boolean
         {
-            var $cells = $("td", $row);
+            var cells = _Select("td", row);
             var isallnull = true;
-            $cells.each(function (ix, cell) {
-                if (!IsNull($(cell).html().trim())) {
+            cells.forEach(function (cellelement, ix) {
+                var value = _Html(cellelement).trim();
+                if (!IsNull(value)) {
                     isallnull = false;
                 }
             });
@@ -284,26 +329,26 @@ module UI {
             var me = this;
             var s_ix = 1;
             me.Cells = [];
-            $(".data").each(function (index, item) {
-                var $cell = $(item);
-                var layoutid: string = $cell.attr("id");
+            var datacells = _Select(".report .data");
+            datacells.forEach(function (cellelement, index) {
+                var layoutid: string = _Attribute(cellelement,"id");
                 var row = layoutid.split("|")[0];
                 var col = layoutid.split("|")[1];
                 row = row.substring(1);
                 col = col.substring(1);
 
                 var cell: Model.Cell = new Model.Cell();
-                cell.IsBlocked = $cell.hasClass("blocked");
+                cell.IsBlocked = _HasClass(cellelement,"blocked");
                 if (!cell.IsBlocked) {
                     cell.Row = row;
                     cell.Column = col;         
                     me.Cells.push(cell);
                 }
-                $cell.attr("title", layoutid + "\r\n" + $cell.attr("factstring"));
+                _Attribute(cellelement, "title", layoutid + "\r\n" + _Attribute(cellelement, "factstring"));
             });
-            var templaterow = $(".dynamic");
-            if (templaterow.length > 0) {
-                me.$TemplateRow = $(templaterow[0]);
+            var templaterow = _SelectFirst("tr.dynamic");
+            if (!IsNull(templaterow)) {
+                me.TemplateRow = templaterow;
                 me.AddRow("newrow", false, 0);
             }
       
@@ -316,13 +361,14 @@ module UI {
 
         public LoadExtension(li: Model.LayoutItem) {
             this.CurrentExtension = li;
-            $("#Extension").html(Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
-            $("#Extension").attr("title", li.FactString);
+            var extensionscell = _SelectFirst("#Extension");
+            _Html(extensionscell, Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
+            _Attribute(extensionscell,"title", li.FactString);
         }
 
         public LoadInstance(instance: Model.Instance) {
             var me = this;
-            $("dynamicdata").remove();
+
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
@@ -357,13 +403,17 @@ module UI {
                                         if (facts.length == 1 && facts[0].FactKey==facts[0].FactString) {
                                             var fact = facts[0];
                                             if (!IsNull(fact)) {
-                                                var selector = "#" + cell.LayoutID.replace("|","\\|");
-                                                if ($(selector).length == 0) {
+                                                var selector = "#" + cell.LayoutID.replace("|", "\\|");
+                                                var cellelement = _SelectFirst(selector);
+                                                if (IsNull(cellelement)) {
                                                     ShowNotification(Format("No cell found with selector {0}", selector));
-
+                                                }
+                                                else
+                                                {
+                                                    _Html(cellelement, fact.Value);
                                                 }
                                                 c++;
-                                                $(selector).html(fact.Value);
+                                                //set was here
                                             }
                                         }
                                         else
@@ -373,7 +423,9 @@ module UI {
 
                                             facts.forEach(function (factobj, index) {
                                                 var fact = Model.InstanceFact.Convert(factobj);
-                                                fact.Load();
+                                                //fact.Load();
+                                                Model.FactBase.LoadFromFactString(fact);
+
                                                 var typeddimensions = fact.Dimensions.AsLinq<Model.Dimension>().Where(i=> i.IsTyped).ToArray();
                                                 var typedfacts = new Model.FactBase();
                                                 typedfacts.Dimensions = typeddimensions;
@@ -385,7 +437,8 @@ module UI {
                                                     cellid = cellid.replace("R", rowid);
                                                 }
                                                 var selector = "#" + cellid.replace("|", "\\|");
-                                                $(selector).html(fact.Value);
+                                                var cellelement = _SelectFirst(selector);
+                                                _Html(cellelement, fact.Value);
                                             });
 
                                         }
@@ -404,40 +457,45 @@ module UI {
         public SetDynamicRows()
         {
             var me = this;
+
+            var datarows = _Select("tr.dynamicdata");
+            _Remove(datarows);
+
             var cellobj = me.Cells[0];
             var url = window.location.pathname;
-            var reportname = url.substring(url.lastIndexOf('/') + 1);
-            reportname = reportname.replace(".html", "");
+            var reportid = me.Current_ReportID;
+
             var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
 
 
-            var reportkey = Format("{0}|{1}", reportname, extensioncode);
+            var reportkey = Format("{0}|{1}", reportid, extensioncode);
 
             var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
             var rows = GetProperties(rowidcontainer);
             rows.forEach(function (rowitem) { 
-                var $row = me.AddRow("", true, rowitem.Value);
+                var row = me.AddRow("", true, rowitem.Value);
                 var fact = new Model.FactBase();
                 fact.FactString = rowitem.Key;
                 Model.FactBase.LoadFromFactString(fact);
 
-                $row.attr("factkey", rowitem.Key);
+                _Attribute(row, "factkey", rowitem.Key);
 
-                var cells = $("td", $row);
-                cells.each(function (index, cell) {
-                    var $cell = $(cell);
-                    var cellfactstring = $cell.attr("factstring");
+                var cells = _Select("td", row);
+                cells.forEach(function (cellelement, index) {
+                    var cellfactstring = _Attribute(cellelement,"factstring");
                     cellfactstring = Replace(cellfactstring.trim(), ",", "");
                     if (!IsNull(cellfactstring)) {
                         var dim = fact.Dimensions.AsLinq<Model.Dimension>().FirstOrDefault(i=> i.DomainMemberFullName.indexOf(cellfactstring) == 0);
                         if (dim != null) {
                             var text = dim.DomainMember;
-                            $cell.text(text);
+                            _Text(cellelement, text);
                         }
                     }
 
                 });
             });
+            me.AddRow("newrow", false, 0);
+
 
         }
 
@@ -446,78 +504,76 @@ module UI {
             var me = this;
             var newrowneeded = false;
             var rownum:number = 1;
-            var $row: JQuery = null;
+            var row: Element = null;
             var factkey: string = "";
             if (fact != null) {
                 factkey = fact.GetFactString();
-                var $rows = $("tr", me.$TemplateRow.parent());
-                $row = $("tr[factkey='" + factkey + "']");
+                var rows = _Select("tr", _Parent(me.TemplateRow));// $("tr", me.$TemplateRow.parent());
+                row = _SelectFirst("tr[factkey='" + factkey + "']");
             }
 
             if (fact != null)
             {
-                $row.attr("factkey", factkey);
+               _Attribute(row, "factkey", factkey);
 
-                var cells = $("td", $row);
-                cells.each(function (index, cell) {
-                    var $cell = $(cell);
-                    var cellfactstring = $cell.attr("factstring");
+               var cells = _Select("td", row);
+               cells.forEach(function (cellelement, index) {
+                    var cellfactstring = _Attribute(cellelement,"factstring");
                     cellfactstring = Replace(cellfactstring.trim(), ",", "");
                     if (!IsNull(cellfactstring)) {
                         var dim = fact.Dimensions.AsLinq<Model.Dimension>().FirstOrDefault(i=> i.DomainMemberFullName.indexOf(cellfactstring) == 0);
                         if (dim != null) {
                             var text = dim.DomainMember;
-                            $cell.text(text);
+                            _Text(cellelement,text);
                         }
                     }
 
                 });
             }
 
-            return $row.attr("id");
+            return _Attribute(row,"id");
             
         }
 
-        public AddRow(rowclass: string, beforelast: boolean, rownum: number): JQuery
+        public AddRow(rowclass: string, beforelast: boolean, rownum: number): Element
         {
             var me = this;
             var id = Format("R{0}", rownum);
+            var newrow: Element = null;
+            if (!IsNull(me.TemplateRow)) {
+                newrow = _Clone(me.TemplateRow);
+                _Html(_Find(me.TemplateRow, "td"), "");
+                var lastrow = _FindFirst(_Parent(me.TemplateRow), "tr:last");
+                if (beforelast) {
+                    _Before(lastrow, newrow);
+                }
+                else {
+                    _After(lastrow, newrow);
+                }
 
-            var $newrow = me.$TemplateRow.clone();
-            me.$TemplateRow.find("td").html("");
-            var $lastrow = me.$TemplateRow.parent().find("tr:last");
-            if (beforelast) {
-                $lastrow.before($newrow);
-            }
-            else {
-                $lastrow.after($newrow);
-            }
+                _Attribute(newrow, "id", id);
+                _AddClass(newrow, "dynamicdata");
+                _RemoveClass(newrow, "dynamic");
 
-            $newrow.attr("id", id);
-            $newrow.addClass("dynamicdata");
-            $newrow.removeClass("dynamic");
-         
-            me.SetCellID($newrow);
+                me.SetCellID(newrow);
 
-            if (!beforelast) {
-                $newrow.find(".title").html("new row");
+                if (!beforelast) {
+                    _Html(_Find(newrow, ".title"), "new row");
+                }
             }
-            var $rows = $("tr", me.$TemplateRow.parent());
-   
-            return $newrow;
+            return newrow;
         }
 
-        private SetCellID($row: JQuery)
+        private SetCellID(row: Element)
         {
-            var cells = $("td", $row);
-            var rowid = $row.attr("id");
-            cells.each(function (index, cell) {
-                var $cell = $(cell);
-                var cellid = $cell.attr("id");
+            var cells = _Select("td", row);// $("td", $row);
+            var rowid =_Attribute( row,"id");
+            cells.forEach(function (cellelement, index) {
+                var cellid = _Attribute(cellelement,"id");
                 cellid = cellid.substring(cellid.indexOf("|"));
                 cellid = rowid + cellid;
-                $cell.attr("id", cellid);
-                $cell.attr("title", cellid);
+                _Attribute(cellelement, "id", cellid);
+                _Attribute(cellelement, "title", cellid);
             });
         }
         
