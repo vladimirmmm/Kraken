@@ -1,4 +1,12 @@
-﻿
+﻿/// <reference path="Interfaces.ts" />
+/// <reference path="Utils.ts" />
+/// <reference path="JqueryUtils.ts" />
+/// <reference path="Models.ts" />
+/// <reference path="Linq.ts" />
+/// <reference path="TableManager.ts" />
+/// <reference path="Binding.ts" />
+
+
 module UI {
 
     export class Table {
@@ -122,15 +130,10 @@ module UI {
             var uitable = new Controls.Table(uitablemanger);
             uitable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
             _EnsureEventHandler(_Select("table.report tr"), "click", function () {
-                $('tr', 'table').removeClass("selected");
-                $(this).addClass("selected");
+                _RemoveClass(_Select("table.report tr"), "selected");
+                _AddClass(this, "selected");
             });
-            /*
-            $("table.report").on('click', 'tr', function () {
-                $('tr', 'table').removeClass("selected");
-                $(this).addClass("selected");
-            });
-            */
+         
             this.LoadCellsFromHtml();
             this.SetCellEditors();
 
@@ -142,14 +145,11 @@ module UI {
         public HighlightCell()
         {
             _RemoveClass(_Select(".highlight"), "highlight");
-            //$(".highlight").removeClass("highlight");
 
             var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
             var cells = _Select("#" + cellselector);
             _AddClass(cells, "highlight");
-            //$("#" + cellselector).addClass("highlight");
             _Focus(cells);
-            //$("#" + cellselector).focus();
         }
 
         public LoadConceptValues() {
@@ -178,7 +178,6 @@ module UI {
                         if (hier != null) {
                             var clkp = new Model.ConceptLookUp();
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
-                            //hier["ToArray"] = Model.Hierarchy.ToArray(htemp); //() => htemp.ToArray.apply(hier);
                             var items = Model.Hierarchy.ToArray(hier);
                             items.forEach(function (item, index) {
                                 if (index > 0) {
@@ -210,11 +209,10 @@ module UI {
             var cellselector = ".data";
             var cells = _Select(cellselector);
             _RemoveEventHandlers(cells, "click");
-            //$(cellselector).off("click");
-            //$(cellselector).each(function (ix, item) {
+
             cells.forEach(function (item, ix) {
                 var target = <Element>item;
-                //var factitems = target.attr("factstring").split(",");
+         
                 var factitems = _Attribute(target,"factstring").split(",");
                 var concept = "";
                 if (factitems[0].indexOf("[") == -1)
@@ -222,13 +220,13 @@ module UI {
                     concept = factitems[0];
                 }
     
-                //if (!target.parent().hasClass("dynamic") && !target.hasClass("blocked")) {
+           
                 if (!_HasClass(_Parent(target), "dynamic") && !_HasClass(target,"blocked")) {
                 
-                    //target.click(function () {
+                
                     _AddEventHandler(target,"click", function () {
                         //Notify("clicked")
-                        //if (!target.hasClass(Editor.editclass)) {
+                
                         if (!_HasClass(target, Editor.editclass)) {
                             var typeclass = "";
                             if (factitems[0].indexOf(":ei") > -1) {
@@ -386,7 +384,7 @@ module UI {
             me.SetDynamicRows();
             if (!IsNull(me.FactMap)) {
                 var c = 0;
-                var extfacts = me.FactMap[me.CurrentExtension.LabelCode];
+                var extfacts = me.FactMap[me.CurrentExtension.FactString];
                 if (extfacts != null) {
                     this.Cells.forEach(function (cell, index) {
                         if (!cell.IsBlocked) {
@@ -508,7 +506,7 @@ module UI {
             var factkey: string = "";
             if (fact != null) {
                 factkey = fact.GetFactString();
-                var rows = _Select("tr", _Parent(me.TemplateRow));// $("tr", me.$TemplateRow.parent());
+                var rows = _Select("tr", _Parent(me.TemplateRow));
                 row = _SelectFirst("tr[factkey='" + factkey + "']");
             }
 
@@ -566,7 +564,7 @@ module UI {
 
         private SetCellID(row: Element)
         {
-            var cells = _Select("td", row);// $("td", $row);
+            var cells = _Select("td", row);
             var rowid =_Attribute( row,"id");
             cells.forEach(function (cellelement, index) {
                 var cellid = _Attribute(cellelement,"id");

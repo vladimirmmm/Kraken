@@ -251,6 +251,7 @@
     <TypeScriptCompile Include="Scripts\AppItems.ts" />
     <TypeScriptCompile Include="Scripts\Binding.ts" />
     <TypeScriptCompile Include="Scripts\Instance.ts" />
+    <TypeScriptCompile Include="Scripts\Interfaces.ts" />
     <TypeScriptCompile Include="Scripts\JqueryUtils.ts" />
     <TypeScriptCompile Include="Scripts\Linq.ts" />
     <TypeScriptCompile Include="Scripts\Models.ts" />

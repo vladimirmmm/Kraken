@@ -20,6 +20,8 @@ var Controls;
 (function (Controls) {
     var TableManager = (function () {
         function TableManager() {
+            this.CellEditorAssigner = null;
+            this.OnLoaded = null;
             this.OnCellSelected = null;
             this.OnRowSelected = null;
             this.OnColumnSelected = null;
@@ -51,12 +53,13 @@ var Controls;
                         var headerrow = rawrows[headerix];
                         columncells = _Select("th", headerrow);
                     }
-                    var rowcell = rawheadercells[rawheadercells.length - 1];
-                    rowcells.push(rowcell);
+                    var rowheadercell = rawheadercells[rawheadercells.length - 1];
+                    rowcells.push(rowheadercell);
                     var row = new Row();
+                    row.HeaderCell = Cell.ConvertFrom(rowheadercell);
                     row.UIElement = rawrow;
                     rawdatacells.forEach(function (cell, ix) {
-                        var rowcode = _Html(rowcell).trim();
+                        var rowcode = _Html(rowheadercell).trim();
                         var colcell = columncells[ix]; //rowcells[ix];
                         var colcode = _Html(colcell).trim();
                         var cellid = Format("{0}|{1}", rowcode, colcode);
@@ -65,6 +68,7 @@ var Controls;
                         cellobj.RowID = rowcode;
                         cellobj.ColID = colcode;
                         cellobj.Value = _Html(cell).trim();
+                        cellobj.UIElement = cell;
                         row.Cells.push(cellobj);
                     });
                     table.Rows.push(row);
@@ -79,6 +83,7 @@ var Controls;
             colheader.Cells = columncells.AsLinq().Select(function (i) { return Cell.ConvertFrom(i); }).ToArray();
             table.RowHeader = colheader;
             table.ColumnHeader = rowheader;
+            CallFunction(me.OnLoaded, [me]);
         };
         TableManager.prototype.Validate = function () {
             return true;
@@ -121,14 +126,30 @@ var Controls;
             cell.UIElement = element;
             return cell;
         };
+        Cell.prototype.HasData = function () {
+            return !IsNull(_Html(this.UIElement).trim());
+        };
         return Cell;
     })();
     Controls.Cell = Cell;
     var Row = (function () {
         function Row() {
             this.RowID = "";
+            this.HeaderCell = null;
             this.Cells = [];
         }
+        Row.prototype.HasData = function () {
+            var cellswithData = this.Cells.AsLinq().FirstOrDefault(function (i) { return i.HasData(); });
+            return cellswithData != null;
+        };
+        Row.prototype.IsDynamic = function () {
+            return _HasClass(this.UIElement, "dynamic");
+        };
+        Row.ClearDataCells = function (row) {
+            row.Cells.forEach(function (cell, ix) {
+                _Html(cell.UIElement, "");
+            });
+        };
         return Row;
     })();
     Controls.Row = Row;
@@ -143,6 +164,7 @@ var Controls;
     var Table = (function () {
         function Table(manager) {
             this.Manager = null;
+            this.UIElement = null;
             this.ColumnHeader = null;
             this.RowHeader = null;
             this.Rows = [];
@@ -151,9 +173,44 @@ var Controls;
             this.HeaderRowCount = 0;
             this.HeaderColCount = 0;
             this.Keys = [];
+            this.OnRowRemoved = function (row) {
+                var me = (this);
+                me.ManageRows();
+                CallFunction(me.Manager.OnRowRemoved, [row]);
+                //me.Manager.OnRowRemoved(row);
+            };
+            this.OnRowAdded = function (row) {
+                var me = (this);
+                me.ManageRows();
+                CallFunction(me.Manager.OnRowAdded, [row]);
+                //me.Manager.OnRowAdded(row);
+            };
             this.Manager = manager;
             manager.Table;
         }
+        Table.prototype.ManageRows = function () {
+            var me = this;
+            var rowsquery = me.Rows.AsLinq();
+            var dynamicrow = rowsquery.FirstOrDefault(function (i) { return i.IsDynamic(); });
+            if (!IsNull(dynamicrow || 1 == 1)) {
+                var emptyrow = rowsquery.FirstOrDefault(function (i) { return !i.HasData(); });
+                if (IsNull(emptyrow)) {
+                    me.AddRow(-1);
+                }
+            }
+            me.SetRowIds();
+        };
+        Table.prototype.GetRowOfCell = function (cellelement) {
+            var me = this;
+            var result = null;
+            var rowelement = _Parent(cellelement);
+            me.Rows.forEach(function (row, ix) {
+                if (rowelement == row.UIElement) {
+                    result = row;
+                }
+            });
+            return result;
+        };
         Table.prototype.ValidateRow = function (rowid) {
             return true;
         };
@@ -174,26 +231,69 @@ var Controls;
             });
         };
         Table.prototype.LoadfromHtml = function (element) {
+            this.UIElement = element;
             this.Manager.LoadLayoutFromHtml(element, this);
+            this.ManageRows();
         };
         Table.prototype.AddRow = function (index) {
             if (index === void 0) { index = -1; }
             var me = this;
             var templaterow = this.Rows[0];
+            var indexedrow = (index > -1 && index < this.Rows.length) ? this.Rows[0] : null;
+            var referencerow = (index == -1) ? this.Rows.AsLinq().LastOrDefault().UIElement : indexedrow.UIElement;
             var newrow = me.GetNewRow();
             var newelement = _Clone(templaterow.UIElement);
-            this.SetRow(newrow, newelement);
-            var newrowHeaderCell = newrow.Cells.AsLinq().Last(function (i) { return i.Type == 2 /* Header */; });
+            me.SetRow(newrow, newelement);
+            Row.ClearDataCells(newrow);
+            var newrowHeaderCell = newrow.Cells.AsLinq().LastOrDefault(function (i) { return i.Type == 2 /* Header */; });
             var rowid = Format(Table.RowID_Format, me.RowHeader.Cells.length);
-            newrowHeaderCell.RowID = rowid;
             newrow.RowID = rowid;
-            _Html(newrowHeaderCell.UIElement, rowid);
-            this.Cells.concat(newrow.Cells);
-            this.RowHeader.Cells.push(newrowHeaderCell);
-            this.Rows.push(newrow);
-            CallFunctionVariable(me.Manager.OnRowRemoved, [newrow]);
-            this.LoadEventHandlers();
+            if (!IsNull(newrowHeaderCell)) {
+                newrowHeaderCell.RowID = rowid;
+                _Html(newrowHeaderCell.UIElement, rowid);
+                me.RowHeader.Cells.push(newrowHeaderCell);
+            }
+            me.Cells.concat(newrow.Cells);
+            me.Rows.push(newrow);
+            if (index == -1) {
+                _After(referencerow, newrow.UIElement);
+            }
+            else {
+                _Before(referencerow, newrow.UIElement);
+            }
+            CallFunctionWithContext(me, me.OnRowAdded, [newrow]);
+            me.LoadEventHandlers();
             return newrow;
+        };
+        Table.prototype.SetRowIds = function () {
+            var me = this;
+            this.Rows.forEach(function (row, ix) {
+                row.RowID = Format(Table.RowID_Format, ix);
+                var headercell = row.HeaderCell;
+                var existingrowid = _Html(headercell.UIElement).trim();
+                if (IsNull(existingrowid)) {
+                    _Html(headercell.UIElement, row.RowID);
+                }
+                _EnsureEventHandler(row.UIElement, "click", function (e) {
+                    _Focus(this);
+                    _RemoveClass(_Select("tr", me.UIElement), "selected");
+                    _AddClass(this, "selected");
+                });
+                //_EnsureEventHandler(row.UIElement, "keyup", function (e) {
+                _EnsureEventHandler(window, "keyup", function (e) {
+                    if (e.which == 46) {
+                        var rowtodelete = null;
+                        me.Rows.forEach(function (row, ix) {
+                            if (_HasClass(row.UIElement, "selected")) {
+                                rowtodelete = row;
+                            }
+                        });
+                        if (!IsNull(rowtodelete)) {
+                            me.RemoveRow(rowtodelete);
+                        }
+                    }
+                });
+            });
         };
         Table.prototype.GetRowByID = function (id) {
             var row = this.Rows.AsLinq().FirstOrDefault(function (i) { return i.RowID == id; });
@@ -207,19 +307,29 @@ var Controls;
         };
         Table.prototype.RemoveRow = function (row) {
             var me = this;
-            var ix = this.Rows.indexOf(row);
-            row.Cells.forEach(function (cell, ix) {
-                RemoveFrom(cell, me.Cells);
-            });
-            RemoveFrom(row, me.RowHeader.Cells);
-            RemoveFrom(row, me.Rows);
-            CallFunctionVariable(me.Manager.OnRowRemoved, [row]);
+            if (me.Rows.length > 1) {
+                var ix = this.Rows.indexOf(row);
+                row.Cells.forEach(function (cell, ix) {
+                    RemoveFrom(cell, me.Cells);
+                });
+                RemoveFrom(row, me.RowHeader.Cells);
+                RemoveFrom(row, me.Rows);
+                _Remove(row.UIElement);
+                CallFunctionWithContext(me, me.OnRowRemoved, [row]);
+            }
+            else {
+                console.log("The last row can't be removed!");
+            }
             return true;
         };
         Table.prototype.SetRow = function (row, element) {
             var headercells = _Select("th", element);
             var datacells = _Select("td", element);
             row.Cells = [];
+            var headercellelement = headercells.AsLinq().LastOrDefault();
+            if (!IsNull(headercellelement)) {
+                row.HeaderCell = Cell.ConvertFrom(headercellelement);
+            }
             row.UIElement = element;
             datacells.forEach(function (cellelement, ix) {
                 var cell = Cell.ConvertFrom(cellelement);

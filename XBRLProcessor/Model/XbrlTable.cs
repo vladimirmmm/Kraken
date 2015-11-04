@@ -252,10 +252,18 @@ namespace XBRLProcessor.Model
             logicaltable.ID = logicaltable.LayoutRoot.Item.ID;
             logicaltable.Name = logicaltable.LayoutRoot.Item.LabelContent;
             logicaltable.SetHtmlPath();
-            System.IO.File.WriteAllText(logicaltable.FullHtmlPath.Replace(".html", "_layout.txt"), logicaltable.LayoutRoot.ToHierarchyString(i => (String.IsNullOrEmpty(i.Axis) ? "" : i.Axis + " ") + i.ID + " code: " + i.LabelCode + " >>> " + i.FactString));
+            System.IO.File.WriteAllText(logicaltable.FullHtmlPath.Replace(".html", "_layout.txt"), logicaltable.LayoutRoot.ToHierarchyString(GetLayoutString));
 
         }
-        
+
+        private string GetLayoutString(LogicalModel.LayoutItem li) 
+        {
+            var result = "";
+            var axis = String.IsNullOrEmpty(li.Axis) ? "" : li.Axis + " ";
+            var isabstract = li.IsAbstract ? "abstract " : "";
+            result = String.Format("{1}{0} {2} code{3} >> {4}", li.ID, axis, isabstract, li.LabelCode, li.FactString);
+            return result;
+        }
        
         public void LoadDefinitionHierarchy(LogicalModel.Table logicaltable)
         {

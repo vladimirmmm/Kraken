@@ -29,7 +29,7 @@
         private s_find_selector: string = "";
         private s_general_selector: string = "";
 
-        private FactServiceFunction: FunctionWithCallback = null;
+        private FactServiceFunction: General.FunctionWithCallback = null;
 
         constructor() {
             this.s_fact_selector = "#" + this.s_fact_id;
@@ -121,8 +121,8 @@
                 me.Taxonomy.Labels = data;
             }, function (error) { console.log(error); });
 
-            me.FactServiceFunction = new FunctionWithCallback(
-                (fwc: FunctionWithCallback, args: any) => {
+            me.FactServiceFunction = new General.FunctionWithCallback(
+                (fwc: General.FunctionWithCallback, args: any) => {
                     var p = <Model.Dictionary<any>>args[0];
                     AjaxRequest("Taxonomy/Facts", "get", "json", p,
                         function (data: DataResult) {
@@ -140,7 +140,7 @@
                 me.Taxonomy.ValidationRules.forEach(function (v: Model.ValidationRule) {
                     v.Title = Truncate(v.DisplayText, 100)
                 });
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) { console.log(error); });
         }
         public ShowValidationResults() {
@@ -448,14 +448,7 @@
                     var hash = itemparts[1];
 
                     window.location.hash = hash;
-                    /*
-                    AjaxRequest(url, "get", "text/html", null, function (data) {
-                        _Html(_SelectFirst("#ReportContainer"), data);
-                        Notify(Format("Loading {0}", url));
-                        window.location.hash = hash;
-                    },
-                    function (error) { console.log(error); });
-                    */
+               
                 }
             },
             function (error) { console.log(error); });

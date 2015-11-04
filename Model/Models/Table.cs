@@ -40,6 +40,8 @@ namespace LogicalModel
         private int titlecellminwidth = 300; 
         private string _HtmlPath = "";
         public static string DefaultExtensionCode = "000";
+        public static string LabelCodeFormat = "{0:D5}";
+
         public string Name { get; set; }
         public string FilingIndicator { get; set; }
         public string HtmlPath 
@@ -390,9 +392,7 @@ namespace LogicalModel
                     if (!this.Taxonomy.Facts.ContainsKey(key)) 
                     {
                         this.Taxonomy.Facts.Add(key, new List<String>());
-                        if (key.Contains("eba_typ"))
-                        {
-                        }
+               
                     }
                     sb_fact.AppendLine();
                 }
@@ -417,7 +417,7 @@ namespace LogicalModel
                 //var leafs = extensionnode.GetLeafs().Where(i => i.Parent != null).ToList();
                 var leafs = extensionnode.All().Where(i => i.Item.IsVisible).ToList();
 
-                this.Extensions = TableHelpers.CombineExtensionNodes(leafs, this);
+                this.Extensions = TableHelpers.CombineExtensionNodes(extensionnode, this);
             }
         }
 
@@ -507,7 +507,7 @@ namespace LogicalModel
             columnsnode = GetAxisNode("x");
             extensionnode = GetAxisNode("z");
 
-            if (this.Name.Contains("07"))
+            if (this.ID.Contains("27.01.04.12"))
             {
 
             }
@@ -546,7 +546,7 @@ namespace LogicalModel
 
             }
 
-            if (this.ID.Contains("07")) 
+            if (this.ID.Contains("S.25.01.08.01")) 
             {
 
             }
@@ -564,8 +564,8 @@ namespace LogicalModel
             Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural && !i.Item.IsAbstract).ToList();
             Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
 
-            FixLabelCodes(Columns, "{0:D4}");
-            FixLabelCodes(Rows, "{0:D4}");
+            FixLabelCodes(Columns, Table.LabelCodeFormat);
+            FixLabelCodes(Rows, Table.LabelCodeFormat);
 
             var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
             if (xRows.Count > 1) 
@@ -605,7 +605,7 @@ namespace LogicalModel
                 foreach (var ext in exts)
                 {
                     var factextdict = new Dictionary<string, string>();
-                    factmap.Add(ext.LabelCode, factextdict);
+                    factmap.Add(ext.FactString, factextdict);
 
                     foreach (var row in Rows)
                     {

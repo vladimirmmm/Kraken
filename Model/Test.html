@@ -14,26 +14,60 @@
     <script src="Scripts\colResizable-1.5.min.js" type="text/javascript"></script>
     <script src="Scripts\jquery.pagination.js" type="text/javascript"></script>
     <script src="Scripts\Linq.js" type="text/javascript"></script>
-    <script src="Scripts\AppItems.js" type="text/javascript"></script>
     <script src="Scripts\Formatter.js" type="text/javascript"></script>
+    <script src="Scripts\Interfaces.js" type="text/javascript"></script>
     <script src="Scripts\Utils.js" type="text/javascript"></script>
     <script src="Scripts\JqueryUtils.js" type="text/javascript"></script>
     <script src="Scripts\TableManager.js" type="text/javascript"></script>
-
     <script src="Scripts\Binding.js" type="text/javascript"></script>
+    <script src="Scripts\AppItems.js" type="text/javascript"></script>
+
 
     <title></title>
 </head>
 <body>
     <script type="text/javascript">
-        var table = new Controls.Table();
-        var tmanager = new Controls.TableManager();
-        table.Manager = tmanager;
-        $(document).ready(function () {
-            LoadLayoutFromHtml(_Select("#testtable"))
+    
 
+        $(document).ready(function () {
+            var tmanager = new Controls.TableManager();
+            var table = new Controls.Table(tmanager);
+            tmanager.CellEditorAssigner = function (element) {
+                AssignEditor(
+                    _Select("td:not(.blocked)", element),
+                    GetDefaultEditor,
+                    tmanager.OnCellChanged);
+
+            };
+            tmanager.OnLoaded=function (table) {
+                tmanager.CellEditorAssigner(table.UIElement);
+            };
+            tmanager.OnRowAdded=function (row) {
+                tmanager.CellEditorAssigner(row.UIElement);
+            };
+            tmanager.OnRowRemoved=function (row) {
+
+            };
+
+            tmanager.OnCellChanged = function (cell, value) {
+                var row = table.GetRowOfCell(cell);
+                if (!IsNull(row) && !row.HasData()) {
+                    table.RemoveRow(row);
+                }
+                table.ManageRows();
+                OnCellChanged(cell, value);
+            };
+         
+            table.LoadfromHtml(_Select("#testtable"));
+            //table.OnCellChanged = function (cell, value) {
+            //};
         });
 
+        function OnCellChanged(cell,value)
+        {
+            console.log(Format("cell: {0}; value: {1}", cell, value));
+
+        }
 
     </script>
 
@@ -56,7 +90,7 @@
                 <th class="title" colspan="2">R1</th>
                 <td class="data" fac-string="dgd">11</td>
                 <td class="data">12</td>
-                <td class="data">13</td>
+                <td class="data blocked"></td>
                 <td class="data">14</td>
             </tr>
             <tr>

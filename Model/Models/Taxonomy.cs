@@ -465,45 +465,14 @@ namespace LogicalModel
         
         public void ManageUIFiles() 
         {
-            //if (!System.IO.Directory.Exists(TaxonomyLayoutFolder))
-            //{
-            //    System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
-            //}
 
-            //var scriptfiles = System.IO.Directory.GetFiles("Scripts");
-            //foreach (var file in scriptfiles)
-            //{
-            //    var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
-            //    ManageUIFile(filepath);
-            //}
-            //var layoutfiles = System.IO.Directory.GetFiles("Layout");
-            //foreach (var file in layoutfiles)
-            //{
-            //    var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
-            //    ManageUIFile(filepath);
-            //}
-
-            //ManageUIFile(@"Table.css");
-            //ManageUIFile(@"UI.html");
          
         }
 
         public void TaxonomyToUI()
         {
      
-            //TaxFiles.Add(JsonFileToJsVarible(TaxonomyFactsPath, "", "tax_facts"));
-            /*
-             TaxFiles.Add(JsonFileToJsVarible(TaxonomyHierarchyPath, "", "tax_hierarchies"));
-             TaxFiles.Add(JsonFileToJsVarible(TaxonomyConceptPath, "", "tax_concepts"));
-         
-             var jsonsimplifiedvalidation = "";
-             if (this.SimpleValidationRules.Count > 0) 
-             {
-                 jsonsimplifiedvalidation = Utilities.Converters.ToJson(this.SimpleValidationRules);
-             }
-             TaxFiles.Add(JsonToJsVarible(jsonsimplifiedvalidation, "tax_validations"));
-             TaxFiles.Add(JsonFileToJsVarible(TaxonomyLabelPath, "", "tax_labels"));
-             */
+   
         }
 
         public string JsonFileToJsVarible(string path, string jsonvalue, string variablename, bool overwrite = false) 
@@ -822,6 +791,97 @@ namespace LogicalModel
         public virtual Instance GetNewInstance()
         {
             return new Instance();
+        }
+
+        public List<String> GetAllDimensions() 
+        {
+            var dimensions = new Dictionary<string,string>();
+            var factkeys = this.Facts.Select(i=>i.Key).ToList();
+            foreach (var factkey in factkeys) 
+            {
+                var fact = new FactBase();
+                fact.SetFromString(factkey);
+                foreach (var dimension in fact.Dimensions) 
+                {
+                    if (!dimensions.ContainsKey(dimension.DimensionItem)) 
+                    {
+                        var dim_text = GetLabelForDimensionItem(dimension.DimensionItem);
+                        var dom_text = GetLabelForDomain(dimension.Domain);
+                        var mem_text = GetLabelForMember(dimension.DomainAndMember);
+                        dimensions.Add(dimension.DimensionItem, String.Format("{0} = {1}", dimension.DimensionItem, dim_text));
+                    }
+                }
+            }
+            return dimensions.Select(i => i.Value).ToList();
+        }
+
+        public string GetLabelForDimension(Dimension dimension) 
+        {
+            var sb = new StringBuilder();
+            sb.Append(String.Format("{0}: {1} | ", dimension.DimensionItem, GetLabelForDimensionItem(dimension.DimensionItem)));
+            sb.Append(String.Format("{0}: {1} | ", dimension.Domain, GetLabelForDimensionItem(dimension.Domain)));
+            sb.Append(String.Format("{0}: {1}", dimension.DomainAndMember, GetLabelForDimensionItem(dimension.DomainAndMember)));
+            return sb.ToString() ;
+        }
+
+        public string GetLabelForDimensionItem(string dimensionitem)
+        {
+            var dimparts = dimensionitem.Split(":");
+
+            var ns = dimparts[0];
+            var name = dimparts[1];
+            var element = this.SchemaElements.FirstOrDefault(i => i.Namespace == ns && i.Name == name);
+            //if (element!=null)
+            var labelkey = Label.GetKey("dim", element.ID);
+            var label = this.FindLabel(labelkey);
+            var content = label != null ? label.Content : "";
+            return content;
+        }
+        public virtual Element FindDimensionDomain(string dimensionitem) 
+        {
+            return null;
+        }
+
+        public Element GetDomain(string item)
+        {
+            Element element = null;
+            if (item.Contains(":"))
+            {
+                var parts = item.Split(":");
+
+                var ns = parts[0];
+                var name = parts[1];
+                element = this.SchemaElements.FirstOrDefault(i => i.Namespace == ns && i.Name == name);
+            }
+            else
+            {
+                element = this.SchemaElements.FirstOrDefault(i => i.ID == item && i.Type == "model:explicitDomainType");
+            }
+            return element;
+        }
+
+        public string GetLabelForDomain(string domain)
+        {
+            var element = GetDomain(domain);
+            var labelkey = Label.GetKey("dom", element.ID);
+            var label = this.FindLabel(labelkey);
+            var content = label != null ? label.Content : "";
+            return content;
+        }
+
+        public string GetLabelForMember(string domainandmember)
+        {
+            var dimparts = domainandmember.Split(new string[] { ":" }, StringSplitOptions.None);
+            if (dimparts.Length > 2) { return ""; }
+            var domain = dimparts[0];
+            var member = dimparts[1];
+            var domainelement = GetDomain(domain);
+            var memberelement = this.SchemaElements.FirstOrDefault(i => i.Name == member && i.Namespace == domain);
+
+            var labelkey = Label.GetKey(domainelement.Name, memberelement.ID);
+            var label = this.FindLabel(labelkey);
+            var content = label != null ? label.Content : "";
+            return content;
         }
 
         #region Clear

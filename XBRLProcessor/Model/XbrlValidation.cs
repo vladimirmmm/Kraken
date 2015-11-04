@@ -86,7 +86,7 @@ namespace XBRLProcessor.Model
             Identifiables.AddRange(this.Filters);
 
             ValidationRoot = Hierarchy<XbrlIdentifiable>.GetHierarchy(Arcs, Identifiables,
-                (i, a) => i.Item.ID == a.From, (i, a) => i.Item.ID == a.To,
+                (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
                 (i, a) => {
                     if (i.Item is Filter && a is ComplementArc) 
                     {

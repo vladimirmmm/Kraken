@@ -7,8 +7,25 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
+    public class LayoutTable 
+    {
+        public List<LayoutItem> Header = new List<LayoutItem>();
+
+    }
     public class TableHelpers
     {
+
+        public Hierarchy<LayoutItem> SetExts(Table table, Hierarchy<LayoutItem> extensionnode)
+        {
+           
+            foreach (var node in extensionnode.Children) 
+            {
+
+            }
+            return null;
+        }
+
+
         public static List<LayoutItem> GetAspectItems(Hierarchy<LayoutItem> hli, Table table)
         {
             var results = new List<LayoutItem>();
@@ -58,15 +75,15 @@ namespace LogicalModel
 
         }
 
-        public static Hierarchy<LayoutItem> CombineExtensionNodes(List<Hierarchy<LayoutItem>> nodes,Table table) 
+        public static Hierarchy<LayoutItem> CombineExtensionNodes(Hierarchy<LayoutItem> axisnode,Table table) 
         {
             var rootextensionli = table.GetRootExtension();
             rootextensionli.Category = LayoutItemCategory.BreakDown;
             var extensionnode = new Hierarchy<LayoutItem>(rootextensionli);
             var nodecontainer = extensionnode;
             var sets = new List<List<LayoutItem>>();
-
-            if (table.ID.Contains("09"))
+            var nodes = axisnode.All().Where(i => i.Item.IsVisible).ToList();
+            if (table.ID.Contains("27.01.04.12"))
             {
             }
             var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();           
@@ -85,20 +102,20 @@ namespace LogicalModel
                 {
                     Dimension.MergeDimensions(dynamicli.Dimensions, typednode.Item.Dimensions);
                 }
-
+                /*
                 extensionnode.Children.Add(dynamicnode);
                 dynamicnode.Parent = extensionnode;
                 nodecontainer = dynamicnode;
-
+                */
             }
 
             //set the aspectnodes if any
             var firstnode = nodes.FirstOrDefault();
             if (firstnode != null)
             {
-                var axisroot = firstnode.Parents().LastOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
+                //var axisroot = firstnode.Parents().LastOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
 
-                var aspectnodes = axisroot.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
+                var aspectnodes = axisnode.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
                 foreach (var aspectnode in aspectnodes)
                 {
                     var aspectnodeitems = GetAspectItems(aspectnode, table);
@@ -116,20 +133,24 @@ namespace LogicalModel
             
 
                 }
-                foreach (var axischildren in axisroot.Children)
+                foreach (var axischildren in axisnode.Children)
                 {
                     var axischildrennodes = axischildren.Where(i => i.Item.IsVisible && i.Item.Category!=LayoutItemCategory.Aspect).ToList();
+                    axischildrennodes = axischildrennodes.Where(i => !i.Parents().Any(j => j.Item.IsAbstract)).ToList();
                     if (axischildrennodes.Count > 200)
                     {
 
                     }
-                    sets.Add(axischildrennodes.Select(i => i.Item).ToList());
+                    if (axischildrennodes.Count > 0)
+                    {
+                        sets.Add(axischildrennodes.Select(i => i.Item).ToList());
+                    }
 
                 }
             }
 
             //add root filters from abstractnodes
-            var abstractnodes = normalnodes.Where(i => i.Item.IsAbstract).ToList();
+            var abstractnodes = normalnodes.Where(i => i.Item.IsAbstract || i.Parents().Any(j=>j.Item.IsAbstract)).ToList();
             foreach (var abstractnode in abstractnodes) 
             {
                 Dimension.MergeDimensions(rootextensionli.Dimensions, abstractnode.Item.Dimensions);
@@ -165,17 +186,18 @@ namespace LogicalModel
                 }
 
             }
-       
-       
 
+
+            //extensionnode.Children.AddRange(extensionlist);
 
             nodecontainer.Children.AddRange(extensionlist.Select(i => new Hierarchy<LayoutItem>(i)));
             if (typednodes.Count > 1) 
             {
-                throw new NotImplementedException("Multiple TypedDimension nodes on z axis");
+                //TODO is this ok?
+                //throw new NotImplementedException("Multiple TypedDimension nodes on z axis");
             }
 
-            return extensionnode;
+            return nodecontainer;//extensionnode;
         }
 
         private static void AddCombinationTo(IEnumerable<LayoutItem> combination, List<LayoutItem> target) 
@@ -188,42 +210,55 @@ namespace LogicalModel
             }       
 
             target.Add(li);
-            if (combination.Count() == 1) 
+            foreach (var dim in li.Dimensions) 
             {
-                var item = combination.FirstOrDefault();
-                if (item.Category != LayoutItemCategory.Aspect)
+                dim.SetTyped();
+            }
+            if (li.Dimensions.Any(j => j.IsTyped))
+            {
+                li.Category = LayoutItemCategory.Dynamic;
+                li.LabelCode = "*";
+                li.LabelContent = "Dynamic";
+            }
+            else 
+            {
+                if (combination.Count() == 1)
                 {
-                    li.Label = item.Label;
-                    li.LabelCode = item.LabelCode;
-                    li.LabelContent = item.LabelContent;
+                    var item = combination.FirstOrDefault();
+                    if (item.Category != LayoutItemCategory.Aspect)
+                    {
+                        li.Label = item.Label;
+                        li.LabelCode = item.LabelCode;
+                        li.LabelContent = item.LabelContent;
+                    }
                 }
                 else 
                 {
-                    li.LabelCode = String.Format("-{0:D5}", target.Count);
+                    li.LabelCode = String.Format(Table.LabelCodeFormat, target.Count);
                     li.LabelContent = String.Format("Extension {0}", target.Count);
                 }
             }
 
-
         }
 
-        private static void AddCombinationTo(IEnumerable<LayoutItem> combination, Hierarchy<LayoutItem> target)
-        {
-            var count = combination.Count();
-            var currentparent = target;
-            for (int i = 0; i<count; i++) 
-            { 
-                var li = combination.ElementAt(i);
+        //private static void AddCombinationTo(IEnumerable<LayoutItem> combination, Hierarchy<LayoutItem> target)
+        //{
+        //    var count = combination.Count();
+        //    var currentparent = target;
+        //    for (int i = 0; i<count; i++) 
+        //    { 
+        //        var li = combination.ElementAt(i);
 
-                var hli = currentparent.Children.FirstOrDefault(o => o.Item.ID == li.ID);
-                if (hli == null)
-                {
-                    hli = new Hierarchy<LayoutItem>(li);
-                    currentparent.Children.Add(hli);
-                    hli.Parent = currentparent;
-                }
-                currentparent = hli;
-            }
-        }
+        //        var hli = currentparent.Children.FirstOrDefault(o => o.Item.ID == li.ID);
+        //        if (hli == null)
+        //        {
+        //            hli = new Hierarchy<LayoutItem>(li);
+        //            currentparent.Children.Add(hli);
+        //            hli.Parent = currentparent;
+        //        }
+        //        currentparent = hli;
+        //    }
+        //}
+   
     }
 }

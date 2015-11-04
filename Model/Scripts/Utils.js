@@ -1,46 +1,3 @@
-var Refrence = (function () {
-    function Refrence(reference) {
-        this.Value = reference;
-    }
-    return Refrence;
-})();
-function CreateMsg(category) {
-    var msg = new General.Message();
-    msg.Category = category;
-    return msg;
-}
-function CreateNotificationMsg(message) {
-    var msg = CreateMsg("notification");
-    msg.Data = message;
-    return msg;
-}
-function CreateAjaxMsg() {
-    var msg = CreateMsg("ajax");
-    return msg;
-}
-function CreateErrorMsg(errormessage) {
-    var msg = CreateMsg("error");
-    msg.Error = errormessage;
-    return msg;
-}
-function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Error(errortext);
-    return true;
-}
-function ShowHideChild(selector, sender) {
-    $(selector).hide();
-    var $item = $(selector, $(sender).parent()).first();
-    $item.show();
-}
-function SetPivots() {
-    $("#maintable").resizableColumns();
-}
-HTMLElement.prototype.toString = function () {
-    var html = this.outerHTML;
-    var result = "<" + TextBetween(html, "<", ">") + ">";
-    return result;
-};
 var _Select = function (CssSelector, from) { return null; };
 var _SelectFirst = function (CssSelector, from) { return null; };
 var _Find = function (element, CssSelector) { return null; };
@@ -89,13 +46,6 @@ var _Hide = function (element) {
 };
 var _IsVisible = function (element) { return false; };
 var _Clone = function (element) { return null; };
-function ToElements(item) {
-    var items = [];
-    item.each(function (ix, element) {
-        items.push(element);
-    });
-    return items;
-}
 var waitForFinalEvent = (function () {
     var timers = {};
     return function (callback, ms, uniqueId) {
@@ -132,10 +82,6 @@ function Activate(jitem) {
     // $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
     //$("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
 }
-//Notify("typeof console " + typeof console);
-//if (typeof console === "undefined") {
-window.onerror = ErrorHandler;
-//}
 function LoadJS(path) {
     var fileref = document.createElement('script');
     fileref.setAttribute("type", "text/javascript");
@@ -185,77 +131,6 @@ function ToObject(items) {
         obj[item.Key] = item.Value;
     });
     return obj;
-}
-var General;
-(function (General) {
-    var KeyValue = (function () {
-        function KeyValue() {
-            this.Key = "";
-            this.Value = null;
-        }
-        return KeyValue;
-    })();
-    General.KeyValue = KeyValue;
-    var Message = (function () {
-        function Message() {
-            this.Parameters = {};
-        }
-        return Message;
-    })();
-    General.Message = Message;
-})(General || (General = {}));
-var Waiter = (function () {
-    function Waiter(Condition, AllCompleted) {
-        this.Items = [];
-        this.Condition = null;
-        this.AllCompleted = null;
-        this.IsStarted = false;
-        this.AllCompleted = AllCompleted;
-        this.Condition = Condition;
-    }
-    Waiter.prototype.Check = function () {
-        var me = this;
-        var result = true;
-        this.Items.forEach(function (Item) {
-            if (!me.Condition(Item)) {
-                result = false;
-            }
-        });
-        if (result && me.IsStarted) {
-            me.Stop();
-            me.AllCompleted();
-            me.Items = [];
-        }
-    };
-    Waiter.prototype.WaitFor = function (Item) {
-        var me = this;
-        me.Items.push(Item);
-    };
-    Waiter.prototype.Start = function () {
-        this.IsStarted = true;
-        this.Check();
-    };
-    Waiter.prototype.Stop = function () {
-        this.IsStarted = false;
-    };
-    return Waiter;
-})();
-var StopProgress = function (id) {
-    return null;
-};
-var StartProgress = function (id) {
-    return null;
-};
-var ResultFormatter = function (rawdata) {
-    return rawdata;
-};
-var requests = [];
-try {
-    if (!IsNull(parent["requests"])) {
-        requests = parent["requests"];
-    }
-}
-catch (err) {
 }
 function GetPart(data, startix, endix) {
     var part = [];
@@ -312,87 +187,27 @@ function RemoveFrom(item, items) {
     var ix = items.indexOf(item);
     items.splice(ix, 1);
 }
-var FunctionWithCallback = (function () {
-    function FunctionWithCallback(f) {
-        this.Func = null;
-        this.Callback = function (data) {
-            console.log("No CallbackDefined");
-        };
-        this.Func = f;
-    }
-    FunctionWithCallback.prototype.Call = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i - 0] = arguments[_i];
-        }
-        if (IsFunction(this.Func)) {
-            this.Func(this, args);
-        }
-    };
-    return FunctionWithCallback;
-})();
-function CallFunction(eventcontainer, eventname, args) {
+function CallFunctionFrom(eventcontainer, eventname, args) {
     if (!IsNull(eventcontainer)) {
         if (eventname in eventcontainer && IsFunction(eventcontainer[eventname])) {
             eventcontainer[eventname](args);
         }
     }
 }
-function CallFunctionVariable(func, args) {
+function CallFunction(func, args) {
     if (!IsNull(func) && IsFunction(func)) {
         func(args);
     }
 }
-function Notify(message) {
-    ShowNotification(message);
-}
-function ShowNotification(message) {
-    var msg = CreateNotificationMsg(message);
-    Communication_ToApp(msg);
-}
-function ShowError(message) {
-    var msg = CreateErrorMsg(message);
-    Communication_ToApp(msg);
-}
-function Communication_ToApp(message) {
-    var strdata = JSON.stringify(message);
-    if ('Notify' in window.external) {
-        window.external.Notify(strdata);
-    }
-    else {
-        console.log(strdata);
+function CallFunctionWithContext(context, func, args) {
+    if (!IsNull(func) && IsFunction(func)) {
+        func.apply(context, args);
     }
 }
 function asyncFunc(func) {
     setTimeout(function () {
         func();
     }, 10);
-}
-function Communication_Listener(data) {
-    //Notify("Communication_Listener_Start");
-    var message = JSON.parse(data);
-    data = "";
-    //Notify("Communication_Listener Parsed");
-    data = null;
-    if (message.Category == "ajax") {
-        asyncFunc(function () {
-            //Notify("Calling AjaxResponse");
-            AjaxResponse(message);
-        });
-    }
-    if (message.Category == "notfication") {
-    }
-    if (message.Category == "error") {
-    }
-    if (message.Category == "action") {
-        if (message.Url.toLowerCase() == "instance") {
-            app.instancecontainer.HandleAction(message);
-        }
-    }
-    if (message.Category == "debug") {
-        debugger;
-    }
-    //Notify("Communication_Listener_End");
 }
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
@@ -870,6 +685,11 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 }
+HTMLElement.prototype.toString = function () {
+    var html = this.outerHTML;
+    var result = "<" + TextBetween(html, "<", ">") + ">";
+    return result;
+};
 function Res(key, culture) {
     var res = key;
     res = resourcemanager.Get(key, culture);
@@ -940,199 +760,63 @@ function browserSupportsWebWorkers() {
     //return typeof window.Worker === "function";
     return false;
 }
-var Engine;
-(function (Engine) {
-    var ActionCenter = (function () {
-        function ActionCenter() {
-            this.Selector = null;
-            this.CurrentSelector = null;
-            this.ListSelector = null;
-            this.ActionBarSelector = null;
-            this.class_Error = "n-error";
-            this.class_Warning = "n-warning";
-            this.class_Info = "n-info";
-            this.class_Success = "n-success";
-            this.format_Notification = "<div class=\"notification {1}\">{0}</div>";
-        }
-        ActionCenter.prototype.SetSelectors = function (selector, currentselector, listselector, actionbarselector) {
-            this.Selector = selector;
-            this.CurrentSelector = currentselector;
-            this.ListSelector = listselector;
-            this.ActionBarSelector = actionbarselector;
-        };
-        ActionCenter.prototype.AddSuccess = function (content) {
-            this.AddNotification(content, this.class_Success);
-        };
-        ActionCenter.prototype.AddInfo = function (content) {
-            this.AddNotification(content, this.class_Info);
-        };
-        ActionCenter.prototype.AddWarning = function (content) {
-            this.AddNotification(content, this.class_Warning);
-        };
-        ActionCenter.prototype.AddError = function (content) {
-            this.AddNotification(content, this.class_Error);
-        };
-        ActionCenter.prototype.AddNotification = function (content, cssclass) {
-            content = Format(this.format_Notification, content, cssclass);
-            var lastmessage = $(this.CurrentSelector).html();
-            $(this.CurrentSelector).html(content);
-            $(this.ListSelector).prepend(lastmessage);
-            $(this.Selector).show();
-        };
-        ActionCenter.prototype.ClearAll = function () {
-            this.ClearCurrent();
-            this.ClearList();
-            $(this.Selector).hide();
-        };
-        ActionCenter.prototype.ClearCurrent = function () {
-            $(this.CurrentSelector).html("");
-        };
-        ActionCenter.prototype.ClearList = function () {
-            $(this.ListSelector).html("");
-        };
-        ActionCenter.prototype.ToggleListVisibility = function () {
-            if ($(this.ListSelector).is(":visible")) {
-                $(this.ListSelector).hide();
-            }
-            else {
-                $(this.ListSelector).show();
-            }
-        };
-        return ActionCenter;
-    })();
-    Engine.ActionCenter = ActionCenter;
-    var UIManager = (function () {
-        function UIManager() {
-            this.duration = 200;
-            this.min_width = 150;
-        }
-        UIManager.prototype.GetMaxWidth = function () {
-            var maxwidth = $("#main-content").width();
-            return maxwidth;
-        };
-        UIManager.prototype.ActivateList = function () {
-            $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-            $("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
-        };
-        UIManager.prototype.ActivateSave = function () {
-            $("#ListController").parent().animate({ "max-width": this.min_width + "px" }, { duration: this.duration, queue: false });
-            $("#SaveController").parent().animate({ "width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-        };
-        return UIManager;
-    })();
-    Engine.UIManager = UIManager;
-})(Engine || (Engine = {}));
-var Editor = (function () {
-    function Editor(HtmlFormat, ValueGetter, ValueSetter) {
-        this.HtmlFormat = "";
-        this.ValueGetter = null;
-        this.ValueSetter = null;
-        this.TargetValueGetter = null;
-        this.TargetValueSetter = null;
-        this.CustomTrigger = null;
-        this.$Target = null;
-        this.$Me = null;
-        this.HtmlFormat = HtmlFormat;
-        this.ValueGetter = ValueGetter;
-        this.ValueSetter = ValueSetter;
-    }
-    Editor.prototype.Save = function () {
-        this.TargetValueSetter(this.ValueGetter(this.$Me));
-        this.$Target.removeClass(Editor.editclass);
-        this.$Me.remove();
-    };
-    Editor.prototype.Load = function (TargetElement, TargetValueGetter, TargetValueSetter) {
-        var Target = $(TargetElement);
-        var me = this;
-        this.TargetValueGetter = TargetValueGetter;
-        this.TargetValueSetter = TargetValueSetter;
-        this.Original_Value = TargetValueGetter().trim();
-        this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
-        //setting UI
-        var t_width = Target.width();
-        var t_height = Target.height();
-        var t_l_padding = Target.padding("left");
-        var t_r_padding = Target.padding("right");
-        var t_t_padding = Target.padding("top");
-        var t_b_padding = Target.padding("bottom");
-        var t_tagname = Target.prop("tagName");
-        //Notify(Format("t_width: {0}; t_height: {1}; t_l_padding: {2}, t_r_padding: {3}; t_t_padding: {4}; t_b_padding: {5};",
-        //    t_width, t_height, t_l_padding, t_r_padding, t_t_padding, t_b_padding));
-        var containerwidth = t_width; // - (t_l_padding + t_r_padding);
-        //Notify(Format("   containerwidth: {0}; t_tagname: {1}; $Me.tagname: {2}",
-        //    containerwidth, t_tagname, this.$Me.prop("tagName")));
-        var containerheight = t_height - (t_t_padding + t_b_padding);
-        var containerfontfamily = Target.css('font-family');
-        var containerfontsize = Target.css('font-size');
-        var containerlineheight = Target.css('line-height');
-        var containerbackgroundcolor = Target.parent().css('background-color');
-        this.$Me.width(containerwidth);
-        this.$Me.height(containerheight);
-        this.$Me.css('font-family', containerfontfamily);
-        this.$Me.css('font-size', containerfontsize);
-        this.$Me.css('line-height', containerlineheight);
-        //this.$Me.css('background-color', containerbackgroundcolor);
-        //end setting UI
-        this.ValueSetter(this.$Me, this.Original_Value);
-        this.$Target = Target;
-        this.$Target.html('');
-        this.$Me.appendTo(this.$Target);
-        this.$Target.addClass(Editor.editclass);
-        this.$Me.keypress(function (e) {
-            if (e.which == 13) {
-                me.Save();
-            }
-        });
-        this.$Me.focus();
-        if (IsNull(this.CustomTrigger)) {
-            this.$Me.blur(function () {
-                //Notify("blurred");
-                me.Save();
-                return true;
-            });
-        }
-    };
-    Editor.editclass = "editing";
-    return Editor;
-})();
-function MakeEditable2(cellselector) {
+/*
+function MakeEditable2(cellselector)
+{
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var target = this;
+        var target = <Element>this;
         if (!_HasClass(target, Editor.editclass)) {
-            var editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
-            editor.Load(target, function () { return _Html(target); }, function () { return _Html(target, editor.ValueGetter(editor.$Me)); });
+            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
+            editor.Load(target,() => _Html(target), () => _Html(target, editor.ValueGetter(editor.$Me)));
         }
-        /*
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(),(i: JQuery, val: any) => i.val(val));
-            editor.Load($target,() => $target.html(),() => $target.html(editor.ValueGetter(editor.$Me)));
-        }
-        */
+
     });
 }
+
 function MakeEditable3(cellselector, optionObject) {
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var target = this;
+        var target = <Element>this;
         if (!_HasClass(target, Editor.editclass)) {
-            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)), function (i) { return i.val(); }, function (i, val) {
-                i.val(val);
-            });
-            editor.Load(target, function () { return _Html(target); }, function () { return _Html(target, editor.ValueGetter(editor.$Me)); });
-        }
-        /*
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-  
             var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
-            editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
+            editor.Load(target,() => _Html(target),() => _Html(target, editor.ValueGetter(editor.$Me)));
         }
-        */
     });
 }
-var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs" };
+*/
+function Editable(cellselector, editedcallback) {
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event) {
+        var target = event.currentTarget;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+            editor.Load(target, function () { return _Html(target); }, function () {
+                var value = editor.ValueGetter(editor.$Me);
+                _Html(target, value);
+                editedcallback(target, value);
+            });
+        }
+    });
+}
+function GetDefaultEditor(target) {
+    var editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+    return editor;
+}
+function AssignEditor(cellselector, editorAccessor, editedcallback) {
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event) {
+        var target = event.currentTarget;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = editorAccessor(target);
+            editor.Load(target, function () { return _Html(target); }, function () {
+                var value = editor.ValueGetter(editor.$Me);
+                _Html(target, value);
+                editedcallback(target, value);
+            });
+        }
+    });
+}
 function MakeEditable(cellselector) {
     function SaveCell(target) {
         var parent = target.parent();
@@ -1266,10 +950,6 @@ function OuterHtml(item) {
     //return item.wrapAll('<div>').parent().html(); 
 }
 function Replace(text, texttoreplace, textwithreplace) {
-    /*
-    var reg = new RegExp(texttoreplace, "g");
-    return text.replace(reg, textwithreplace);
-    */
     var index = 0;
     do {
         text = text.replace(texttoreplace, textwithreplace);
@@ -1299,21 +979,4 @@ function GetPropertiesArray(item) {
     }
     return properties;
 }
-var S_Bind_Start = "bind[";
-var S_Bind_End = "]";
-var s_list_selector = ".list";
-var s_listpager_selector = ".listpager";
-var s_listfilter_selector = ".listfilter";
-var s_sublist_selector = ".sublist";
-var s_sublistpager_selector = ".sublistpager";
-var s_detail_selector = ".detail";
-var s_parent_selector = ".parent";
-var s_contentcontainer_selector = ".contentcontainer";
-var s_content_selector = ".subcontent";
-var actioncenter = new Engine.ActionCenter();
-var uimanager = new Engine.UIManager();
-var resourcemanager = { Get: function (key, culture) {
-    return key;
-} };
-var activeItem = null;
 //# sourceMappingURL=Utils.js.map

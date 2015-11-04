@@ -142,11 +142,10 @@ namespace XBRLProcessor.Models
                 keylist.Add(fact.Key);
             }
         }
-        
-        public string FindDimensionDomain(string dimensionitem) 
+        public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
         {
-            var domain = "";
-    
+            LogicalModel.Base.Element domain = null;
+
             LogicalModel.Base.Element se = null;
             if (!this.SchemaElementDictionary.ContainsKey(dimensionitem))
             {
@@ -154,11 +153,7 @@ namespace XBRLProcessor.Models
                 if (dimensionitem.Contains(":"))
                 {
                     var items = dimensionitem.Split(':');
-                    //TODOX
-                    //if (!items[1].StartsWith(Prefix))
-                    //{
-                    //    items[1] = Prefix + items[1];
-                    //}
+            
                     ebadimensionkey = String.Format("{0}:{1}", items[0], items[1]);
                 }
                 if (this.SchemaElementDictionary.ContainsKey(ebadimensionkey))
@@ -166,12 +161,12 @@ namespace XBRLProcessor.Models
                     se = this.SchemaElementDictionary[ebadimensionkey];
                 }
             }
-            else 
+            else
             {
                 se = this.SchemaElementDictionary[dimensionitem];
 
             }
-            if (se!=null)
+            if (se != null)
             {
                 var domainref = se.TypedDomainRef;
                 var se_dim_doc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == se.Namespace);
@@ -182,9 +177,20 @@ namespace XBRLProcessor.Models
                 var se_domain_key = se_domain_doc.TargetNamespacePrefix + ":" + refid;
                 var se_domain = SchemaElementDictionary[se_domain_key];
                 //domain = se_domain.ID;
-                domain = String.Format("{0}:{1}",se_domain.Namespace, se_domain.Name);
+                domain = se_domain;
             }
             return domain;
+        }
+        public string FindDimensionDomainString(string dimensionitem) 
+        {
+            var domain = FindDimensionDomain(dimensionitem);
+            var result = "";
+            if (domain != null)
+            {
+                result = String.Format("{0}:{1}", domain.Namespace, domain.Name);
+            }
+            return result;
+            
         }
         
         public XbrlTaxonomyDocument FindDocument(string localpath) 
@@ -614,7 +620,8 @@ namespace XBRLProcessor.Models
                         }
                         else
                         {
-                            assertions.AddRange(validation.ValidationRoot.Children);
+                            var valueassertions = validation.ValidationRoot.Children.Where(i => i.Item is ValueAssertion).ToList();
+                            assertions.AddRange(valueassertions);
                         }
                         foreach (var assertion in assertions)
                         {

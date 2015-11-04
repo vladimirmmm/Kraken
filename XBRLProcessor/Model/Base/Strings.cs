@@ -68,7 +68,7 @@ namespace XBRLProcessor.Model.StringEnums
     public class FilterAxis : StringEnum
     {
         public FilterAxis(int value, String name) : base(value, name) { }
-
+        //TODO
         public static readonly FilterAxis ChildOrSelf = new FilterAxis(0, "child-or-self");
         public static readonly FilterAxis Child = new FilterAxis(0, "child");
         public static readonly FilterAxis Descendant = new FilterAxis(0, "descendant");

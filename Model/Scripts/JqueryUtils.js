@@ -64,9 +64,9 @@ function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
     var endix = startix + pagesize;
     var itemspart = GetPart(data, startix, endix);
     var datalength = GetLength(data);
-    CallFunction(events, "onloading", itemspart);
+    CallFunctionFrom(events, "onloading", itemspart);
     BindX($bindtarget, itemspart);
-    CallFunction(events, "onloaded", itemspart);
+    CallFunctionFrom(events, "onloaded", itemspart);
     if ($pager.length == 0 || 1 == 1) {
         $pager.pagination(datalength, {
             items_per_page: pagesize,
@@ -78,9 +78,9 @@ function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
             prev_show_always: true,
             next_show_always: true,
             callback: function (pageix) {
-                CallFunction(events, "onpaging");
+                CallFunctionFrom(events, "onpaging");
                 LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
-                CallFunction(events, "onpaged");
+                CallFunctionFrom(events, "onpaged");
                 return false;
             },
         });
@@ -93,9 +93,9 @@ function LoadPageAsync($bindtarget, $pager, functionwithcallback, page, pagesize
     var startix = pagesize * page;
     var endix = startix + pagesize;
     functionwithcallback.Callback = function (result) {
-        CallFunction(events, "onloading", result.Items);
+        CallFunctionFrom(events, "onloading", result.Items);
         BindX($bindtarget, result.Items);
-        CallFunction(events, "onloaded", result.Items);
+        CallFunctionFrom(events, "onloaded", result.Items);
         if ($pager.length == 0 || 1 == 1) {
             $pager.pagination(result.Total, {
                 items_per_page: pagesize,
@@ -107,9 +107,9 @@ function LoadPageAsync($bindtarget, $pager, functionwithcallback, page, pagesize
                 prev_show_always: true,
                 next_show_always: true,
                 callback: function (pageix) {
-                    CallFunction(events, "onpaging");
+                    CallFunctionFrom(events, "onpaging");
                     LoadPageAsync($bindtarget, $pager, functionwithcallback, pageix, pagesize, parameters, events);
-                    CallFunction(events, "onpaged");
+                    CallFunctionFrom(events, "onpaged");
                     return false;
                 },
             });
@@ -120,12 +120,10 @@ function LoadPageAsync($bindtarget, $pager, functionwithcallback, page, pagesize
     if (IsNull(parameters)) {
         parameters = {};
     }
-    if (!("page" in parameters)) {
-        parameters["page"] = page;
-    }
-    if (!("pagesize" in parameters)) {
-        parameters["pagesize"] = pagesize;
-    }
+    SetProperty(parameters, "page", page);
+    SetProperty(parameters, "pagesize", pagesize);
+    //if (!("page" in parameters)) { parameters["page"] = page; }
+    //if (!("pagesize" in parameters)) { parameters["pagesize"] = pagesize;}
     functionwithcallback.Call(parameters);
 }
 function Ajax(url, method, parameters, generichandler, contentType) {
@@ -178,6 +176,13 @@ function Ajax(url, method, parameters, generichandler, contentType) {
             generichandler(result);
         }
     });
+}
+function ToElements(item) {
+    var items = [];
+    item.each(function (ix, element) {
+        items.push(element);
+    });
+    return items;
 }
 function HtmlEncode(value) {
     return $('<div/>').text(value).html();

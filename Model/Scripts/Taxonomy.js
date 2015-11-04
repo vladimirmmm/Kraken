@@ -110,7 +110,7 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
-            me.FactServiceFunction = new FunctionWithCallback(function (fwc, args) {
+            me.FactServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
                 var p = args[0];
                 AjaxRequest("Taxonomy/Facts", "get", "json", p, function (data) {
                     me.CurrentFacts = data.Items;
@@ -125,7 +125,7 @@ var Control;
                 me.Taxonomy.ValidationRules.forEach(function (v) {
                     v.Title = Truncate(v.DisplayText, 100);
                 });
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
             });

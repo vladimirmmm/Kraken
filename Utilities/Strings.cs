@@ -357,10 +357,9 @@ namespace Utilities
             return true;
         }
 
-        public static string ArrayToString(string[] arr)
+        public static string ArrayToString(string[] arr, string delimiter=", ")
         {
             string rs = "";
-            var delimiter = ", ";
             for (int i = 0; i < arr.Length; i++)
             {
                 rs += delimiter + arr[i];

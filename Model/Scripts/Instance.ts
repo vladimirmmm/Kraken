@@ -82,7 +82,7 @@
             var me = this;
             AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
                 me.ValidationResults = data;
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) { console.log(error); });
         }
 
@@ -91,7 +91,7 @@
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
                 me.LoadToUI();
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
 
             }, function (error) { console.log(error); });
         }

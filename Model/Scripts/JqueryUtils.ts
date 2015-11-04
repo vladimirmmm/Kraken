@@ -77,9 +77,9 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, 
     var endix = startix + pagesize;
     var itemspart = GetPart(data, startix, endix);
     var datalength = GetLength(data);
-    CallFunction(events, "onloading", itemspart);
+    CallFunctionFrom(events, "onloading", itemspart);
     BindX($bindtarget, itemspart);
-    CallFunction(events, "onloaded", itemspart);
+    CallFunctionFrom(events, "onloaded", itemspart);
 
     if ($pager.length == 0 || 1 == 1) {
         $pager.pagination(datalength,
@@ -93,9 +93,9 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, 
                 prev_show_always: true,
                 next_show_always: true,
                 callback: function (pageix) {
-                    CallFunction(events, "onpaging");
+                    CallFunctionFrom(events, "onpaging");
                     LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
-                    CallFunction(events, "onpaged");
+                    CallFunctionFrom(events, "onpaged");
                     return false;
                 },
             });
@@ -106,16 +106,16 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, 
 }
 
 function LoadPageAsync($bindtarget: JQuery, $pager: JQuery,
-    functionwithcallback: FunctionWithCallback,
+    functionwithcallback: General.FunctionWithCallback,
     page: number, pagesize: number, parameters:Object, events?: Object) {
     var me = this;
     var startix = pagesize * page;
     var endix = startix + pagesize;
     functionwithcallback.Callback = (result: DataResult) => {
 
-        CallFunction(events, "onloading", result.Items);
+        CallFunctionFrom(events, "onloading", result.Items);
         BindX($bindtarget, result.Items);
-        CallFunction(events, "onloaded", result.Items);
+        CallFunctionFrom(events, "onloaded", result.Items);
 
         if ($pager.length == 0 || 1 == 1) {
             $pager.pagination(result.Total,
@@ -129,10 +129,10 @@ function LoadPageAsync($bindtarget: JQuery, $pager: JQuery,
                     prev_show_always: true,
                     next_show_always: true,
                     callback: function (pageix) {
-                        CallFunction(events, "onpaging");
+                        CallFunctionFrom(events, "onpaging");
                         LoadPageAsync($bindtarget, $pager, functionwithcallback,
                             pageix, pagesize, parameters, events);
-                        CallFunction(events, "onpaged");
+                        CallFunctionFrom(events, "onpaged");
                         return false;
                     },
                 });
@@ -140,9 +140,11 @@ function LoadPageAsync($bindtarget: JQuery, $pager: JQuery,
             //console.log("")
         }
     };
-    if (IsNull(parameters)) { parameters = {};}
-    if (!("page" in parameters)) { parameters["page"] = page; }
-    if (!("pagesize" in parameters)) { parameters["pagesize"] = pagesize;}
+    if (IsNull(parameters)) { parameters = {}; }
+    SetProperty(parameters, "page", page);
+    SetProperty(parameters, "pagesize", pagesize);
+    //if (!("page" in parameters)) { parameters["page"] = page; }
+    //if (!("pagesize" in parameters)) { parameters["pagesize"] = pagesize;}
     functionwithcallback.Call(parameters);
 
 
@@ -201,6 +203,13 @@ function Ajax(url: string, method: string, parameters: Dictionary, generichandle
     });
 }
 
+function ToElements(item: JQuery): Element[] {
+    var items: Element[] = [];
+    item.each(function (ix, element) {
+        items.push(element);
+    });
+    return items;
+}
 
 function HtmlEncode(value: string): string {
     return $('<div/>').text(value).html();
@@ -367,6 +376,7 @@ function CallJQueryFunction(obj, functionname:string, value?: string): string {
     }
     return "";
 }
+
 
 $.fn.serializeObject = function () {
     var o = {};

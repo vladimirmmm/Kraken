@@ -109,6 +109,10 @@ namespace UI
                     new MenuCommand("Test", "")
                     ),
                 new MenuCommand("Taxonomy", "",
+                    new MenuCommand("Process Folder", "", (o) => { ProcessFolder(); }),
+                    new MenuCommand("Test", "", (o) => { Taxonomy_Test(); }),
+                    new MenuCommand("Z Axis Test", "", (o) => { Extensions_Test(); }),
+                    
                     new MenuCommand("Refresh all (but Structure)", "", (o) => { ClearTaxonomy(ClearEnum.AllButStructure); }),
                     new MenuCommand("Refresh", "",
                         new MenuCommand("Refresh all", "", (o) => { ClearTaxonomy(ClearEnum.All); }),
@@ -520,6 +524,26 @@ namespace UI
                 }
             }
         }
+
+        public void ProcessFolder()
+        {
+            var path = BrowsForFolder("");
+            if (!String.IsNullOrEmpty(path))
+            {
+                var modulefolders = System.IO.Directory.GetDirectories(path, "mod", System.IO.SearchOption.AllDirectories);
+                foreach (var modulefolder in modulefolders)
+                {
+                    var files = System.IO.Directory.GetFiles(modulefolder, "*.xsd", System.IO.SearchOption.AllDirectories);
+                    foreach (var file in files)
+                    {
+                        OpenTaxonomy(file);
+                        //OpenInstance(file);
+                        //ValidateInstance();
+                    }
+                }
+            }
+        }
+
         public void LoadInstanceToUI()
         {
             if (UI.DispatcherCheckAccess())
@@ -707,6 +731,39 @@ namespace UI
         public Message ProcessRequest(Message request)
         {
             return DataService.ProcessRequest(request);
+        }
+
+        public void Taxonomy_Test() 
+        {
+            var dimensions = this.Engine.CurrentTaxonomy.GetAllDimensions();
+            var text = Utilities.Strings.ArrayToString(dimensions.ToArray(),"\r\n");
+            Utilities.Logger.WriteLine(text);
+        }
+
+        public void Extensions_Test() 
+        {
+            var taxonomycontainerfolder = TaxonomyEngine.LocalFolder;
+            var files = System.IO.Directory.GetFiles(taxonomycontainerfolder, "*layout.txt*", System.IO.SearchOption.AllDirectories);
+            var sb = new StringBuilder();
+            foreach (var file in files) 
+            {
+                string content = Utilities.FS.ReadAllText(file);
+                var folder = Utilities.Strings.GetFolder(file);
+                var filename = Utilities.Strings.GetFileName(file);
+                var zix = content.IndexOf("    z ");
+                if (zix>-1){
+                    var zcontent = content.Substring(zix);
+                    sb.AppendLine("_______________________________________________________");
+                    sb.AppendLine(filename);
+                    sb.AppendLine(folder);
+                    sb.AppendLine(zcontent);
+                    sb.AppendLine("_______________________________________________________");
+                    sb.AppendLine();
+                }
+            }
+            var outputpath = taxonomycontainerfolder + "ZAxisTest.txt";
+            Utilities.FS.WriteAllText(outputpath, sb.ToString());
+            Utilities.Logger.WriteLine(String.Format("Z Axis analyzis exported to {0}", outputpath));
         }
     }
 }

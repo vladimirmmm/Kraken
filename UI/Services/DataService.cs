@@ -118,13 +118,16 @@ namespace UI.Services
                             {
                                 var page = int.Parse(request.Parameters["page"]);
                                 var pagesize = int.Parse(request.Parameters["pagesize"]);
-                                var factstring = request.Parameters["factstring"];
+                                var factstring = request.Parameters["factstring"].ToLower();
                                 var cellid = request.Parameters["cellid"];
                                 var rs = new DataResult<KeyValuePair<string, List<String>>>();
                                 var query = Engine.CurrentTaxonomy.Facts.Where(i => i.Key == i.Key);
 
-                                query = query.Where(i => i.Key.Contains(factstring));
-
+                                var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var fs in factstrings)
+                                {
+                                    query = query.Where(i => i.Key.ToLower().Contains(fs));
+                                }
                                 if (!String.IsNullOrEmpty(cellid))
                                 {
                                     query = query.Where(i => i.Value.Any(j => j.Contains(cellid)));

@@ -1,82 +1,4 @@
 
-interface cbdelegate { (result: any): any; }
-interface Dictionary { [s: string]: Object; }
-interface F_Progress { (id: string): any; }
-interface F_ResultFormatter { (rawdata: any): any; }
-
-interface JQueryStatic {
-    formatDateTime(format: string, d: Date);
-    w8n(...any);
-
-}
-interface JQuery
-{
-    w8n(...any);
-    serializeObject(...any);
-    padding(direction: string): number;
-    pagination(total: any, options: any);
-    resizable(options?: any);
-    colResizable(options?: any);
-    resizableColumns(options?: any);
-    datepicker(options?: any);
-}
-
-interface External {
-    Notify(obj: any)
-}
-
-class Refrence<T> {
-    public Value: T;
-
-    constructor(reference: T)
-    {
-        this.Value=reference;
-    }
-}
-function CreateMsg(category: string): General.Message {
-    var msg = new General.Message();
-    msg.Category = category;
-    return msg;
-}
-function CreateNotificationMsg(message: string): General.Message
-{
-    var msg = CreateMsg("notification");
-    msg.Data = message;
-    return msg
-}
-function CreateAjaxMsg(): General.Message {
-    var msg = CreateMsg("ajax");
-    return msg
-}
-function CreateErrorMsg(errormessage: string):General.Message
-{
-    var msg = CreateMsg("error");
-    msg.Error = errormessage;
-    return msg;
-}
-function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Error(errortext);
-    return true;
-}
-function ShowHideChild(selector: any,sender:any)
-{
-    $(selector).hide();
-    var $item = $(selector, $(sender).parent()).first();
-    $item.show();
-}
-function SetPivots()
-{
-    
-    $("#maintable").resizableColumns();
-
-}
-
-HTMLElement.prototype.toString = function () {
-    var html = (<HTMLElement>this).outerHTML;
-    var result = "<" + TextBetween(html, "<", ">") + ">";
-    return result;
-}
 
 var _Select = (CssSelector: string, from?: Element): Element[]=> null;
 var _SelectFirst = (CssSelector: string, from?: Element): Element=> null;
@@ -120,14 +42,7 @@ var _Hide = (element: any) => { };
 var _IsVisible = (element: any):boolean => false;
 var _Clone = (element: Element):Element => null;
 
-function ToElements(item: JQuery): Element[]
-{
-    var items: Element[] = [];
-    item.each(function (ix, element) {
-        items.push(element);
-    });
-    return items;
-}
+
 
 var waitForFinalEvent = (function () {
     var timers = {};
@@ -172,11 +87,7 @@ function Activate(jitem: JQuery)
 
  
 }
-//Notify("typeof console " + typeof console);
-//if (typeof console === "undefined") {
 
-    window.onerror = ErrorHandler;
-//}
 
 
 
@@ -246,97 +157,6 @@ function ToObject(items: General.KeyValue[]): Object
     return obj;
 }
 
-module General {
-    export class KeyValue {
-        public Key: string = "";
-        public Value: any = null;
-    }
-
-    export class Message
-    {
-        public Id: string;
-        public Url: string;
-        public Category: string;
-        public Parameters: Object = {};
-        public ContentType: string;
-        public Error: string
-        public Data:string
-    }
-
-}
-
-interface RequestHandler
-{
-    success: Function[];
-    error: Function[];
-    Id: string;
-    succeded: boolean;
-    /*
-    url: string;
-    contenttype: string;
-    */
-}
-
-class Waiter
-{
-    public Items: Object[] = [];
-    public Condition: Function = null;
-    public AllCompleted: Function = null;
-    private IsStarted: boolean = false;
-
-    constructor(Condition: Function, AllCompleted: Function)
-    {
-        this.AllCompleted = AllCompleted;
-        this.Condition = Condition;
-    }
-    public Check()
-    {
-        var me = this;
-        var result = true;
-        this.Items.forEach(function (Item) {
-            if (!me.Condition(Item))
-            {
-                result = false;
-            }
-        });
-        if (result && me.IsStarted)
-        {
-            me.Stop();
-            me.AllCompleted();
-            me.Items = [];
-
-        }
-    }
-    public WaitFor(Item:Object)
-    {
-        var me = this;
-        me.Items.push(Item);
-    }
-    public Start()
-    {
-        this.IsStarted = true;
-        this.Check();
-    }
-    public Stop() {
-        this.IsStarted = false;
-    }
-}
-
-var StopProgress: F_Progress = function (id: string) { return null; };
-var StartProgress: F_Progress = function (id: string) { return null; };
-var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
-
-
-var requests: General.KeyValue[] = []; 
-try {
-    if (!IsNull(parent["requests"])){
-        requests = parent["requests"];
-    }
-}
-catch (err) {
-    
-}
-
 
 function GetPart(data: any, startix: number, endix: number) {
     var part: any[] = [];
@@ -403,31 +223,11 @@ function RemoveFrom(item: Object, items: any[])
     items.splice(ix, 1);
 }
 
-class FunctionWithCallback {
-    public Func: Function = null;
-    public Callback: Function = (data) => { console.log("No CallbackDefined")};
-
-    constructor(f: Function)
-    {
-        this.Func = f;
-    }
-
-    public Call(...args:any[]) {
-        if (IsFunction(this.Func)) {
-            this.Func(this, args);
-        }
-    }
-
-}
-interface DataResult
-{
-    Total: number;
-    Items: any[];
-    Item: any;
-}
 
 
-function CallFunction(eventcontainer: Object, eventname: string, args?: any[])
+
+
+function CallFunctionFrom(eventcontainer: Object, eventname: string, args?: any[])
 {
     if (!IsNull(eventcontainer))
     {
@@ -438,7 +238,7 @@ function CallFunction(eventcontainer: Object, eventname: string, args?: any[])
     }
 }
 
-function CallFunctionVariable(func: Function, args?: any[])
+function CallFunction(func: Function, args?: any[])
 {
     if (!IsNull(func) && IsFunction(func)) {
         func(args);
@@ -446,67 +246,19 @@ function CallFunctionVariable(func: Function, args?: any[])
     
 }
 
-function Notify(message: string) {
-    ShowNotification(message);
-}
-function ShowNotification(message: string) {
-    var msg = CreateNotificationMsg(message);
-    Communication_ToApp(msg);
-}
-function ShowError(message: string) {
-    var msg = CreateErrorMsg(message);
-    Communication_ToApp(msg);
+function CallFunctionWithContext(context:any, func: Function, args?: any[]) {
+    if (!IsNull(func) && IsFunction(func)) {
+        func.apply(context, args);
+    }
 
 }
-function Communication_ToApp(message: General.Message)
-{
-    var strdata = JSON.stringify(message);
-    if ('Notify' in window.external) {
-        window.external.Notify(strdata);
-    } else {
-        console.log(strdata);
-    }
-}
+
+
 function asyncFunc(func:Function) {
     setTimeout(function () {
        
         func();
     }, 10);
-}
-
-function Communication_Listener(data: string) {
-    //Notify("Communication_Listener_Start");
-    var message: General.Message = <General.Message>JSON.parse(data);
-    data = "";
-
-    //Notify("Communication_Listener Parsed");
-
-    data = null;
-    if (message.Category == "ajax") {
-        asyncFunc(() => {
-            //Notify("Calling AjaxResponse");
-            AjaxResponse(message);
-        });
-        //clearobject(message);
-        //AjaxResponse(message);
-    }
-    if (message.Category == "notfication")
-    {
-
-    }
-    if (message.Category == "error") {
-
-    }
-    if (message.Category == "action") {
-        if (message.Url.toLowerCase() == "instance")
-        {
-            app.instancecontainer.HandleAction(message);
-        }
-    }
-    if (message.Category == "debug") {
-        debugger;
-    }
-    //Notify("Communication_Listener_End");
 }
 
 function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function): RequestHandler {
@@ -1032,7 +784,11 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 }
-
+HTMLElement.prototype.toString = function () {
+    var html = (<HTMLElement>this).outerHTML;
+    var result = "<" + TextBetween(html, "<", ">") + ">";
+    return result;
+}
 function Res(key: string, culture?: string): string {
     var res = key;
     res = resourcemanager.Get(key, culture);
@@ -1109,199 +865,8 @@ function browserSupportsWebWorkers():boolean {
     return false;
 }
 
-module Engine
-{  
 
-    export class ActionCenter
-    {
-        private Selector: any = null;
-        private CurrentSelector: any = null;
-        private ListSelector: any = null;
-        private ActionBarSelector: any = null;
-        private class_Error: string = "n-error";
-        private class_Warning: string = "n-warning";
-        private class_Info: string = "n-info";
-        private class_Success: string = "n-success";
-        private format_Notification: string = "<div class=\"notification {1}\">{0}</div>";
-
-        public SetSelectors(selector:any, currentselector: any, listselector: any,actionbarselector:any)
-        {
-            this.Selector = selector;
-            this.CurrentSelector = currentselector;
-            this.ListSelector = listselector;
-            this.ActionBarSelector = actionbarselector;
-        }
-
-        public AddSuccess(content: string)
-        {
-            this.AddNotification(content, this.class_Success);
-        }
-        public AddInfo(content: string)
-        {
-            this.AddNotification(content, this.class_Info);
-        }
-        public AddWarning(content: string)
-        {
-            this.AddNotification(content, this.class_Warning);
-        }
-        public AddError(content: string)
-        {
-            this.AddNotification(content, this.class_Error);
-        }
-
-        public AddNotification(content: string, cssclass?:string)
-        {
-            content = Format(this.format_Notification, content, cssclass);
-            var lastmessage = $(this.CurrentSelector).html();
-            $(this.CurrentSelector).html(content);
-            $(this.ListSelector).prepend(lastmessage);
-            $(this.Selector).show();
-        }
-
-        public ClearAll()
-        {
-            this.ClearCurrent();
-            this.ClearList();
-            $(this.Selector).hide();
-            
-        }
-
-        public ClearCurrent()
-        {
-            $(this.CurrentSelector).html("");
-
-        }
-        public ClearList() {
-            $(this.ListSelector).html("");
-
-        }
-        public ToggleListVisibility() {
-            if ($(this.ListSelector).is(":visible")) {
-                $(this.ListSelector).hide();
-            }
-            else {
-                $(this.ListSelector).show();
-
-            }
-        }
-    }
-
-    export class UIManager
-    {
-        private duration: number = 200;
-        private min_width: number = 150;
-
-        private GetMaxWidth():number
-        {
-             var maxwidth = $("#main-content").width();
-             return maxwidth;
-        }
-
-        public ActivateList()
-        {
-
-                $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-                $("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
-        }
-        public ActivateSave()
-        {
-            $("#ListController").parent().animate({ "max-width": this.min_width + "px" }, { duration: this.duration, queue: false });
-            $("#SaveController").parent().animate({ "width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-
-        }
-    }
-}
-
-class Editor
-{
-    public HtmlFormat: string = "";
-    public ValueGetter: Function = null;
-    public ValueSetter: Function = null;
-    public TargetValueGetter: Function = null;
-    public TargetValueSetter: Function = null;
-    public CustomTrigger: Function = null;
-    public $Target: JQuery = null; 
-    public $Me: JQuery = null; 
-    public Current_Value: string;
-    public Original_Value: string;
-
-    static editclass: string = "editing";
-
-    constructor(HtmlFormat: string, ValueGetter: Function, ValueSetter: Function)
-    {
-        this.HtmlFormat = HtmlFormat;
-        this.ValueGetter = ValueGetter;
-        this.ValueSetter = ValueSetter;
-    }
-
-    public Save() {
-        this.TargetValueSetter(this.ValueGetter(this.$Me))
-        this.$Target.removeClass(Editor.editclass);
-        this.$Me.remove();
-
-    }
-
-    public Load(TargetElement: Element, TargetValueGetter: Function, TargetValueSetter: Function)
-    {
-        var Target = $(TargetElement);
-        var me = this;
-        this.TargetValueGetter = TargetValueGetter;
-        this.TargetValueSetter = TargetValueSetter;
-        this.Original_Value = TargetValueGetter().trim();
-        this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
-
-        //setting UI
-        var t_width = Target.width();
-        var t_height = Target.height();
-        var t_l_padding = Target.padding("left");
-        var t_r_padding = Target.padding("right");
-        var t_t_padding = Target.padding("top");
-        var t_b_padding = Target.padding("bottom");
-        var t_tagname = Target.prop("tagName"); 
-        //Notify(Format("t_width: {0}; t_height: {1}; t_l_padding: {2}, t_r_padding: {3}; t_t_padding: {4}; t_b_padding: {5};",
-        //    t_width, t_height, t_l_padding, t_r_padding, t_t_padding, t_b_padding));
-        var containerwidth = t_width;// - (t_l_padding + t_r_padding);
-        //Notify(Format("   containerwidth: {0}; t_tagname: {1}; $Me.tagname: {2}",
-        //    containerwidth, t_tagname, this.$Me.prop("tagName")));
-
-        var containerheight = t_height - (t_t_padding + t_b_padding);
-        var containerfontfamily = Target.css('font-family');
-        var containerfontsize = Target.css('font-size');
-        var containerlineheight = Target.css('line-height');
-        var containerbackgroundcolor = Target.parent().css('background-color');
-
-        this.$Me.width(containerwidth);
-        this.$Me.height(containerheight);
-        this.$Me.css('font-family', containerfontfamily);
-        this.$Me.css('font-size', containerfontsize);
-        this.$Me.css('line-height', containerlineheight);
-        //this.$Me.css('background-color', containerbackgroundcolor);
-        //end setting UI
-        this.ValueSetter(this.$Me, this.Original_Value);
-
-        this.$Target = Target;
-        this.$Target.html('');
-        this.$Me.appendTo(this.$Target);
-        this.$Target.addClass(Editor.editclass);
-
-      
-        this.$Me.keypress(function (e) {
-            if (e.which == 13) {
-                me.Save();
-            }
-        });
-
-        this.$Me.focus();
-        if (IsNull(this.CustomTrigger)) {
-            this.$Me.blur(function () {
-                //Notify("blurred");
-                me.Save();
-                return true;
-            });
-        }
-    }
-}
-
+/*
 function MakeEditable2(cellselector)
 {
     $(cellselector).off("click");
@@ -1311,13 +876,7 @@ function MakeEditable2(cellselector)
             var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
             editor.Load(target,() => _Html(target), () => _Html(target, editor.ValueGetter(editor.$Me)));
         }
-        /*
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(),(i: JQuery, val: any) => i.val(val));
-            editor.Load($target,() => $target.html(),() => $target.html(editor.ValueGetter(editor.$Me)));
-        }
-        */
+
     });
 }
 
@@ -1329,18 +888,58 @@ function MakeEditable3(cellselector, optionObject) {
             var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
             editor.Load(target,() => _Html(target),() => _Html(target, editor.ValueGetter(editor.$Me)));
         }
-        /*
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-  
-            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
-            editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
-        }
-        */
     });
 }
-var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs"};
+*/
+function Editable(cellselector:any, editedcallback:Function)
+{
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event: any) {
+        var target = event.currentTarget;
 
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor " value="" />',
+                (i: JQuery) => i.val(),
+                (i: JQuery, val: any) => i.val(val));
+
+            editor.Load(target,
+                () => _Html(target),
+                () => {
+                    var value = editor.ValueGetter(editor.$Me);
+                    _Html(target, value);
+                    editedcallback(target, value);
+                }
+                );
+        }
+    });
+}
+function GetDefaultEditor(target:Element):Editor
+{
+    var editor = new Editor('<input type="text" class="celleditor " value="" />',
+        (i: JQuery) => i.val(),
+        (i: JQuery, val: any) => i.val(val));
+    return editor;
+}
+
+function AssignEditor(cellselector: any, editorAccessor: Function, editedcallback: Function) {
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event: any) {
+        var target = event.currentTarget;
+
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = editorAccessor(target);
+
+            editor.Load(target,
+                () => _Html(target),
+                () => {
+                    var value = editor.ValueGetter(editor.$Me);
+                    _Html(target, value);
+                    editedcallback(target, value);
+                }
+                );
+        }
+    });
+}
 function MakeEditable(cellselector)
 {
     function SaveCell(target)
@@ -1408,7 +1007,8 @@ function ToOptionList(obj: Object, addemptyoption:boolean): string
     }
     return result;
 }
-function NormalizeFolderPath(folder:any):string
+
+function NormalizeFolderPath(folder: any): string
 {
     if (folder == null) { folder = ""; }
     if (folder.indexOf("~") == 0) { folder = folder.substring(1); }
@@ -1419,7 +1019,6 @@ function NormalizeFolderPath(folder:any):string
 
     return folder;
 }
-
 
 function SetCustomFields(fieldcontainerselector: any, targetinputselector:any): General.KeyValue[]
 {
@@ -1500,10 +1099,6 @@ function OuterHtml(item: JQuery): string
 
 function Replace(text:string, texttoreplace:string, textwithreplace:string):string
 {
-    /*
-    var reg = new RegExp(texttoreplace, "g");
-    return text.replace(reg, textwithreplace);
-    */
     var index = 0;
     do {
         text = text.replace(texttoreplace, textwithreplace);
@@ -1540,27 +1135,10 @@ function GetPropertiesArray(item: Object): Object[] {
 }
 
 
-var S_Bind_Start = "bind[";
-var S_Bind_End = "]";
-var s_list_selector: string = ".list";
-var s_listpager_selector: string = ".listpager";
-var s_listfilter_selector: string = ".listfilter";
-var s_sublist_selector: string = ".sublist";
-var s_sublistpager_selector: string = ".sublistpager";
-var s_detail_selector: string = ".detail";
-var s_parent_selector: string = ".parent";
-var s_contentcontainer_selector: string = ".contentcontainer";
-var s_content_selector: string = ".subcontent";
 
 
 
-var actioncenter = new Engine.ActionCenter();
-var uimanager = new Engine.UIManager();
-var resourcemanager: IResourceManager = { Get: function (key: string, culture?: string) { return key;}};
-interface IResourceManager
-{
-    Get(key: string, culture?: string): string;
-}
-var activeItem = null;
+
+
 
 

@@ -502,7 +502,7 @@ namespace XBRLProcessor.Model
                 if (String.IsNullOrEmpty(dimension.Domain))
                 {
                     //OGR issue
-                    dimension.Domain = Taxonomy.FindDimensionDomain(dimension.DimensionItem);
+                    dimension.Domain = Taxonomy.FindDimensionDomainString(dimension.DimensionItem);
                 }
             }
         }

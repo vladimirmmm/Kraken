@@ -1,4 +1,6 @@
 ﻿var TemplateDictionary: TemplateDictionaryItem[] = [];
+var S_Bind_Start = "bind[";
+var S_Bind_End = "]";
 
 class TemplateDictionaryItem {
     public Item: JQuery = null;

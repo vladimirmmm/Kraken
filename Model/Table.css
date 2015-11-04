@@ -1,10 +1,24 @@
 ﻿table {
     border-collapse: collapse;
+    border: solid 1px black;
 }
-table, th, td{
-    border:  solid 1px black;
+tr 
+{
+    border-bottom: solid 1px black;
 }
+th, td{
+    border-top:  solid 1px black;
+    border-left:  solid 1px black;
+    border-right:  solid 1px black;
+    /*border-bottom: solid 1px transparent;*/
+}
+tr.selected,
+tr.selected th,
+tr.selected td
+{
+    border: solid 1px red;
 
+}
 
 
     table td {
@@ -178,12 +192,16 @@ li {
 .selected {
 
 }
+
 .selected a,.selected a:visited {
     color:red;
 }
 li.selected {
     border-bottom:solid 1px black;
     border-top:solid 1px black;
+}
+li.selected a,li.selected a:visited {
+    color:#375990;
 }
 table.report tbody tr.selected,
 table.report tbody tr:nth-child(2n-1).selected {
