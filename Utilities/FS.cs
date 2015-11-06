@@ -60,7 +60,7 @@ namespace Utilities
 
         }
 
-        public static void DeleteFile(string filepath)
+        public static void DeleteFile(string filepath, bool logexception=true)
         {
             if (System.IO.File.Exists(filepath))
             {
@@ -70,7 +70,10 @@ namespace Utilities
                 }
                 catch (Exception ex) 
                 {
-                    Logger.WriteLine(String.Format("Can't delete file {0}! {1}",filepath, ex.Message));
+                    if (logexception)
+                    {
+                        Logger.WriteLine(String.Format("Can't delete file {0}! {1}", filepath, ex.Message));
+                    }
                 }
             }
         }

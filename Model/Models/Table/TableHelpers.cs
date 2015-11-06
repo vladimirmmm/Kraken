@@ -77,13 +77,14 @@ namespace LogicalModel
 
         public static Hierarchy<LayoutItem> CombineExtensionNodes(Hierarchy<LayoutItem> axisnode,Table table) 
         {
+
             var rootextensionli = table.GetRootExtension();
             rootextensionli.Category = LayoutItemCategory.BreakDown;
             var extensionnode = new Hierarchy<LayoutItem>(rootextensionli);
             var nodecontainer = extensionnode;
             var sets = new List<List<LayoutItem>>();
             var nodes = axisnode.All().Where(i => i.Item.IsVisible).ToList();
-            if (table.ID.Contains("27.01.04.12"))
+            if (table.ID.Contains("08"))
             {
             }
             var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();           
@@ -160,7 +161,7 @@ namespace LogicalModel
             //set the combination set
             foreach (var normalnode in normalnodes) 
             {
-                table.SetDimensions(normalnode);
+                Dimension.SetDimensions(normalnode);
                 //sets.Add(normalnode.Children.Select(i => i.Item).ToList());
                 //sets.Add(new List<LayoutItem>(){ normalnode.Item});
             }

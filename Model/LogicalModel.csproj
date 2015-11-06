@@ -250,6 +250,7 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Scripts\AppItems.ts" />
     <TypeScriptCompile Include="Scripts\Binding.ts" />
+    <TypeScriptCompile Include="Scripts\Factories.ts" />
     <TypeScriptCompile Include="Scripts\Instance.ts" />
     <TypeScriptCompile Include="Scripts\Interfaces.ts" />
     <TypeScriptCompile Include="Scripts\JqueryUtils.ts" />

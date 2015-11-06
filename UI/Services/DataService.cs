@@ -116,9 +116,9 @@ namespace UI.Services
                             }
                             if (part1 == "facts")
                             {
-                                var page = int.Parse(request.Parameters["page"]);
-                                var pagesize = int.Parse(request.Parameters["pagesize"]);
-                                var factstring = request.Parameters["factstring"].ToLower();
+                                var page = int.Parse(request.GetParameter("page"));
+                                var pagesize = int.Parse(request.GetParameter("pagesize"));
+                                var factstring = request.GetParameter("factstring").ToLower();
                                 var cellid = request.Parameters["cellid"];
                                 var rs = new DataResult<KeyValuePair<string, List<String>>>();
                                 var query = Engine.CurrentTaxonomy.Facts.Where(i => i.Key == i.Key);

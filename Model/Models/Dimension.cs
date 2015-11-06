@@ -142,6 +142,28 @@ namespace LogicalModel
             return this.DomainMemberFullName.GetHashCode();
         }
 
+        public static void SetDimensions(BaseModel.Hierarchy<LayoutItem> item)
+        {
+            var current = item.Parent;
+            while (current != null)
+            {
+                MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
+
+                if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
+                {
+                }
+
+                current = current.Parent;
+            }
+            item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMemeber).ToList();
+        }
+        public static void SetDimensions(List<BaseModel.Hierarchy<LayoutItem>> items)
+        {
+            foreach (var item in items)
+            {
+                SetDimensions(item);
+            }
+        }
         public static void MergeDimensions(List<Dimension> target, List<Dimension> items)
         {
             foreach (var item in items)

@@ -145,8 +145,8 @@
             }
             var lastdimns = "";
             var ref = new Refrence(lastdimns);
-
-            this.Dimensions.forEach(function (dimension, index) {
+            var dimensions = this.Dimensions.sort(function (a, b) { return a.DomainMemberFullName < b.DomainMemberFullName ? -1 : 1; });
+            dimensions.forEach(function (dimension, index) {
                 var dimstr = dimension.DomainMemberFullName;
                 dimstr = FactBase.Format(dimstr, ref);
 
@@ -180,6 +180,28 @@
         }
         public set FactString(value:string) {
             this._FactString = value;
+        }
+
+        public static Merge(target: FactBase, item: FactBase, overwrite:boolean=false)
+        {
+            if (IsNull(target.Concept)) { target.Concept = item.Concept; }
+            var targetdimensions = target.Dimensions.AsLinq<Dimension>();
+            item.Dimensions.forEach(function (dimension, ix) {
+                var exisiting = targetdimensions.FirstOrDefault(i=> i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem);
+                if (IsNull(exisiting)) {
+                    target.Dimensions.push(dimension);
+                } else
+                {
+                    if (overwrite)
+                    {
+                        RemoveFrom(exisiting, target.Dimensions);
+                        //removeFromArray(target.Dimensions, exisiting);
+                        target.Dimensions.push(dimension);
+
+                    }
+                }
+            });
+
         }
 
         public static LoadFromFactString(fact: FactBase)
@@ -219,14 +241,15 @@
 
                 if (domainpart.indexOf(":")>-1) {
                     var domainparts = Split(domainpart, ":", true);
-                    if (domainparts.length == 2) {
-                        domain = domainparts[0];
-                        member = domainparts[1];
-                    }
-                    if (domainparts.length == 3) {
+           
+                    if (domainparts.length == 3 || domainparts[0].indexOf("_typ")>-1) {
                         domain = Format("{0}:{1}", domainparts[0], domainparts[1]);
                         member = domainparts[2];
                         dim.IsTyped = true;
+                    }
+                    if (domainparts.length == 2 && !dim.IsTyped) {
+                        domain = domainparts[0];
+                        member = domainparts[1];
                     }
                 }
                 dim.DimensionItem = dimitem;
@@ -234,6 +257,14 @@
                 dim.DomainMember = member;
                 me.Dimensions.push(dim);
             });
+        }
+
+        public static GetFactFromString(factstring: string): FactBase
+        {
+            var fb = new FactBase();
+            fb.FactString = factstring;
+            FactBase.LoadFromFactString(fb);
+            return fb;
         }
 
         public static Format(item: string, lastdimns: Refrence<string>) {

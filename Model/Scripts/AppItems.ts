@@ -23,6 +23,221 @@ var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
 
 var requests: General.KeyValue[] = []; 
 
+class UITableManager implements Controls.ITableManager {
+    public RowID_Format: string = "R{0:D4}";
+    public ColumnID_Format: string = "C{0:D4}";
+    public ExtensionID_Format: string = "Z{0:D4}";
+
+    TemplateRow: Controls.Row=null;
+    TemplateColumn: Controls.Column=null;
+
+    public Table: Controls.Table;
+
+    public LoadToUI(data: Object) {
+
+    }
+    public LoadPage(page: number, asyncdatagetter: Function, callback: Function) {
+
+    }
+
+    LoadLayoutFromData(data: any, table: Controls.Table) {
+    }
+
+    LoadLayoutFromHtml(element: Element, table: Controls.Table) {
+        var me = this;
+        var rawrows = _Select("tr", element);
+        var headerix = 0;
+        var columncells: Element[] = [];
+        var rowcells: Element[] = [];
+        table.HeaderRowCount = _Select("thead tr", element).length;
+
+        rawrows.forEach(function (rawrow, ix) {
+            var rawdatacells = _Select("td", rawrow);
+            var rawheadercells = _Select("th", rawrow);
+            if (rawdatacells.length > 0) {
+                if (columncells.length < 1) {
+                    headerix = ix - 1;
+                    var headerrow = rawrows[headerix];
+                    columncells = _Select("th", headerrow);
+                }
+                var rowheadercell = rawheadercells[rawheadercells.length - 1];
+                rowcells.push(rowheadercell);
+                var row = new Controls.Row();
+                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell);
+                row.UIElement = rawrow;
+                rawdatacells.forEach(function (cell, ix) {
+                    var rowcode = _Html(rowheadercell).trim();
+
+                    var colcell = columncells[ix]; //rowcells[ix];
+                    var colcode = _Html(colcell).trim();
+
+                    var cellid = Format("{0}|{1}", rowcode, colcode);
+
+                    var cellobj = new Controls.Cell();
+                    cellobj.Type = Controls.CellType.Data;
+                    cellobj.RowID = rowcode;
+                    cellobj.ColID = colcode;
+                    cellobj.Value = _Html(cell).trim();
+                    cellobj.UIElement = cell;
+                    row.Cells.push(cellobj);
+                });
+                table.Rows.push(row);
+                if (rawheadercells.length > table.HeaderColCount) {
+                    table.HeaderColCount = rawheadercells.length;
+                }
+            }
+        });
+
+        var rowheader: Controls.Row = new Controls.Row();
+        rowheader.Cells = rowcells.AsLinq<Element>().Select(i=> Controls.Cell.ConvertFrom(i)).ToArray();
+
+        var colheader: Controls.Column = new Controls.Column();
+        colheader.Cells = columncells.AsLinq<Element>().Select(i=> Controls.Cell.ConvertFrom(i)).ToArray();
+
+        table.RowHeader = colheader;
+        table.ColumnHeader = rowheader;
+        CallFunction(me.OnLoaded, [me]);
+
+    }
+
+    public ManageRows(table: Controls.Table) {
+        Notify("ManageRows");
+        var me = this;
+        
+        if (!IsNull(me.TemplateRow)) {
+            var rowsquery = table.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement, "dynamicdata"));
+
+            var emptyrow = rowsquery.FirstOrDefault(i=> !i.HasData());
+            if (IsNull(emptyrow)) {
+                table.AddRow(-1);
+            }
+        }
+        me.SetDynamicRowIds(table);
+    }
+
+    private SetDynamicRowIds(table: Controls.Table) {
+        var me = this;
+        var fdyndata = (row: Controls.Row) => _HasClass(row.UIElement, "dynamicdata");
+        var dynamicrows = table.Rows.AsLinq<Controls.Row>().Where(i=> fdyndata(i)).ToArray();
+        dynamicrows.forEach(function (row, ix) {
+            row.RowID = Format(me.RowID_Format, ix);
+            var headercell = row.HeaderCell;
+            var existingrowid = _Html(headercell.UIElement).trim();
+            _Html(headercell.UIElement, row.RowID);
+            _Attribute(row.UIElement, "id", row.RowID);
+            row.Cells.forEach(function (cell, ix) {
+                var cellid = _Attribute(cell.UIElement, "id").trim();
+                if (cellid.indexOf("|") == 0) {
+                    cellid = row.RowID + cellid;
+                    _Attribute(cell.UIElement, "id", cellid);
+                }
+                _Attribute(cell.UIElement, "title", cellid + "\r\n" + _Attribute(cell.UIElement, "factstring"));
+            });
+            _EnsureEventHandler(row.UIElement, "click", function (e) {
+                _Focus(this);
+                _RemoveClass(_Select("tr", table.UIElement), "selected");
+                _AddClass(this, "selected");
+
+            });
+            //_EnsureEventHandler(row.UIElement, "keyup", function (e) {
+            _EnsureEventHandler(window, "keyup", function (e) {
+                if (e.which == 46) {
+                    var rowtodelete: Controls.Row = null;
+                    table.Rows.forEach(function (row, ix) {
+                        if (_HasClass(row.UIElement, "selected")) {
+                            rowtodelete = row;
+                        }
+                    });
+                    if (!IsNull(rowtodelete)) {
+                        table.RemoveRow(rowtodelete);
+                    }
+                }
+            });
+        });
+    }
+
+    public Validate(): boolean {
+        return true;
+    }
+
+    public Save(): boolean {
+        return true;
+    }
+
+    public EditCell(cell: Controls.Cell) {
+        return true;
+    }
+
+    public CellEditorAssigner: Function = null;
+
+    public OnLoaded: Function = null;
+    public OnCellSelected: Function = null;
+    public OnRowSelected: Function = null;
+    public OnColumnSelected: Function = null;
+    public OnCellChanged: Function = null;
+    public OnRowAdded: Function = null;
+    public OnRowRemoved: Function = null;
+    public OnColumnAdded: Function = null;
+    public OnColumnRemoved: Function = null;
+    public OnLayoutChanged: Function = null;
+
+}
+
+function GetXbrlCellEditor(target:Element) {
+    var typeclass = "";
+
+    var factitems = _Attribute(target, "factstring").split(",");
+    var concept = "";
+    if (factitems[0].indexOf("[") == -1) {
+        concept = factitems[0];
+    }
+    if (concept.indexOf(":ei") > -1) {
+        typeclass = "ei";
+    }
+    if (concept.indexOf(":bi") > -1) {
+        typeclass = "bi";
+    }
+    if (concept.indexOf(":di") > -1) {
+        typeclass = "di";
+    }
+    var editor: Editor = null;
+    if (typeclass == "bi") {
+        editor = new Editor('<select class="celleditor"><option>true</option><option>false</option></select>',
+            (i: JQuery) => i.val(),
+            (i: JQuery, val: any) => { i.val(val); });
+
+    }
+    if (typeclass == "ei") {
+        editor = new Editor(Format('<select class="celleditor">{0}</select>', app.taxonomycontainer.GetConcepOptions(concept)),
+            (i: JQuery) => i.val(),
+            (i: JQuery, val: any) => { i.val(val); });
+
+    }
+    if (typeclass == "di") {
+        editor = new Editor('<input type="text" class="celleditor datepicker" value="" />',
+            (i: JQuery) => {
+                return i.val();
+            },
+            (i: JQuery, val: any) => {
+                i.datepicker({
+                    dateFormat: "yy-mm-dd",
+                    onSelect: function () {
+                        editor.Save();
+                    }
+                });
+                i.val(val);
+            });
+        editor.CustomTrigger = () => { };
+
+    }
+    if (typeclass == "") {
+        editor = new Editor('<input type="text" class="celleditor " value="" />',
+            (i: JQuery) => i.val(),
+            (i: JQuery, val: any) => i.val(val));
+    }
+    return editor;
+}
+
 module Engine {
 
     export class ActionCenter {
@@ -161,7 +376,7 @@ class Editor {
         var t_t_padding = Target.padding("top");
         var t_b_padding = Target.padding("bottom");
         var t_tagname = Target.prop("tagName"); 
-        var containerwidth = t_width;// - (t_l_padding + t_r_padding);
+        var containerwidth = t_width-2;// - (t_l_padding + t_r_padding);
 
         var containerheight = t_height - (t_t_padding + t_b_padding);
         var containerfontfamily = Target.css('font-family');
@@ -204,30 +419,36 @@ function CreateMsg(category: string): General.Message {
     msg.Category = category;
     return msg;
 }
+
 function CreateNotificationMsg(message: string): General.Message {
     var msg = CreateMsg("notification");
     msg.Data = message;
     return msg
 }
+
 function CreateAjaxMsg(): General.Message {
     var msg = CreateMsg("ajax");
     return msg
 }
+
 function CreateErrorMsg(errormessage: string): General.Message {
     var msg = CreateMsg("error");
     msg.Error = errormessage;
     return msg;
 }
+
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Error(errortext);
+    ShowError(errortext);
     return true;
 }
+
 function ShowHideChild(selector: any, sender: any) {
     _Hide(_Select(selector));
     var item = _SelectFirst(selector, _Parent(sender));
     _Show(item);
 }
+
 function SetPivots() {
 
     $("#maintable").resizableColumns();
@@ -237,15 +458,18 @@ function SetPivots() {
 function Notify(message: string) {
     ShowNotification(message);
 }
+
 function ShowNotification(message: string) {
     var msg = CreateNotificationMsg(message);
     Communication_ToApp(msg);
 }
+
 function ShowError(message: string) {
     var msg = CreateErrorMsg(message);
     Communication_ToApp(msg);
 
 }
+
 function Communication_ToApp(message: General.Message) {
     var strdata = JSON.stringify(message);
     if ('Notify' in window.external) {

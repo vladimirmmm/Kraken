@@ -605,7 +605,7 @@ namespace LogicalModel
                 foreach (var ext in exts)
                 {
                     var factextdict = new Dictionary<string, string>();
-                    factmap.Add(ext.FactString, factextdict);
+                    //factmap.Add(ext.FactString, factextdict);
 
                     foreach (var row in Rows)
                     {
@@ -725,9 +725,9 @@ namespace LogicalModel
                         }
                     }
                 }
-                var jsoncontent = Utilities.Converters.ToJson(factmap);
+                var jsoncontent = ""; //Utilities.Converters.ToJson(factmap);
                 //var jscontent = "var FactMap = " + jsoncontent.Replace("\r\n", "\\ \r\n") + ";";
-                var jscontent = "{\"FactMap\": " + jsoncontent + ", \r\n";
+                var jscontent = "{\r\n";//{\"FactMap\": " + jsoncontent + ", \r\n";
                 jscontent += "\"ExtensionsRoot\": " + Utilities.Converters.ToJson(Extensions) + ", \r\n";
                 jscontent += "\"HtmlTemplatePath\": \"" + this.HtmlPath + "\"}";
                 System.IO.File.WriteAllText(FactMapPath, jscontent);
@@ -770,27 +770,7 @@ namespace LogicalModel
             {
                 var html = GetTableHtml();
                 Utilities.FS.WriteAllText(FullHtmlPath, html);
-                /*
-                var taxscriptincludes = "";
-
-                var folder = Utilities.Strings.GetFolder(FullHtmlPath);
-                var htmlbuilder = new StringBuilder();
-                var template = System.IO.File.ReadAllText("TableTemplate.html");
-                var html = template;
-
-                html = html.Replace("#table#", GetTableHtml());
-
-                html = html.Replace("#style#", GetStyle());
-                html = html.Replace("#jsonpath#", Utilities.Strings.GetFileName( this.FactMapPath));
-                html = html.Replace("#TaxScripts#", taxscriptincludes);
-                html = html.Replace("#extensions#", Utilities.Converters.ToJson(this.Extensions));
-                
-                htmlbuilder.AppendLine(html);
-
-
-
-                Utilities.FS.WriteAllText(FullHtmlPath, htmlbuilder.ToString());
-                */
+        
             }
         }
 
@@ -958,28 +938,28 @@ namespace LogicalModel
             cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMemeber).OrderBy(i=>i.DomainMemberFullName).ToList();
             cell.Dimensions = cell.Dimensions.Distinct().ToList();
         }
-        public void SetDimensions(Hierarchy<LayoutItem> item)
-        {
-            var current = item.Parent;
-            while (current != null)
-            {
-                MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
+        //public void SetDimensions(Hierarchy<LayoutItem> item)
+        //{
+        //    var current = item.Parent;
+        //    while (current != null)
+        //    {
+        //        MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
 
-                if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
-                {
-                }
+        //        if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
+        //        {
+        //        }
 
-                current = current.Parent;
-            }
-            item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMemeber).ToList();
-        }
-        public void SetDimensions(List<Hierarchy<LayoutItem>> items)
-        {
-            foreach (var item in items)
-            {
-                SetDimensions(item);
-            }
-        }
+        //        current = current.Parent;
+        //    }
+        //    item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMemeber).ToList();
+        //}
+        //public void SetDimensions(List<Hierarchy<LayoutItem>> items)
+        //{
+        //    foreach (var item in items)
+        //    {
+        //        SetDimensions(item);
+        //    }
+        //}
 
         private void MergeDimensions(List<Dimension> target, List<Dimension> items)
         {

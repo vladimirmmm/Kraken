@@ -196,13 +196,14 @@ function CallFunctionFrom(eventcontainer, eventname, args) {
 }
 function CallFunction(func, args) {
     if (!IsNull(func) && IsFunction(func)) {
-        func(args);
+        return func.apply(this, args);
     }
 }
 function CallFunctionWithContext(context, func, args) {
     if (!IsNull(func) && IsFunction(func)) {
-        func.apply(context, args);
+        return func.apply(context, args);
     }
+    return null;
 }
 function asyncFunc(func) {
     setTimeout(function () {

@@ -260,61 +260,51 @@ Date.prototype.format = function (f) {
     });
 };
 function Attribute(obj, name, value) {
-    if (arguments.length == 3) {
-        $(obj).attr(name, value);
-    }
-    if (arguments.length == 2) {
-        return $(obj).attr(name);
-    }
-    return "";
+    return CallJQueryFunction(obj, "attr", name, value);
 }
 function Css(obj, name, value) {
-    if (arguments.length == 3) {
-        $(obj).css(name, value);
-    }
-    if (arguments.length == 2) {
-        return $(obj).css(name);
-    }
-    return "";
+    return CallJQueryFunction(obj, "css", name, value);
 }
 function Value(obj, value) {
-    if (arguments.length == 2) {
-        $(obj).val(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).val();
-    }
-    return "";
+    return CallJQueryFunction(obj, "value", "", value);
 }
 function Content(obj, value) {
-    if (arguments.length == 2) {
-        $(obj).html(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).html();
-    }
-    return "";
+    return CallJQueryFunction(obj, "html", "", value);
 }
-function GetJqueryFunction(functionname) {
-    var f = function (obj, value) {
-        if (arguments.length == 2) {
-            $(obj)[functionname](value);
+function XText(obj, value) {
+    return CallJQueryFunction(obj, "text", "", value);
+}
+//function CallJQueryFunction(obj, functionname: string, property: string, value?: string): string {
+//}
+function CallJQueryFunction(obj, functionname, property, value) {
+    //var jqueryfunction = $(obj)[functionname]; 
+    var jqueryfunction = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
         }
-        if (arguments.length == 1) {
-            return $(obj)[functionname]();
-        }
-        return value;
+        return CallFunctionWithContext($(obj), $(obj)[functionname], args);
     };
-    return f;
-}
-function CallJQueryFunction(obj, functionname, value) {
-    if (arguments.length == 2) {
-        $(obj)[functionname](value);
+    var result = "";
+    if (IsNull(property)) {
+        if (value == undefined) {
+            result = jqueryfunction();
+        }
+        else {
+            jqueryfunction(value);
+            result = value;
+        }
     }
-    if (arguments.length == 1) {
-        return $(obj)[functionname]();
+    else {
+        if (value == undefined) {
+            result = jqueryfunction(property);
+        }
+        else {
+            jqueryfunction(property, value);
+            result = value;
+        }
     }
-    return "";
+    return IsNull(result) ? "" : result;
 }
 $.fn.serializeObject = function () {
     var o = {};
@@ -545,7 +535,7 @@ function _SetFunctions() {
     };
     _Value = Value;
     _Html = Content;
-    _Text = GetJqueryFunction("text");
+    _Text = XText;
     _Remove = function (element) {
         $(element).remove();
     };

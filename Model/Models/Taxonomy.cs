@@ -653,7 +653,18 @@ namespace LogicalModel
             {
                 if (System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath))
                 {
-                    var assembly = Assembly.LoadFile(this.TaxonomyValidationDotNetLibPath);
+                    var dlltempfolder =TaxonomyEngine.LocalFolder+@"Temp\";
+                    Utilities.FS.EnsurePath(dlltempfolder);
+                    var templibs = System.IO.Directory.GetFiles(dlltempfolder, "*.dll", System.IO.SearchOption.AllDirectories);
+                    foreach (var templibfile in templibs) 
+                    {
+                        Utilities.FS.DeleteFile(templibfile, false);
+                    }
+                   
+                    var templibpath = this.TaxonomyValidationDotNetLibPath.Replace(".dll", String.Format("{0}.dll", Guid.NewGuid()));
+                    System.IO.File.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
+
+                    var assembly = Assembly.LoadFile(templibpath);
                     var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));
                     if (type != null)
                     {

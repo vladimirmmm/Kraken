@@ -261,7 +261,7 @@ namespace XBRLProcessor.Model
             var result = "";
             var axis = String.IsNullOrEmpty(li.Axis) ? "" : li.Axis + " ";
             var isabstract = li.IsAbstract ? "abstract " : "";
-            result = String.Format("{1}{0} {2} code{3} >> {4}", li.ID, axis, isabstract, li.LabelCode, li.FactString);
+            result = String.Format("{0}{1} <{2}> {3} code{4} >> {5}", axis, li.ID, li.Category, isabstract, li.LabelCode, li.FactString);
             return result;
         }
        

@@ -238,19 +238,20 @@ function CallFunctionFrom(eventcontainer: Object, eventname: string, args?: any[
     }
 }
 
-function CallFunction(func: Function, args?: any[])
+function CallFunction(func: Function, args?: any[]):any
 {
     if (!IsNull(func) && IsFunction(func)) {
-        func(args);
+        return func.apply(this, args);
+
     }
     
 }
 
-function CallFunctionWithContext(context:any, func: Function, args?: any[]) {
+function CallFunctionWithContext(context:any, func: Function, args?: any[]):any {
     if (!IsNull(func) && IsFunction(func)) {
-        func.apply(context, args);
+        return func.apply(context, args);
     }
-
+    return null
 }
 
 

@@ -36,6 +36,15 @@ namespace UI
         public string Error { get; set; }
         public string Data { get; set; }
 
+        public string GetParameter(string name) 
+        {
+            var result = "";
+            if (Parameters.ContainsKey(name)) 
+            {
+                return Parameters[name];
+            }
+            return result;
+        }
         public override string ToString()
         {
             return String.Format("Message{{ Url: {0}}}", Url);

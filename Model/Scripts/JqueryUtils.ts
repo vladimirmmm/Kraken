@@ -316,67 +316,55 @@ Date.prototype.format = function (f) {
 }
 
 function Attribute(obj, name: string, value?: string): string {
-    if (arguments.length == 3) {
-        $(obj).attr(name, value);
-    }
-    if (arguments.length == 2) {
-        return $(obj).attr(name);
-    }
-    return "";
+    return CallJQueryFunction(obj, "attr", name, value);
+
 }
 
 function Css(obj, name: string, value?: string): string {
-    if (arguments.length == 3) {
-        $(obj).css(name, value);
-    }
-    if (arguments.length == 2) {
-        return $(obj).css(name);
-    }
-    return "";
+    return CallJQueryFunction(obj, "css", name, value);
 }
 
 function Value(obj, value?: string): string {
-    if (arguments.length == 2) {
-        $(obj).val(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).val();
-    }
-    return "";
+    return CallJQueryFunction(obj, "value", "", value);
 }
 
 function Content(obj, value?: string): string {
-    if (arguments.length == 2) {
-        $(obj).html(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).html();
-    }
-    return "";
-}
-function GetJqueryFunction(functionname: string): any {
-    var f = (obj: any, value: string): string => {
-        if (arguments.length == 2) {
-            $(obj)[functionname](value);
-        }
-        if (arguments.length == 1) {
-            return $(obj)[functionname]();
-        }
-        return value;
-    };
-    return f;
+    return CallJQueryFunction(obj, "html", "", value);
 
 }
-function CallJQueryFunction(obj, functionname:string, value?: string): string {
-    if (arguments.length == 2) {
-        $(obj)[functionname](value);
-    }
-    if (arguments.length == 1) {
-        return $(obj)[functionname]();
-    }
-    return "";
-}
+function XText(obj, value?: string): string {
+    return CallJQueryFunction(obj, "text", "", value);
 
+}
+//function CallJQueryFunction(obj, functionname: string, property: string, value?: string): string {
+
+//}
+function CallJQueryFunction(obj, functionname: string, property: string, value?: string): string {
+    //var jqueryfunction = $(obj)[functionname]; 
+    var jqueryfunction = (...args: any[]): string => { return CallFunctionWithContext($(obj), $(obj)[functionname], args); }; 
+
+    var result = "";
+    if (IsNull(property)) {
+        if (value == undefined) {
+            result = jqueryfunction();
+        } else
+        {
+            jqueryfunction(value);
+            result =  value;
+        }
+    }
+    else
+    {
+        if (value == undefined) {
+            result = jqueryfunction(property);
+        } else {
+            jqueryfunction(property,value);
+            result = value;
+        }
+    }
+    return IsNull(result) ? "" : result;
+    
+}
 
 $.fn.serializeObject = function () {
     var o = {};
@@ -651,7 +639,7 @@ function _SetFunctions() {
     _Value = Value;
 
     _Html = Content;
-    _Text = GetJqueryFunction("text");
+    _Text = XText;
 
     _Remove = (element: any) => { $(element).remove(); };
     _Append = (target: Element, element: Element) => { $(target).append(element); };

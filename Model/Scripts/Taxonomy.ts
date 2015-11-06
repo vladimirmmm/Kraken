@@ -3,6 +3,9 @@
         public Taxonomy: Model.Taxonomy = new Model.Taxonomy();
         public Table: UI.Table = new UI.Table();
         public ValidationRules: Model.ValidationRule[] = [];
+
+        public ConceptValues: Model.ConceptLookUp[] = [];
+
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
         public CurrentFacts: Model.KeyValuePair<string, string[]>[] = null;
         public LPageSize: number = 10;
@@ -115,6 +118,9 @@
 
             AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
                 me.Taxonomy.Hierarchies = data;
+
+                me.LoadConceptValues();
+
             }, function (error) { console.log(error); });
 
             AjaxRequest("Taxonomy/Labels", "get", "json", null, function (data) {
@@ -452,6 +458,55 @@
                 }
             },
             function (error) { console.log(error); });
+        }
+        public LoadConceptValues() {
+            var me = this;
+            var concepts: Model.Concept[] = <Model.Concept[]>GetPropertiesArray(me.Taxonomy.Concepts);
+
+            if (me.Taxonomy.Hierarchies.length > 0 && concepts.length > 0) {
+
+                me.ConceptValues = [];
+                var htemp = new Model.Hierarchy<Model.QualifiedItem>();
+                me.Taxonomy.Hierarchies.forEach(function (hierarchy) {
+                    Model.QualifiedItem.Set(hierarchy.Item);
+
+                });
+                concepts.forEach(function (concept) {
+                    Model.QualifiedName.Set(concept);
+                    if (!IsNull(concept.Domain)) {
+                        Model.QualifiedName.Set(concept.Domain);
+                        concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
+                        var hiers = me.Taxonomy.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
+                            .Where(i=> i.Item.Name == concept.Domain.Name
+                            && i.Item.Namespace == concept.Domain.Namespace
+                            && i.Item.Role == concept.HierarchyRole
+                            );
+                        var hier = hiers.FirstOrDefault();
+                        if (hier != null) {
+                            var clkp = new Model.ConceptLookUp();
+                            clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
+                            var items = Model.Hierarchy.ToArray(hier);
+                            items.forEach(function (item, index) {
+                                if (index > 0) {
+                                    var v = {};
+                                    Model.QualifiedItem.Set(item);
+                                    var id = Format("{0}:{1}", item.Namespace, item.Name);
+                                    clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                                }
+                            });
+                            clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                            me.ConceptValues.push(clkp);
+                        }
+                    }
+                });
+            }
+        }
+        public GetConcepOptions(concept: string): string {
+            var clkp = this.ConceptValues.AsLinq<Model.ConceptLookUp>().FirstOrDefault(i=> i.Concept == concept);
+            if (clkp != null) {
+                return clkp.OptionsHTML;
+            }
+            return "";
         }
     }
 }

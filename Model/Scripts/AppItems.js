@@ -24,6 +24,188 @@ var ResultFormatter = function (rawdata) {
     return rawdata;
 };
 var requests = [];
+var UITableManager = (function () {
+    function UITableManager() {
+        this.RowID_Format = "R{0:D4}";
+        this.ColumnID_Format = "C{0:D4}";
+        this.ExtensionID_Format = "Z{0:D4}";
+        this.TemplateRow = null;
+        this.TemplateColumn = null;
+        this.CellEditorAssigner = null;
+        this.OnLoaded = null;
+        this.OnCellSelected = null;
+        this.OnRowSelected = null;
+        this.OnColumnSelected = null;
+        this.OnCellChanged = null;
+        this.OnRowAdded = null;
+        this.OnRowRemoved = null;
+        this.OnColumnAdded = null;
+        this.OnColumnRemoved = null;
+        this.OnLayoutChanged = null;
+    }
+    UITableManager.prototype.LoadToUI = function (data) {
+    };
+    UITableManager.prototype.LoadPage = function (page, asyncdatagetter, callback) {
+    };
+    UITableManager.prototype.LoadLayoutFromData = function (data, table) {
+    };
+    UITableManager.prototype.LoadLayoutFromHtml = function (element, table) {
+        var me = this;
+        var rawrows = _Select("tr", element);
+        var headerix = 0;
+        var columncells = [];
+        var rowcells = [];
+        table.HeaderRowCount = _Select("thead tr", element).length;
+        rawrows.forEach(function (rawrow, ix) {
+            var rawdatacells = _Select("td", rawrow);
+            var rawheadercells = _Select("th", rawrow);
+            if (rawdatacells.length > 0) {
+                if (columncells.length < 1) {
+                    headerix = ix - 1;
+                    var headerrow = rawrows[headerix];
+                    columncells = _Select("th", headerrow);
+                }
+                var rowheadercell = rawheadercells[rawheadercells.length - 1];
+                rowcells.push(rowheadercell);
+                var row = new Controls.Row();
+                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell);
+                row.UIElement = rawrow;
+                rawdatacells.forEach(function (cell, ix) {
+                    var rowcode = _Html(rowheadercell).trim();
+                    var colcell = columncells[ix]; //rowcells[ix];
+                    var colcode = _Html(colcell).trim();
+                    var cellid = Format("{0}|{1}", rowcode, colcode);
+                    var cellobj = new Controls.Cell();
+                    cellobj.Type = 1 /* Data */;
+                    cellobj.RowID = rowcode;
+                    cellobj.ColID = colcode;
+                    cellobj.Value = _Html(cell).trim();
+                    cellobj.UIElement = cell;
+                    row.Cells.push(cellobj);
+                });
+                table.Rows.push(row);
+                if (rawheadercells.length > table.HeaderColCount) {
+                    table.HeaderColCount = rawheadercells.length;
+                }
+            }
+        });
+        var rowheader = new Controls.Row();
+        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i); }).ToArray();
+        var colheader = new Controls.Column();
+        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i); }).ToArray();
+        table.RowHeader = colheader;
+        table.ColumnHeader = rowheader;
+        CallFunction(me.OnLoaded, [me]);
+    };
+    UITableManager.prototype.ManageRows = function (table) {
+        Notify("ManageRows");
+        var me = this;
+        if (!IsNull(me.TemplateRow)) {
+            var rowsquery = table.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); });
+            var emptyrow = rowsquery.FirstOrDefault(function (i) { return !i.HasData(); });
+            if (IsNull(emptyrow)) {
+                table.AddRow(-1);
+            }
+        }
+        me.SetDynamicRowIds(table);
+    };
+    UITableManager.prototype.SetDynamicRowIds = function (table) {
+        var me = this;
+        var fdyndata = function (row) { return _HasClass(row.UIElement, "dynamicdata"); };
+        var dynamicrows = table.Rows.AsLinq().Where(function (i) { return fdyndata(i); }).ToArray();
+        dynamicrows.forEach(function (row, ix) {
+            row.RowID = Format(me.RowID_Format, ix);
+            var headercell = row.HeaderCell;
+            var existingrowid = _Html(headercell.UIElement).trim();
+            _Html(headercell.UIElement, row.RowID);
+            _Attribute(row.UIElement, "id", row.RowID);
+            row.Cells.forEach(function (cell, ix) {
+                var cellid = _Attribute(cell.UIElement, "id").trim();
+                if (cellid.indexOf("|") == 0) {
+                    cellid = row.RowID + cellid;
+                    _Attribute(cell.UIElement, "id", cellid);
+                }
+                _Attribute(cell.UIElement, "title", cellid + "\r\n" + _Attribute(cell.UIElement, "factstring"));
+            });
+            _EnsureEventHandler(row.UIElement, "click", function (e) {
+                _Focus(this);
+                _RemoveClass(_Select("tr", table.UIElement), "selected");
+                _AddClass(this, "selected");
+            });
+            //_EnsureEventHandler(row.UIElement, "keyup", function (e) {
+            _EnsureEventHandler(window, "keyup", function (e) {
+                if (e.which == 46) {
+                    var rowtodelete = null;
+                    table.Rows.forEach(function (row, ix) {
+                        if (_HasClass(row.UIElement, "selected")) {
+                            rowtodelete = row;
+                        }
+                    });
+                    if (!IsNull(rowtodelete)) {
+                        table.RemoveRow(rowtodelete);
+                    }
+                }
+            });
+        });
+    };
+    UITableManager.prototype.Validate = function () {
+        return true;
+    };
+    UITableManager.prototype.Save = function () {
+        return true;
+    };
+    UITableManager.prototype.EditCell = function (cell) {
+        return true;
+    };
+    return UITableManager;
+})();
+function GetXbrlCellEditor(target) {
+    var typeclass = "";
+    var factitems = _Attribute(target, "factstring").split(",");
+    var concept = "";
+    if (factitems[0].indexOf("[") == -1) {
+        concept = factitems[0];
+    }
+    if (concept.indexOf(":ei") > -1) {
+        typeclass = "ei";
+    }
+    if (concept.indexOf(":bi") > -1) {
+        typeclass = "bi";
+    }
+    if (concept.indexOf(":di") > -1) {
+        typeclass = "di";
+    }
+    var editor = null;
+    if (typeclass == "bi") {
+        editor = new Editor('<select class="celleditor"><option>true</option><option>false</option></select>', function (i) { return i.val(); }, function (i, val) {
+            i.val(val);
+        });
+    }
+    if (typeclass == "ei") {
+        editor = new Editor(Format('<select class="celleditor">{0}</select>', app.taxonomycontainer.GetConcepOptions(concept)), function (i) { return i.val(); }, function (i, val) {
+            i.val(val);
+        });
+    }
+    if (typeclass == "di") {
+        editor = new Editor('<input type="text" class="celleditor datepicker" value="" />', function (i) {
+            return i.val();
+        }, function (i, val) {
+            i.datepicker({
+                dateFormat: "yy-mm-dd",
+                onSelect: function () {
+                    editor.Save();
+                }
+            });
+            i.val(val);
+        });
+        editor.CustomTrigger = function () {
+        };
+    }
+    if (typeclass == "") {
+        editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+    }
+    return editor;
+}
 var Engine;
 (function (Engine) {
     var ActionCenter = (function () {
@@ -146,7 +328,7 @@ var Editor = (function () {
         var t_t_padding = Target.padding("top");
         var t_b_padding = Target.padding("bottom");
         var t_tagname = Target.prop("tagName");
-        var containerwidth = t_width; // - (t_l_padding + t_r_padding);
+        var containerwidth = t_width - 2; // - (t_l_padding + t_r_padding);
         var containerheight = t_height - (t_t_padding + t_b_padding);
         var containerfontfamily = Target.css('font-family');
         var containerfontsize = Target.css('font-size');
@@ -200,7 +382,7 @@ function CreateErrorMsg(errormessage) {
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Error(errortext);
+    ShowError(errortext);
     return true;
 }
 function ShowHideChild(selector, sender) {
