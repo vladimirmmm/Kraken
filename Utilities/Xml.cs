@@ -39,11 +39,13 @@ namespace Utilities
 
         public static void ClearDocument(XmlDocument document)
         {
-            if (NamespaceDictionary.ContainsKey(document)) 
+            if (document != null)
             {
-                NamespaceDictionary.Remove(document);
+                if (NamespaceDictionary.ContainsKey(document))
+                {
+                    NamespaceDictionary.Remove(document);
+                }
             }
-
         }
 
         private static Object DictionaryLocker = new Object();

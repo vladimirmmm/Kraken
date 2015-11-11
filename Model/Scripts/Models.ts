@@ -44,24 +44,24 @@
         public DomainMember: string;
         public IsTyped: boolean;
 
-        public get DomainMemberFullName(): string {
+        public static DomainMemberFullName(dimension: Dimension): string {
 
-            if (IsNull(this.DomainMember)) {
-                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+            if (IsNull(dimension.DomainMember)) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
             }
 
-            return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
         }
-        public get ToStringForKey(): string {
-            if (this.IsTyped) {
-                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+        public static ToStringForKey(dimension: Dimension): string {
+            if (dimension.IsTyped) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
             }
 
-            if (IsNull(this.DomainMember)) {
-                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+            if (IsNull(dimension.DomainMember)) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
             }
 
-            return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
         }
     }
 
@@ -145,9 +145,9 @@
             }
             var lastdimns = "";
             var ref = new Refrence(lastdimns);
-            var dimensions = this.Dimensions.sort(function (a, b) { return a.DomainMemberFullName < b.DomainMemberFullName ? -1 : 1; });
+            var dimensions = this.Dimensions.sort(function (a, b) { return Dimension.DomainMemberFullName(a) < Dimension.DomainMemberFullName(b) ? -1 : 1; });
             dimensions.forEach(function (dimension, index) {
-                var dimstr = dimension.DomainMemberFullName;
+                var dimstr = Dimension.DomainMemberFullName(dimension);
                 dimstr = FactBase.Format(dimstr, ref);
 
                 result += Format("{0},", dimstr);
@@ -165,7 +165,7 @@
             var lastdimns = "";
             var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                var dimstr = dimension.ToStringForKey;
+                var dimstr = Dimension.ToStringForKey(dimension);
                 dimstr = FactBase.Format(dimstr, ref);
                 result += Format("{0},", dimstr);
             });
@@ -405,7 +405,7 @@
             var me = this;
             var result = this.Concept.FullName+",";
             this.Dimensions.forEach(function (dimension, index) {
-                result +=Format("{0},",dimension.DomainMemberFullName);
+                result += Format("{0},", Dimension.DomainMemberFullName(dimension));
             });
             return result;
         }

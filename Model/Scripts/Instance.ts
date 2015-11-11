@@ -194,6 +194,9 @@
 
                     var fact = facts[0];
                     Model.FactBase.LoadFromFactString(fact);
+                    fact.Dimensions.forEach(function (dimension, ix) {
+                        SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
+                    });
                     var $factdetail = me.SelFromFact(s_detail_selector);
                     BindX($factdetail, fact);
                     $factdetail.show();

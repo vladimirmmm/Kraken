@@ -30,29 +30,21 @@ var Model;
     var Dimension = (function () {
         function Dimension() {
         }
-        Object.defineProperty(Dimension.prototype, "DomainMemberFullName", {
-            get: function () {
-                if (IsNull(this.DomainMember)) {
-                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
-                }
-                return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Dimension.prototype, "ToStringForKey", {
-            get: function () {
-                if (this.IsTyped) {
-                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
-                }
-                if (IsNull(this.DomainMember)) {
-                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
-                }
-                return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
-            },
-            enumerable: true,
-            configurable: true
-        });
+        Dimension.DomainMemberFullName = function (dimension) {
+            if (IsNull(dimension.DomainMember)) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+            }
+            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+        };
+        Dimension.ToStringForKey = function (dimension) {
+            if (dimension.IsTyped) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+            }
+            if (IsNull(dimension.DomainMember)) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+            }
+            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+        };
         return Dimension;
     })();
     Model.Dimension = Dimension;
@@ -151,10 +143,10 @@ var Model;
             var lastdimns = "";
             var ref = new Refrence(lastdimns);
             var dimensions = this.Dimensions.sort(function (a, b) {
-                return a.DomainMemberFullName < b.DomainMemberFullName ? -1 : 1;
+                return Dimension.DomainMemberFullName(a) < Dimension.DomainMemberFullName(b) ? -1 : 1;
             });
             dimensions.forEach(function (dimension, index) {
-                var dimstr = dimension.DomainMemberFullName;
+                var dimstr = Dimension.DomainMemberFullName(dimension);
                 dimstr = FactBase.Format(dimstr, ref);
                 result += Format("{0},", dimstr);
             });
@@ -169,7 +161,7 @@ var Model;
             var lastdimns = "";
             var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                var dimstr = dimension.ToStringForKey;
+                var dimstr = Dimension.ToStringForKey(dimension);
                 dimstr = FactBase.Format(dimstr, ref);
                 result += Format("{0},", dimstr);
             });
@@ -414,7 +406,7 @@ var Model;
                 var me = this;
                 var result = this.Concept.FullName + ",";
                 this.Dimensions.forEach(function (dimension, index) {
-                    result += Format("{0},", dimension.DomainMemberFullName);
+                    result += Format("{0},", Dimension.DomainMemberFullName(dimension));
                 });
                 return result;
             },

@@ -119,7 +119,7 @@ namespace UI.Services
                                 var page = int.Parse(request.GetParameter("page"));
                                 var pagesize = int.Parse(request.GetParameter("pagesize"));
                                 var factstring = request.GetParameter("factstring").ToLower();
-                                var cellid = request.Parameters["cellid"];
+                                var cellid = request.GetParameter("cellid").ToLower();
                                 var rs = new DataResult<KeyValuePair<string, List<String>>>();
                                 var query = Engine.CurrentTaxonomy.Facts.Where(i => i.Key == i.Key);
 
@@ -193,31 +193,9 @@ namespace UI.Services
                                     ti.Type = "tablegroup";
                                     return ti;
                                 });
-                                //tablegroups.Where(i =>
-                                //{
-                                //    bool x = true;
-                                //    if (i.Item.Type == "tablegroup")
-                                //    {
-                                //        if (i.Children.Count == 1) 
-                                //        {
-                                //            var child = i.Children.FirstOrDefault();
-                                //            if (child.Item.Type == "tablegroup") 
-                                //            {
-                                //                //i.Children.Clear();
-                                //                //i.Children.AddRange(child.Children);
-                                //            }
-                                //        }
-                                //    }
-                                //    return x;
-                                //});
+                           
                                 var tgs = tablegroups.All();
-                                //var tgsitems = Engine.CurrentTaxonomy.Module.TableGroups.Where(i => i.Item.TableIDs.Count > 0);
-                                //var tgs = tgsitems.Select(i => { 
-                                //    var ti = new TableInfo();
-                                //    ti.ID = i.Item.FilingIndicator; 
-                                //    ti.Name = i.Item.FilingIndicator;
-                                //    ti.Description = i.Item.LabelContent;
-                                //    return ti; });
+                     
                                 foreach (var tgcontainer in tgs)
                                 {
                                     var tg = tgcontainer.Item;
@@ -247,32 +225,21 @@ namespace UI.Services
                                         ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
                                         ht.Item.Type = "table";
                                         //TODO EXT
-                                        var extensions = tbl.Extensions.Cast<TableInfo>(i =>
+                                        var tbextensions = tbl.Extensions.Children;
+                                        var extensions = tbextensions.Select(i =>
                                         {
                                             var ti = new TableInfo();
-                                            ti.ID = String.Format("{0}<{1}>", tbl.ID, i.LabelCode);
-                                            ti.Name = i.LabelContent;
-                                            ti.Description = i.LabelContent;
+                                            ti.ID = String.Format("{0}<{1}>", tbl.ID, i.Item.LabelCode);
+                                            ti.Name = i.Item.LabelContent;
+                                            ti.Description = i.Item.LabelContent;
                                             ti.Type = "extension";
                                             return ti;
                                         });
                                         //extensions.Item.Type = "extension";
                                         //foreach(var ext in extensions.ch)
-                                        ht.Children.AddRange(extensions.Children);
+                                        ht.Children.AddRange(extensions.Select(i=>new BaseModel.Hierarchy<TableInfo>(i)));
 
-                                        /*
-                                           var extensions = tbl.Extensions.Where(i=>i.LabelCode!=Table.DefaultExtensionCode).ToList();
-                                           foreach (var ext in extensions)
-                                           {
-                                               var extinfo = new TableInfo();
-                                               extinfo.ID = String.Format("{0}<{1}>", tbl.ID, ext.LabelCode);
-                                               extinfo.Name = ext.LabelContent;
-                                               extinfo.Description = ext.LabelCode;
-                                               var hext = new BaseModel.Hierarchy<LogicalModel.TableInfo>(extinfo);
-                                               hext.Item.Type = "extension";
-                                               ht.Children.Add(hext);
-                                           }
-                                        */
+                                    
                                     }
 
 
@@ -312,5 +279,19 @@ namespace UI.Services
             return url;
         }
   
+    }
+    public class Test{
+        public void TestX() 
+        {
+            var files = System.IO.Directory.GetFiles(@"C:\My\XBRL\Taxonomies\Israel-XBRL_26.10.2015\layout");
+            var sb = new StringBuilder();
+            foreach (var file in files) 
+            {
+                sb.AppendLine(System.IO.File.ReadAllText(file));
+                sb.AppendLine("</br>");
+            }
+            System.IO.File.WriteAllText("all.html", sb.ToString());
+        }
+    
     }
 }

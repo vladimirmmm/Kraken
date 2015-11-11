@@ -41,6 +41,7 @@ namespace LogicalModel
         private string _HtmlPath = "";
         public static string DefaultExtensionCode = "000";
         public static string LabelCodeFormat = "{0:D5}";
+        public static string ExtensionLableContentFormat = "Extension {0}";
 
         public string Name { get; set; }
         public string FilingIndicator { get; set; }
@@ -56,6 +57,10 @@ namespace LogicalModel
         public string JsonPath
         {
             get { return this.Taxonomy.TaxonomyLayoutFolder + JsonFileName; }
+        }
+        public string FactsPath
+        {
+            get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-facts.json"); }
         }
         public string FactMapPath
         {
@@ -349,7 +354,7 @@ namespace LogicalModel
                     childslices.Remove(conceptslicechild);
                     //childslices=childslices.OrderBy(i=>(i as DimensionMember).Domain)
                     var conceptpart = string.Format("{0},",conceptslicechild.FullName);
-                    sb_fact.Append(conceptpart);
+                    //sb_fact.Append(conceptpart);
                     key += conceptpart;
                     var dimkeyparts =new List<string>();
                     for (int i = 0; i < childslices.Count; i++)
@@ -381,7 +386,7 @@ namespace LogicalModel
 
                     foreach (var dimkeypart in dimkeyparts)
                     {
-                        sb_fact.Append(dimkeypart);
+                        //sb_fact.Append(dimkeypart);
                         key += dimkeypart;
 
                     }
@@ -389,18 +394,23 @@ namespace LogicalModel
                     tempfact.SetFromString(key);
                     key = tempfact.GetFactKey();
                     FactKeys.Add(key);
+                    sb_fact.AppendLine(key);
+
                     if (!this.Taxonomy.Facts.ContainsKey(key)) 
                     {
                         this.Taxonomy.Facts.Add(key, new List<String>());
                
                     }
-                    sb_fact.AppendLine();
+                    //sb_fact.AppendLine();
                 }
             }
             //Logger.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
             //var factpath = HtmlPath.Replace(".html", "-facts.txt");
             //var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
             //Utilities.FS.WriteAllText(FactPath, sb_fact.ToString());
+
+            //var jsonfacts = Utilities.Converters.ToJson(this.FactList);
+            System.IO.File.WriteAllText(FactsPath, sb_fact.ToString());
             sb_fact.Clear();
 
         }
@@ -416,8 +426,9 @@ namespace LogicalModel
             {
                 //var leafs = extensionnode.GetLeafs().Where(i => i.Parent != null).ToList();
                 var leafs = extensionnode.All().Where(i => i.Item.IsVisible).ToList();
-
-                this.Extensions = TableHelpers.CombineExtensionNodes(extensionnode, this);
+                
+                //this.Extensions =  TableHelpers.CombineExtensionNodes(extensionnode, this);
+                this.Extensions = TableHelpers.GetExtensions(extensionnode, this);
             }
         }
 
@@ -588,19 +599,23 @@ namespace LogicalModel
   
             if (LayoutCells.Count == 0)
             {
-                var exts = Extensions
-                    .Where(i => i.Item.Category == LayoutItemCategory.Rule || (i.Item.Category == LayoutItemCategory.Dynamic && i.Children.Count==0))
-                    .Select(i=>i.Item).ToList();
+                //var exts = Extensions
+                //    .Where(i => i.Item.Category == LayoutItemCategory.Rule || (i.Item.Category == LayoutItemCategory.Dynamic && i.Children.Count==0))
+                //    .Select(i=>i.Item).ToList();
+                var exts = Extensions.Children.Select(i => i.Item).ToList();
                 if (exts.Count == 0)
                 {
-                    var li = GetDefaultExtension();
-                    Dimension.MergeDimensions(li.Dimensions, Extensions.Item.Dimensions);
-                    exts.Add(li);
+                    //var li = GetDefaultExtension();
+                    //Dimension.MergeDimensions(li.Dimensions, Extensions.Item.Dimensions);
+                    //exts.Add(li);
+                    exts.Add(Extensions.Item);
                 }
-                foreach (var ext in exts) 
-                {
-                    Dimension.MergeDimensions(ext.Dimensions, this.Extensions.Item.Dimensions);
-                }
+                //foreach (var ext in exts) 
+                //{
+                //    Dimension.MergeDimensions(ext.Dimensions, this.Extensions.Item.Dimensions);
+                //}
+
+
                 var factmap = new Dictionary<string, Dictionary<string,string>>();
                 foreach (var ext in exts)
                 {
@@ -703,6 +718,9 @@ namespace LogicalModel
                                 }
                                 else
                                 {
+                                    if (this.ID.Contains("S.06.02.02")) 
+                                    {
+                                    }
                                     var aspectcolumnitem = cell.LayoutColumn.Item;
                                     aspectcolumnitem = aspectcolumnitem.IsAspect ? aspectcolumnitem : cell.LayoutColumn.Parent.Item;
                                     if (aspectcolumnitem.IsAspect)
@@ -725,12 +743,14 @@ namespace LogicalModel
                         }
                     }
                 }
-                var jsoncontent = ""; //Utilities.Converters.ToJson(factmap);
                 //var jscontent = "var FactMap = " + jsoncontent.Replace("\r\n", "\\ \r\n") + ";";
                 var jscontent = "{\r\n";//{\"FactMap\": " + jsoncontent + ", \r\n";
                 jscontent += "\"ExtensionsRoot\": " + Utilities.Converters.ToJson(Extensions) + ", \r\n";
                 jscontent += "\"HtmlTemplatePath\": \"" + this.HtmlPath + "\"}";
                 System.IO.File.WriteAllText(FactMapPath, jscontent);
+
+
+                
 
             }
 

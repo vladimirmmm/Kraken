@@ -590,7 +590,7 @@ namespace LogicalModel
                 parameters.GenerateExecutable = false;
                 parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
                 parameters.IncludeDebugInformation = true;
-                parameters.TempFiles = new TempFileCollection(".", true);
+                parameters.TempFiles = new TempFileCollection(".", false);
                 var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
                 var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -656,13 +656,22 @@ namespace LogicalModel
                     var dlltempfolder =TaxonomyEngine.LocalFolder+@"Temp\";
                     Utilities.FS.EnsurePath(dlltempfolder);
                     var templibs = System.IO.Directory.GetFiles(dlltempfolder, "*.dll", System.IO.SearchOption.AllDirectories);
-                    foreach (var templibfile in templibs) 
+                    var temppdbs = System.IO.Directory.GetFiles(dlltempfolder, "*.pdb", System.IO.SearchOption.AllDirectories);
+                    var tempfiles = templibs.Concat(temppdbs);
+                    foreach (var tempfile in tempfiles) 
                     {
-                        Utilities.FS.DeleteFile(templibfile, false);
+                        Utilities.FS.DeleteFile(tempfile, false);
                     }
-                   
-                    var templibpath = this.TaxonomyValidationDotNetLibPath.Replace(".dll", String.Format("{0}.dll", Guid.NewGuid()));
+                    var guid = Guid.NewGuid();
+                    var originalfolder = Utilities.Strings.GetFolder(this.TaxonomyValidationDotNetLibPath);
+                    var templibpath = this.TaxonomyValidationDotNetLibPath.Replace(".dll", String.Format("{0}.dll", guid));
+                    var pdbpath = this.TaxonomyValidationDotNetLibPath.Replace(".dll", ".pdb");
+                    var temppdbpath = templibpath.Replace(".dll", ".pdb");
+                    templibpath = templibpath.Replace(originalfolder, dlltempfolder);
+                    temppdbpath = temppdbpath.Replace(originalfolder, dlltempfolder);
+
                     System.IO.File.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
+                    System.IO.File.Copy(pdbpath, temppdbpath);
 
                     var assembly = Assembly.LoadFile(templibpath);
                     var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));

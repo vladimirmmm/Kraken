@@ -51,7 +51,18 @@ var UI;
             });
         };
         Table.prototype.SetExternals = function () {
-            this.Extensions = Model.Hierarchy.ToArray(this.ExtensionsRoot).AsLinq().Where(function (i) { return In(i.Category, 2 /* Rule */, 3 /* BreakDown */); }).Select(function (i) { return i; });
+            //this.Extensions = Model.Hierarchy.ToArray(this.ExtensionsRoot)
+            //    .AsLinq<Model.LayoutItem>()
+            //    .Where(i=> In(i.Category,
+            //    Model.LayoutItemCategory.Rule,
+            //    Model.LayoutItemCategory.BreakDown))
+            //    .Select(i=> i);
+            this.Extensions = this.ExtensionsRoot.Children.AsLinq().Select(function (i) { return i.Item; });
+            //.AsLinq<Model.LayoutItem>()
+            //.Where(i=> In(i.Category,
+            //Model.LayoutItemCategory.Rule,
+            //Model.LayoutItemCategory.BreakDown))
+            //.Select(i=> i);
             this.CurrentExtension = this.ExtensionsRoot.Item;
         };
         Table.prototype.GetData = function () {
@@ -63,7 +74,10 @@ var UI;
         Table.prototype.SetNavigation = function () {
             var me = this;
             if (IsNull(me.Current_ExtensionCode)) {
-                this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
+                var firstextension = this.Extensions.FirstOrDefault();
+                if (!IsNull(firstextension)) {
+                    this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
+                }
             }
             me.SetExtensionByCode(this.Current_ExtensionCode);
             me.LoadToUI();
@@ -231,7 +245,7 @@ var UI;
                     var cellfactstring = _Attribute(cellelement, "factstring");
                     var cfs = Replace(cellfactstring.trim(), ",", "");
                     if (!IsNull(cfs)) {
-                        var dim = rowfact.Dimensions.AsLinq().FirstOrDefault(function (i) { return i.DomainMemberFullName.indexOf(cfs) == 0; });
+                        var dim = rowfact.Dimensions.AsLinq().FirstOrDefault(function (i) { return Model.Dimension.DomainMemberFullName(i).indexOf(cfs) == 0; });
                         if (dim != null) {
                             var text = dim.DomainMember;
                             _Text(cellelement, text);

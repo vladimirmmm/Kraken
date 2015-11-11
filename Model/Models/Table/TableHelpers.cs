@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel
 {
@@ -24,7 +25,150 @@ namespace LogicalModel
             }
             return null;
         }
+        public static Hierarchy<LayoutItem> GetExtensions(Hierarchy<LayoutItem> axisnode, Table table) 
+        {
+            var extensions = new Hierarchy<LayoutItem>(table.GetRootExtension());
+            //Getting the layout nodes
+            var nodes = axisnode.All().Where(i => i.Item.IsLayout).ToList();
+            //Getting typed nodes
+            var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();
+            //Getting non typed ndoes
+            var nontypednodes = nodes.Except(typednodes);
+            //Set the aspect nodes
+            var aspectnodes = axisnode.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
+            foreach (var aspectnode in aspectnodes)
+            {
+                var aspectnodeitems = GetAspectItems(aspectnode, table);
+                if (aspectnodeitems.Count != 0)
+                {
+                    aspectnode.Children.Clear();
 
+                    foreach (var aspectnodeitem in aspectnodeitems)
+                    {
+                        var hli = new Hierarchy<LayoutItem>(aspectnodeitem);
+                        hli.Parent = aspectnode;
+                        aspectnode.Children.Add(hli);
+                    }
+                }
+     
+
+            }
+
+            var zaxisnodelistcollection = new List<List<Hierarchy<LayoutItem>>>();
+            //get the axis nodes
+            var zaxisnodes = axisnode.Where(i => i.Item.Axis == "z").ToList();
+         
+            foreach (var zaxisnode in zaxisnodes) 
+            {
+                var zaxisnodelist = GetItemsFor(zaxisnode, table);
+                if (zaxisnodelist.Count > 0)
+                {
+                    zaxisnodelistcollection.Add(zaxisnodelist);
+                }
+            }
+
+            var singlenodes = zaxisnodelistcollection.Where(i => i.Count == 1 && !i.Any(j => j.Item.IsDynamic)).ToList();
+
+            //combine the nodelist
+            var combinations = Utilities.MathX.CartesianProduct(zaxisnodelistcollection);
+            var firstcombination = combinations.FirstOrDefault();
+            var ix = 0;
+            foreach (var combination in combinations) 
+            {
+                var li = new LayoutItem();
+                var hli = new Hierarchy<LayoutItem>(li);
+
+                //setting the dimensions for the combination
+                var dimensions = new List<Dimension>();
+                foreach (var item in combination)
+                {
+                    Dimension.SetDimensions(item);
+                    Dimension.MergeDimensions(dimensions, item.Item.Dimensions);
+
+                    //adding the parts of the combination to the extesnion node
+                    if (!item.Item.IsAbstract)
+                    {
+                        hli.Children.Add(item);
+                    }
+
+                }
+                li.Dimensions = dimensions;
+
+                //setting the lable for the combination
+                //if (combinationcount == 1) 
+                //{
+                //    var item = combination.FirstOrDefault();
+                //    li.LabelCode = item.Item.LabelCode;
+                //    li.LabelContent = item.Item.LabelContent;
+                //    li.ID = item.Item.ID;
+                //}
+                //if (combinationcount > 1) 
+                //{
+                //    li.LabelCode = String.Format(Table.LabelCodeFormat, ix);
+                //    li.LabelContent = String.Format(Table.ExtensionLableContentFormat, li.LabelCode);
+                  
+                //}
+
+                extensions.Children.Add(hli);
+                ix++;
+            }
+
+            //Fixing the labels
+            FixLabels(extensions);
+
+            return extensions;
+        }
+
+        public static void FixLabels(Hierarchy<LayoutItem> hli)
+        {
+            var ix =0;
+            foreach (var child in hli.Children) 
+            {
+                var firstchild = child.Children.FirstOrDefault();
+                if (firstchild != null)
+                {
+                    foreach (var children in child.Children)
+                    {
+                        foreach (var dim in children.Item.Dimensions)
+                        {
+                            dim.SetTyped();
+                        }
+                    }
+                    if (child.Children.Count == 1
+                        && !String.IsNullOrEmpty(firstchild.Item.LabelCode)
+                        && !firstchild.Item.Dimensions.Any(i => i.IsTyped))
+                    {
+                        child.Item.LabelCode = firstchild.Item.LabelCode;
+                        //var dim = firstchild.Item.Dimensions.FirstOrDefault();
+                        //var label = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.GetLabelForDimension()
+
+                        child.Item.LabelContent = firstchild.Item.LabelContent;
+                        child.Item.ID = firstchild.Item.ID;
+                    }
+                    else
+                    {
+                        var code = String.Format(Table.LabelCodeFormat, ix);
+                        var content = String.Format(Table.ExtensionLableContentFormat, code);
+
+                        child.Item.LabelCode = code;
+                        child.Item.LabelContent = content;
+                    }
+                }
+                else 
+                {
+
+                }
+                ix++;  
+            }
+        }
+
+        public static List<Hierarchy<LayoutItem>> GetItemsFor(Hierarchy<LayoutItem> axisnode, Table table) 
+        {
+            var result = new List<Hierarchy<LayoutItem>>();
+            result = axisnode.Where(i => LayoutItem.IsLayoutLeaf(i)).ToList();
+            return result;
+
+        }
 
         public static List<LayoutItem> GetAspectItems(Hierarchy<LayoutItem> hli, Table table)
         {
@@ -51,6 +195,7 @@ namespace LogicalModel
                             li.Dimensions.Add(dim);
                             li.LabelID = dm.ID;
                             li.LabelCode = dim.Domain;
+                            li.Category = LayoutItemCategory.Dynamic;
                         }
                         else
                         {

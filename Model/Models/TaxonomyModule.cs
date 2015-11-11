@@ -27,7 +27,7 @@ namespace LogicalModel
             get { return _TablePaths; }
             set { _TablePaths = value; }
         }
-        private Hierarchy<TableGroup> _TableGroups = new Hierarchy<TableGroup>();
+        private Hierarchy<TableGroup> _TableGroups = new Hierarchy<TableGroup>(new TableGroup());
         public Hierarchy<TableGroup> TableGroups
         {
             get { return _TableGroups; }

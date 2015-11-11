@@ -398,16 +398,19 @@ namespace XBRLProcessor.Models
             var filingindicatorsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "find-params.xml");
             if (filingindicatorsdoc != null)
             {
-                var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, "//gen:link");
-                if (genlinknode != null)
+                if (filingindicatorsdoc.XmlDocument != null)
                 {
-                    foreach (XmlNode node in genlinknode) 
+                    var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, "//gen:link");
+                    if (genlinknode != null)
                     {
-                        if (node.Name.ToLower() == "variable:parameter") 
+                        foreach (XmlNode node in genlinknode)
                         {
-                            var select = Utilities.Xml.Attr(node, "select");
-                            var find = select.TextBetween("'", "'");
-                            filingindicators.Add(find);
+                            if (node.Name.ToLower() == "variable:parameter")
+                            {
+                                var select = Utilities.Xml.Attr(node, "select");
+                                var find = select.TextBetween("'", "'");
+                                filingindicators.Add(find);
+                            }
                         }
                     }
                 }

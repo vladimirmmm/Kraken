@@ -42,6 +42,17 @@ namespace UI
             var context = ContextAccessor != null ? ContextAccessor() : this;
             if (Action != null) { Action(context); }
             if (DefaultAction != null) { DefaultAction(context); }
+
+            //try
+            //{
+            //    var context = ContextAccessor != null ? ContextAccessor() : this;
+            //    if (Action != null) { Action(context); }
+            //    if (DefaultAction != null) { DefaultAction(context); }
+            //}
+            //catch (Exception ex) 
+            //{
+            //    Utilities.Logger.WriteLine(ex);
+            //}
         }
         public void ExecuteAsync() 
         {
