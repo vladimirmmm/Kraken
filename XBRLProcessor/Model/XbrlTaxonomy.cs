@@ -292,7 +292,7 @@ namespace XBRLProcessor.Models
             else
             {
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyUnitPath);
-                this.Units = Utilities.Converters.JsonTo<List<LogicalModel.Unit>>(jsoncontent);
+                this.Units = Utilities.Converters.JsonTo<List<LogicalModel.InstanceUnit>>(jsoncontent);
             }
 
             Logger.WriteLine("Load Units completed");
@@ -988,7 +988,6 @@ namespace XBRLProcessor.Models
             this.Concepts.Clear();
             this.Hierarchies.Clear();
             this.SimpleValidationRules.Clear();
-
             GC.Collect();
         }
 

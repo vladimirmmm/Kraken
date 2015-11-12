@@ -156,32 +156,46 @@ namespace XBRLProcessor.Mapping
 
         public Mapping GetMapping(XmlNode node, Type ClassType) 
         {
+            Mapping nodemapping = null;
+            Mapping typemapping = null;
             var identifier = "<" + node.Name + ">";
             var localidentifier = "<" + node.LocalName + ">";
+            var namespaceinvariantidentifier = "<*:" + node.LocalName + ">";
 
-            if (ClassType == null)
-            {
-                var m = MappingCollection.FirstOrDefault(i => i.XmlSelector == identifier);
-                if (m == null) 
-                {
-                    m = MappingCollection.FirstOrDefault(i => i.XmlSelector == localidentifier);
-                }
-                if (m != null) 
-                {
-                    //var mappings = MappingCollection.Where(i => i.ClassType == m.ClassType && i!=m);
-                    //foreach (var mapping in mappings) 
-                    //{
-                    //    m.prop
-                    //}
-                }
-                return m;
+            if (ClassType == typeof(XBRLProcessor.Model.DefinitionModel.Filter.DimensionFilter)) 
+            { 
             }
-            else
+
+            nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == identifier);
+            if (nodemapping == null)
             {
-                var classmapping = MappingCollection.FirstOrDefault(i => i.ClassType == ClassType);
-                var propertyMapping = classmapping.PropertyMappings.FirstOrDefault(i => i.XmlSelector == identifier);
-                return propertyMapping;
+
+                nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == localidentifier);
+                if (nodemapping == null)
+                {
+                    nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == namespaceinvariantidentifier);
+             
+                }
             }
+        
+
+            if (ClassType != null)
+            {
+
+                typemapping = MappingCollection.FirstOrDefault(i => i.ClassType == ClassType);
+          
+  
+            }
+
+            if (typemapping != null) 
+            {
+                //if (!nodemapping.ClassType.IsAssignableFrom(typemapping.ClassType))
+                if (!typemapping.ClassType.IsAssignableFrom(nodemapping.ClassType))
+                {
+                    return typemapping;
+                }
+            }
+            return nodemapping;
         }
     }
     
@@ -397,21 +411,26 @@ namespace XBRLProcessor.Mapping
             Object value = null;
             var tagname = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
 
-            if (XmlSelector.Contains("df:typedDimension"))
-            {
-                var c = Utilities.Xml.SelectChildNodes(node, tagname).Count;
-                if (c > 0) 
-                {
+            //if (XmlSelector.Contains("df:typedDimension"))
+            //{
+            //    var c = Utilities.Xml.SelectChildNodes(node, tagname).Count;
+            //    if (c > 0) 
+            //    {
 
-                }
-            }
+            //    }
+            //}
  
             if (!String.IsNullOrEmpty(tagname) && IsComplexType)
             {
+                if (tagname.Contains("context")) 
+                { 
 
+                }
                 foreach (XmlNode childnode in Utilities.Xml.SelectChildNodes(node,tagname))
                 {
-                    var mapping = Mappings.CurrentMapping.GetMapping(childnode, null);
+                    //var mapping = Mappings.CurrentMapping.GetMapping(childnode, null);
+                    var mapping = Mappings.CurrentMapping.GetMapping(childnode, this.EnumerableType);
+                    
                     if (mapping != null)
                     {
                         value = mapping.Map(childnode);

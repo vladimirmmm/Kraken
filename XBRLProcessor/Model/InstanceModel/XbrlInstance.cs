@@ -35,6 +35,13 @@ namespace Model.InstanceModel
             set { _XbrlFacts = value; }
         }
 
+        //private List<XbrlUnit> _XbrlFacts = new List<XbrlFact>();
+        //public List<XbrlFact> XbrlFacts
+        //{
+        //    get { return _XbrlFacts; }
+        //    set { _XbrlFacts = value; }
+        //}
+
         private List<FilingIndicator> _XbrlFilingIndicators = new List<FilingIndicator>();
         public List<FilingIndicator> XbrlFilingIndicators
         {
@@ -75,17 +82,32 @@ namespace Model.InstanceModel
         }
         public void LoadComplex() 
         {
+            var XbrlTaxonomy= (XBRLProcessor.Models.XbrlTaxonomy)this.Taxonomy;
             Clear();
-            var factnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.StartsWith(this.Taxonomy.ConceptNameSpace+":")).ToList();
-            foreach (var factnode in factnodes) 
+            var allnodes = Utilities.Xml.AllNodes(XmlDocument);
+
+            this.Contexts.Clear();
+            var contextnodes = allnodes.Where(i => i.Name.ToLower()=="context").ToList();
+            foreach (var contextnode in contextnodes)
             {
-                var item = new XbrlFact();
-                Mappings.CurrentMapping.Map<XbrlFact>(factnode, item);
-                this.XbrlFacts.Add(item);
+                var item = new Context();
+                Mappings.CurrentMapping.Map<Context>(contextnode, item);
+                this.Contexts.Add(item);
+            }
+            var conceptnslist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.Namespace).Distinct().ToList();
+            foreach (var conceptns in conceptnslist)
+            {
+                var factnodes = allnodes.Where(i => i.Name.StartsWith(conceptns + ":")).ToList();
+                foreach (var factnode in factnodes)
+                {
+                    var item = new XbrlFact();
+                    Mappings.CurrentMapping.Map<XbrlFact>(factnode, item);
+                    this.XbrlFacts.Add(item);
+                }
             }
 
             this.XbrlFilingIndicators.Clear();
-            var filingnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.Equals("find:filingIndicator", StringComparison.OrdinalIgnoreCase)).ToList();
+            var filingnodes = allnodes.Where(i => i.Name.Equals("find:filingIndicator", StringComparison.OrdinalIgnoreCase)).ToList();
             foreach (var filingnode in filingnodes)
             {
                 var item = new FilingIndicator();
@@ -118,17 +140,28 @@ namespace Model.InstanceModel
                 var factstring = "";
                 factstring = String.Format("{0},",xbrlfact.Concept);
                 var factkey = factstring;
+                if (xbrlcontext.ID=="c-108")
+                {
+                }
                 logicalfact.Concept = new Concept();
                 logicalfact.Concept.Content = xbrlfact.Concept;
-                var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
-                foreach (var dimension in dimensions) 
+                if (xbrlcontext.Scenario != null)
                 {
-                    var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
-                    var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());
-                    factstring += dimitem;
-                    factkey += dimension.IsTyped ? dimitemforkey : dimitem;
+                    var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
+                    foreach (var dimension in dimensions)
+                    {
+                        var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
+                        if (dimitem.Contains("STA")) 
+                        {
+
+                        }
+                        var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());
+                        factstring += dimitem;
+                        factkey += dimension.IsTyped ? dimitemforkey : dimitem;
+                    }
                 }
                 logicalfact.SetFromString(factstring);
+ 
                 if (logicalfact.Concept == null) 
                 {
                 }
@@ -354,7 +387,7 @@ namespace Model.InstanceModel
                 
                 if (!dict.ContainsKey(taxconcept.ItemType))
                 {
-                    Unit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
+                    InstanceUnit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
                   
                     if (taxconcept.ItemType == "monetaryItemType") 
                     {
@@ -362,7 +395,7 @@ namespace Model.InstanceModel
                     }
                     if (unit != null)
                     {
-                        var xbrlunit = new Unit();
+                        var xbrlunit = new InstanceUnit();
                         xbrlunit.ID = GetNewID(this.Units, "U_{0}");
                         xbrlunit.Measure = unit.Measure;
                         this.Units.Add(xbrlunit);

@@ -53,7 +53,7 @@ namespace LogicalModel
         [JsonProperty]
         public Entity Entity { get; set; }
         [JsonIgnore]
-        public Unit Unit { get; set; }
+        public InstanceUnit Unit { get; set; }
         [JsonProperty]
         public String UnitID { get; set; }
 

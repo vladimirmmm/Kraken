@@ -27,9 +27,9 @@ namespace LogicalModel
             get { return _HtmlPath; }
             set { _HtmlPath = value; }
         }
-        private List<Unit> _Units = new List<Unit>();
+        private List<InstanceUnit> _Units = new List<InstanceUnit>();
         [JsonProperty]
-        public List<Unit> Units
+        public List<InstanceUnit> Units
         {
             get { return _Units; }
             set { _Units = value; }
@@ -61,7 +61,7 @@ namespace LogicalModel
         [JsonProperty]
         public Period ReportingPeriod { get; set; }
         [JsonProperty]
-        public Unit ReportingMonetaryUnit { get; set; }
+        public InstanceUnit ReportingMonetaryUnit { get; set; }
 
         public void CreateHtml() 
         {

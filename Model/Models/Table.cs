@@ -398,6 +398,10 @@ namespace LogicalModel
 
                     if (!this.Taxonomy.Facts.ContainsKey(key)) 
                     {
+                        if (key == "de_sprv_met:si6,[de_sprv_dim:COL]de_sprv_CL:x010,[*:GRA]de_sprv_typ:GR,[*:ROW]de_sprv_RO:x010,[*:TEM]de_sprv_TE:GRP,") 
+                        { 
+
+                        }
                         this.Taxonomy.Facts.Add(key, new List<String>());
                
                     }
@@ -532,6 +536,8 @@ namespace LogicalModel
             {
                 aspect.Item.LabelID = aspect.Parent.Item.LabelID;
                 aspect.Item.Label = aspect.Parent.Item.Label;
+                aspect.Item.LabelCode = " ";
+                aspect.Item.LabelID = "";
                 var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
                 if (rolenode != null)
                 {

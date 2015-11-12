@@ -160,9 +160,10 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadAllReferences();
 
                 CheckMapping();
-
+                /*
                 var metdoc = CurrentXbrlTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "met.xsd");
                 CurrentTaxonomy.ConceptNameSpace = metdoc.TargetNamespacePrefix;
+                 * */
                 //CurrentTaxonomy.Prefix = CurrentTaxonomy.ConceptNameSpace.Remove(CurrentTaxonomy.ConceptNameSpace.LastIndexOf("_")) + "_";
 
                 CurrentTaxonomy.LoadLabels();

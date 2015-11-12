@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
-    public class Unit:Identifiable
+    public class InstanceUnit:Identifiable
     {
         public QualifiedName Measure { get; set; }
 

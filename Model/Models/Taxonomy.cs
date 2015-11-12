@@ -33,7 +33,7 @@ namespace LogicalModel
             get { return (TaxonomyDocument)base.EntryDocument; }
             set { base.EntryDocument=value;}
         }
-        public string ConceptNameSpace = "";
+        //public string ConceptNameSpace = "";
         public string Prefix = "";
         public static string Lang = "en";
 
@@ -48,7 +48,7 @@ namespace LogicalModel
 
         public List<Hierarchy<QualifiedItem>> Hierarchies = new List<Hierarchy<QualifiedItem>>();
 
-        public List<Unit> Units = new List<Unit>();
+        public List<InstanceUnit> Units = new List<InstanceUnit>();
 
         public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
 
@@ -969,6 +969,8 @@ namespace LogicalModel
 
         public void Clear_Validations()
         {
+            this.ValidationFunctionContainer = null;
+            GC.Collect();
             var validationFolder = Utilities.Strings.GetFolder(TaxonomySimpleValidationPath);
             var valfiles = System.IO.Directory.GetFiles(validationFolder);
             foreach (var valfile in valfiles) 

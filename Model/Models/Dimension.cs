@@ -94,6 +94,7 @@ namespace LogicalModel
             if (this.Domain.IndexOf(":") > -1)
             {
                 this.IsTyped = Taxonomy.IsTyped(this.Domain);
+                return;
             }
             if (this.Domain.IndexOf(":") > -1 && !String.IsNullOrEmpty(this.DomainMember))
             {

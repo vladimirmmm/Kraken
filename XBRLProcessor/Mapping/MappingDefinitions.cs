@@ -250,23 +250,23 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                 ),
                  //Instance
-                Mappings.Map<LogicalModel.Base.QualifiedName>("<xbrli:measure>",
+                Mappings.Map<LogicalModel.Base.QualifiedName>("<*:measure>",
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                  ),
-                 Mappings.Map<Unit>("<xbrli:unit>",
-                    Mappings.PropertyMap("<xbrli:measure>", (Unit i) => i.Measure)
+                 Mappings.Map<InstanceUnit>("<*:instanceunit>",
+                    Mappings.PropertyMap("<*:measure>", (InstanceUnit i) => i.Measure)
                  ),
-                 Mappings.Map<Entity>("<xbrli:entity>",
+                 Mappings.Map<Entity>("<*:entity>",
                     Mappings.PropertyMap("/scheme", (Entity i) => i.Scheme),
                     Mappings.PropertyMap("/@content", (Entity i) => i.ID)
                  ),
-                 Mappings.Map<Period>("<xbrli:period>",
-                    Mappings.PropertyMap("<xbrli:instant>", (Period i) => i.Instant),
-                    Mappings.PropertyMap("<xbrli:forever>", (Period i) => i.Forever),
-                    Mappings.PropertyMap("<xbrli:startdate>", (Period i) => i.StartDate),
-                    Mappings.PropertyMap("<xbrli:enddate>", (Period i) => i.EndDate)
+                 Mappings.Map<Period>("<*:period>",
+                    Mappings.PropertyMap("<*:instant>", (Period i) => i.Instant),
+                    Mappings.PropertyMap("<*:forever>", (Period i) => i.Forever),
+                    Mappings.PropertyMap("<*:startdate>", (Period i) => i.StartDate),
+                    Mappings.PropertyMap("<*:enddate>", (Period i) => i.EndDate)
                  ),
-                 Mappings.Map<Scenario>("<xbrli:scenario>",
+                 Mappings.Map<Scenario>("<*:scenario>",
                     Mappings.PropertyMap("<xbrldi:explicitMember>", (Scenario i) => i.Dimensions),
                     Mappings.PropertyMap("<xbrldi:typedMember>", (Scenario i) => i.Dimensions)
                  ),
@@ -274,10 +274,10 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("contextRef", (FilingIndicator i) => i.ContextID),
                     Mappings.PropertyMap("@content", (FilingIndicator i) => i.Value)
                  ),
-                 Mappings.Map<Context>("<xbrli:context>",
-                    Mappings.PropertyMap("<xbrli:entity>", (Context i) => i.Entity),
-                    Mappings.PropertyMap("<xbrli:period>", (Context i) => i.Period),
-                    Mappings.PropertyMap("<xbrli:scenario>", (Context i) => i.Scenario)
+                 Mappings.Map<Context>("<*:context>",
+                    Mappings.PropertyMap("<*:entity>", (Context i) => i.Entity),
+                    Mappings.PropertyMap("<*:period>", (Context i) => i.Period),
+                    Mappings.PropertyMap("<*:scenario>", (Context i) => i.Scenario)
                  ),
 
                  Mappings.Map<XbrlFact>("<XbrlFact>",
@@ -295,8 +295,8 @@ namespace XBRLProcessor.Mapping
 
                  Mappings.Map<XbrlInstance>("<xbrli:xbrl>",
                     Mappings.PropertyMap("<link:schemaRef>", (XbrlInstance i) => i.SchemaRef),
-                    Mappings.PropertyMap("<xbrli:context>", (XbrlInstance i) => i.Contexts),
-                    Mappings.PropertyMap("<xbrli:unit>", (XbrlInstance i) => i.Units)
+                    Mappings.PropertyMap("<*:context>", (XbrlInstance i) => i.Contexts),
+                    Mappings.PropertyMap("<*:unit>", (XbrlInstance i) => i.Units)
                  ),
                  //End Instance
                 //hier
@@ -368,9 +368,9 @@ namespace XBRLProcessor.Mapping
             return toitem;
         }
 
-        public static LogicalModel.Unit ToLogical(XbrlUnit item)
+        public static LogicalModel.InstanceUnit ToLogical(XbrlUnit item)
         {
-            var toitem = new LogicalModel.Unit();
+            var toitem = new LogicalModel.InstanceUnit();
             toitem.Measure = new LogicalModel.Base.QualifiedName(String.Format("{0}:{1}", item.BaseStandard, item.UnitID));
             toitem.ID = item.ID;
             toitem.Name = item.UnitName;
