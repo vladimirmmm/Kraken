@@ -109,8 +109,8 @@ namespace LogicalModel
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Y_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Z_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
 
-        private List<Hierarchy<LayoutItem>> Rows = new List<Hierarchy<LayoutItem>>();
-        private List<Hierarchy<LayoutItem>> Columns = new List<Hierarchy<LayoutItem>>();
+        public List<Hierarchy<LayoutItem>> Rows = new List<Hierarchy<LayoutItem>>();
+        public List<Hierarchy<LayoutItem>> Columns = new List<Hierarchy<LayoutItem>>();
         private Hierarchy<LayoutItem> _Extensions = new Hierarchy<LayoutItem>();
         public Hierarchy<LayoutItem> Extensions 
         {
@@ -605,21 +605,12 @@ namespace LogicalModel
   
             if (LayoutCells.Count == 0)
             {
-                //var exts = Extensions
-                //    .Where(i => i.Item.Category == LayoutItemCategory.Rule || (i.Item.Category == LayoutItemCategory.Dynamic && i.Children.Count==0))
-                //    .Select(i=>i.Item).ToList();
+
                 var exts = Extensions.Children.Select(i => i.Item).ToList();
                 if (exts.Count == 0)
-                {
-                    //var li = GetDefaultExtension();
-                    //Dimension.MergeDimensions(li.Dimensions, Extensions.Item.Dimensions);
-                    //exts.Add(li);
+                {    
                     exts.Add(Extensions.Item);
                 }
-                //foreach (var ext in exts) 
-                //{
-                //    Dimension.MergeDimensions(ext.Dimensions, this.Extensions.Item.Dimensions);
-                //}
 
 
                 var factmap = new Dictionary<string, Dictionary<string,string>>();

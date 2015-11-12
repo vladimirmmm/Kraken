@@ -55,6 +55,7 @@
     <Compile Include="Models\Dimensions\DimensionItem.cs" />
     <Compile Include="Models\Dimensions\DimensionMember.cs" />
     <Compile Include="Models\Enums.cs" />
+    <Compile Include="Models\Instance\DynamicCellDictionary.cs" />
     <Compile Include="Models\Instance\Fact.cs">
       <SubType>Code</SubType>
     </Compile>

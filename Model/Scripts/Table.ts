@@ -311,10 +311,10 @@ module UI {
             var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
 
 
-            var reportkey = Format("{0}|{1}", reportid, extensioncode);
-
-            var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
-            var rows = GetProperties(rowidcontainer);
+            //var reportkey = Format("{0}|{1}", reportid, extensioncode);
+            //var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
+            var rowidcontainer = me.Instance.DynamicReportCells[reportid];
+            var rows = GetProperties(rowidcontainer.RowDictionary);
             me.UITable.CanManageRows = false;
             rows.forEach(function (rowitem) { 
                 var row = me.UITable.AddRow(-1);

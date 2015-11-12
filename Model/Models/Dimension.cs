@@ -177,6 +177,20 @@ namespace LogicalModel
             }
         }
 
+        public static List<Dimension> GetDimensions(List<Dimension> target, List<Dimension> items)
+        {
+            var dimensions = new List<Dimension>();
+            foreach (var item in items)
+            {
+                var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
+                if (existing != null)
+                {
+                    dimensions.Add(existing);
+                }
+            }
+            return dimensions;
+        }
+
         public string ToXmlString()
         {
             var sb = new StringBuilder();

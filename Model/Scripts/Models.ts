@@ -410,7 +410,13 @@
             return result;
         }
     }
-
+    export class DynamicCellDictionary
+    {
+        public ExtDictionary: Dictionary<string> = {};
+        public RowDictionary: Dictionary<string> = {};
+        public ColDictionary: Dictionary<string> = {};
+        public CellOfFact: Dictionary<string> = {};
+    }
     export class Instance
     {
         public Facts: InstanceFact[] = [];
@@ -422,6 +428,7 @@
         public FullPath: string;
         public FactDictionary: Object = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
+        public DynamicReportCells: Dictionary<DynamicCellDictionary> = {};
     }   
 
     export class Label {

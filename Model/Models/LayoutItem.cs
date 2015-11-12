@@ -1,4 +1,5 @@
-﻿using LogicalModel.Helpers;
+﻿using LogicalModel.Base;
+using LogicalModel.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -203,6 +204,29 @@ namespace LogicalModel
             {
                 return Category == LayoutItemCategory.Dynamic;
             }
+        }
+
+        public static LayoutItem Copy(LayoutItem li_original)
+        {
+            var li_new = new LayoutItem();
+            li_new._Axis = li_original._Axis;
+            li_new._Category = li_original._Category;
+            li_new.FactString = li_original.FactString;
+
+            var fact = new FactBase();
+            fact.SetFromString(li_new.FactString);
+
+            li_new.Dimensions = fact.Dimensions;
+            li_new.Concept = fact.Concept;
+
+            li_new._ID = li_original._ID;
+            li_new._IsAbstract = li_original._IsAbstract;
+            li_new.Label = li_original.Label;
+            li_new._LabelCode = li_original._LabelCode;
+            li_new._LabelContent = li_original._LabelContent;
+            li_new._LabelID = li_original._LabelID;
+            li_new._Role = li_original._Role;
+            return li_new;
         }
     }
 }

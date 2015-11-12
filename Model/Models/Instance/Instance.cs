@@ -1,4 +1,6 @@
-﻿using LogicalModel.Base;
+﻿using BaseModel;
+using LogicalModel.Base;
+using LogicalModel.Models;
 using LogicalModel.Validation;
 using Newtonsoft.Json;
 using System;
@@ -62,6 +64,23 @@ namespace LogicalModel
         public Period ReportingPeriod { get; set; }
         [JsonProperty]
         public InstanceUnit ReportingMonetaryUnit { get; set; }
+
+        private Dictionary<string, Dictionary<string, string>> _DynamicCellDictionary = new Dictionary<string, Dictionary<string, string>>();
+        [JsonProperty]
+        public Dictionary<string, Dictionary<string, string>> DynamicCellDictionary_Old
+        {
+            get { return _DynamicCellDictionary; }
+            set { _DynamicCellDictionary = value; }
+        }
+
+        private Dictionary<string, DynamicCellDictionary> _DynamicReportCells = new Dictionary<string, DynamicCellDictionary>();
+        [JsonProperty]
+        public Dictionary<string, DynamicCellDictionary> DynamicReportCells
+        {
+            get { return _DynamicReportCells; }
+            set { _DynamicReportCells = value; }
+        }
+
 
         public void CreateHtml() 
         {
@@ -243,22 +262,77 @@ namespace LogicalModel
         }
         //C 27.00 (LE 1)<000||040>
 
-        private Dictionary<string, Dictionary<string, string>> _DynamicCellDictionary = new Dictionary<string, Dictionary<string, string>>();
-        [JsonProperty]
-        public Dictionary<string, Dictionary<string, string>> DynamicCellDictionary 
-        {
-            get { return _DynamicCellDictionary; }
-            set { _DynamicCellDictionary = value; }
-        }
 
         public virtual void Clear() 
         {
             this.Facts.Clear();
-            this.DynamicCellDictionary.Clear();
+            this.DynamicCellDictionary_Old.Clear();
+            this.DynamicReportCells.Clear();
             this.FactDictionary.Clear();
         }
 
-        public void SetCells() 
+        public void SetTypedCells()
+        {
+
+
+
+        }
+
+        public void SetCells()
+        {
+            var reportdict = new Dictionary<string, int>();
+            foreach (var fact in this.Facts)
+            {
+                if (this.Taxonomy.Facts.ContainsKey(fact.FactKey))
+                {
+                    fact.Cells = this.Taxonomy.Facts[fact.FactKey];
+                    foreach (var cell in fact.Cells)
+                    {
+                
+
+                        var cellobj = new Cell();
+                        cellobj.SetFromCellID(cell);
+
+                        if (!DynamicReportCells.ContainsKey(cellobj.Report)) 
+                        {
+                            DynamicReportCells.Add(cellobj.Report, new DynamicCellDictionary());
+                        }
+                        var dynamiccellsofreport = DynamicReportCells[cellobj.Report];
+                        var table = Taxonomy.Tables.FirstOrDefault(i=>i.ID==cellobj.Report);
+                        var dynamicCell = dynamiccellsofreport.AddCells(cellobj, fact, table);
+                        if (dynamicCell.CellID != cellobj.CellID) 
+                        {
+
+                        }
+
+
+       
+                        var reportid = cellobj.Report;
+                        if (!reportdict.ContainsKey(reportid))
+                        {
+                            reportdict.Add(reportid, 0);
+                        }
+
+                        reportdict[reportid] = reportdict[reportid] + 1;
+
+                    }
+
+
+                }
+                else
+                {
+                }
+            }
+
+            foreach (var key in reportdict.Keys)
+            {
+                var table = Taxonomy.Tables.FirstOrDefault(i => i.ID == key);
+                table.InstanceFactsCount = reportdict[key];
+            }
+        }
+
+       
+        public void SetCells_Old() 
         {
             var reportdict = new Dictionary<string, int>();
             foreach (var fact in this.Facts)
@@ -270,17 +344,21 @@ namespace LogicalModel
                     {
                         var cellobj = new Cell();
                         cellobj.SetFromCellID(cell);
+                        if (cellobj.Extension=="_")
+                        {
+
+                        }
                         if (string.IsNullOrEmpty(cellobj.Row))
                         {
                             var typedfact = new FactBase();
                             typedfact.Dimensions = fact.Dimensions.Where(i => i.IsTyped).ToList();
                             var typedfactkey = typedfact.FactString.Trim();
                             var reportkey = String.Format("{0}|{1}", cellobj.Report, cellobj.Extension);
-                            if (!DynamicCellDictionary.ContainsKey(reportkey))
+                            if (!DynamicCellDictionary_Old.ContainsKey(reportkey))
                             {
-                                DynamicCellDictionary.Add(reportkey, new Dictionary<string, string>());
+                                DynamicCellDictionary_Old.Add(reportkey, new Dictionary<string, string>());
                             }
-                            var cellsofreportdict = DynamicCellDictionary[reportkey];
+                            var cellsofreportdict = DynamicCellDictionary_Old[reportkey];
                             if (!cellsofreportdict.ContainsKey(typedfactkey))
                             {
 
@@ -304,7 +382,7 @@ namespace LogicalModel
                 {
                 }
             }
-            foreach (var cellsofreport in DynamicCellDictionary)
+            foreach (var cellsofreport in DynamicCellDictionary_Old)
             {
                 var rowix = 0;
                 for (var i = 0; i < cellsofreport.Value.Count; i++)
@@ -328,19 +406,42 @@ namespace LogicalModel
             var cellobj = new Cell();
             cellobj.SetFromCellID(cellID);
 
+            var reportid = cellobj.Report;
+
+            if (DynamicReportCells.ContainsKey(reportid))
+            {
+                var cellsofreportdict = DynamicCellDictionary_Old[reportid];
+
+                if (cellsofreportdict.ContainsKey(cellobj.FactString)) 
+                {
+                    var cellid = cellsofreportdict[cellobj.FactString];
+                    cellobj.SetFromCellID(cellid);
+                }
+            }
+
+            return cellobj.CellID;
+        }
+
+        public string GetDynamicCellID_Old(string cellID, FactBase fact)
+        {
+            var dynamiccellID = cellID;
+
+            var cellobj = new Cell();
+            cellobj.SetFromCellID(cellID);
+
             var typedfact = new FactBase();
             typedfact.Dimensions = fact.Dimensions.Where(i => i.IsTyped).ToList();
-            if (typedfact.Dimensions.Count == 0) 
+            if (typedfact.Dimensions.Count == 0)
             {
                 return cellID;
             }
             var typedfactkey = typedfact.FactString;
             var reportkey = String.Format("{0}|{1}", cellobj.Report, cellobj.Extension);
 
-            if (DynamicCellDictionary.ContainsKey(reportkey))
+            if (DynamicCellDictionary_Old.ContainsKey(reportkey))
             {
-                var cellsofreportdict = DynamicCellDictionary[reportkey];
-                if (cellsofreportdict.ContainsKey(typedfactkey)) 
+                var cellsofreportdict = DynamicCellDictionary_Old[reportkey];
+                if (cellsofreportdict.ContainsKey(typedfactkey))
                 {
                     var rowid = cellsofreportdict[typedfactkey];
                     cellobj.Row = rowid;
@@ -349,5 +450,19 @@ namespace LogicalModel
 
             return cellobj.CellID;
         }
+
+        public Hierarchy<LayoutItem> GetTableExtensions(Table table) 
+        {
+            if (this.DynamicReportCells.ContainsKey(table.ID))
+            {
+                return this.DynamicReportCells[table.ID].GetInstanceExtensions(table);
+            }
+            else 
+            {
+                return table.Extensions;
+
+            }
+        }
+    
     }
 }

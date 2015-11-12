@@ -283,7 +283,12 @@ namespace LogicalModel.Base
             }
             return false;
         }
-      
+        public void SetTyped() 
+        {
+            foreach (var dim in Dimensions) {
+                dim.SetTyped();
+            }
+        }
         public override string ToString()
         {
             return GetFactString();

@@ -225,7 +225,10 @@ namespace UI.Services
                                         ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
                                         ht.Item.Type = "table";
                                         //TODO EXT
-                                        var tbextensions = tbl.Extensions.Children;
+                                        //var tbextensions = tbl.Extensions.Children;
+                                        var tbextensions = Engine.CurrentInstance.GetTableExtensions(tbl).Children;
+
+
                                         var extensions = tbextensions.Select(i =>
                                         {
                                             var ti = new TableInfo();

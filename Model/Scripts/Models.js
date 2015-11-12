@@ -416,12 +416,23 @@ var Model;
         return Cell;
     })(InstanceFact);
     Model.Cell = Cell;
+    var DynamicCellDictionary = (function () {
+        function DynamicCellDictionary() {
+            this.ExtDictionary = {};
+            this.RowDictionary = {};
+            this.ColDictionary = {};
+            this.CellOfFact = {};
+        }
+        return DynamicCellDictionary;
+    })();
+    Model.DynamicCellDictionary = DynamicCellDictionary;
     var Instance = (function () {
         function Instance() {
             this.Facts = [];
             this.FilingIndicators = [];
             this.FactDictionary = null;
             this.DynamicCellDictionary = {};
+            this.DynamicReportCells = {};
         }
         return Instance;
     })();
