@@ -38,6 +38,13 @@ namespace LogicalModel.Models
             set { _CellOfFact = value; }
         }
 
+        private Hierarchy<LayoutItem> _Extensions = null;
+        public Hierarchy<LayoutItem> Extensions
+        {
+            get { return _Extensions; }
+            set { _Extensions = value; }
+        }
+
         public DynamicCellDictionary() 
         {
 
@@ -103,42 +110,46 @@ namespace LogicalModel.Models
             }
             else
             {
-                var hlroot = new Hierarchy<LayoutItem>(table.Extensions.Item);
-                var ix = 1;
-                foreach (var typedext in ExtDictionary)
+                if (this.Extensions == null)
                 {
-                    var factstring = typedext.Key;
-                    var typedfact = new FactBase();
-                    typedfact.SetFromString(factstring);
-                    typedfact.SetTyped();
-
-                    foreach (var ext in table.Extensions.Children)
+                    var hlroot = new Hierarchy<LayoutItem>(table.Extensions.Item);
+                    var ix = 1;
+                    foreach (var typedext in ExtDictionary)
                     {
-                        var li_original = ext.Item;
-                        var li_new = LayoutItem.Copy(li_original);
-                        foreach (var dim in li_new.Dimensions)
+                        var factstring = typedext.Key;
+                        var typedfact = new FactBase();
+                        typedfact.SetFromString(factstring);
+                        typedfact.SetTyped();
+
+                        foreach (var ext in table.Extensions.Children)
                         {
-                            var instancedim = typedfact.Dimensions.FirstOrDefault(i => i.DimensionItem == dim.DimensionItem && i.Domain == dim.Domain);
-                            dim.DomainMember = instancedim.DomainMember;
+                            var li_original = ext.Item;
+                            var li_new = LayoutItem.Copy(li_original);
+                            foreach (var dim in li_new.Dimensions)
+                            {
+                                var instancedim = typedfact.Dimensions.FirstOrDefault(i => i.DimensionItem == dim.DimensionItem && i.Domain == dim.Domain);
+                                dim.DomainMember = instancedim.DomainMember;
+                            }
+                            var fact = new FactBase();
+                            fact.Dimensions = li_new.Dimensions;
+                            fact.Concept = li_new.Concept;
+                            fact.SetFactString();
+                            li_new.FactString = fact.FactString;
+                            var code = String.Format(Table.LabelCodeFormat, typedext.Value);
+                            var content = String.Format(Table.ExtensionLableContentFormat, code);
+                            li_new.LabelCode = code;
+                            li_new.LabelContent = content;
+                            var hli = new Hierarchy<LayoutItem>(li_new);
+                            hlroot.Children.Add(hli);
+                            hli.Parent = hlroot;
+
+                            ix++;
                         }
-                        var fact = new FactBase();
-                        fact.Dimensions = li_new.Dimensions;
-                        fact.Concept = li_new.Concept;
-                        fact.SetFactString();
-                        li_new.FactString = fact.FactString;
-                        var code = String.Format(Table.LabelCodeFormat, ix);
-                        var content = String.Format(Table.ExtensionLableContentFormat, code);
-                        li_new.LabelCode = code;
-                        li_new.LabelContent = content;
-                        var hli = new Hierarchy<LayoutItem>(li_new);
-                        hlroot.Children.Add(hli);
-                        hli.Parent = hlroot;
 
-                        ix++;
                     }
-
+                    Extensions = hlroot;
                 }
-                return hlroot;
+                return Extensions;
             }
         }
 

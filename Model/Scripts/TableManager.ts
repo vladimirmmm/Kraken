@@ -209,25 +209,21 @@ module Controls
             this.Manager.LoadLayoutFromHtml(element, this);
         }
 
-        public AddRow(index:number=-1):Row
-        {
+        public AddRow(index: number = -1, id:string = ""): Row {
             var me = this;
 
             var templaterow = this.Manager.TemplateRow;
             var indexedrow = (index > -1 && index < this.Rows.length) ? this.Rows[0] : null;
-            var referencerow = (index == -1) ? this.Rows.AsLinq<Row>().LastOrDefault().UIElement : indexedrow.UIElement;
+            var lastrow = this.Rows.AsLinq<Row>().LastOrDefault()
+            var referencerow = (index == -1) ? IsNull(lastrow) ? templaterow.UIElement : lastrow.UIElement : indexedrow.UIElement;
             var newrow = me.GetNewRow();
             var newelement = _Clone(templaterow.UIElement);
             me.SetRow(newrow, newelement);
             Row.ClearDataCells(newrow);
-            
+
             var newrowHeaderCell = newrow.Cells.AsLinq<Cell>().LastOrDefault(i=> i.Type == CellType.Header);
-            //var rowid = Format(Table.RowID_Format, me.RowHeader.Cells.length);
-            //newrow.RowID = rowid;
 
             if (!IsNull(newrowHeaderCell)) {
-                //newrowHeaderCell.RowID = rowid;
-                //_Html(newrowHeaderCell.UIElement, rowid);
                 me.RowHeader.Cells.push(newrowHeaderCell);
 
             }
@@ -235,17 +231,20 @@ module Controls
 
 
             me.Rows.push(newrow);
+
             if (index == -1) {
                 _After(referencerow, newrow.UIElement);
             }
-            else
-            {
+            else {
                 _Before(referencerow, newrow.UIElement);
             }
+
             CallFunctionWithContext(me, me.OnRowAdded, [newrow]);
             CallFunctionWithContext(me, me.OnLayoutChanged, [newrow]);
 
             me.LoadEventHandlers();
+            ShowNotification(Format("Row {0} was added!", newrow.RowID));
+
             return newrow;
         }
 
@@ -284,10 +283,12 @@ module Controls
                 _Remove(row.UIElement);
                 CallFunctionWithContext(me, me.OnRowRemoved, [row]);
                 CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
+                ShowNotification(Format("Row {0} was removed!", row.RowID));
 
             } else
             {
-                console.log("The last row can't be removed!");
+                ShowNotification(Format("Row {0} was NOT removed! The last row can't be removed!", row.RowID));
+
             }
             return true;
         }

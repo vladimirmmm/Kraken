@@ -413,6 +413,17 @@ var Model;
             enumerable: true,
             configurable: true
         });
+        Cell.prototype.SetFromCellID = function (CellID) {
+            var reportpart = CellID.substring(0, CellID.indexOf("<") + 1);
+            var cellpart = TextBetween(CellID, "<", ">");
+            var cellparts = cellpart.split("|");
+            if (cellparts.length == 3) {
+                this.Report = reportpart;
+                this.Extension = cellparts[0];
+                this.Row = cellparts[1];
+                this.Column = cellparts[2];
+            }
+        };
         return Cell;
     })(InstanceFact);
     Model.Cell = Cell;
@@ -422,6 +433,7 @@ var Model;
             this.RowDictionary = {};
             this.ColDictionary = {};
             this.CellOfFact = {};
+            this.Extensions = null;
         }
         return DynamicCellDictionary;
     })();
@@ -434,6 +446,19 @@ var Model;
             this.DynamicCellDictionary = {};
             this.DynamicReportCells = {};
         }
+        Instance.GetFactFor = function (me, cellfact, cellid) {
+            var facts = [];
+            var fact = null;
+            var factkey = cellfact.GetFactKey();
+            var factstring = cellfact.GetFactString();
+            if (factkey in me.FactDictionary) {
+                facts = me.FactDictionary[factkey];
+                if (facts.length > 0) {
+                    fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
+                }
+            }
+            return fact;
+        };
         return Instance;
     })();
     Model.Instance = Instance;

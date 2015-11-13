@@ -409,6 +409,18 @@
             });
             return result;
         }
+
+        public SetFromCellID(CellID: string) {
+            var reportpart = CellID.substring(0, CellID.indexOf("<") + 1);
+            var cellpart = TextBetween(CellID, "<", ">");
+            var cellparts = cellpart.split("|");
+            if (cellparts.length == 3) {
+                this.Report = reportpart;
+                this.Extension = cellparts[0];
+                this.Row = cellparts[1];
+                this.Column = cellparts[2];
+            }
+        }
     }
     export class DynamicCellDictionary
     {
@@ -416,6 +428,7 @@
         public RowDictionary: Dictionary<string> = {};
         public ColDictionary: Dictionary<string> = {};
         public CellOfFact: Dictionary<string> = {};
+        public Extensions: Hierarchy<LayoutItem> = null;
     }
     export class Instance
     {
@@ -426,9 +439,43 @@
         public Entity: Entity;
         public TaxonomyModuleReference: string;
         public FullPath: string;
-        public FactDictionary: Object = null;
+        public FactDictionary: Dictionary<InstanceFact[]> = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
         public DynamicReportCells: Dictionary<DynamicCellDictionary> = {};
+
+        public static GetFactFor(me:Instance, cellfact: FactBase, cellid: string): InstanceFact
+        {
+            var facts: InstanceFact[] = [];
+            var fact: InstanceFact = null;
+            var factkey = cellfact.GetFactKey();
+            var factstring = cellfact.GetFactString();
+            if (factkey in me.FactDictionary) {
+                facts = me.FactDictionary[factkey];
+                if (facts.length > 0) {
+                    fact = facts.AsLinq<InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
+                }
+            } 
+            return fact;
+        }
+        //public GetCellForFact(factstring: string, reportid:string): string
+        //{
+        //    var me = this;
+        //    var cellid: string = "";
+        //    if (factstring in me.FactDictionary) {
+        //        cellid = me.FactDictionary[factstring];
+        //    }
+        //    else
+        //    {
+        //        var dynamicdataofreport = me.DynamicReportCells[reportid];
+        //        if (!IsNull(dynamicdataofreport)) {
+        //            if (factstring in dynamicdataofreport.CellOfFact)
+        //            {
+        //                cellid = dynamicdataofreport.CellOfFact[factstring];
+        //            }
+        //        }
+        //    }
+        //    return cellid;
+        //}
     }   
 
     export class Label {

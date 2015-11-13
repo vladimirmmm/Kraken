@@ -150,22 +150,20 @@ var Controls;
             this.UIElement = element;
             this.Manager.LoadLayoutFromHtml(element, this);
         };
-        Table.prototype.AddRow = function (index) {
+        Table.prototype.AddRow = function (index, id) {
             if (index === void 0) { index = -1; }
+            if (id === void 0) { id = ""; }
             var me = this;
             var templaterow = this.Manager.TemplateRow;
             var indexedrow = (index > -1 && index < this.Rows.length) ? this.Rows[0] : null;
-            var referencerow = (index == -1) ? this.Rows.AsLinq().LastOrDefault().UIElement : indexedrow.UIElement;
+            var lastrow = this.Rows.AsLinq().LastOrDefault();
+            var referencerow = (index == -1) ? IsNull(lastrow) ? templaterow.UIElement : lastrow.UIElement : indexedrow.UIElement;
             var newrow = me.GetNewRow();
             var newelement = _Clone(templaterow.UIElement);
             me.SetRow(newrow, newelement);
             Row.ClearDataCells(newrow);
             var newrowHeaderCell = newrow.Cells.AsLinq().LastOrDefault(function (i) { return i.Type == 2 /* Header */; });
-            //var rowid = Format(Table.RowID_Format, me.RowHeader.Cells.length);
-            //newrow.RowID = rowid;
             if (!IsNull(newrowHeaderCell)) {
-                //newrowHeaderCell.RowID = rowid;
-                //_Html(newrowHeaderCell.UIElement, rowid);
                 me.RowHeader.Cells.push(newrowHeaderCell);
             }
             me.Cells.concat(newrow.Cells);
@@ -179,6 +177,7 @@ var Controls;
             CallFunctionWithContext(me, me.OnRowAdded, [newrow]);
             CallFunctionWithContext(me, me.OnLayoutChanged, [newrow]);
             me.LoadEventHandlers();
+            ShowNotification(Format("Row {0} was added!", newrow.RowID));
             return newrow;
         };
         Table.prototype.GetRowByID = function (id) {
@@ -207,9 +206,10 @@ var Controls;
                 _Remove(row.UIElement);
                 CallFunctionWithContext(me, me.OnRowRemoved, [row]);
                 CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
+                ShowNotification(Format("Row {0} was removed!", row.RowID));
             }
             else {
-                console.log("The last row can't be removed!");
+                ShowNotification(Format("Row {0} was NOT removed! The last row can't be removed!", row.RowID));
             }
             return true;
         };

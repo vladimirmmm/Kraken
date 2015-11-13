@@ -51,18 +51,14 @@ var UI;
             });
         };
         Table.prototype.SetExternals = function () {
-            //this.Extensions = Model.Hierarchy.ToArray(this.ExtensionsRoot)
-            //    .AsLinq<Model.LayoutItem>()
-            //    .Where(i=> In(i.Category,
-            //    Model.LayoutItemCategory.Rule,
-            //    Model.LayoutItemCategory.BreakDown))
-            //    .Select(i=> i);
-            this.Extensions = this.ExtensionsRoot.Children.AsLinq().Select(function (i) { return i.Item; });
-            //.AsLinq<Model.LayoutItem>()
-            //.Where(i=> In(i.Category,
-            //Model.LayoutItemCategory.Rule,
-            //Model.LayoutItemCategory.BreakDown))
-            //.Select(i=> i);
+            var extensions = this.ExtensionsRoot.Children;
+            var dynamiccells = this.Instance.DynamicReportCells[this.Current_ReportID];
+            if (!IsNull(dynamiccells)) {
+                if (!IsNull(dynamiccells.Extensions)) {
+                    extensions = dynamiccells.Extensions.Children;
+                }
+            }
+            this.Extensions = extensions.AsLinq().Select(function (i) { return i.Item; });
             this.CurrentExtension = this.ExtensionsRoot.Item;
         };
         Table.prototype.GetData = function () {
@@ -140,6 +136,11 @@ var UI;
         Table.prototype.LoadExtension = function (li) {
             this.CurrentExtension = li;
             var extensionscell = _SelectFirst("#Extension");
+            var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
+            this.Cells.forEach(function (cell, ix) {
+                //var 
+                //cell.FactString
+            });
             _Html(extensionscell, Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
             _Attribute(extensionscell, "title", li.FactString);
         };
@@ -149,12 +150,6 @@ var UI;
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
                     me.Instance.FactDictionary = {};
-                    me.Instance.Facts.forEach(function (fact, index) {
-                        if (!IsNull(me.Instance.FactDictionary[fact.FactString])) {
-                            var x = 5;
-                        }
-                        me.Instance.FactDictionary[fact.FactString] = fact;
-                    });
                 }
             }
             me.SetDynamicRows();
@@ -164,15 +159,26 @@ var UI;
             //if (extfacts != null) {
             this.Cells.forEach(function (cell, index) {
                 if (!cell.IsBlocked) {
-                    //if (cell.LayoutID in extfacts)
-                    //{
                     var cellfb = new Model.FactBase();
                     cellfb.FactString = cell.FactString;
                     Model.FactBase.LoadFromFactString(cellfb);
                     Model.FactBase.Merge(cellfb, me.CurrentExtension);
                     var factstring = cellfb.GetFactString();
+                    var factkey = cellfb.GetFactKey();
                     //var factstring = extfacts[cell.LayoutID];
                     if (!IsNull(factstring)) {
+                        var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell.LayoutID);
+                        if (!IsNull(fact)) {
+                            var selector = "#" + cell.LayoutID.replace("|", "\\|");
+                            var cellelement = _SelectFirst(selector);
+                            if (IsNull(cellelement)) {
+                                ShowNotification(Format("No cell found with selector {0}", selector));
+                            }
+                            else {
+                                _Html(cellelement, fact.Value);
+                            }
+                            c++;
+                        }
                         if (!(factstring in me.Instance.FactDictionary)) {
                         }
                         else {
@@ -192,10 +198,8 @@ var UI;
                                 }
                             }
                             else {
-                                //dynamic
                                 facts.forEach(function (factobj, index) {
                                     var fact = Model.InstanceFact.Convert(factobj);
-                                    //fact.Load();
                                     Model.FactBase.LoadFromFactString(fact);
                                     var typeddimensions = fact.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
                                     var typedfacts = new Model.FactBase();
@@ -207,7 +211,6 @@ var UI;
                                         cellid = cellid.replace("R", rowid);
                                     }
                                     var selector = "#" + cellid.replace("|", "\\|");
-                                    //var cellelement = _SelectFirst(selector);
                                     var cellelement = _SelectFirst(selector, _SelectFirst("#" + rowid));
                                     _Html(cellelement, fact.Value);
                                 });
@@ -216,15 +219,22 @@ var UI;
                     }
                 }
             });
-            //me.SetCellEditors();
             ShowNotification(Format("{0} cells were populated!", c));
-            //}
-            //}
+        };
+        Table.prototype.SetRowID = function (row) {
         };
         Table.prototype.SetDynamicRows = function () {
             var me = this;
             //var datarows = _Select("tr.dynamicdata");
             //_Remove(datarows);
+            var uirows = me.UITable.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).Select(function (i) { return i.RowID; }).ToArray();
+            me.UITable.CanManageRows = false;
+            uirows.forEach(function (rowid, ix) {
+                var count = uirows.length;
+                ShowNotification(Format("removing row {0} ...", rowid));
+                me.UITable.RemoveRowByID(rowid);
+            });
+            me.UITable.CanManageRows = true;
             var cellobj = me.Cells[0];
             var url = window.location.pathname;
             var reportid = me.Current_ReportID;
@@ -236,6 +246,7 @@ var UI;
             me.UITable.CanManageRows = false;
             rows.forEach(function (rowitem) {
                 var row = me.UITable.AddRow(-1);
+                row.RowID = rowitem.Value;
                 me.SetCellID(row.UIElement);
                 var rowfact = new Model.FactBase();
                 rowfact.FactString = rowitem.Key;

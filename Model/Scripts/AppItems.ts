@@ -55,6 +55,7 @@ class UITableManager implements Controls.ITableManager {
             var rawdatacells = _Select("td", rawrow);
             var rawheadercells = _Select("th", rawrow);
             if (rawdatacells.length > 0) {
+
                 if (columncells.length < 1) {
                     headerix = ix - 1;
                     var headerrow = rawrows[headerix];
@@ -81,7 +82,12 @@ class UITableManager implements Controls.ITableManager {
                     cellobj.UIElement = cell;
                     row.Cells.push(cellobj);
                 });
-                table.Rows.push(row);
+                if (_HasClass(rawrow, "dynamic")) {
+                    me.TemplateRow = row;
+                    _Hide(me.TemplateRow.UIElement);
+                } else {
+                    table.Rows.push(row);
+                }
                 if (rawheadercells.length > table.HeaderColCount) {
                     table.HeaderColCount = rawheadercells.length;
                 }
@@ -112,10 +118,11 @@ class UITableManager implements Controls.ITableManager {
                 table.AddRow(-1);
             }
         }
-        me.SetDynamicRowIds(table);
+        //me.SetDynamicRowIds(table);
     }
 
     private SetDynamicRowIds(table: Controls.Table) {
+        ShowNotification("SetDynamicRowIds");
         var me = this;
         var fdyndata = (row: Controls.Row) => _HasClass(row.UIElement, "dynamicdata");
         var dynamicrows = table.Rows.AsLinq<Controls.Row>().Where(i=> fdyndata(i)).ToArray();

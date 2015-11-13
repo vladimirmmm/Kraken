@@ -83,7 +83,13 @@ var UITableManager = (function () {
                     cellobj.UIElement = cell;
                     row.Cells.push(cellobj);
                 });
-                table.Rows.push(row);
+                if (_HasClass(rawrow, "dynamic")) {
+                    me.TemplateRow = row;
+                    _Hide(me.TemplateRow.UIElement);
+                }
+                else {
+                    table.Rows.push(row);
+                }
                 if (rawheadercells.length > table.HeaderColCount) {
                     table.HeaderColCount = rawheadercells.length;
                 }
@@ -107,9 +113,10 @@ var UITableManager = (function () {
                 table.AddRow(-1);
             }
         }
-        me.SetDynamicRowIds(table);
+        //me.SetDynamicRowIds(table);
     };
     UITableManager.prototype.SetDynamicRowIds = function (table) {
+        ShowNotification("SetDynamicRowIds");
         var me = this;
         var fdyndata = function (row) { return _HasClass(row.UIElement, "dynamicdata"); };
         var dynamicrows = table.Rows.AsLinq().Where(function (i) { return fdyndata(i); }).ToArray();

@@ -254,6 +254,10 @@ namespace LogicalModel
 
         public void SaveToJson() 
         {
+            foreach (var table in Taxonomy.Tables) 
+            {
+                GetTableExtensions(table);
+            }
             //var json_instance = Utilities.Converters.ToJson<Instance>(this);
             var json_instance = Utilities.Converters.ToJson(this);
             //Utilities.FS.WriteAllText(this.Taxonomy.CurrentInstancePath, "var currentinstance = " + json_instance + ";");

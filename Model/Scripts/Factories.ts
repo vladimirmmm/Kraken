@@ -16,18 +16,21 @@
         };
         uitablemanger.OnLoaded = function (table) {
             uitablemanger.CellEditorAssigner(table.UIElement);
+            /*
             var templaterow = _SelectFirst("tr.dynamic");
             if (!IsNull(templaterow)) {
                 uitablemanger.TemplateRow = uitable.GetRowByElement(templaterow);
                 _Hide(templaterow);
             }
+            */
         };
-        uitablemanger.OnRowAdded = function (row) {
+        uitablemanger.OnRowAdded = function (row:Controls.Row) {
             var rowelement = row.UIElement;
             _AddClass(rowelement, "dynamicdata");
             _RemoveClass(rowelement, "dynamic");
             _Attribute(rowelement, "style", "");
             uitablemanger.CellEditorAssigner(row.UIElement);
+            _Show(row.UIElement);
 
         };
         uitablemanger.OnRowRemoved = function (row) {
