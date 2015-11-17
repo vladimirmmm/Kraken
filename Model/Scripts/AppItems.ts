@@ -56,6 +56,7 @@ class UITableManager implements Controls.ITableManager {
         rawrows.forEach(function (rawrow, ix) {
             var rawdatacells = _Select("td", rawrow);
             var rawheadercells = _Select("th", rawrow);
+            var isdynamic = _HasClass(rawrow, "dynamic");
             if (rawdatacells.length > 0) {
 
                 if (columncells.length < 1) {
@@ -83,13 +84,16 @@ class UITableManager implements Controls.ITableManager {
                     cellobj.Value = _Html(cell).trim();
                     cellobj.UIElement = cell;
                     row.Cells.push(cellobj);
-                    table.Cells.push(cellobj);
+                    if (!isdynamic) {
+                        table.Cells.push(cellobj);
+                    }
                 });
-                if (_HasClass(rawrow, "dynamic")) {
+                if (isdynamic) {
                     me.TemplateRow = row;
                     _Hide(me.TemplateRow.UIElement);
                 } else {
                     table.Rows.push(row);
+
                 }
                 if (rawheadercells.length > table.HeaderColCount) {
                     table.HeaderColCount = rawheadercells.length;
@@ -153,7 +157,7 @@ class UITableManager implements Controls.ITableManager {
 
         });
     }
-    public Clear(table:Controls.Table) {
+    public Clear(table: Controls.Table) {
         table.Cells.forEach(function (cell, ix) {
             Controls.Cell.Clear(cell);
             //_Attribute(cell.UIElement, "factstring", "");
@@ -186,7 +190,7 @@ class UITableManager implements Controls.ITableManager {
 
     private SetCellsOfRow(row: Controls.Row) {
         var me = this;
-        
+
         this.CellEditorAssigner(row.UIElement);
         row.Cells.forEach(function (cell, ix) {
             _Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
@@ -246,7 +250,7 @@ class UITableManager implements Controls.ITableManager {
 
         };
 
-        this.OnLayoutChanged = function (table:Controls.Table) {
+        this.OnLayoutChanged = function (table: Controls.Table) {
             var me = <UITableManager>this;
             if (table.CanManageRows) {
                 me.ManageRows(table);

@@ -160,19 +160,22 @@ var UI;
             me.UITable.Manager.Clear(me.UITable);
             me.SetDynamicRows();
             var c = 0;
-            this.Cells.forEach(function (cell, index) {
-                if (!cell.IsBlocked) {
+            var cells = this.UITable.Cells; //this.Cells;
+            cells.forEach(function (cell, index) {
+                if (!_HasClass(cell, "blocked")) {
+                    var cellelement = cell.UIElement;
+                    var cell_layoutid = _Attribute(cellelement, "id");
+                    var cell_factstring = _Attribute(cellelement, "factstring");
                     var cellfb = new Model.FactBase();
-                    cellfb.FactString = cell.FactString;
+                    cellfb.FactString = cell_factstring; //  cell.FactString;
                     Model.FactBase.LoadFromFactString(cellfb);
                     Model.FactBase.Merge(cellfb, me.CurrentExtension);
                     var factstring = cellfb.GetFactString();
                     var factkey = cellfb.GetFactKey();
-                    //var factstring = extfacts[cell.LayoutID];
                     if (!IsNull(factstring)) {
-                        var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell.LayoutID);
+                        var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell_layoutid);
                         if (!IsNull(fact)) {
-                            var selector = "#" + cell.LayoutID.replace("|", "\\|");
+                            var selector = "#" + cell_layoutid.replace("|", "\\|");
                             var cellelement = _SelectFirst(selector);
                             if (IsNull(cellelement)) {
                                 ShowNotification(Format("No cell found with selector {0}", selector));
@@ -189,7 +192,7 @@ var UI;
                             if (facts.length == 1 && facts[0].FactKey == facts[0].FactString) {
                                 var fact = facts[0];
                                 if (!IsNull(fact)) {
-                                    var selector = "#" + cell.LayoutID.replace("|", "\\|");
+                                    var selector = "#" + cell_layoutid.replace("|", "\\|");
                                     var cellelement = _SelectFirst(selector);
                                     if (IsNull(cellelement)) {
                                         ShowNotification(Format("No cell found with selector {0}", selector));
@@ -207,8 +210,8 @@ var UI;
                                     var typeddimensions = fact.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
                                     var typedfacts = new Model.FactBase();
                                     typedfacts.Dimensions = typeddimensions;
-                                    var rowid = me.GetDynamicRowID(cell.LayoutID, typedfacts);
-                                    var cellid = cell.LayoutID;
+                                    var rowid = me.GetDynamicRowID(cell_layoutid, typedfacts);
+                                    var cellid = cell_layoutid;
                                     var r_ix = cellid.indexOf("R");
                                     if (r_ix > -1) {
                                         cellid = cellid.replace("R", rowid);
@@ -234,7 +237,7 @@ var UI;
             me.UITable.CanManageRows = false;
             uirows.forEach(function (rowid, ix) {
                 var count = uirows.length;
-                ShowNotification(Format("removing row {0} ...", rowid));
+                //ShowNotification(Format("removing row {0} ...", rowid));
                 me.UITable.RemoveRowByID(rowid);
             });
             me.UITable.CanManageRows = true;
@@ -248,9 +251,9 @@ var UI;
             var rows = GetProperties(rowidcontainer.RowDictionary);
             me.UITable.CanManageRows = false;
             rows.forEach(function (rowitem) {
-                var row = me.UITable.AddRow(-1);
-                row.RowID = rowitem.Value;
-                me.SetCellID(row.UIElement);
+                var row = me.UITable.AddRow(-1, rowitem.Value);
+                //row.RowID = rowitem.Value;
+                me.SetCellIDs(row);
                 var rowfact = new Model.FactBase();
                 rowfact.FactString = rowitem.Key;
                 Model.FactBase.LoadFromFactString(rowfact);
@@ -309,6 +312,16 @@ var UI;
             //    });
             //}
             return "";
+        };
+        Table.prototype.SetCellIDs = function (row) {
+            var rowid = _Attribute(row.UIElement, "id");
+            row.Cells.forEach(function (cell, index) {
+                var cellid = _Attribute(cell.UIElement, "id");
+                cellid = cellid.substring(cellid.indexOf("|"));
+                cellid = rowid + cellid;
+                _Attribute(cell.UIElement, "id", cellid);
+                _Attribute(cell.UIElement, "title", cellid);
+            });
         };
         Table.prototype.SetCellID = function (row) {
             var cells = _Select("td", row);

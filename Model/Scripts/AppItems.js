@@ -60,6 +60,7 @@ var UITableManager = (function () {
         rawrows.forEach(function (rawrow, ix) {
             var rawdatacells = _Select("td", rawrow);
             var rawheadercells = _Select("th", rawrow);
+            var isdynamic = _HasClass(rawrow, "dynamic");
             if (rawdatacells.length > 0) {
                 if (columncells.length < 1) {
                     headerix = ix - 1;
@@ -83,9 +84,11 @@ var UITableManager = (function () {
                     cellobj.Value = _Html(cell).trim();
                     cellobj.UIElement = cell;
                     row.Cells.push(cellobj);
-                    table.Cells.push(cellobj);
+                    if (!isdynamic) {
+                        table.Cells.push(cellobj);
+                    }
                 });
-                if (_HasClass(rawrow, "dynamic")) {
+                if (isdynamic) {
                     me.TemplateRow = row;
                     _Hide(me.TemplateRow.UIElement);
                 }

@@ -66,9 +66,34 @@ var Controls;
             var cellswithData = this.Cells.AsLinq().FirstOrDefault(function (i) { return i.HasData(); });
             return cellswithData != null;
         };
-        //public IsDynamic(): boolean {
-        //    return _HasClass(this.UIElement, "dynamic");
-        //} 
+        Row.SetRowID = function (row, ID) {
+            row.RowID = ID;
+            var headercell = row.HeaderCell;
+            var existingrowid = _Html(headercell.UIElement).trim();
+            _Html(headercell.UIElement, row.RowID);
+            _Attribute(row.UIElement, "id", row.RowID);
+            row.Cells.forEach(function (cell, ix) {
+                var cellid = _Attribute(cell.UIElement, "id").trim();
+                if (cellid.indexOf("|") == 0) {
+                    cellid = row.RowID + cellid;
+                    _Attribute(cell.UIElement, "id", cellid);
+                }
+            });
+        };
+        Row.SetRowFromElement = function (row, element) {
+            var headercells = _Select("th", element);
+            var datacells = _Select("td", element);
+            row.Cells = [];
+            var headercellelement = headercells.AsLinq().LastOrDefault();
+            if (!IsNull(headercellelement)) {
+                row.HeaderCell = Cell.ConvertFrom(headercellelement);
+            }
+            row.UIElement = element;
+            datacells.forEach(function (cellelement, ix) {
+                var cell = Cell.ConvertFrom(cellelement);
+                row.Cells.push(cell);
+            });
+        };
         Row.ClearDataCells = function (row) {
             row.Cells.forEach(function (cell, ix) {
                 _Html(cell.UIElement, "");
@@ -162,13 +187,14 @@ var Controls;
             var referencerow = (index == -1) ? IsNull(lastrow) ? templaterow.UIElement : lastrow.UIElement : indexedrow.UIElement;
             var newrow = me.GetNewRow();
             var newelement = _Clone(templaterow.UIElement);
-            me.SetRow(newrow, newelement);
+            Row.SetRowFromElement(newrow, newelement);
+            Controls.Row.SetRowID(newrow, id);
             Row.ClearDataCells(newrow);
             var newrowHeaderCell = newrow.Cells.AsLinq().LastOrDefault(function (i) { return i.Type == 2 /* Header */; });
             if (!IsNull(newrowHeaderCell)) {
                 me.RowHeader.Cells.push(newrowHeaderCell);
             }
-            me.Cells.concat(newrow.Cells);
+            me.Cells = me.Cells.concat(newrow.Cells);
             me.Rows.push(newrow);
             if (index == -1) {
                 _After(referencerow, newrow.UIElement);
@@ -179,7 +205,7 @@ var Controls;
             CallFunctionWithContext(me, me.OnRowAdded, [newrow]);
             CallFunctionWithContext(me, me.OnLayoutChanged, [newrow]);
             me.LoadEventHandlers();
-            ShowNotification(Format("Row {0} was added!", newrow.RowID));
+            //ShowNotification(Format("Row {0} was added!", newrow.RowID));
             return newrow;
         };
         Table.prototype.GetRowByID = function (id) {
@@ -208,26 +234,10 @@ var Controls;
                 _Remove(row.UIElement);
                 CallFunctionWithContext(me, me.OnRowRemoved, [row]);
                 CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
-                ShowNotification(Format("Row {0} was removed!", row.RowID));
             }
             else {
-                ShowNotification(Format("Row {0} was NOT removed! The last row can't be removed!", row.RowID));
             }
             return true;
-        };
-        Table.prototype.SetRow = function (row, element) {
-            var headercells = _Select("th", element);
-            var datacells = _Select("td", element);
-            row.Cells = [];
-            var headercellelement = headercells.AsLinq().LastOrDefault();
-            if (!IsNull(headercellelement)) {
-                row.HeaderCell = Cell.ConvertFrom(headercellelement);
-            }
-            row.UIElement = element;
-            datacells.forEach(function (cellelement, ix) {
-                var cell = Cell.ConvertFrom(cellelement);
-                row.Cells.push(cell);
-            });
         };
         return Table;
     })();
