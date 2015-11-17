@@ -119,6 +119,8 @@ module UI {
         public LoadToUI()
         {
             var me = this;
+            this.LoadInstance(this.Instance);
+            /*
             if (me.Instance != null && !me.IsInstanceLoaded)
             {
                 if (!IsNull(this.Instance)) {
@@ -126,6 +128,7 @@ module UI {
                 }
                 me.IsInstanceLoaded = true;
             }
+            */
         }
   
         public Load()
@@ -205,31 +208,21 @@ module UI {
 
         public LoadInstance(instance: Model.Instance) {
             var me = this;
-
+            ShowNotification("Loading Instance to UI");
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
 
-                    me.Instance.FactDictionary = {};
-                    //me.Instance.Facts.forEach(function (fact, index) {
-                    //    if (!IsNull(me.Instance.FactDictionary[fact.FactString])) {
-                    //        var x = 5;
-                    //    }
-                    //    me.Instance.FactDictionary[fact.FactString] = fact;
-                    //});
+                    me.Instance.FactDictionary = {};     
                 }
             }
-
+            me.UITable.Manager.Clear(me.UITable);
             me.SetDynamicRows();
 
-
-            //if (!IsNull(me.FactMap)) {
             var c = 0;
-            //var extfacts = me.FactMap[me.CurrentExtension.FactString];
-            //if (extfacts != null) {
+
             this.Cells.forEach(function (cell, index) {
                 if (!cell.IsBlocked) {
-
                     var cellfb = new Model.FactBase();
                     cellfb.FactString = cell.FactString;
                     Model.FactBase.LoadFromFactString(cellfb);
@@ -500,7 +493,7 @@ module UI {
 
 
 } 
-var Table: UI.Table = null;
+//var UITable: UI.Table = null;
 function SetExtension(extjson:string) {
 }
 

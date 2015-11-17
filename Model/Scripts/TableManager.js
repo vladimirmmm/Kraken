@@ -34,6 +34,9 @@ var Controls;
             this.Type = 0 /* Unknown */;
             this.UIElement = null;
         }
+        Cell.Clear = function (cell) {
+            _Html(cell.UIElement, "");
+        };
         Cell.ConvertFrom = function (element) {
             var cell = new Cell();
             var tag = _Property(element, "tagName");
@@ -114,7 +117,6 @@ var Controls;
                 CallFunction(me.Manager.OnLayoutChanged, [row]);
             };
             this.Manager = manager;
-            manager.Table;
         }
         Table.prototype.GetRowOfCell = function (cellelement) {
             var me = this;

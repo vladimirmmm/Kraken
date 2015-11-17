@@ -25,8 +25,6 @@ module Controls
         TemplateRow: Row;
         TemplateColumn: Column;
 
-        Table: Table;
-
         LoadToUI(data: Object);
         LoadPage(page: number, asyncdatagetter: Function, callback: Function);
 
@@ -37,6 +35,7 @@ module Controls
         EditCell(cell: Cell);
 
         ManageRows(table: Table);
+        Clear(table: Table);
 
         CellEditorAssigner: Function;
 
@@ -67,7 +66,10 @@ module Controls
         public Value: string = "";
         public Type: CellType = CellType.Unknown;
         public UIElement: Element = null;
-
+        public static Clear(cell: Cell) 
+        { 
+            _Html(cell.UIElement, "");
+        }
         public static ConvertFrom(element: Element): Cell {
             var cell = new Cell();
             var tag = _Property(element, "tagName");
@@ -163,7 +165,6 @@ module Controls
         constructor(manager: ITableManager)
         {
             this.Manager = manager;
-            manager.Table
         }
 
         public GetRowOfCell(cellelement: Element): Row {

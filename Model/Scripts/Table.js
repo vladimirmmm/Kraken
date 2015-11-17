@@ -81,12 +81,16 @@ var UI;
         };
         Table.prototype.LoadToUI = function () {
             var me = this;
-            if (me.Instance != null && !me.IsInstanceLoaded) {
+            this.LoadInstance(this.Instance);
+            /*
+            if (me.Instance != null && !me.IsInstanceLoaded)
+            {
                 if (!IsNull(this.Instance)) {
                     this.LoadInstance(this.Instance);
                 }
                 me.IsInstanceLoaded = true;
             }
+            */
         };
         Table.prototype.Load = function () {
             var me = this;
@@ -146,17 +150,16 @@ var UI;
         };
         Table.prototype.LoadInstance = function (instance) {
             var me = this;
+            ShowNotification("Loading Instance to UI");
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
                     me.Instance.FactDictionary = {};
                 }
             }
+            me.UITable.Manager.Clear(me.UITable);
             me.SetDynamicRows();
-            //if (!IsNull(me.FactMap)) {
             var c = 0;
-            //var extfacts = me.FactMap[me.CurrentExtension.FactString];
-            //if (extfacts != null) {
             this.Cells.forEach(function (cell, index) {
                 if (!cell.IsBlocked) {
                     var cellfb = new Model.FactBase();
@@ -372,7 +375,7 @@ var UI;
     })();
     UI.Table = Table;
 })(UI || (UI = {}));
-var Table = null;
+//var UITable: UI.Table = null;
 function SetExtension(extjson) {
 }
 //function LoadInstance(instancejson:string) {

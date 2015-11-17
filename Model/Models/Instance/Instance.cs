@@ -414,13 +414,32 @@ namespace LogicalModel
 
             if (DynamicReportCells.ContainsKey(reportid))
             {
-                var cellsofreportdict = DynamicCellDictionary_Old[reportid];
-
-                if (cellsofreportdict.ContainsKey(cellobj.FactString)) 
+                var dynamicdata = DynamicReportCells[reportid];
+                if (dynamicdata != null)
                 {
-                    var cellid = cellsofreportdict[cellobj.FactString];
-                    cellobj.SetFromCellID(cellid);
+                    if (dynamicdata.CellOfFact.ContainsKey(fact.FactString))
+                    {
+                        var cellid = dynamicdata.CellOfFact[fact.FactString];
+                        cellobj.SetFromCellID(cellid);
+
+                    }
+                    else 
+                    {
+                        Logger.WriteLine("No Cell found for " + fact.FactString);
+
+                    }
                 }
+                else 
+                {
+                    Logger.WriteLine("No Dynamic Data found for " + reportid);
+                }
+                //var cellsofreportdict = DynamicCellDictionary_Old[reportid];
+
+                //if (cellsofreportdict.ContainsKey(cellobj.FactString)) 
+                //{
+                //    var cellid = cellsofreportdict[cellobj.FactString];
+                //    cellobj.SetFromCellID(cellid);
+                //}
             }
 
             return cellobj.CellID;

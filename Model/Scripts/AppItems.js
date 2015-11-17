@@ -42,6 +42,7 @@ var UITableManager = (function () {
         this.OnColumnAdded = null;
         this.OnColumnRemoved = null;
         this.OnLayoutChanged = null;
+        this.AddEventHandlers();
     }
     UITableManager.prototype.LoadToUI = function (data) {
     };
@@ -82,6 +83,7 @@ var UITableManager = (function () {
                     cellobj.Value = _Html(cell).trim();
                     cellobj.UIElement = cell;
                     row.Cells.push(cellobj);
+                    table.Cells.push(cellobj);
                 });
                 if (_HasClass(rawrow, "dynamic")) {
                     me.TemplateRow = row;
@@ -101,7 +103,7 @@ var UITableManager = (function () {
         colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i); }).ToArray();
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
-        CallFunction(me.OnLoaded, [me]);
+        CallFunctionWithContext(me, me.OnLoaded, [table]);
     };
     UITableManager.prototype.ManageRows = function (table) {
         Notify("ManageRows");
@@ -110,10 +112,25 @@ var UITableManager = (function () {
             var rowsquery = table.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); });
             var emptyrow = rowsquery.FirstOrDefault(function (i) { return !i.HasData(); });
             if (IsNull(emptyrow)) {
-                table.AddRow(-1);
+                emptyrow = table.AddRow(-1);
+                this.SetRowID("emptyrow", emptyrow);
             }
         }
         //me.SetDynamicRowIds(table);
+    };
+    UITableManager.prototype.SetRowID = function (ID, row) {
+        row.RowID = ID;
+        var headercell = row.HeaderCell;
+        var existingrowid = _Html(headercell.UIElement).trim();
+        _Html(headercell.UIElement, row.RowID);
+        _Attribute(row.UIElement, "id", row.RowID);
+        row.Cells.forEach(function (cell, ix) {
+            var cellid = _Attribute(cell.UIElement, "id").trim();
+            if (cellid.indexOf("|") == 0) {
+                cellid = row.RowID + cellid;
+                _Attribute(cell.UIElement, "id", cellid);
+            }
+        });
     };
     UITableManager.prototype.SetDynamicRowIds = function (table) {
         ShowNotification("SetDynamicRowIds");
@@ -121,25 +138,47 @@ var UITableManager = (function () {
         var fdyndata = function (row) { return _HasClass(row.UIElement, "dynamicdata"); };
         var dynamicrows = table.Rows.AsLinq().Where(function (i) { return fdyndata(i); }).ToArray();
         dynamicrows.forEach(function (row, ix) {
-            row.RowID = Format(me.RowID_Format, ix);
-            var headercell = row.HeaderCell;
-            var existingrowid = _Html(headercell.UIElement).trim();
-            _Html(headercell.UIElement, row.RowID);
-            _Attribute(row.UIElement, "id", row.RowID);
-            row.Cells.forEach(function (cell, ix) {
-                var cellid = _Attribute(cell.UIElement, "id").trim();
-                if (cellid.indexOf("|") == 0) {
-                    cellid = row.RowID + cellid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                }
-                _Attribute(cell.UIElement, "title", cellid + "\r\n" + _Attribute(cell.UIElement, "factstring"));
+            var rowid = row.RowID; //Format(me.RowID_Format, ix);
+            this.SetRowID(rowid, row);
+        });
+    };
+    UITableManager.prototype.Clear = function (table) {
+        table.Cells.forEach(function (cell, ix) {
+            Controls.Cell.Clear(cell);
+            //_Attribute(cell.UIElement, "factstring", "");
+        });
+    };
+    UITableManager.prototype.Validate = function () {
+        return true;
+    };
+    UITableManager.prototype.Save = function () {
+        return true;
+    };
+    UITableManager.prototype.EditCell = function (cell) {
+        return true;
+    };
+    UITableManager.prototype.SetCellsOfRow = function (row) {
+        var me = this;
+        this.CellEditorAssigner(row.UIElement);
+        row.Cells.forEach(function (cell, ix) {
+            _Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
+        });
+        _EnsureEventHandler(row.UIElement, "click", function (e) {
+            _Focus(this);
+            _RemoveClass(_Select("tr", _Parent(row.UIElement)), "selected");
+            _AddClass(this, "selected");
+        });
+    };
+    UITableManager.prototype.AddEventHandlers = function () {
+        var me = this;
+        this.CellEditorAssigner = function (element) {
+            AssignEditor(_Select("td.data:not(.blocked)", element), GetXbrlCellEditor, me.OnCellChanged);
+        };
+        this.OnLoaded = function (table) {
+            me.CellEditorAssigner(table.UIElement);
+            table.Rows.forEach(function (row, ix) {
+                me.SetCellsOfRow(row);
             });
-            _EnsureEventHandler(row.UIElement, "click", function (e) {
-                _Focus(this);
-                _RemoveClass(_Select("tr", table.UIElement), "selected");
-                _AddClass(this, "selected");
-            });
-            //_EnsureEventHandler(row.UIElement, "keyup", function (e) {
             _EnsureEventHandler(window, "keyup", function (e) {
                 if (e.which == 46) {
                     var rowtodelete = null;
@@ -153,16 +192,32 @@ var UITableManager = (function () {
                     }
                 }
             });
-        });
-    };
-    UITableManager.prototype.Validate = function () {
-        return true;
-    };
-    UITableManager.prototype.Save = function () {
-        return true;
-    };
-    UITableManager.prototype.EditCell = function (cell) {
-        return true;
+        };
+        this.OnRowAdded = function (row) {
+            var rowelement = row.UIElement;
+            _AddClass(rowelement, "dynamicdata");
+            _RemoveClass(rowelement, "dynamic");
+            _Attribute(rowelement, "style", "");
+            me.SetCellsOfRow(row);
+            _Show(row.UIElement);
+        };
+        this.OnRowRemoved = function (row) {
+        };
+        this.OnLayoutChanged = function (table) {
+            var me = this;
+            if (table.CanManageRows) {
+                me.ManageRows(table);
+            }
+        };
+        this.OnCellChanged = function (cell, value) {
+            var table = app.taxonomycontainer.Table.UITable;
+            var row = table.GetRowOfCell(cell);
+            if (!IsNull(row) && !row.HasData()) {
+                table.RemoveRow(row);
+            }
+            this.ManageRows(table);
+            //OnCellChanged(cell, value);
+        };
     };
     return UITableManager;
 })();

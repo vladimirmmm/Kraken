@@ -86,14 +86,14 @@ namespace Model.InstanceModel
             Clear();
             var allnodes = Utilities.Xml.AllNodes(XmlDocument);
 
-            this.Contexts.Clear();
-            var contextnodes = allnodes.Where(i => i.Name.ToLower()=="context").ToList();
-            foreach (var contextnode in contextnodes)
-            {
-                var item = new Context();
-                Mappings.CurrentMapping.Map<Context>(contextnode, item);
-                this.Contexts.Add(item);
-            }
+            //this.Contexts.Clear();
+            //var contextnodes = allnodes.Where(i => i.Name.ToLower()=="context").ToList();
+            //foreach (var contextnode in contextnodes)
+            //{
+            //    var item = new Context();
+            //    Mappings.CurrentMapping.Map<Context>(contextnode, item);
+            //    this.Contexts.Add(item);
+            //}
             var conceptnslist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.Namespace).Distinct().ToList();
             foreach (var conceptns in conceptnslist)
             {
@@ -140,9 +140,9 @@ namespace Model.InstanceModel
                 var factstring = "";
                 factstring = String.Format("{0},",xbrlfact.Concept);
                 var factkey = factstring;
-                if (xbrlcontext.ID=="c-108")
-                {
-                }
+                //if (xbrlcontext.ID=="c-108")
+                //{
+                //}
                 logicalfact.Concept = new Concept();
                 logicalfact.Concept.Content = xbrlfact.Concept;
                 if (xbrlcontext.Scenario != null)

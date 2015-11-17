@@ -21,17 +21,19 @@ var StartProgress: F_Progress = function (id: string) { return null; };
 var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
 
 
-var requests: General.KeyValue[] = []; 
+var requests: General.KeyValue[] = [];
 
 class UITableManager implements Controls.ITableManager {
     public RowID_Format: string = "R{0:D4}";
     public ColumnID_Format: string = "C{0:D4}";
     public ExtensionID_Format: string = "Z{0:D4}";
 
-    TemplateRow: Controls.Row=null;
-    TemplateColumn: Controls.Column=null;
+    TemplateRow: Controls.Row = null;
+    TemplateColumn: Controls.Column = null;
 
-    public Table: Controls.Table;
+    constructor() {
+        this.AddEventHandlers();
+    }
 
     public LoadToUI(data: Object) {
 
@@ -81,6 +83,7 @@ class UITableManager implements Controls.ITableManager {
                     cellobj.Value = _Html(cell).trim();
                     cellobj.UIElement = cell;
                     row.Cells.push(cellobj);
+                    table.Cells.push(cellobj);
                 });
                 if (_HasClass(rawrow, "dynamic")) {
                     me.TemplateRow = row;
@@ -102,23 +105,41 @@ class UITableManager implements Controls.ITableManager {
 
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
-        CallFunction(me.OnLoaded, [me]);
+        CallFunctionWithContext(me, me.OnLoaded, [table]);
 
     }
 
     public ManageRows(table: Controls.Table) {
         Notify("ManageRows");
         var me = this;
-        
+
         if (!IsNull(me.TemplateRow)) {
             var rowsquery = table.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement, "dynamicdata"));
 
             var emptyrow = rowsquery.FirstOrDefault(i=> !i.HasData());
             if (IsNull(emptyrow)) {
-                table.AddRow(-1);
+                emptyrow = table.AddRow(-1);
+                this.SetRowID("emptyrow", emptyrow);
+
+
             }
         }
         //me.SetDynamicRowIds(table);
+    }
+
+    public SetRowID(ID: string, row: Controls.Row) {
+        row.RowID = ID;
+        var headercell = row.HeaderCell;
+        var existingrowid = _Html(headercell.UIElement).trim();
+        _Html(headercell.UIElement, row.RowID);
+        _Attribute(row.UIElement, "id", row.RowID);
+        row.Cells.forEach(function (cell, ix) {
+            var cellid = _Attribute(cell.UIElement, "id").trim();
+            if (cellid.indexOf("|") == 0) {
+                cellid = row.RowID + cellid;
+                _Attribute(cell.UIElement, "id", cellid);
+            }
+        });
     }
 
     private SetDynamicRowIds(table: Controls.Table) {
@@ -127,42 +148,17 @@ class UITableManager implements Controls.ITableManager {
         var fdyndata = (row: Controls.Row) => _HasClass(row.UIElement, "dynamicdata");
         var dynamicrows = table.Rows.AsLinq<Controls.Row>().Where(i=> fdyndata(i)).ToArray();
         dynamicrows.forEach(function (row, ix) {
-            row.RowID = Format(me.RowID_Format, ix);
-            var headercell = row.HeaderCell;
-            var existingrowid = _Html(headercell.UIElement).trim();
-            _Html(headercell.UIElement, row.RowID);
-            _Attribute(row.UIElement, "id", row.RowID);
-            row.Cells.forEach(function (cell, ix) {
-                var cellid = _Attribute(cell.UIElement, "id").trim();
-                if (cellid.indexOf("|") == 0) {
-                    cellid = row.RowID + cellid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                }
-                _Attribute(cell.UIElement, "title", cellid + "\r\n" + _Attribute(cell.UIElement, "factstring"));
-            });
-            _EnsureEventHandler(row.UIElement, "click", function (e) {
-                _Focus(this);
-                _RemoveClass(_Select("tr", table.UIElement), "selected");
-                _AddClass(this, "selected");
+            var rowid = row.RowID; //Format(me.RowID_Format, ix);
+            this.SetRowID(rowid, row);
 
-            });
-            //_EnsureEventHandler(row.UIElement, "keyup", function (e) {
-            _EnsureEventHandler(window, "keyup", function (e) {
-                if (e.which == 46) {
-                    var rowtodelete: Controls.Row = null;
-                    table.Rows.forEach(function (row, ix) {
-                        if (_HasClass(row.UIElement, "selected")) {
-                            rowtodelete = row;
-                        }
-                    });
-                    if (!IsNull(rowtodelete)) {
-                        table.RemoveRow(rowtodelete);
-                    }
-                }
-            });
         });
     }
-
+    public Clear(table:Controls.Table) {
+        table.Cells.forEach(function (cell, ix) {
+            Controls.Cell.Clear(cell);
+            //_Attribute(cell.UIElement, "factstring", "");
+        });
+    }
     public Validate(): boolean {
         return true;
     }
@@ -188,9 +184,88 @@ class UITableManager implements Controls.ITableManager {
     public OnColumnRemoved: Function = null;
     public OnLayoutChanged: Function = null;
 
+    private SetCellsOfRow(row: Controls.Row) {
+        var me = this;
+        
+        this.CellEditorAssigner(row.UIElement);
+        row.Cells.forEach(function (cell, ix) {
+            _Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
+        });
+        _EnsureEventHandler(row.UIElement, "click", function (e) {
+            _Focus(this);
+            _RemoveClass(_Select("tr", _Parent(row.UIElement)), "selected");
+            _AddClass(this, "selected");
+
+        });
+    }
+
+    public AddEventHandlers() {
+        var me = this;
+        this.CellEditorAssigner = function (element) {
+            AssignEditor(
+                //_Select("td:not(.blocked)", element),
+                _Select("td.data:not(.blocked)", element),
+                GetXbrlCellEditor,
+                me.OnCellChanged);
+
+        };
+
+        this.OnLoaded = function (table: Controls.Table) {
+            me.CellEditorAssigner(table.UIElement);
+            table.Rows.forEach(function (row, ix) {
+                me.SetCellsOfRow(row);
+            });
+            _EnsureEventHandler(window, "keyup", function (e) {
+                if (e.which == 46) {
+                    var rowtodelete: Controls.Row = null;
+                    table.Rows.forEach(function (row, ix) {
+                        if (_HasClass(row.UIElement, "selected")) {
+                            rowtodelete = row;
+                        }
+                    });
+                    if (!IsNull(rowtodelete)) {
+                        table.RemoveRow(rowtodelete);
+                    }
+                }
+            });
+        };
+
+        this.OnRowAdded = function (row: Controls.Row) {
+            var rowelement = row.UIElement;
+            _AddClass(rowelement, "dynamicdata");
+            _RemoveClass(rowelement, "dynamic");
+            _Attribute(rowelement, "style", "");
+
+            me.SetCellsOfRow(row);
+
+            _Show(row.UIElement);
+
+        };
+
+        this.OnRowRemoved = function (row) {
+
+        };
+
+        this.OnLayoutChanged = function (table:Controls.Table) {
+            var me = <UITableManager>this;
+            if (table.CanManageRows) {
+                me.ManageRows(table);
+            }
+        };
+
+        this.OnCellChanged = function (cell, value) {
+            var table = app.taxonomycontainer.Table.UITable;
+            var row = table.GetRowOfCell(cell);
+            if (!IsNull(row) && !row.HasData()) {
+                table.RemoveRow(row);
+            }
+            this.ManageRows(table);
+            //OnCellChanged(cell, value);
+        };
+    }
 }
 
-function GetXbrlCellEditor(target:Element) {
+function GetXbrlCellEditor(target: Element) {
     var typeclass = "";
 
     var factitems = _Attribute(target, "factstring").split(",");
@@ -360,8 +435,7 @@ class Editor {
         this.$Me.remove();
         if (this.Original_Value != new_value) {
             this.TargetValueSetter(new_value)
-        } else
-        {
+        } else {
             _Html(this.$Target[0], this.Original_Value);
         }
 
@@ -382,8 +456,8 @@ class Editor {
         var t_r_padding = Target.padding("right");
         var t_t_padding = Target.padding("top");
         var t_b_padding = Target.padding("bottom");
-        var t_tagname = Target.prop("tagName"); 
-        var containerwidth = t_width-2;// - (t_l_padding + t_r_padding);
+        var t_tagname = Target.prop("tagName");
+        var containerwidth = t_width - 2;// - (t_l_padding + t_r_padding);
 
         var containerheight = t_height - (t_t_padding + t_b_padding);
         var containerfontfamily = Target.css('font-family');
