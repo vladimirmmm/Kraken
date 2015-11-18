@@ -1,12 +1,13 @@
 ﻿module Model {
 
-    interface Dictionary<T> {
+    export interface Dictionary<T> {
         [key: string]: T;
     }
-    //interface Dictionary<T,K> {
-    //    [key: K]: T;
-    //}
-
+    export interface KeyValuePair<K,V> {
+        Key: K;
+        Value: V;
+    }
+  
     export class Hierarchy<T>
     {
         public Children: Hierarchy<T>[] = [];
@@ -14,20 +15,27 @@
         public Order: number;
         public Item: T = null;
 
-        public ToArray(): T[]
+        public static ToArray<TClass>(hierarchy: Hierarchy<TClass>): TClass[]
         {
             var me = this;
-            var items: T[] = [];
-            items.push(this.Item);
-            this.Children.forEach(function (item) {
+            var items: TClass[] = [];
+            items.push(hierarchy.Item);
+            hierarchy.Children.forEach(function (item) {
                 if ("ToArray" in item == false)
                 {
                     item["ToArray"] = me.ToArray;
                 }
-                items = items.concat(item.ToArray());
+                items = items.concat(Hierarchy.ToArray(item));
             });
             return items; 
         }
+
+        //public FirstOrDefault(func:Function): T
+        //{
+        //    var T = null;
+
+        //    return T;
+        //}
     }
 
     export class Dimension {
@@ -36,24 +44,30 @@
         public DomainMember: string;
         public IsTyped: boolean;
 
-        public get DomainMemberFullName(): string {
+        public static DomainMemberFullName(dimension: Dimension): string {
+            if ("DomainMemberFullName" in dimension) {
+                return dimension["DomainMemberFullName"];
+            } else {
+                var dmfn = "";
+                if (IsNull(dimension.DomainMember)) {
+                    dmfn = Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+                }
 
-            if (IsNull(this.DomainMember)) {
-                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+                dmfn = Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+                dimension["DomainMemberFullName"] = dmfn;
+                return dmfn;
             }
-
-            return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
         }
-        public get ToStringForKey(): string {
-            if (this.IsTyped) {
-                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+        public static ToStringForKey(dimension: Dimension): string {
+            if (dimension.IsTyped) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
             }
 
-            if (IsNull(this.DomainMember)) {
-                return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+            if (IsNull(dimension.DomainMember)) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
             }
 
-            return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
+            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
         }
     }
 
@@ -135,8 +149,14 @@
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
-            this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.DomainMemberFullName);
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
+            var dimensions = this.Dimensions.sort(function (a, b) { return Dimension.DomainMemberFullName(a) < Dimension.DomainMemberFullName(b) ? -1 : 1; });
+            dimensions.forEach(function (dimension, index) {
+                var dimstr = Dimension.DomainMemberFullName(dimension);
+                dimstr = FactBase.Format(dimstr, ref);
+
+                result += Format("{0},", dimstr);
             });
             return result;
         }
@@ -148,8 +168,12 @@
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.ToStringForKey);
+                var dimstr = Dimension.ToStringForKey(dimension);
+                dimstr = FactBase.Format(dimstr, ref);
+                result += Format("{0},", dimstr);
             });
             return result;
         }
@@ -162,6 +186,28 @@
         }
         public set FactString(value:string) {
             this._FactString = value;
+        }
+
+        public static Merge(target: FactBase, item: FactBase, overwrite:boolean=false)
+        {
+            if (IsNull(target.Concept)) { target.Concept = item.Concept; }
+            var targetdimensions = target.Dimensions.AsLinq<Dimension>();
+            item.Dimensions.forEach(function (dimension, ix) {
+                var exisiting = targetdimensions.FirstOrDefault(i=> i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem);
+                if (IsNull(exisiting)) {
+                    target.Dimensions.push(dimension);
+                } else
+                {
+                    if (overwrite)
+                    {
+                        RemoveFrom(exisiting, target.Dimensions);
+                        //removeFromArray(target.Dimensions, exisiting);
+                        target.Dimensions.push(dimension);
+
+                    }
+                }
+            });
+
         }
 
         public static LoadFromFactString(fact: FactBase)
@@ -181,23 +227,35 @@
             }
             var dimparts = parts;
             dimparts.splice(0, toskip);
+            var lastdimns = "";
+
             dimparts.forEach(function (dimpart) { 
                 var dimitem = TextBetween(dimpart, "[", "]");
                 var domainpart = dimpart.substring(dimitem.length + 2);
+
+                var dimitemns = dimitem.substr(0, dimitem.indexOf(":"));
+                if (dimitemns == "*") {
+                    dimitem = Replace(dimitem,"*", lastdimns);
+                }
+                else {
+                    lastdimns = dimitemns;
+                }
+
                 var domain = domainpart;
                 var member = "";
                 var dim = new Dimension();
 
                 if (domainpart.indexOf(":")>-1) {
                     var domainparts = Split(domainpart, ":", true);
-                    if (domainparts.length == 2) {
-                        domain = domainparts[0];
-                        member = domainparts[1];
-                    }
-                    if (domainparts.length == 3) {
+           
+                    if (domainparts.length == 3 || domainparts[0].indexOf("_typ")>-1) {
                         domain = Format("{0}:{1}", domainparts[0], domainparts[1]);
                         member = domainparts[2];
                         dim.IsTyped = true;
+                    }
+                    if (domainparts.length == 2 && !dim.IsTyped) {
+                        domain = domainparts[0];
+                        member = domainparts[1];
                     }
                 }
                 dim.DimensionItem = dimitem;
@@ -205,6 +263,28 @@
                 dim.DomainMember = member;
                 me.Dimensions.push(dim);
             });
+        }
+
+        public static GetFactFromString(factstring: string): FactBase
+        {
+            var fb = new FactBase();
+            fb.FactString = factstring;
+            FactBase.LoadFromFactString(fb);
+            return fb;
+        }
+
+        public static Format(item: string, lastdimns: Refrence<string>) {
+
+            var dimns = TextBetween(item, "[", ":");
+            if (lastdimns.Value != dimns) {
+                lastdimns.Value = dimns;
+            }
+            else {
+                item = Replace(item, dimns, "*");
+
+            }
+            return item;
+
         }
     }
 
@@ -281,10 +361,19 @@
         }
 
     }
+    export enum LayoutItemCategory {
+        Unknown = 0,
+        Aspect = 1,
+        Rule = 2,
+        BreakDown = 3,
+        Dynamic = 4,
+        Filter = 5,
+    }
 
     export class LayoutItem extends FactBase {
         public ID: string;
         public Axis: string;
+        public Category: LayoutItemCategory = LayoutItemCategory.Unknown;
         public Label: Label;
 
         public get LabelContent() {
@@ -322,12 +411,31 @@
             var me = this;
             var result = this.Concept.FullName+",";
             this.Dimensions.forEach(function (dimension, index) {
-                result +=Format("{0},",dimension.DomainMemberFullName);
+                result += Format("{0},", Dimension.DomainMemberFullName(dimension));
             });
             return result;
         }
-    }
 
+        public SetFromCellID(CellID: string) {
+            var reportpart = CellID.substring(0, CellID.indexOf("<") + 1);
+            var cellpart = TextBetween(CellID, "<", ">");
+            var cellparts = cellpart.split("|");
+            if (cellparts.length == 3) {
+                this.Report = reportpart;
+                this.Extension = cellparts[0];
+                this.Row = cellparts[1];
+                this.Column = cellparts[2];
+            }
+        }
+    }
+    export class DynamicCellDictionary
+    {
+        public ExtDictionary: Dictionary<string> = {};
+        public RowDictionary: Dictionary<string> = {};
+        public ColDictionary: Dictionary<string> = {};
+        public CellOfFact: Dictionary<string> = {};
+        public Extensions: Hierarchy<LayoutItem> = null;
+    }
     export class Instance
     {
         public Facts: InstanceFact[] = [];
@@ -336,8 +444,44 @@
         public ReportingCurrency: string;
         public Entity: Entity;
         public TaxonomyModuleReference: string;
-        public FactDictionary: Object = null;
+        public FullPath: string;
+        public FactDictionary: Dictionary<InstanceFact[]> = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
+        public DynamicReportCells: Dictionary<DynamicCellDictionary> = {};
+
+        public static GetFactFor(me:Instance, cellfact: FactBase, cellid: string): InstanceFact
+        {
+            var facts: InstanceFact[] = [];
+            var fact: InstanceFact = null;
+            var factkey = cellfact.GetFactKey();
+            var factstring = cellfact.GetFactString();
+            if (factkey in me.FactDictionary) {
+                facts = me.FactDictionary[factkey];
+                if (facts.length > 0) {
+                    fact = facts.AsLinq<InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
+                }
+            } 
+            return fact;
+        }
+        //public GetCellForFact(factstring: string, reportid:string): string
+        //{
+        //    var me = this;
+        //    var cellid: string = "";
+        //    if (factstring in me.FactDictionary) {
+        //        cellid = me.FactDictionary[factstring];
+        //    }
+        //    else
+        //    {
+        //        var dynamicdataofreport = me.DynamicReportCells[reportid];
+        //        if (!IsNull(dynamicdataofreport)) {
+        //            if (factstring in dynamicdataofreport.CellOfFact)
+        //            {
+        //                cellid = dynamicdataofreport.CellOfFact[factstring];
+        //            }
+        //        }
+        //    }
+        //    return cellid;
+        //}
     }   
 
     export class Label {
@@ -409,6 +553,7 @@
         public FromDate: Date;
         public ToDate: Date;
         public SchemaRef: string;
+        public LocalPath: string;
 
     }
     export class TaxonomyProperties {

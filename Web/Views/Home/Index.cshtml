@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+
+<h2>Index</h2>
+
+<form method="post">
+    <p>
+        Instance: <input type="text" autocomplete="on" name="instancepath" value="C:\Users\vladimir.balacescu\Desktop\Delivery\Zsombi\COFREP-B00000316-2015-09-SLAREX-00-L-N---SLAREX.xbrl" />
+        <input type="file" name="instancepath"  />
+    </p>
+    <p>
+        Taxonomy: <input type="file" name="taxonomypath" value="" />
+    </p>
+    <input type="submit" value="Load" />
+</form>

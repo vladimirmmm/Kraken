@@ -6,24 +6,21 @@ var __extends = this.__extends || function (d, b) {
 };
 var Model;
 (function (Model) {
-    //interface Dictionary<T,K> {
-    //    [key: K]: T;
-    //}
     var Hierarchy = (function () {
         function Hierarchy() {
             this.Children = [];
             this.Parent = null;
             this.Item = null;
         }
-        Hierarchy.prototype.ToArray = function () {
+        Hierarchy.ToArray = function (hierarchy) {
             var me = this;
             var items = [];
-            items.push(this.Item);
-            this.Children.forEach(function (item) {
+            items.push(hierarchy.Item);
+            hierarchy.Children.forEach(function (item) {
                 if ("ToArray" in item == false) {
                     item["ToArray"] = me.ToArray;
                 }
-                items = items.concat(item.ToArray());
+                items = items.concat(Hierarchy.ToArray(item));
             });
             return items;
         };
@@ -33,29 +30,29 @@ var Model;
     var Dimension = (function () {
         function Dimension() {
         }
-        Object.defineProperty(Dimension.prototype, "DomainMemberFullName", {
-            get: function () {
-                if (IsNull(this.DomainMember)) {
-                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
+        Dimension.DomainMemberFullName = function (dimension) {
+            if ("DomainMemberFullName" in dimension) {
+                return dimension["DomainMemberFullName"];
+            }
+            else {
+                var dmfn = "";
+                if (IsNull(dimension.DomainMember)) {
+                    dmfn = Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
                 }
-                return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Dimension.prototype, "ToStringForKey", {
-            get: function () {
-                if (this.IsTyped) {
-                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
-                }
-                if (IsNull(this.DomainMember)) {
-                    return Format("[{0}]{1}", this.DimensionItem, this.Domain);
-                }
-                return Format("[{0}]{1}:{2}", this.DimensionItem, this.Domain, this.DomainMember);
-            },
-            enumerable: true,
-            configurable: true
-        });
+                dmfn = Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+                dimension["DomainMemberFullName"] = dmfn;
+                return dmfn;
+            }
+        };
+        Dimension.ToStringForKey = function (dimension) {
+            if (dimension.IsTyped) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+            }
+            if (IsNull(dimension.DomainMember)) {
+                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+            }
+            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+        };
         return Dimension;
     })();
     Model.Dimension = Dimension;
@@ -151,8 +148,15 @@ var Model;
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
-            this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.DomainMemberFullName);
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
+            var dimensions = this.Dimensions.sort(function (a, b) {
+                return Dimension.DomainMemberFullName(a) < Dimension.DomainMemberFullName(b) ? -1 : 1;
+            });
+            dimensions.forEach(function (dimension, index) {
+                var dimstr = Dimension.DomainMemberFullName(dimension);
+                dimstr = FactBase.Format(dimstr, ref);
+                result += Format("{0},", dimstr);
             });
             return result;
         };
@@ -162,8 +166,12 @@ var Model;
             if (!IsNull(this.Concept)) {
                 result = this.Concept.FullName + ",";
             }
+            var lastdimns = "";
+            var ref = new Refrence(lastdimns);
             this.Dimensions.forEach(function (dimension, index) {
-                result += Format("{0},", dimension.ToStringForKey);
+                var dimstr = Dimension.ToStringForKey(dimension);
+                dimstr = FactBase.Format(dimstr, ref);
+                result += Format("{0},", dimstr);
             });
             return result;
         };
@@ -180,6 +188,26 @@ var Model;
             enumerable: true,
             configurable: true
         });
+        FactBase.Merge = function (target, item, overwrite) {
+            if (overwrite === void 0) { overwrite = false; }
+            if (IsNull(target.Concept)) {
+                target.Concept = item.Concept;
+            }
+            var targetdimensions = target.Dimensions.AsLinq();
+            item.Dimensions.forEach(function (dimension, ix) {
+                var exisiting = targetdimensions.FirstOrDefault(function (i) { return i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem; });
+                if (IsNull(exisiting)) {
+                    target.Dimensions.push(dimension);
+                }
+                else {
+                    if (overwrite) {
+                        RemoveFrom(exisiting, target.Dimensions);
+                        //removeFromArray(target.Dimensions, exisiting);
+                        target.Dimensions.push(dimension);
+                    }
+                }
+            });
+        };
         FactBase.LoadFromFactString = function (fact) {
             var me = fact;
             me.Dimensions = [];
@@ -196,22 +224,30 @@ var Model;
             }
             var dimparts = parts;
             dimparts.splice(0, toskip);
+            var lastdimns = "";
             dimparts.forEach(function (dimpart) {
                 var dimitem = TextBetween(dimpart, "[", "]");
                 var domainpart = dimpart.substring(dimitem.length + 2);
+                var dimitemns = dimitem.substr(0, dimitem.indexOf(":"));
+                if (dimitemns == "*") {
+                    dimitem = Replace(dimitem, "*", lastdimns);
+                }
+                else {
+                    lastdimns = dimitemns;
+                }
                 var domain = domainpart;
                 var member = "";
                 var dim = new Dimension();
                 if (domainpart.indexOf(":") > -1) {
                     var domainparts = Split(domainpart, ":", true);
-                    if (domainparts.length == 2) {
-                        domain = domainparts[0];
-                        member = domainparts[1];
-                    }
-                    if (domainparts.length == 3) {
+                    if (domainparts.length == 3 || domainparts[0].indexOf("_typ") > -1) {
                         domain = Format("{0}:{1}", domainparts[0], domainparts[1]);
                         member = domainparts[2];
                         dim.IsTyped = true;
+                    }
+                    if (domainparts.length == 2 && !dim.IsTyped) {
+                        domain = domainparts[0];
+                        member = domainparts[1];
                     }
                 }
                 dim.DimensionItem = dimitem;
@@ -219,6 +255,22 @@ var Model;
                 dim.DomainMember = member;
                 me.Dimensions.push(dim);
             });
+        };
+        FactBase.GetFactFromString = function (factstring) {
+            var fb = new FactBase();
+            fb.FactString = factstring;
+            FactBase.LoadFromFactString(fb);
+            return fb;
+        };
+        FactBase.Format = function (item, lastdimns) {
+            var dimns = TextBetween(item, "[", ":");
+            if (lastdimns.Value != dimns) {
+                lastdimns.Value = dimns;
+            }
+            else {
+                item = Replace(item, dimns, "*");
+            }
+            return item;
         };
         return FactBase;
     })();
@@ -297,10 +349,20 @@ var Model;
         return InstanceFact;
     })(FactBase);
     Model.InstanceFact = InstanceFact;
+    (function (LayoutItemCategory) {
+        LayoutItemCategory[LayoutItemCategory["Unknown"] = 0] = "Unknown";
+        LayoutItemCategory[LayoutItemCategory["Aspect"] = 1] = "Aspect";
+        LayoutItemCategory[LayoutItemCategory["Rule"] = 2] = "Rule";
+        LayoutItemCategory[LayoutItemCategory["BreakDown"] = 3] = "BreakDown";
+        LayoutItemCategory[LayoutItemCategory["Dynamic"] = 4] = "Dynamic";
+        LayoutItemCategory[LayoutItemCategory["Filter"] = 5] = "Filter";
+    })(Model.LayoutItemCategory || (Model.LayoutItemCategory = {}));
+    var LayoutItemCategory = Model.LayoutItemCategory;
     var LayoutItem = (function (_super) {
         __extends(LayoutItem, _super);
         function LayoutItem() {
             _super.apply(this, arguments);
+            this.Category = 0 /* Unknown */;
         }
         Object.defineProperty(LayoutItem.prototype, "LabelContent", {
             get: function () {
@@ -352,23 +414,59 @@ var Model;
                 var me = this;
                 var result = this.Concept.FullName + ",";
                 this.Dimensions.forEach(function (dimension, index) {
-                    result += Format("{0},", dimension.DomainMemberFullName);
+                    result += Format("{0},", Dimension.DomainMemberFullName(dimension));
                 });
                 return result;
             },
             enumerable: true,
             configurable: true
         });
+        Cell.prototype.SetFromCellID = function (CellID) {
+            var reportpart = CellID.substring(0, CellID.indexOf("<") + 1);
+            var cellpart = TextBetween(CellID, "<", ">");
+            var cellparts = cellpart.split("|");
+            if (cellparts.length == 3) {
+                this.Report = reportpart;
+                this.Extension = cellparts[0];
+                this.Row = cellparts[1];
+                this.Column = cellparts[2];
+            }
+        };
         return Cell;
     })(InstanceFact);
     Model.Cell = Cell;
+    var DynamicCellDictionary = (function () {
+        function DynamicCellDictionary() {
+            this.ExtDictionary = {};
+            this.RowDictionary = {};
+            this.ColDictionary = {};
+            this.CellOfFact = {};
+            this.Extensions = null;
+        }
+        return DynamicCellDictionary;
+    })();
+    Model.DynamicCellDictionary = DynamicCellDictionary;
     var Instance = (function () {
         function Instance() {
             this.Facts = [];
             this.FilingIndicators = [];
             this.FactDictionary = null;
             this.DynamicCellDictionary = {};
+            this.DynamicReportCells = {};
         }
+        Instance.GetFactFor = function (me, cellfact, cellid) {
+            var facts = [];
+            var fact = null;
+            var factkey = cellfact.GetFactKey();
+            var factstring = cellfact.GetFactString();
+            if (factkey in me.FactDictionary) {
+                facts = me.FactDictionary[factkey];
+                if (facts.length > 0) {
+                    fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
+                }
+            }
+            return fact;
+        };
         return Instance;
     })();
     Model.Instance = Instance;

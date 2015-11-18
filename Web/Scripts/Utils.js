@@ -1,55 +1,51 @@
-function CreateMsg(category) {
-    var msg = new General.Message();
-    msg.Category = category;
-    return msg;
-}
-function CreateNotificationMsg(message) {
-    var msg = CreateMsg("notification");
-    msg.Data = message;
-    return msg;
-}
-function CreateAjaxMsg() {
-    var msg = CreateMsg("ajax");
-    return msg;
-}
-function CreateErrorMsg(errormessage) {
-    var msg = CreateMsg("error");
-    msg.Error = errormessage;
-    return msg;
-}
-function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Error(errortext);
-    return true;
-}
-function ShowHideChild(selector, sender) {
-    $(selector).hide();
-    var $item = $(selector, $(sender).parent()).first();
-    $item.show();
-}
-function SetPivots() {
-    $("#maintable").resizableColumns();
-    //$("#maintable").colResizable({
-    //    liveDrag: false,
-    //});
-    //$("#pivot").splitPane({
-    //    type: "v",
-    //    outline: true,
-    //    minLeft: 100, sizeLeft: 150, minRight: 100,
-    //    resizeToWidth: true,
-    //    cookie: "vsplitter",
-    //    accessKey: 'I'
-    //});
-    /*
-    $(".pivotitem").click(function () {
-        Activate($(this));
-    });
-    var iframe = $($("#tableframe")[0]["contentWindow"].document);
-    $(iframe).click(function () {
-        Activate($("#tableframe").parent());
-    });
-    */
-}
+var _Select = function (CssSelector, from) { return null; };
+var _SelectFirst = function (CssSelector, from) { return null; };
+var _Find = function (element, CssSelector) { return null; };
+var _FindFirst = function (element, CssSelector) { return null; };
+var _Parent = function (element, selector) { return null; };
+var _Parents = function (element, selector) { return []; };
+var _Children = function (element, CssSelector) { return null; };
+var _FirstChildren = function (element, CssSelector) { return null; };
+var _AddEventHandler = function (element, eventname, handler) {
+};
+var _RemoveEventHandler = function (element, eventname, handler) {
+};
+var _RemoveEventHandlers = function (element, eventname) {
+};
+var _EnsureEventHandler = function (element, eventname, handler) {
+};
+var _Attribute = function (element, attributename, attributevalue) { return ""; };
+var _RemoveAttribute = function (target, attributename) {
+};
+var _Property = function (element, propertyname) { return ""; };
+var _Value = function (element, value) { return ""; };
+var _Html = function (element, html) { return ""; };
+var _Text = function (element, text) { return ""; };
+var _Remove = function (element) {
+};
+var _Append = function (target, element) {
+};
+var _After = function (target, element) {
+};
+var _Before = function (target, element) {
+};
+var _HasClass = function (element, classname) { return false; };
+var _AddClass = function (element, classname) {
+};
+var _RemoveClass = function (element, classname) {
+};
+var _Css = function (element, value) {
+};
+var _Width = function (element, value) { return -1; };
+var _Height = function (element, value) { return -1; };
+var _Focus = function (element) {
+};
+var _Show = function (element) {
+};
+var _Hide = function (element) {
+};
+var _IsVisible = function (element) { return false; };
+var _Clone = function (element) { return null; };
 var waitForFinalEvent = (function () {
     var timers = {};
     return function (callback, ms, uniqueId) {
@@ -86,10 +82,6 @@ function Activate(jitem) {
     // $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
     //$("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
 }
-//Notify("typeof console " + typeof console);
-//if (typeof console === "undefined") {
-window.onerror = ErrorHandler;
-//}
 function LoadJS(path) {
     var fileref = document.createElement('script');
     fileref.setAttribute("type", "text/javascript");
@@ -100,36 +92,6 @@ function GetFunctionBody(f) {
     var entire = f.toString();
     var body = entire.slice(entire.indexOf("{") + 1, entire.lastIndexOf("}"));
     return result;
-}
-function Select(sender) {
-    var $command = $(sender);
-    var sel = "selected";
-    var $commands = $command.parent().children(); //a
-    $commands.removeClass(sel);
-    $command.addClass(sel);
-    var selectfromlist = function (item, items) {
-        if (item.length > 0) {
-            items.removeClass(sel);
-            item.addClass(sel);
-        }
-    };
-    var $list = $command.parents(".list").first();
-    if ($list.length == 1) {
-        var tag = $list.prop("tagName");
-        tag = tag.toLowerCase();
-        var $listitem = null;
-        var $listitems = null;
-        if (tag == "ul") {
-            $listitem = $command.parents("li").first();
-            $listitems = $list.children();
-        }
-        if (tag == "table") {
-            $listitem = $command.parents("tr").first();
-            $listitems = $("tr", $list);
-        }
-        selectfromlist($listitem, $listitems);
-    }
-    return sender;
 }
 function GetReturnStatement(f) {
     var body = GetFunctionBody(f);
@@ -169,107 +131,6 @@ function ToObject(items) {
         obj[item.Key] = item.Value;
     });
     return obj;
-}
-var General;
-(function (General) {
-    var KeyValue = (function () {
-        function KeyValue() {
-            this.Key = "";
-            this.Value = null;
-        }
-        return KeyValue;
-    })();
-    General.KeyValue = KeyValue;
-    var Message = (function () {
-        function Message() {
-            this.Parameters = {};
-        }
-        return Message;
-    })();
-    General.Message = Message;
-})(General || (General = {}));
-var Waiter = (function () {
-    function Waiter(Condition, AllCompleted) {
-        this.Items = [];
-        this.Condition = null;
-        this.AllCompleted = null;
-        this.IsStarted = false;
-        this.AllCompleted = AllCompleted;
-        this.Condition = Condition;
-    }
-    Waiter.prototype.Check = function () {
-        var me = this;
-        var result = true;
-        this.Items.forEach(function (Item) {
-            if (!me.Condition(Item)) {
-                result = false;
-            }
-        });
-        if (result && me.IsStarted) {
-            me.Stop();
-            me.AllCompleted();
-            me.Items = [];
-        }
-    };
-    Waiter.prototype.WaitFor = function (Item) {
-        var me = this;
-        me.Items.push(Item);
-    };
-    Waiter.prototype.Start = function () {
-        this.IsStarted = true;
-        this.Check();
-    };
-    Waiter.prototype.Stop = function () {
-        this.IsStarted = false;
-    };
-    return Waiter;
-})();
-var StopProgress = function (id) {
-    return null;
-};
-var StartProgress = function (id) {
-    return null;
-};
-var ResultFormatter = function (rawdata) {
-    return rawdata;
-};
-var requests = [];
-try {
-    if (!IsNull(parent["requests"])) {
-        requests = parent["requests"];
-    }
-}
-catch (err) {
-}
-function ShowContent(selector, sender) {
-    var id = selector.replace("#", "");
-    var $activator = $(sender); // $("[activator-for=" + id + "]");
-    Select($activator);
-    var $content = $(selector);
-    var $parents = ($activator.length == 0 ? $content : $activator).parents(s_contentcontainer_selector);
-    var $parent = $parents.first();
-    $parent.children(s_content_selector).hide();
-    if ($parent.length > 0) {
-        var id = $parent.attr("id");
-        ShowContentByID("#" + id);
-    }
-    if ($content.length == 0) {
-        ShowError("ShowContent: " + selector + " has not items!");
-    }
-    $content.show();
-    return $activator;
-}
-function ShowContentByID(selector) {
-    var id = selector.replace("#", "");
-    var $activator = $("[activator-for=" + id + "]").first();
-    ShowContent(selector, $activator);
-    return $activator;
-}
-function ShowContentBySender(sender) {
-    var $activator = $(sender);
-    var targetselector = "#" + $activator.attr("activator-for");
-    ShowContent(targetselector, sender);
-    return $activator;
 }
 function GetPart(data, startix, endix) {
     var part = [];
@@ -322,98 +183,32 @@ function GetLength(data) {
     }
     return 0;
 }
-function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
-    var me = this;
-    var startix = pagesize * page;
-    var endix = startix + pagesize;
-    var itemspart = GetPart(data, startix, endix);
-    var datalength = GetLength(data);
-    CallFunction(events, "onloading", itemspart);
-    BindX($bindtarget, itemspart);
-    CallFunction(events, "onloaded", itemspart);
-    if ($pager.length == 0 || 1 == 1) {
-        $pager.pagination(datalength, {
-            items_per_page: pagesize,
-            current_page: page ? page : 0,
-            link_to: "",
-            prev_text: "Prev",
-            next_text: "Next",
-            ellipse_text: "...",
-            prev_show_always: true,
-            next_show_always: true,
-            callback: function (pageix) {
-                CallFunction(events, "onpaging");
-                LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
-                CallFunction(events, "onpaged");
-                return false;
-            },
-        });
-    }
-    else {
-    }
+function RemoveFrom(item, items) {
+    var ix = items.indexOf(item);
+    items.splice(ix, 1);
 }
-function CallFunction(eventcontainer, eventname, args) {
+function CallFunctionFrom(eventcontainer, eventname, args) {
     if (!IsNull(eventcontainer)) {
         if (eventname in eventcontainer && IsFunction(eventcontainer[eventname])) {
             eventcontainer[eventname](args);
         }
     }
 }
-function CallFunctionVariable(func, args) {
+function CallFunction(func, args) {
     if (!IsNull(func) && IsFunction(func)) {
-        func(args);
+        return func.apply(this, args);
     }
 }
-function Notify(message) {
-    ShowNotification(message);
-}
-function ShowNotification(message) {
-    var msg = CreateNotificationMsg(message);
-    Communication_ToApp(msg);
-}
-function ShowError(message) {
-    var msg = CreateErrorMsg(message);
-    Communication_ToApp(msg);
-}
-function Communication_ToApp(message) {
-    var strdata = JSON.stringify(message);
-    if ('Notify' in window.external) {
-        window.external.Notify(strdata);
+function CallFunctionWithContext(context, func, args) {
+    if (!IsNull(func) && IsFunction(func)) {
+        return func.apply(context, args);
     }
-    else {
-        console.log(strdata);
-    }
+    return null;
 }
 function asyncFunc(func) {
     setTimeout(function () {
         func();
     }, 10);
-}
-function Communication_Listener(data) {
-    //Notify("Communication_Listener_Start");
-    var message = JSON.parse(data);
-    data = "";
-    //Notify("Communication_Listener Parsed");
-    data = null;
-    if (message.Category == "ajax") {
-        asyncFunc(function () {
-            //Notify("Calling AjaxResponse");
-            AjaxResponse(message);
-        });
-    }
-    if (message.Category == "notfication") {
-    }
-    if (message.Category == "error") {
-    }
-    if (message.Category == "action") {
-        if (message.Url.toLowerCase() == "instance") {
-            app.instancecontainer.HandleAction(message);
-        }
-    }
-    if (message.Category == "debug") {
-        debugger;
-    }
-    //Notify("Communication_Listener_End");
 }
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
@@ -499,57 +294,6 @@ function clearobject(item) {
         }
     }
 }
-function Ajax(url, method, parameters, generichandler, contentType) {
-    var result = {}; //new Engine.InfoContainer();
-    var _contentType = "text/html";
-    var _dataType = "";
-    var callback = function (result) {
-        return false;
-    };
-    var S_Callback = "callback";
-    if (!IsNull(parameters) && parameters[S_Callback] instanceof Function) {
-        callback = parameters[S_Callback];
-    }
-    if (contentType == "json") {
-        _contentType = "application/json; charset=UTF-8";
-        _dataType = "json";
-    }
-    var params = parameters;
-    if (method.toLowerCase() == "get") {
-        params = ToObjectX(parameters); //Clone(parameters);
-    }
-    if (method.toLowerCase() == "post") {
-        params = JSON.stringify(parameters);
-    }
-    StartProgress("ajax");
-    //_App.ProgressManager.StartProgress("ajax");
-    $.ajax({
-        url: GetBaseURL() + url,
-        contentType: _contentType,
-        dataType: _dataType,
-        type: method,
-        data: params,
-        cache: false,
-        success: function (data) {
-            StopProgress("ajax");
-            var Id = this.url.toString();
-            result = ResultFormatter(data);
-            console.log(Format("Request succeeded - {0}", Id));
-            generichandler(result);
-            callback(result);
-        },
-        error: function (exception) {
-            StopProgress("ajax");
-            var Id = this.url.toString();
-            var errorobj = GetErrorObj(exception, this.contentType);
-            var errormsg = Format("Request failed: {0}", errorobj.message);
-            //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
-            actioncenter.AddError(errormsg);
-            SetProperty(result, "Error", exception);
-            generichandler(result);
-        }
-    });
-}
 function GetErrorObj(exception, contenttype) {
     var exceptiontext = "responseJSON" in exception ? exception["responseJSON"] : "";
     var stacktrace = "";
@@ -592,7 +336,7 @@ function GetBaseURL() {
 }
 ;
 /*Strings*/
-function TextBetween(text, begintag, endtag) {
+function TextBetween(text, begintag, endtag, withtags) {
     var result = "";
     if (typeof text == "string") {
         var ixs = text.indexOf(begintag);
@@ -604,6 +348,9 @@ function TextBetween(text, begintag, endtag) {
             }
         }
     }
+    if (withtags) {
+        result = begintag + result + endtag;
+    }
     return result;
 }
 ;
@@ -611,8 +358,8 @@ function TextsBetween(text, begintag, endtag, withtags) {
     var result = [];
     while (text.indexOf(begintag) > -1 && text.indexOf(begintag) > -1) {
         var item = TextBetween(text, begintag, endtag);
-        var fullitem = begintag + item + endtag;
         if (withtags) {
+            var fullitem = begintag + item + endtag;
             result.push(fullitem);
         }
         else {
@@ -623,23 +370,81 @@ function TextsBetween(text, begintag, endtag, withtags) {
     return result;
 }
 ;
-function Format() {
+function FormatSimpleTest() {
     var any = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         any[_i - 0] = arguments[_i];
     }
     var args = Array.prototype.slice.call(arguments, 1);
-    if (args.length == 1) {
-        if (IsArray(args[0])) {
-            args = args[0];
-        }
-    }
     var format = arguments[0];
     return format.replace(/{(\d+)}/g, function (match, number) {
         return typeof args[number] != 'undefined' ? args[number] : match;
     });
 }
 ;
+function FormatSimple(format, args) {
+    return format.replace(/{(\d+)}/g, function (match, number) {
+        return typeof args[number] != 'undefined' ? args[number] : match;
+    });
+}
+;
+function Format() {
+    var any = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        any[_i - 0] = arguments[_i];
+    }
+    var args = Array.prototype.slice.call(arguments, 1);
+    //if (args.length == 1)
+    //{
+    //    if (IsArray(args[0]))
+    //    {
+    //        args = args[0];
+    //    }
+    //    //if 
+    //}
+    var format = arguments[0];
+    if (format.indexOf("d}") == -1 || format.indexOf("{{") == -1) {
+        return FormatSimple(format, args);
+    }
+    format = Replace(format, "{{", "xF<w&");
+    format = Replace(format, "}}", "xF>w&");
+    var result = format;
+    var parts = TextsBetween(format, "{", "}", true);
+    parts.forEach(function (item, ix) {
+        var ix = -1;
+        var inner = item.substring(1, item.length - 1);
+        var partformat = "";
+        if (inner.indexOf(":") > -1) {
+            ix = Number(inner.substring(0, inner.indexOf(":")));
+            partformat = inner.substring(inner.indexOf(":") + 1);
+        }
+        else {
+            ix = Number(inner);
+        }
+        var arg = args[ix];
+        if (!IsNull(format)) {
+            if (arg instanceof Date) {
+                arg = FormatDate(arg, partformat);
+            }
+            if (IsNumeric(arg) && (!(arg instanceof Date))) {
+                if (partformat.toLowerCase().indexOf("d") == 0) {
+                    var padnr = Number(partformat.substring(1));
+                    arg = pad(Number(arg), padnr, "0", 0);
+                }
+            }
+        }
+        result = Replace(result, item, arg);
+    });
+    return result;
+}
+;
+function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+//string/number,length=2,char=0,0/false=Left-1/true=Right
+function pad(a, b, c, d) {
+    return a = (a || c || 0) + '', b = new Array((++b || 3) - a.length).join(c || 0), d ? a + b : b + a;
+}
 function Property(item, property, value) {
     if (typeof value === "undefined" && !IsNull(item)) {
         if (property in item) {
@@ -813,7 +618,8 @@ function Clone(obj) {
     return copy;
 }
 function IsNull(item) {
-    return item == 'undefined' || item == null || (typeof (item) == "string" && item == "");
+    //return item == 'undefined' || item == null || (typeof (item) == "string" && item == "");
+    return item === undefined || item == null || item === "";
 }
 ;
 function s4() {
@@ -862,12 +668,6 @@ function HtmlToText(html) {
 function ToString(item) {
     return IsNull(item) ? "" : item.toString();
 }
-function HtmlEncode(value) {
-    return $('<div/>').text(value).html();
-}
-function HtmlDecode(value) {
-    return $('<div/>').html(value).text();
-}
 function Truncate(item, limit) {
     var result = "";
     if (IsNull(limit)) {
@@ -883,17 +683,6 @@ function Truncate(item, limit) {
     }
     return result;
 }
-function BindEvent(selector, events, handler) {
-    $(selector).unbind(events, handler).bind(events, handler);
-}
-;
-function UnBindEvent(selector, events) {
-    $(selector).unbind(events);
-}
-;
-function ShowHide(target) {
-    $(target).toggleClass("hidden");
-}
 /*End HTML*/
 /*DateTime*/
 function JsonToDate(item) {
@@ -906,15 +695,6 @@ function JsonToDate(item) {
 }
 function ToDate(item) {
     return FormatDate(JsonToDate(item));
-}
-function FormatDate(d, format) {
-    if (IsNull(format)) {
-        format = "yy/mm/dd hh:ii:ss";
-    }
-    if (IsNull(d)) {
-        return "";
-    }
-    return $.formatDateTime(format, d);
 }
 function ToNormalDate(item) {
     return FormatDate(JsonToDate(item));
@@ -931,28 +711,17 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 }
+/*
+HTMLElement.prototype.toString = function () {
+    var html = (<HTMLElement>this).outerHTML;
+    var result = "<" + TextBetween(html, "<", ">") + ">";
+    return result;
+}
+*/
 function Res(key, culture) {
     var res = key;
     res = resourcemanager.Get(key, culture);
     return res;
-}
-function Attribute(obj, name, value) {
-    if (arguments.length == 3) {
-        $(obj).attr(name, value);
-    }
-    if (arguments.length == 2) {
-        return $(obj).attr(name);
-    }
-    return "";
-}
-function Content(obj, value) {
-    if (arguments.length == 2) {
-        $(obj).html(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).html();
-    }
-    return "";
 }
 /**End Proto/
 
@@ -998,29 +767,6 @@ function parseExp(expression, model) {
 }
 ;
 /*End Expressions*/
-$.fn.serializeObject = function () {
-    var o = {};
-    var a = this.serializeArray();
-    //$.each(a, function () {
-    //    if (o[this.name] !== undefined) {
-    //        if (!o[this.name].push) {
-    //            o[this.name] = [o[this.name]];
-    //        }
-    //        o[this.name].push(this.value || '');
-    //    } else {
-    //        o[this.name] = this.value || '';
-    //    }
-    //});
-    //return o;
-    var paramObj = {};
-    $.each(a, function (_, kv) {
-        paramObj[kv.name] = kv.value;
-    });
-    return paramObj;
-};
-function SerializeForm(selector) {
-    return $(selector).serializeObject();
-}
 function FilesIntoUL(viewmodel) {
     var model = viewmodel.Items;
     var html = "";
@@ -1038,218 +784,67 @@ function FilesIntoUL(viewmodel) {
     html += "</ul>";
     return html;
 }
-$.fn.extend({
-    padding: function (direction) {
-        // calculate the values you need, using a switch statement
-        // or some other clever solution you figure out
-        // this now contains a wrapped set with the element you apply the 
-        // function on, and direction should be one of the four strings 'top', 
-        // 'right', 'left' or 'bottom'
-        // That means you could probably do something like (pseudo code):
-        var paddingvalue = this.css('padding-' + direction).trim();
-        var intPart = "";
-        var unit = paddingvalue.substring(paddingvalue.length - 2);
-        intPart = paddingvalue.replace(unit, "");
-        switch (unit) {
-            case 'px':
-                return Number(intPart);
-            case 'em':
-                return 0;
-            default:
-        }
-    }
-});
-$.fn.extend({
-    editable: function () {
-        var that = this, $edittextbox = $('<input type="text"></input>').css('min-width', that.width()), submitChanges = function () {
-            that.html($edittextbox.val());
-            that.show();
-            that.trigger('editsubmit', [that.html()]);
-            $(document).unbind('click', submitChanges);
-            $edittextbox.detach();
-        }, tempVal;
-        $edittextbox.click(function (event) {
-            event.stopPropagation();
-        });
-        that.dblclick(function (e) {
-            tempVal = that.html();
-            $edittextbox.val(tempVal).insertBefore(that).bind('keypress', function (e) {
-                if ($(this).val() !== '') {
-                    var code = (e.keyCode ? e.keyCode : e.which);
-                    if (code == 13) {
-                        submitChanges();
-                    }
-                }
-            });
-            that.hide();
-            $(document).click(submitChanges);
-        });
-        return that;
-    }
-});
 function browserSupportsWebWorkers() {
     //return typeof window.Worker === "function";
     return false;
 }
-var Engine;
-(function (Engine) {
-    var ActionCenter = (function () {
-        function ActionCenter() {
-            this.Selector = null;
-            this.CurrentSelector = null;
-            this.ListSelector = null;
-            this.ActionBarSelector = null;
-            this.class_Error = "n-error";
-            this.class_Warning = "n-warning";
-            this.class_Info = "n-info";
-            this.class_Success = "n-success";
-            this.format_Notification = "<div class=\"notification {1}\">{0}</div>";
-        }
-        ActionCenter.prototype.SetSelectors = function (selector, currentselector, listselector, actionbarselector) {
-            this.Selector = selector;
-            this.CurrentSelector = currentselector;
-            this.ListSelector = listselector;
-            this.ActionBarSelector = actionbarselector;
-        };
-        ActionCenter.prototype.AddSuccess = function (content) {
-            this.AddNotification(content, this.class_Success);
-        };
-        ActionCenter.prototype.AddInfo = function (content) {
-            this.AddNotification(content, this.class_Info);
-        };
-        ActionCenter.prototype.AddWarning = function (content) {
-            this.AddNotification(content, this.class_Warning);
-        };
-        ActionCenter.prototype.AddError = function (content) {
-            this.AddNotification(content, this.class_Error);
-        };
-        ActionCenter.prototype.AddNotification = function (content, cssclass) {
-            content = Format(this.format_Notification, content, cssclass);
-            var lastmessage = $(this.CurrentSelector).html();
-            $(this.CurrentSelector).html(content);
-            $(this.ListSelector).prepend(lastmessage);
-            $(this.Selector).show();
-        };
-        ActionCenter.prototype.ClearAll = function () {
-            this.ClearCurrent();
-            this.ClearList();
-            $(this.Selector).hide();
-        };
-        ActionCenter.prototype.ClearCurrent = function () {
-            $(this.CurrentSelector).html("");
-        };
-        ActionCenter.prototype.ClearList = function () {
-            $(this.ListSelector).html("");
-        };
-        ActionCenter.prototype.ToggleListVisibility = function () {
-            if ($(this.ListSelector).is(":visible")) {
-                $(this.ListSelector).hide();
-            }
-            else {
-                $(this.ListSelector).show();
-            }
-        };
-        return ActionCenter;
-    })();
-    Engine.ActionCenter = ActionCenter;
-    var UIManager = (function () {
-        function UIManager() {
-            this.duration = 200;
-            this.min_width = 150;
-        }
-        UIManager.prototype.GetMaxWidth = function () {
-            var maxwidth = $("#main-content").width();
-            return maxwidth;
-        };
-        UIManager.prototype.ActivateList = function () {
-            $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-            $("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
-        };
-        UIManager.prototype.ActivateSave = function () {
-            $("#ListController").parent().animate({ "max-width": this.min_width + "px" }, { duration: this.duration, queue: false });
-            $("#SaveController").parent().animate({ "width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-        };
-        return UIManager;
-    })();
-    Engine.UIManager = UIManager;
-})(Engine || (Engine = {}));
-var Editor = (function () {
-    function Editor(HtmlFormat, ValueGetter, ValueSetter) {
-        this.HtmlFormat = "";
-        this.ValueGetter = null;
-        this.ValueSetter = null;
-        this.TargetValueGetter = null;
-        this.TargetValueSetter = null;
-        this.$Target = null;
-        this.$Me = null;
-        this.HtmlFormat = HtmlFormat;
-        this.ValueGetter = ValueGetter;
-        this.ValueSetter = ValueSetter;
-    }
-    Editor.prototype.Save = function () {
-        this.TargetValueSetter(this.ValueGetter(this.$Me));
-        this.$Target.removeClass(Editor.editclass);
-        this.$Me.remove();
-    };
-    Editor.prototype.Load = function (Target, TargetValueGetter, TargetValueSetter) {
-        var me = this;
-        this.TargetValueGetter = TargetValueGetter;
-        this.TargetValueSetter = TargetValueSetter;
-        this.Original_Value = TargetValueGetter().trim();
-        this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
-        //setting UI
-        var containerwidth = Target.width() - (Target.padding("left") + Target.padding("right"));
-        var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
-        var containerfontfamily = Target.css('font-family');
-        var containerfontsize = Target.css('font-size');
-        var containerlineheight = Target.css('line-height');
-        this.$Me.width(containerwidth);
-        this.$Me.height(containerheight);
-        this.$Me.css('font-family', containerfontfamily);
-        this.$Me.css('font-size', containerfontsize);
-        this.$Me.css('line-height', containerlineheight);
-        //end setting UI
-        this.ValueSetter(this.$Me, this.Original_Value);
-        this.$Target = Target;
-        this.$Target.html('');
-        this.$Me.appendTo(this.$Target);
-        this.$Target.addClass(Editor.editclass);
-        this.$Me.blur(function () {
-            me.Save();
-        });
-        this.$Me.keypress(function (e) {
-            if (e.which == 13) {
-                me.Save();
-            }
-        });
-        this.$Me.focus();
-    };
-    Editor.editclass = "editing";
-    return Editor;
-})();
-function MakeEditable2(cellselector) {
+/*
+function MakeEditable2(cellselector)
+{
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor('<input type="text" class="celleditor" value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
-            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+        var target = <Element>this;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
+            editor.Load(target,() => _Html(target), () => _Html(target, editor.ValueGetter(editor.$Me)));
         }
+
     });
 }
+
 function MakeEditable3(cellselector, optionObject) {
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)), function (i) { return i.val(); }, function (i, val) {
-                i.val(val);
-            });
-            editor.Load($target, function () { return $target.html(); }, function () { return $target.html(editor.ValueGetter(editor.$Me)); });
+        var target = <Element>this;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
+            editor.Load(target,() => _Html(target),() => _Html(target, editor.ValueGetter(editor.$Me)));
         }
     });
 }
-var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs" };
+*/
+function Editable(cellselector, editedcallback) {
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event) {
+        var target = event.currentTarget;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+            editor.Load(target, function () { return _Html(target); }, function () {
+                var value = editor.ValueGetter(editor.$Me);
+                _Html(target, value);
+                editedcallback(target, value);
+            });
+        }
+    });
+}
+function GetDefaultEditor(target) {
+    var editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
+    return editor;
+}
+function AssignEditor(cellselector, editorAccessor, editedcallback) {
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event) {
+        var target = event.currentTarget;
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = editorAccessor(target);
+            editor.Load(target, function () { return _Html(target); }, function () {
+                var value = editor.ValueGetter(editor.$Me);
+                _Html(target, value);
+                editedcallback(target, value);
+            });
+        }
+    });
+}
 function MakeEditable(cellselector) {
     function SaveCell(target) {
         var parent = target.parent();
@@ -1373,109 +968,16 @@ function Access(obj, key) {
     if (key == "this") {
         return obj;
     }
-    return key.split(".").reduce(function (o, x) {
+    var result = key.split(".").reduce(function (o, x) {
         return (typeof o == "undefined" || o === null) ? o : o[x];
     }, obj);
+    return IsNull(result) ? "" : result;
 }
 function OuterHtml(item) {
     return item[0].outerHTML;
     //return item.wrapAll('<div>').parent().html(); 
 }
-function Bind(target, data, parent) {
-    var _this = this;
-    var fBind = function (target, data, parent) { return _this.Bind.call(_this, target, data, parent); };
-    var NoCheck = [];
-    var targetitem = $(target);
-    var bindattribute = "binding";
-    var attributespecifier = "=>";
-    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
-    var targets = [];
-    if (!IsNull($(target).attr(bindattribute))) {
-        targets.push(target);
-    }
-    jquerytargets.each(function (ix, item) {
-        targets.push(item);
-    });
-    //console.log(Format("Binding target: {0}", targets.length));
-    targets.forEach(function (item, ix) {
-        if (NoCheck.indexOf(item) == -1) {
-            var id = $(item).attr(bindattribute);
-            var targetattribute = "";
-            var formatString = "{0}";
-            var expr = id;
-            if (expr.indexOf(attributespecifier) > -1) {
-                var isplit = expr.split(attributespecifier);
-                if (isplit.length == 2) {
-                    targetattribute = isplit[0];
-                    expr = isplit[1];
-                }
-            }
-            var originalexpr = expr;
-            var expressions = [];
-            var i = 0;
-            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
-                expressions.push(expression);
-                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
-                i++;
-            }
-            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
-            if (expressions.length > 0) {
-                formatString = expr; //originalexpr.replace("{" + expr + "}", "{0}");
-            }
-            else {
-                expressions.push(originalexpr);
-            }
-            var values = [];
-            expressions.forEach(function (expression) {
-                var val = null;
-                val = Access(data, expression);
-                if (typeof val == "string") {
-                    if (val.indexOf("/Date(") == 0) {
-                        val = ToDate(val);
-                    }
-                    else {
-                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                    }
-                }
-                values.push(val);
-            });
-            var elementtemplate = $('[binding-type=template]', $(item)).first();
-            var newelementX = $(elementtemplate).clone(true, true);
-            newelementX.removeAttr("binding-type");
-            var firstvalue = values[0];
-            if (IsArray(firstvalue)) {
-                if (elementtemplate.length == 0) {
-                    console.log('no template found!');
-                }
-                $(item).empty();
-                elementtemplate.appendTo($(item));
-                var itemstoadd = [];
-                var bindattributeselector = "[" + bindattribute + "]";
-                firstvalue.forEach(function (childitem) {
-                    fBind(newelementX, childitem, firstvalue);
-                    itemstoadd.push(OuterHtml(newelementX));
-                });
-                //newelement.appendTo($(item));
-                $(item).append(itemstoadd.join('\n'));
-            }
-            else {
-                if (IsNull(targetattribute)) {
-                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
-                        $(item).html(Format(formatString, values));
-                    }
-                }
-                else {
-                    $(item).attr(targetattribute, Format(formatString, values));
-                }
-            }
-        }
-    });
-}
 function Replace(text, texttoreplace, textwithreplace) {
-    /*
-    var reg = new RegExp(texttoreplace, "g");
-    return text.replace(reg, textwithreplace);
-    */
     var index = 0;
     do {
         text = text.replace(texttoreplace, textwithreplace);
@@ -1495,21 +997,14 @@ function GetProperties(item) {
     }
     return properties;
 }
-var S_Bind_Start = "bind[";
-var S_Bind_End = "]";
-var s_list_selector = ".list";
-var s_listpager_selector = ".listpager";
-var s_listfilter_selector = ".listfilter";
-var s_sublist_selector = ".sublist";
-var s_sublistpager_selector = ".sublistpager";
-var s_detail_selector = ".detail";
-var s_parent_selector = ".parent";
-var s_contentcontainer_selector = ".contentcontainer";
-var s_content_selector = ".subcontent";
-var actioncenter = new Engine.ActionCenter();
-var uimanager = new Engine.UIManager();
-var resourcemanager = { Get: function (key, culture) {
-    return key;
-} };
-var activeItem = null;
+function GetPropertiesArray(item) {
+    var properties = [];
+    for (var propertyName in item) {
+        if (item.hasOwnProperty(propertyName)) {
+            var propertyValue = item[propertyName];
+            properties.push(propertyValue);
+        }
+    }
+    return properties;
+}
 //# sourceMappingURL=Utils.js.map

@@ -12,7 +12,7 @@
 
             var funcloader = function () { me.Load.call(me) };
 
-            var waiter: Waiter = new Waiter((i: RequestHandler) => i.succeded, funcloader);
+            var waiter: General.Waiter = new General.Waiter((i: RequestHandler) => i.succeded, funcloader);
             $(s_content_selector).hide();
             $containers.each(function (ix, item) {
                 var $item = $(item);
@@ -39,3 +39,9 @@
 } 
 
 var app = new Applications.App();
+
+var actioncenter = new Engine.ActionCenter();
+var uimanager = new Engine.UIManager();
+var resourcemanager: IResourceManager = { Get: function (key: string, culture?: string) { return key; } };
+
+var activeItem = null;

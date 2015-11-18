@@ -63,7 +63,7 @@ var Control;
             var me = this;
             AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
                 me.ValidationResults = data;
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
             });
@@ -73,7 +73,7 @@ var Control;
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
                 me.LoadToUI();
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
             });
@@ -104,6 +104,9 @@ var Control;
                         this.Instance.Facts.push(fact);
                     }
                 }
+            }
+            if (app.taxonomycontainer.Table != null) {
+                app.taxonomycontainer.Table.Instance = me.Instance;
             }
             me.FactsNr = this.Instance.Facts.length;
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
@@ -150,6 +153,9 @@ var Control;
                 if (facts != null && facts.length > 0) {
                     var fact = facts[0];
                     Model.FactBase.LoadFromFactString(fact);
+                    fact.Dimensions.forEach(function (dimension, ix) {
+                        SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
+                    });
                     var $factdetail = me.SelFromFact(s_detail_selector);
                     BindX($factdetail, fact);
                     $factdetail.show();

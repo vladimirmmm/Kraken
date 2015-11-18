@@ -20,7 +20,9 @@ namespace Web
             Features = new Features(ui);
             var folder = HttpContext.Current.Server.MapPath("~");
             System.IO.Directory.SetCurrentDirectory(folder);
-            Features.LoadTaxonomy(@"C:\Users\vladimir.balacescu\AppData\Roaming\X-TreeMe\Taxonomies\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2014-05\2015-02-16\mod\corep_con.xsd");
+            //Features.LoadTaxonomy(@"C:\Users\vladimir.balacescu\AppData\Roaming\X-TreeMe\Taxonomies\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2014-05\2015-02-16\mod\corep_con.xsd");
+            //Features.OpenInstance(@"C:\My\XBRL\Taxonomies\rtf_1.0\beispielinstanz\WIDAT.TA.1106999.20150603.092007.RTF_con.xbrl");
+            //Features.LoadTaxonomy(@"C:\Users\vladimir.balacescu\AppData\Roaming\X-TreeMe\Taxonomies\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2014-05\2015-02-16\mod\corep_con.xsd");
 
             var z = 0;
         }

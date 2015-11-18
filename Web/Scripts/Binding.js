@@ -1,69 +1,58 @@
-﻿var TemplateDictionary: TemplateDictionaryItem[] = [];
+var TemplateDictionary = [];
 var S_Bind_Start = "bind[";
 var S_Bind_End = "]";
-
-class TemplateDictionaryItem {
-    public Item: JQuery = null;
-    public Template: BindingTemplate = null;
-}
-
-class BindingTemplate {
-    public ID: string = "";
-    public ChildID: string = "";
-    public Children: BindingTemplate[] = [];
-    //public Child: BindingTemplate = null;
-    public Parent: BindingTemplate = null;
-    public Content: string;
-    public ChildPlaceholder: string = "@children@";
-    public AccessorExpression: string = "";
-    public IsEnumerationBinding: boolean = false;
-    public IsRecursive: boolean = false;
-    public PageSize: number = 0;
-
-    public Bind(data: Object): string {
-
-        var result_html: string = "";
+var TemplateDictionaryItem = (function () {
+    function TemplateDictionaryItem() {
+        this.Item = null;
+        this.Template = null;
+    }
+    return TemplateDictionaryItem;
+})();
+var BindingTemplate = (function () {
+    function BindingTemplate() {
+        this.ID = "";
+        this.ChildID = "";
+        this.Children = [];
+        //public Child: BindingTemplate = null;
+        this.Parent = null;
+        this.ChildPlaceholder = "@children@";
+        this.AccessorExpression = "";
+        this.IsEnumerationBinding = false;
+        this.IsRecursive = false;
+        this.PageSize = 0;
+    }
+    BindingTemplate.prototype.Bind = function (data) {
+        var result_html = "";
         var me = this;
         console.log("binding " + data);
         result_html = BindLevel(this.Content, data);
         var children = me.Children;
-        if (!IsNull(me.Parent) && me.Parent.IsRecursive)
-        {
+        if (!IsNull(me.Parent) && me.Parent.IsRecursive) {
             children = [me.Parent];
-            //result_html += me.Parent.Bind(data);
         }
         children.forEach(function (child) {
-            var accessorexpr =  child.AccessorExpression;
+            var accessorexpr = child.AccessorExpression;
             var shouldenumerate = child.Parent.IsEnumerationBinding;
-
             if (accessorexpr != "nobind") {
                 var items = Access(data, accessorexpr);
-
                 items = IsNull(items) ? [] : items;
                 var childitems = "";
                 var hasdata = false;
-
                 var childfunc = function (item) {
                     childitems += child.Bind(item);
                     hasdata = true;
                 };
                 if (shouldenumerate) {
-
-                    EnumerateObject(items,me, childfunc);
+                    EnumerateObject(items, me, childfunc);
                     if (!hasdata) {
                         childitems = Replace(childitems, "@X@", "");
-                    } else
-                    {
-                       // result_html = Replace(result_html, "@X@", childitems);
+                    }
+                    else {
                     }
                 }
-                else
-                {
+                else {
                     childitems += child.Bind(items);
                 }
-
-            
-
                 if (result_html.indexOf(child.ID) > -1) {
                     result_html = Replace(result_html, child.ID, childitems);
                 }
@@ -75,31 +64,25 @@ class BindingTemplate {
             }
         });
         return result_html;
-
-    }
-
-
-    public ToHierarchyString(tab: string): string {
+    };
+    BindingTemplate.prototype.ToHierarchyString = function (tab) {
         var me = this;
         var result = "";
         tab = IsNull(tab) ? "    " : tab;
         result += Format("{0} {1} {2}\n", tab, this.ID, this.AccessorExpression);
         me.Children.forEach(function (child) {
             result += child.ToHierarchyString(tab + tab);
-
         });
-
         return result;
-    }
-
-    public GetExpression(item: JQuery) {
+    };
+    BindingTemplate.prototype.GetExpression = function (item) {
         var expr = item.attr("binding");
         return expr;
-    }
-}
-
-function BindLevel(html: string, data: Object): string {
-    var result_html: string = html;
+    };
+    return BindingTemplate;
+})();
+function BindLevel(html, data) {
+    var result_html = html;
     var bindings = TextsBetween(html, S_Bind_Start, S_Bind_End, true);
     bindings.forEach(function (binding) {
         var subbindings = TextsBetween(binding, "{", "}", true);
@@ -114,16 +97,13 @@ function BindLevel(html: string, data: Object): string {
             s_html = Replace(s_html, subbinding, dataitem);
         });
         result_html = Replace(result_html, binding, s_html);
-
     });
     return result_html;
 }
-
-function GetBindingTemplate(target: JQuery) {
+function GetBindingTemplate(target) {
     //var templates = $('[binding-type=template]', target);
     var templates = $('[binding-items], [binding-type=template]', target);
     var me = this;
-
     templates.each(function (index, item) {
         var jitem = $(item);
         var ix = jitem.index();
@@ -141,12 +121,8 @@ function GetBindingTemplate(target: JQuery) {
         jitem.attr("IsEnumeration", isenumeration);
         //jitem.attr("PageSize", parentpagesize);
         jitem.remove();
-
-
     });
-
-    var templatecollection: BindingTemplate[] = [];
-
+    var templatecollection = [];
     templates.each(function (index, item) {
         var jitem = $(item);
         var placeholder = "@" + index + "@";
@@ -158,21 +134,18 @@ function GetBindingTemplate(target: JQuery) {
         jitem.removeAttr("IsEnumeration");
         //var parentPageSize = jitem.attr("PageSize");
         //jitem.removeAttr("PageSize");
-        var isrecursive = jitem.attr("binding-mode") == "recursive"
+        var isrecursive = jitem.attr("binding-mode") == "recursive";
         jitem.removeAttr("binding-type");
         var html = OuterHtml(jitem);
         var t = new BindingTemplate();
         templatecollection.push(t);
-        t.ID = childID
+        t.ID = childID;
         t.Content = html;
         t.AccessorExpression = parentBinding;
         t.IsRecursive = isrecursive;
         t.IsEnumerationBinding = isenumeration == "true" ? true : false;
-
         //t.ParentPageSize = parentPageSize;
-
     });
-
     var t = new BindingTemplate();
     templatecollection.push(t);
     t.ID = "@root@";
@@ -181,16 +154,15 @@ function GetBindingTemplate(target: JQuery) {
     t.IsRecursive = target.children().first().attr("binding-mode") == "recursive";
     var isenumeration = !IsNull(target.attr("binding-items"));
     t.IsEnumerationBinding = isenumeration;
-    var roottemplate: BindingTemplate = null;
-    var templatelist = templatecollection.AsLinq<BindingTemplate>();
+    var roottemplate = null;
+    var templatelist = templatecollection.AsLinq();
     templatecollection.forEach(function (item) {
-        var parenttemplate = templatelist.FirstOrDefault(i=> i.Content.indexOf(item.ID) > -1);
+        var parenttemplate = templatelist.FirstOrDefault(function (i) { return i.Content.indexOf(item.ID) > -1; });
         if (parenttemplate != null) {
             item.Parent = parenttemplate;
             if (IsNull(item.AccessorExpression)) {
                 //item.AccessorExpression = parenttemplate.AccessorExpression;
                 item.AccessorExpression = 'this';
-                //todo
             }
             parenttemplate.Children.push(item);
         }
@@ -199,19 +171,17 @@ function GetBindingTemplate(target: JQuery) {
         }
     });
     if (IsNull(roottemplate)) {
-        roottemplate = templatelist.FirstOrDefault(i=> IsNull(i.Parent));
+        roottemplate = templatelist.FirstOrDefault(function (i) { return IsNull(i.Parent); });
     }
     return roottemplate;
 }
-
-
-
-function BindX(item: JQuery, data: Object) {
+function BindX(item, data) {
     if (item.length == 0) {
         ShowNotification("BindX: " + item.selector + " has no items!");
-    } else {
-        var bt: BindingTemplate = null;
-        var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
+    }
+    else {
+        var bt = null;
+        var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == item[0]; });
         if (templatedictionaryitem == null) {
             if (item.length > 0) {
                 bt = GetBindingTemplate(item);
@@ -219,12 +189,15 @@ function BindX(item: JQuery, data: Object) {
                 templatedictionaryitem.Item = item;
                 templatedictionaryitem.Template = bt;
                 TemplateDictionary.push(templatedictionaryitem);
-            } else {
+            }
+            else {
                 console.log(item.selector + " was not found! (BindX)");
             }
-        } else {
+        }
+        else {
             bt = templatedictionaryitem.Template;
         }
         item[0].innerHTML = bt.Bind(data);
     }
 }
+//# sourceMappingURL=Binding.js.map
