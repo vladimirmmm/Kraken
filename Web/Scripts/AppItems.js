@@ -14,6 +14,8 @@ var s_detail_selector = ".detail";
 var s_parent_selector = ".parent";
 var s_contentcontainer_selector = ".contentcontainer";
 var s_content_selector = ".subcontent";
+var selectedclass = "selected";
+var s_selectedclass = ".selected";
 var StopProgress = function (id) {
     return null;
 };
@@ -90,6 +92,7 @@ var UITableManager = (function () {
                 });
                 if (isdynamic) {
                     me.TemplateRow = row;
+                    Controls.Row.ClearDataCells(me.TemplateRow);
                     _Hide(me.TemplateRow.UIElement);
                 }
                 else {
@@ -162,32 +165,40 @@ var UITableManager = (function () {
     };
     UITableManager.prototype.SetCellsOfRow = function (row) {
         var me = this;
-        this.CellEditorAssigner(row.UIElement);
+        //this.CellEditorAssigner(row.UIElement);
         row.Cells.forEach(function (cell, ix) {
             //_Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
         });
         _EnsureEventHandler(row.UIElement, "click", function (e) {
             _Focus(this);
-            _RemoveClass(_Select("tr", _Parent(row.UIElement)), "selected");
-            _AddClass(this, "selected");
+            _RemoveClass(_Select("tr", _Parent(row.UIElement)), selectedclass);
+            _AddClass(this, selectedclass);
         });
     };
     UITableManager.prototype.AddEventHandlers = function () {
         var me = this;
         this.CellEditorAssigner = function (element) {
-            AssignEditor(_Select("td.data:not(.blocked)", element), GetXbrlCellEditor, me.OnCellChanged);
+            AssignEditor(function () { return _Select("td.data:not(.blocked)", element); }, GetXbrlCellEditor, me.OnCellChanged);
         };
         this.OnLoaded = function (table) {
             var me = this;
-            me.CellEditorAssigner(table.UIElement);
+            //me.CellEditorAssigner(table.UIElement);
             table.Rows.forEach(function (row, ix) {
                 me.SetCellsOfRow(row);
+            });
+            _EnsureEventHandler(table.UIElement, "click", function (e) {
+                var element = e.target;
+                if (element instanceof HTMLTableDataCellElement) {
+                    if (!_HasClass(element, "blocked")) {
+                        EditCell(element, GetXbrlCellEditor, me.OnCellChanged);
+                    }
+                }
             });
             _EnsureEventHandler(window, "keyup", function (e) {
                 if (e.which == 46) {
                     var rowtodelete = null;
                     table.Rows.forEach(function (row, ix) {
-                        if (_HasClass(row.UIElement, "selected")) {
+                        if (_HasClass(row.UIElement, selectedclass)) {
                             rowtodelete = row;
                         }
                     });
@@ -196,12 +207,12 @@ var UITableManager = (function () {
                     }
                 }
             });
-            table.Rows.forEach(function (row, ix) {
-                _EnsureEventHandler(row.UIElement, "click", me.OnRowSelected);
-            });
-            table.Columns.forEach(function (column, ix) {
-                _EnsureEventHandler(column.UIElement, "click", me.OnColumnSelected);
-            });
+            //table.Rows.forEach(function (row, ix) {
+            //    _EnsureEventHandler(row.UIElement, "click", me.OnRowSelected);
+            //});
+            //table.Columns.forEach(function (column, ix) {
+            //    _EnsureEventHandler(column.UIElement, "click", me.OnColumnSelected);
+            //});
         };
         this.OnRowAdded = function (row) {
             var rowelement = row.UIElement;
@@ -227,6 +238,10 @@ var UITableManager = (function () {
             }
             this.ManageRows(table);
             //OnCellChanged(cell, value);
+        };
+        this.OnRowSelected = function (row) {
+            _RemoveClass(_Select("table.report tbody tr"), selectedclass);
+            _AddClass(row.UIElement, selectedclass);
         };
     };
     return UITableManager;

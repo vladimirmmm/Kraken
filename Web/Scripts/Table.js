@@ -82,23 +82,14 @@ var UI;
         Table.prototype.LoadToUI = function () {
             var me = this;
             this.LoadInstance(this.Instance);
-            /*
-            if (me.Instance != null && !me.IsInstanceLoaded)
-            {
-                if (!IsNull(this.Instance)) {
-                    this.LoadInstance(this.Instance);
-                }
-                me.IsInstanceLoaded = true;
-            }
-            */
         };
         Table.prototype.Load = function () {
             var me = this;
             me.UITable = Factories.GetTablewithManager();
             me.UITable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
             _EnsureEventHandler(_Select("table.report tr"), "click", function () {
-                _RemoveClass(_Select("table.report tr"), "selected");
-                _AddClass(this, "selected");
+                _RemoveClass(_Select("table.report tr"), selectedclass);
+                _AddClass(this, selectedclass);
             });
             this.LoadCellsFromHtml();
             //this.SetCellEditors();
@@ -187,13 +178,10 @@ var UI;
         };
         Table.prototype.SetDynamicRows = function () {
             var me = this;
-            //var datarows = _Select("tr.dynamicdata");
-            //_Remove(datarows);
             var uirows = me.UITable.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).Select(function (i) { return i.RowID; }).ToArray();
             me.UITable.CanManageRows = false;
             uirows.forEach(function (rowid, ix) {
                 var count = uirows.length;
-                //ShowNotification(Format("removing row {0} ...", rowid));
                 me.UITable.RemoveRowByID(rowid);
             });
             me.UITable.CanManageRows = true;
@@ -201,8 +189,6 @@ var UI;
             var url = window.location.pathname;
             var reportid = me.Current_ReportID;
             var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
-            //var reportkey = Format("{0}|{1}", reportid, extensioncode);
-            //var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
             var rowidcontainer = me.Instance.DynamicReportCells[reportid];
             var rows = GetProperties(rowidcontainer.RowDictionary);
             me.UITable.CanManageRows = false;
@@ -260,22 +246,6 @@ var UI;
             if (!IsNull(row)) {
                 return _Attribute(row, "id");
             }
-            //if (fact != null)
-            //{
-            //    _Attribute(row, "factstring", factkey);
-            //   var cells = _Select("td", row);
-            //   cells.forEach(function (cellelement, index) {
-            //        var cellfactstring = _Attribute(cellelement,"factstring");
-            //        cellfactstring = Replace(cellfactstring.trim(), ",", "");
-            //        if (!IsNull(cellfactstring)) {
-            //            var dim = fact.Dimensions.AsLinq<Model.Dimension>().FirstOrDefault(i=> i.DomainMemberFullName.indexOf(cellfactstring) == 0);
-            //            if (dim != null) {
-            //                var text = dim.DomainMember;
-            //                _Text(cellelement,text);
-            //            }
-            //        }
-            //    });
-            //}
             return "";
         };
         Table.prototype.SetCellIDs = function (row) {
@@ -288,18 +258,6 @@ var UI;
                 //_Attribute(cell.UIElement, "title", cellid);
             });
         };
-        //private SetCellID(row: Element)
-        //{
-        //    var cells = _Select("td", row);
-        //    var rowid =_Attribute( row,"id");
-        //    cells.forEach(function (cellelement, index) {
-        //        var cellid = _Attribute(cellelement,"id");
-        //        cellid = cellid.substring(cellid.indexOf("|"));
-        //        cellid = rowid + cellid;
-        //        _Attribute(cellelement, "id", cellid);
-        //        _Attribute(cellelement, "title", cellid);
-        //    });
-        //}
         Table.prototype.SetExtensionByCode = function (code) {
             if (this.Extensions.Count() > 0) {
                 var ext = this.Extensions.FirstOrDefault();
@@ -343,12 +301,6 @@ var UI;
                 }
             }
             var currentextensioncode = this.Current_ExtensionCode;
-            //this.SetNavigation();
-            //this.SetExtensionByCode(this.Current_ExtensionCode);  
-            //this.HighlightCell();   
-            //if (currentextensioncode != this.Current_ExtensionCode) {
-            //    this.GetData();
-            //}
         };
         return Table;
     })();

@@ -295,15 +295,39 @@ function Attribute(obj, name, value) {
         return JqueryAttribute(obj, name, value);
     }
 }
+function JqueryContent(obj, value) {
+    if (value === undefined) {
+        return $(obj).html();
+    }
+    else {
+        $(obj).html(value);
+        return value;
+    }
+}
+function Content(obj, value) {
+    if (obj instanceof Element) {
+        if (value === undefined) {
+            var result = obj.innerHTML;
+            return result === undefined ? "" : result;
+        }
+        else {
+            obj.innerHTML = value;
+            return value;
+        }
+    }
+    else {
+        return JqueryContent(obj, value);
+    }
+}
 function Css(obj, name, value) {
     return CallJQueryFunction(obj, "css", name, value);
 }
 function Value(obj, value) {
     return CallJQueryFunction(obj, "value", "", value);
 }
-function Content(obj, value) {
-    return CallJQueryFunction(obj, "html", "", value);
-}
+//function Content(obj, value?: string): string {
+//    return CallJQueryFunction(obj, "html", "", value);
+//}
 function XText(obj, value) {
     return CallJQueryFunction(obj, "text", "", value);
 }

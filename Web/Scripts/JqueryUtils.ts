@@ -353,6 +353,34 @@ function Attribute(obj, name: string, value?: string): string {
     }
 
 }
+function JqueryContent(obj, value?: string): string {
+    if (value === undefined) {
+        return $(obj).html();
+    }
+    else {
+
+        $(obj).html(value);
+        return value;
+    }
+}
+function Content(obj, value?: string): string {
+    if (obj instanceof Element) {
+        if (value === undefined) {
+            var result = obj.innerHTML;
+            
+            return result === undefined ? "" : result;
+        }
+        else {
+            obj.innerHTML = value;
+            return value;
+        }
+    }
+    else {
+
+        return JqueryContent(obj, value);
+    }
+
+}
 
 function Css(obj, name: string, value?: string): string {
     return CallJQueryFunction(obj, "css", name, value);
@@ -362,10 +390,10 @@ function Value(obj, value?: string): string {
     return CallJQueryFunction(obj, "value", "", value);
 }
 
-function Content(obj, value?: string): string {
-    return CallJQueryFunction(obj, "html", "", value);
+//function Content(obj, value?: string): string {
+//    return CallJQueryFunction(obj, "html", "", value);
 
-}
+//}
 function XText(obj, value?: string): string {
     return CallJQueryFunction(obj, "text", "", value);
 

@@ -831,8 +831,18 @@ function GetDefaultEditor(target) {
     var editor = new Editor('<input type="text" class="celleditor " value="" />', function (i) { return i.val(); }, function (i, val) { return i.val(val); });
     return editor;
 }
-function AssignEditor(cellselector, editorAccessor, editedcallback) {
-    var targets = _Select(cellselector);
+function EditCell(cell, editorAccessor, editedcallback) {
+    if (!_HasClass(cell, Editor.editclass)) {
+        var editor = editorAccessor(cell);
+        editor.Load(cell, function () { return _Html(cell); }, function () {
+            var value = editor.ValueGetter(editor.$Me);
+            _Html(cell, value);
+            editedcallback(cell, value);
+        });
+    }
+}
+function AssignEditor(targetsaccessor, editorAccessor, editedcallback) {
+    var targets = targetsaccessor();
     _AddEventHandler(targets, "click", function (event) {
         var target = event.currentTarget;
         if (!_HasClass(target, Editor.editclass)) {
@@ -845,6 +855,27 @@ function AssignEditor(cellselector, editorAccessor, editedcallback) {
         }
     });
 }
+/*
+function AssignEditor(cellselector: any, editorAccessor: Function, editedcallback: Function) {
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event: any) {
+        var target = event.currentTarget;
+
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = editorAccessor(target);
+
+            editor.Load(target,
+                () => _Html(target),
+                () => {
+                    var value = editor.ValueGetter(editor.$Me);
+                    _Html(target, value);
+                    editedcallback(target, value);
+                }
+                );
+        }
+    });
+}
+*/
 function MakeEditable(cellselector) {
     function SaveCell(target) {
         var parent = target.parent();

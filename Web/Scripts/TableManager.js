@@ -176,7 +176,7 @@ var Controls;
         };
         Table.prototype.LoadRowEventHandlers = function (row) {
             var me = this;
-            _EnsureEventHandler(row.UIElement, "click", me.Manager.OnRowSelected);
+            _EnsureEventHandler(row.UIElement, "click", function () { return me.Manager.OnRowSelected(row); });
             row.Cells.forEach(function (cell, ix) {
                 //_EnsureEventHandler(cell.UIElement, "click", me.Manager.OnCellSelected);
             });
@@ -198,7 +198,7 @@ var Controls;
             var newelement = _Clone(templaterow.UIElement);
             Row.SetRowFromElement(newrow, newelement);
             Controls.Row.SetRowID(newrow, id);
-            Row.ClearDataCells(newrow);
+            //Row.ClearDataCells(newrow);
             var newrowHeaderCell = newrow.Cells.AsLinq().LastOrDefault(function (i) { return i.Type == 2 /* Header */; });
             if (!IsNull(newrowHeaderCell)) {
                 me.RowHeader.Cells.push(newrowHeaderCell);

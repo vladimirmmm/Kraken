@@ -909,7 +909,7 @@ namespace LogicalModel
                     {
                     }
 
-                    var alt = String.Format("R{0}|C{1}", row.Item.LabelCode, column.Item.LabelCode);
+                    var alt = String.Format("{0}|{1}", row.Item.LabelCode, column.Item.LabelCode);
                     var cssclass = "data";
                     if (cell.IsBlocked) 
                     {

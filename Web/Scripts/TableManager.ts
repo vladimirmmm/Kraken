@@ -218,9 +218,9 @@ module Controls {
             //    _EnsureEventHandler(column.UIElement, "click", me.Manager.OnColumnSelected);
             //});
         }
-        private LoadRowEventHandlers(row: Row) {
+        public LoadRowEventHandlers(row: Row) {
             var me = this;
-            _EnsureEventHandler(row.UIElement, "click", me.Manager.OnRowSelected);
+            _EnsureEventHandler(row.UIElement, "click",() => me.Manager.OnRowSelected(row));
             row.Cells.forEach(function (cell, ix) {
                 //_EnsureEventHandler(cell.UIElement, "click", me.Manager.OnCellSelected);
             });
@@ -243,7 +243,7 @@ module Controls {
             var newelement = _Clone(templaterow.UIElement);
             Row.SetRowFromElement(newrow, newelement);
             Controls.Row.SetRowID(newrow, id);
-            Row.ClearDataCells(newrow);
+            //Row.ClearDataCells(newrow);
 
             var newrowHeaderCell = newrow.Cells.AsLinq<Cell>().LastOrDefault(i=> i.Type == CellType.Header);
 

@@ -151,13 +151,42 @@ var Control;
             if (!IsNull(me.Instance)) {
                 var facts = this.Instance.FactDictionary[factkey];
                 if (facts != null && facts.length > 0) {
-                    var fact = facts[0];
-                    Model.FactBase.LoadFromFactString(fact);
-                    fact.Dimensions.forEach(function (dimension, ix) {
+                    var instancefact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
+                    Model.FactBase.LoadFromFactString(instancefact);
+                    var fullfactstring = Model.FactBase.GetFullFactString(instancefact);
+                    for (var i = 0; i < instancefact.Cells.length; i++) {
+                        var cell = instancefact.Cells[i];
+                        var cellobj = new Model.Cell();
+                        cellobj.SetFromCellID(cell);
+                        var reportid = cellobj.Report;
+                        var dynmicdata = me.Instance.DynamicReportCells[reportid];
+                        if (IsNull(cellobj.Column)) {
+                        }
+                        if (IsNull(cellobj.Row)) {
+                            var rowdictionary = IsNull(dynmicdata) ? null : dynmicdata.RowDictionary;
+                            if (!IsNull(rowdictionary)) {
+                                var itemsofdict = GetProperties(rowdictionary);
+                                var kv = itemsofdict.AsLinq().FirstOrDefault(function (i) { return fullfactstring.indexOf(i.Key) > -1; });
+                                cellobj.Row = kv.Value;
+                            }
+                        }
+                        if (cellobj.Extension == "*") {
+                            var extdictionary = IsNull(dynmicdata) ? null : dynmicdata.ExtDictionary;
+                            if (!IsNull(extdictionary)) {
+                                var itemsofdict = GetProperties(extdictionary);
+                                var kv = itemsofdict.AsLinq().FirstOrDefault(function (i) { return fullfactstring.indexOf(i.Key) > -1; });
+                                cellobj.Extension = kv.Value;
+                            }
+                        }
+                        instancefact.Cells[i] = cellobj.CellID;
+                    }
+                    ;
+                    Model.FactBase.LoadFromFactString(instancefact);
+                    instancefact.Dimensions.forEach(function (dimension, ix) {
                         SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
                     });
                     var $factdetail = me.SelFromFact(s_detail_selector);
-                    BindX($factdetail, fact);
+                    BindX($factdetail, instancefact);
                     $factdetail.show();
                 }
             }

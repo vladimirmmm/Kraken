@@ -948,6 +948,43 @@ function GetDefaultEditor(target:Element):Editor
     return editor;
 }
 
+function EditCell(cell: Element, editorAccessor: Function, editedcallback: Function)
+{
+
+    if (!_HasClass(cell, Editor.editclass)) {
+        var editor = editorAccessor(cell);
+
+        editor.Load(cell,
+            () => _Html(cell),
+            () => {
+                var value = editor.ValueGetter(editor.$Me);
+                _Html(cell, value);
+                editedcallback(cell, value);
+            }
+            );
+    }
+}
+
+function AssignEditor(targetsaccessor: Function, editorAccessor: Function, editedcallback: Function) {
+    var targets = targetsaccessor();
+    _AddEventHandler(targets, "click", function (event: any) {
+        var target = event.currentTarget;
+
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = editorAccessor(target);
+
+            editor.Load(target,
+                () => _Html(target),
+                () => {
+                    var value = editor.ValueGetter(editor.$Me);
+                    _Html(target, value);
+                    editedcallback(target, value);
+                }
+                );
+        }
+    });
+}
+/*
 function AssignEditor(cellselector: any, editorAccessor: Function, editedcallback: Function) {
     var targets = _Select(cellselector);
     _AddEventHandler(targets, "click", function (event: any) {
@@ -967,6 +1004,7 @@ function AssignEditor(cellselector: any, editorAccessor: Function, editedcallbac
         }
     });
 }
+*/
 function MakeEditable(cellselector)
 {
     function SaveCell(target)

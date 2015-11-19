@@ -50,24 +50,26 @@
             } else {
                 var dmfn = "";
                 if (IsNull(dimension.DomainMember)) {
-                    dmfn = Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
-                }
+                    //dmfn = Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+                    dmfn = "[" + dimension.DimensionItem + "]" + dimension.Domain;
 
-                dmfn = Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+                }
+                else {
+                    //dmfn = Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+                    dmfn = "["+dimension.DimensionItem+"]"+dimension.Domain+":"+ dimension.DomainMember;
+                }
                 dimension["DomainMemberFullName"] = dmfn;
                 return dmfn;
             }
         }
         public static ToStringForKey(dimension: Dimension): string {
-            if (dimension.IsTyped) {
-                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+            if (dimension.IsTyped || IsNull(dimension.DomainMember)) {
+                //return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
+                return "[" + dimension.DimensionItem + "]" + dimension.Domain;
             }
 
-            if (IsNull(dimension.DomainMember)) {
-                return Format("[{0}]{1}", dimension.DimensionItem, dimension.Domain);
-            }
-
-            return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+            //return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
+            return "[" + dimension.DimensionItem + "]" + dimension.Domain + ":" + dimension.DomainMember;
         }
     }
 
@@ -102,7 +104,8 @@
             if (IsNull(this.Namespace)) {
                 return this.Name;
             }
-            return Format("{0}:{1}", this.Namespace, this.Name);
+            //return Format("{0}:{1}", this.Namespace, this.Name);
+            return this.Namespace+":"+ this.Name;
         }
 
         public set FullName(value:string) {
@@ -141,7 +144,7 @@
         public Dimensions: Dimension[] = [];
 
         private _FactString: string = "";
-        public GetFactString(): string
+        public GetFactString(refresh=false): string
         {
             var me = this;
 
@@ -156,7 +159,8 @@
                 var dimstr = Dimension.DomainMemberFullName(dimension);
                 dimstr = FactBase.Format(dimstr, ref);
 
-                result += Format("{0},", dimstr);
+                //result += Format("{0},", dimstr);
+                result += dimstr + ",";
             });
             return result;
         }
@@ -249,7 +253,8 @@
                     var domainparts = Split(domainpart, ":", true);
            
                     if (domainparts.length == 3 || domainparts[0].indexOf("_typ")>-1) {
-                        domain = Format("{0}:{1}", domainparts[0], domainparts[1]);
+                        //domain = Format("{0}:{1}", domainparts[0], domainparts[1]);
+                        domain = domainparts[0]+":"+ domainparts[1];
                         member = domainparts[2];
                         dim.IsTyped = true;
                     }
@@ -285,6 +290,21 @@
             }
             return item;
 
+        }
+
+        public static GetFullFactString(fact:FactBase): string {
+
+            var result = "";
+            if (!IsNull(fact.Concept)) {
+                result = fact.Concept.FullName + ",";
+            }
+            var dimensions = fact.Dimensions.sort(function (a, b) { return Dimension.DomainMemberFullName(a) < Dimension.DomainMemberFullName(b) ? -1 : 1; });
+            dimensions.forEach(function (dimension, index) {
+                var dimstr = Dimension.DomainMemberFullName(dimension);
+
+                result += Format("{0},", dimstr);
+            });
+            return result;
         }
     }
 
@@ -417,7 +437,7 @@
         }
 
         public SetFromCellID(CellID: string) {
-            var reportpart = CellID.substring(0, CellID.indexOf("<") + 1);
+            var reportpart = CellID.substring(0, CellID.indexOf("<"));
             var cellpart = TextBetween(CellID, "<", ">");
             var cellparts = cellpart.split("|");
             if (cellparts.length == 3) {

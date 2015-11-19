@@ -120,15 +120,7 @@ module UI {
         {
             var me = this;
             this.LoadInstance(this.Instance);
-            /*
-            if (me.Instance != null && !me.IsInstanceLoaded)
-            {
-                if (!IsNull(this.Instance)) {
-                    this.LoadInstance(this.Instance);
-                }
-                me.IsInstanceLoaded = true;
-            }
-            */
+  
         }
   
         public Load()
@@ -138,8 +130,8 @@ module UI {
             me.UITable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
             
             _EnsureEventHandler(_Select("table.report tr"), "click", function () {
-                _RemoveClass(_Select("table.report tr"), "selected");
-                _AddClass(this, "selected");
+                _RemoveClass(_Select("table.report tr"), selectedclass);
+                _AddClass(this, selectedclass);
             });
          
             this.LoadCellsFromHtml();
@@ -260,15 +252,12 @@ module UI {
         public SetDynamicRows()
         {
             var me = this;
-        
-            //var datarows = _Select("tr.dynamicdata");
-            //_Remove(datarows);
 
             var uirows = me.UITable.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement,"dynamicdata")).Select(i=> i.RowID).ToArray();
             me.UITable.CanManageRows = false;
             uirows.forEach(function (rowid, ix) {
                 var count = uirows.length;
-                //ShowNotification(Format("removing row {0} ...", rowid));
+    
                 me.UITable.RemoveRowByID(rowid);
             });
             me.UITable.CanManageRows = true;
@@ -279,9 +268,6 @@ module UI {
 
             var extensioncode = IsNull(me.Current_ExtensionCode) ? this.ExtensionsRoot.Item.LabelCode : me.Current_ExtensionCode;
 
-
-            //var reportkey = Format("{0}|{1}", reportid, extensioncode);
-            //var rowidcontainer = me.Instance.DynamicCellDictionary[reportkey];
             var rowidcontainer = me.Instance.DynamicReportCells[reportid];
             var rows = GetProperties(rowidcontainer.RowDictionary);
 
@@ -352,25 +338,6 @@ module UI {
                 return _Attribute(row, "id");
             }
 
-            //if (fact != null)
-            //{
-            //    _Attribute(row, "factstring", factkey);
-
-            //   var cells = _Select("td", row);
-            //   cells.forEach(function (cellelement, index) {
-            //        var cellfactstring = _Attribute(cellelement,"factstring");
-            //        cellfactstring = Replace(cellfactstring.trim(), ",", "");
-            //        if (!IsNull(cellfactstring)) {
-            //            var dim = fact.Dimensions.AsLinq<Model.Dimension>().FirstOrDefault(i=> i.DomainMemberFullName.indexOf(cellfactstring) == 0);
-            //            if (dim != null) {
-            //                var text = dim.DomainMember;
-            //                _Text(cellelement,text);
-            //            }
-            //        }
-
-            //    });
-            //}
-
             return "";
             
         }
@@ -386,18 +353,7 @@ module UI {
                 //_Attribute(cell.UIElement, "title", cellid);
             });
         }
-        //private SetCellID(row: Element)
-        //{
-        //    var cells = _Select("td", row);
-        //    var rowid =_Attribute( row,"id");
-        //    cells.forEach(function (cellelement, index) {
-        //        var cellid = _Attribute(cellelement,"id");
-        //        cellid = cellid.substring(cellid.indexOf("|"));
-        //        cellid = rowid + cellid;
-        //        _Attribute(cellelement, "id", cellid);
-        //        _Attribute(cellelement, "title", cellid);
-        //    });
-        //}
+
         
         public SetExtensionByCode(code: string)
         {
@@ -453,12 +409,7 @@ module UI {
             }
 
             var currentextensioncode = this.Current_ExtensionCode;
-            //this.SetNavigation();
-            //this.SetExtensionByCode(this.Current_ExtensionCode);  
-            //this.HighlightCell();   
-            //if (currentextensioncode != this.Current_ExtensionCode) {
-            //    this.GetData();
-            //}
+   
      
         }
   

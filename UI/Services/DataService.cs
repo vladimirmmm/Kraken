@@ -274,7 +274,7 @@ namespace UI.Services
                    // table.CurrentExtension = hext.Item;
                 }
                 table.EnsureHtmlLayout();
-                url = String.Format("{0}#report={1};ext={2};cell=R{3}_C{4};", table.FullHtmlPath, report, extension, row, column);
+                url = String.Format("{0}#report={1};ext={2};cell={3}_{4};", table.FullHtmlPath, report, extension, row, column);
 
                 //UI.Browser.Navigate(url);
                 //UI.TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);

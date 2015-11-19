@@ -16,6 +16,10 @@ var s_parent_selector: string = ".parent";
 var s_contentcontainer_selector: string = ".contentcontainer";
 var s_content_selector: string = ".subcontent";
 
+var selectedclass: string = "selected";
+var s_selectedclass: string = ".selected";
+
+
 var StopProgress: F_Progress = function (id: string) { return null; };
 var StartProgress: F_Progress = function (id: string) { return null; };
 var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
@@ -90,6 +94,7 @@ class UITableManager implements Controls.ITableManager {
                 });
                 if (isdynamic) {
                     me.TemplateRow = row;
+                    Controls.Row.ClearDataCells(me.TemplateRow);
                     _Hide(me.TemplateRow.UIElement);
                 } else {
                     table.Rows.push(row);
@@ -191,14 +196,14 @@ class UITableManager implements Controls.ITableManager {
     private SetCellsOfRow(row: Controls.Row) {
         var me = this;
 
-        this.CellEditorAssigner(row.UIElement);
+        //this.CellEditorAssigner(row.UIElement);
         row.Cells.forEach(function (cell, ix) {
             //_Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
         });
         _EnsureEventHandler(row.UIElement, "click", function (e) {
             _Focus(this);
-            _RemoveClass(_Select("tr", _Parent(row.UIElement)), "selected");
-            _AddClass(this, "selected");
+            _RemoveClass(_Select("tr", _Parent(row.UIElement)), selectedclass);
+            _AddClass(this, selectedclass);
 
         });
     }
@@ -207,8 +212,7 @@ class UITableManager implements Controls.ITableManager {
         var me = <UITableManager>this;
         this.CellEditorAssigner = function (element) {
             AssignEditor(
-                //_Select("td:not(.blocked)", element),
-                _Select("td.data:not(.blocked)", element),
+                () => _Select("td.data:not(.blocked)", element),
                 GetXbrlCellEditor,
                 me.OnCellChanged);
 
@@ -216,15 +220,24 @@ class UITableManager implements Controls.ITableManager {
 
         this.OnLoaded = function (table: Controls.Table) {
             var me = <UITableManager>this;
-            me.CellEditorAssigner(table.UIElement);
+            //me.CellEditorAssigner(table.UIElement);
             table.Rows.forEach(function (row, ix) {
                 me.SetCellsOfRow(row);
+            });
+            _EnsureEventHandler(table.UIElement, "click", function (e) {
+                var element = <Element>e.target;
+                if (element instanceof HTMLTableDataCellElement)
+                {
+                    if (!_HasClass(element, "blocked")) {
+                        EditCell(element, GetXbrlCellEditor, me.OnCellChanged)
+                    }
+                }
             });
             _EnsureEventHandler(window, "keyup", function (e) {
                 if (e.which == 46) {
                     var rowtodelete: Controls.Row = null;
                     table.Rows.forEach(function (row, ix) {
-                        if (_HasClass(row.UIElement, "selected")) {
+                        if (_HasClass(row.UIElement, selectedclass)) {
                             rowtodelete = row;
                         }
                     });
@@ -233,12 +246,14 @@ class UITableManager implements Controls.ITableManager {
                     }
                 }
             });
-            table.Rows.forEach(function (row, ix) {
-                _EnsureEventHandler(row.UIElement, "click", me.OnRowSelected);
-            });
-            table.Columns.forEach(function (column, ix) {
-                _EnsureEventHandler(column.UIElement, "click", me.OnColumnSelected);
-            });
+            //table.Rows.forEach(function (row, ix) {
+            //    _EnsureEventHandler(row.UIElement, "click", me.OnRowSelected);
+            //});
+
+ 
+            //table.Columns.forEach(function (column, ix) {
+            //    _EnsureEventHandler(column.UIElement, "click", me.OnColumnSelected);
+            //});
         };
 
     
@@ -274,6 +289,11 @@ class UITableManager implements Controls.ITableManager {
             }
             this.ManageRows(table);
             //OnCellChanged(cell, value);
+        };
+
+        this.OnRowSelected = function (row:Controls.Row) {
+            _RemoveClass(_Select("table.report tbody tr"), selectedclass);
+            _AddClass(row.UIElement, selectedclass);
         };
     }
 }
