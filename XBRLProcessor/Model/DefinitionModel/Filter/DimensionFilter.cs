@@ -83,7 +83,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         public String ArcRole { get { return _ArcRole; } set { _ArcRole = value; } }
 
 
-        public FilterAxis Axis { get; set; }
+        public string Axis { get; set; }
 
 
     }

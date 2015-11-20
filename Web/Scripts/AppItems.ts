@@ -287,7 +287,7 @@ class UITableManager implements Controls.ITableManager {
             if (!IsNull(row) && !row.HasData()) {
                 table.RemoveRow(row);
             }
-            this.ManageRows(table);
+            table.Manager.ManageRows(table);
             //OnCellChanged(cell, value);
         };
 

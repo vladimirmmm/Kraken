@@ -323,7 +323,7 @@ function Css(obj, name, value) {
     return CallJQueryFunction(obj, "css", name, value);
 }
 function Value(obj, value) {
-    return CallJQueryFunction(obj, "value", "", value);
+    return CallJQueryFunction(obj, "val", "", value);
 }
 //function Content(obj, value?: string): string {
 //    return CallJQueryFunction(obj, "html", "", value);

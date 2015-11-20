@@ -102,6 +102,63 @@ namespace XBRLProcessor.Model
 
         public string FilingIndicator;
 
+        private List<LogicalModel.Base.QualifiedItem> GetMembers(DimensionMember FilterMember) 
+        {
+            var result = new List<Hierarchy<LogicalModel.Base.QualifiedItem>>();
+            var resultx = new List<LogicalModel.Base.QualifiedItem>();
+            var hierarchynode = Taxonomy.Hierarchies.FirstOrDefault(i => i.Item.Role == FilterMember.ArcRole);
+            var membernode = hierarchynode.FirstOrDefault(i => i.Item.FullName == FilterMember.QName.Content);
+            var axes = FilterMember.Axis.ToLower();
+            switch (axes)
+            {
+                case "ancestor":
+                    result = membernode.Parents();
+                    break;
+                case "ancestor-or-self":
+                    result = membernode.Parents();
+                    result.Add(membernode);
+                    break;
+                case "attribute":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+                case "child":
+                    result = membernode.Children;
+                    break;
+                case "descendant":
+                    result = membernode.Descendant();
+                    break;
+                case "descendant-or-self":
+                    result = membernode.All();
+                    break;
+                case "following":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "following-sibling":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "namespace":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "parent":
+                    result.Add(membernode.Parent);
+                    break;
+                case "preceding":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "preceding-sibling":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "self":
+                    result.Add(membernode);
+
+                    break;
+                default:
+                    Console.WriteLine("Default case");
+                    break;
+            }
+            resultx=result.Select(i=>i.Item).ToList();
+            return resultx;
+        }
+
         public void LoadLayoutHierarchy(LogicalModel.Table logicaltable)
         {
             Identifiables.Clear();
@@ -137,6 +194,7 @@ namespace XBRLProcessor.Model
                         if (member != null)
                         {
                             li.Role = member.LinkRole;
+
                         }
                     }
                 }

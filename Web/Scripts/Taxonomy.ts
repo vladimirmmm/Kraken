@@ -252,30 +252,25 @@
         }
 
         public ClearFilterFacts() {
-            var me = this;
-            $("input[type=text]", me.SelFromFact(s_listfilter_selector)).val("");
-            $("textarea", me.SelFromFact(s_listfilter_selector)).val("");
+            this.SelFromFact(s_listfilter_selector + " " + "input[type=text]").val("");
+            this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
             this.FilterFacts();
         }
-
+        private GetFilterValue(selector: string): string
+        {
+            var element = this.SelFromFact(s_listfilter_selector + " " + selector);
+            if (!IsNull(element))
+            {
+                return _Value(element).toLowerCase().trim();
+            }
+            return "";
+        }
         public FilterFacts() {
             var me = this;
-            var f_factstring: string = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
-            var f_cellid: string = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
+            var f_factstring: string = me.GetFilterValue("#F_FactString");
+            var f_cellid: string = me.GetFilterValue("#F_CellID");
             var query: any = me.Taxonomy.Facts;
 
-            if (!IsNull(f_factstring)) {
-                var results: any[] = [];
-                EnumerateObject(query, me, function (value: any, key: string) {
-                    if (key.toLowerCase().indexOf(f_factstring) > -1) {
-                        results.push(value);
-                    }
-                });
-                query = results;
-            }
-            if (!IsNull(f_cellid)) {
-                //query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
-            }
             var parameters = { factstring: f_factstring, cellid: f_cellid };
             LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, parameters, null);
        

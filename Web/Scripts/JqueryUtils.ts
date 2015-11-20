@@ -387,7 +387,7 @@ function Css(obj, name: string, value?: string): string {
 }
 
 function Value(obj, value?: string): string {
-    return CallJQueryFunction(obj, "value", "", value);
+    return CallJQueryFunction(obj, "val", "", value);
 }
 
 //function Content(obj, value?: string): string {

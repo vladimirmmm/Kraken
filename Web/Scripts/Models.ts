@@ -30,12 +30,6 @@
             return items; 
         }
 
-        //public FirstOrDefault(func:Function): T
-        //{
-        //    var T = null;
-
-        //    return T;
-        //}
     }
 
     export class Dimension {
@@ -70,6 +64,12 @@
 
             //return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
             return "[" + dimension.DimensionItem + "]" + dimension.Domain + ":" + dimension.DomainMember;
+        }
+
+        public static IsTyped(domainmemberfullname: string): boolean
+        {
+            if (domainmemberfullname.indexOf("_typ") > -1) { return true; }
+            return false;
         }
     }
 
@@ -144,7 +144,7 @@
         public Dimensions: Dimension[] = [];
 
         private _FactString: string = "";
-        public GetFactString(refresh=false): string
+        public GetFactString(): string
         {
             var me = this;
 
@@ -158,27 +158,31 @@
             dimensions.forEach(function (dimension, index) {
                 var dimstr = Dimension.DomainMemberFullName(dimension);
                 dimstr = FactBase.Format(dimstr, ref);
-
                 //result += Format("{0},", dimstr);
                 result += dimstr + ",";
             });
+            me._FactString = result;
             return result;
         }
-
+ 
         public GetFactKey(): string {
             var me = this;
-
             var result = "";
-            if (!IsNull(this.Concept)) {
-                result = this.Concept.FullName + ",";
+            if (!IsNull(this.FactString))
+            {
+                var parts = this.FactString.split(",");
+                parts.forEach(function (part) {
+                    if (!IsNull(part)) {
+                        if (Dimension.IsTyped(part)) {
+                            result += part.substring(0, part.lastIndexOf(":"));
+                        }
+                        else {
+                            result += part;
+                        }
+                        result += ",";
+                    }
+                });
             }
-            var lastdimns = "";
-            var ref = new Refrence(lastdimns);
-            this.Dimensions.forEach(function (dimension, index) {
-                var dimstr = Dimension.ToStringForKey(dimension);
-                dimstr = FactBase.Format(dimstr, ref);
-                result += Format("{0},", dimstr);
-            });
             return result;
         }
 
@@ -474,7 +478,7 @@
             var facts: InstanceFact[] = [];
             var fact: InstanceFact = null;
             var factkey = cellfact.GetFactKey();
-            var factstring = cellfact.GetFactString();
+            var factstring = cellfact.FactString;
             if (factkey in me.FactDictionary) {
                 facts = me.FactDictionary[factkey];
                 if (facts.length > 0) {
@@ -483,25 +487,7 @@
             } 
             return fact;
         }
-        //public GetCellForFact(factstring: string, reportid:string): string
-        //{
-        //    var me = this;
-        //    var cellid: string = "";
-        //    if (factstring in me.FactDictionary) {
-        //        cellid = me.FactDictionary[factstring];
-        //    }
-        //    else
-        //    {
-        //        var dynamicdataofreport = me.DynamicReportCells[reportid];
-        //        if (!IsNull(dynamicdataofreport)) {
-        //            if (factstring in dynamicdataofreport.CellOfFact)
-        //            {
-        //                cellid = dynamicdataofreport.CellOfFact[factstring];
-        //            }
-        //        }
-        //    }
-        //    return cellid;
-        //}
+
     }   
 
     export class Label {

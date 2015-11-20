@@ -112,17 +112,22 @@ var Control;
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
         };
         InstanceContainer.prototype.ClearFilterFacts = function () {
-            $("input[type=text]", "#FactFilter ").val("");
-            $("textarea", "#FactFilter ").val("");
+            this.SelFromFact(s_listfilter_selector + " " + "input[type=text]").val("");
+            this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
             this.FilterFacts();
+        };
+        InstanceContainer.prototype.GetFilterValue = function (selector) {
+            var element = this.SelFromFact(s_listfilter_selector + " " + selector);
+            if (!IsNull(element)) {
+                return _Value(element).toLowerCase().trim();
+            }
+            return "";
         };
         InstanceContainer.prototype.FilterFacts = function () {
             var me = this;
-            var f_label = me.SelFromFact(s_listfilter_selector + " #F_Label").val().toLowerCase().trim();
-            var f_concept = me.SelFromFact(s_listfilter_selector + " #F_Concept").val().toLowerCase().trim();
-            var f_context = me.SelFromFact(s_listfilter_selector + " #F_Context").val().toLowerCase().trim();
-            var f_dimension = me.SelFromFact(s_listfilter_selector + " #F_Dimension").val().toLowerCase().trim();
-            var f_value = me.SelFromFact(s_listfilter_selector + " #F_Value").val().toLowerCase().trim();
+            var f_context = me.GetFilterValue("#F_Context");
+            var f_factstring = me.GetFilterValue("#F_FactString");
+            var f_value = me.GetFilterValue("#F_Value");
             var context_id = "";
             var context_xml = "";
             var query = me.Instance.Facts.AsLinq();
@@ -132,11 +137,13 @@ var Control;
                 context_id = f_context;
                 query = query.Where(function (i) { return i.ContextID.toLowerCase().indexOf(context_id) > -1; });
             }
-            if (!IsNull(f_concept)) {
-                query = query.Where(function (i) { return i.Concept.FullName.toLowerCase().indexOf(f_concept) > -1; });
-            }
-            if (!IsNull(f_dimension)) {
-                query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(f_dimension) > -1; });
+            if (!IsNull(f_factstring)) {
+                var factparts = f_factstring.split(" ");
+                factparts.forEach(function (factpart, ix) {
+                    if (!IsNull(factpart)) {
+                        query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(factpart) > -1; });
+                    }
+                });
             }
             if (!IsNull(f_value)) {
                 query = query.Where(function (i) { return i.Value.toLowerCase() == f_value; });
@@ -170,7 +177,7 @@ var Control;
                                 cellobj.Row = kv.Value;
                             }
                         }
-                        if (cellobj.Extension == "*") {
+                        if (cellobj.Extension == "_") {
                             var extdictionary = IsNull(dynmicdata) ? null : dynmicdata.ExtDictionary;
                             if (!IsNull(extdictionary)) {
                                 var itemsofdict = GetProperties(extdictionary);

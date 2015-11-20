@@ -220,27 +220,22 @@ var Control;
             LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize, eventhandlers);
         };
         TaxonomyContainer.prototype.ClearFilterFacts = function () {
-            var me = this;
-            $("input[type=text]", me.SelFromFact(s_listfilter_selector)).val("");
-            $("textarea", me.SelFromFact(s_listfilter_selector)).val("");
+            this.SelFromFact(s_listfilter_selector + " " + "input[type=text]").val("");
+            this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
             this.FilterFacts();
+        };
+        TaxonomyContainer.prototype.GetFilterValue = function (selector) {
+            var element = this.SelFromFact(s_listfilter_selector + " " + selector);
+            if (!IsNull(element)) {
+                return _Value(element).toLowerCase().trim();
+            }
+            return "";
         };
         TaxonomyContainer.prototype.FilterFacts = function () {
             var me = this;
-            var f_factstring = me.SelFromFact(s_listfilter_selector + " #F_FactString").val().toLowerCase().trim();
-            var f_cellid = me.SelFromFact(s_listfilter_selector + " #F_CellID").val().toLowerCase().trim();
+            var f_factstring = me.GetFilterValue("#F_FactString");
+            var f_cellid = me.GetFilterValue("#F_CellID");
             var query = me.Taxonomy.Facts;
-            if (!IsNull(f_factstring)) {
-                var results = [];
-                EnumerateObject(query, me, function (value, key) {
-                    if (key.toLowerCase().indexOf(f_factstring) > -1) {
-                        results.push(value);
-                    }
-                });
-                query = results;
-            }
-            if (!IsNull(f_cellid)) {
-            }
             var parameters = { factstring: f_factstring, cellid: f_cellid };
             LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, parameters, null);
             //LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query, 0, me.PageSize);

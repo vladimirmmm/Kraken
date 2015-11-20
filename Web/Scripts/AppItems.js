@@ -236,7 +236,7 @@ var UITableManager = (function () {
             if (!IsNull(row) && !row.HasData()) {
                 table.RemoveRow(row);
             }
-            this.ManageRows(table);
+            table.Manager.ManageRows(table);
             //OnCellChanged(cell, value);
         };
         this.OnRowSelected = function (row) {

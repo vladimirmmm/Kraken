@@ -56,6 +56,12 @@ var Model;
             //return Format("[{0}]{1}:{2}", dimension.DimensionItem, dimension.Domain, dimension.DomainMember);
             return "[" + dimension.DimensionItem + "]" + dimension.Domain + ":" + dimension.DomainMember;
         };
+        Dimension.IsTyped = function (domainmemberfullname) {
+            if (domainmemberfullname.indexOf("_typ") > -1) {
+                return true;
+            }
+            return false;
+        };
         return Dimension;
     })();
     Model.Dimension = Dimension;
@@ -146,8 +152,7 @@ var Model;
             this.Dimensions = [];
             this._FactString = "";
         }
-        FactBase.prototype.GetFactString = function (refresh) {
-            if (refresh === void 0) { refresh = false; }
+        FactBase.prototype.GetFactString = function () {
             var me = this;
             var result = "";
             if (!IsNull(this.Concept)) {
@@ -164,21 +169,26 @@ var Model;
                 //result += Format("{0},", dimstr);
                 result += dimstr + ",";
             });
+            me._FactString = result;
             return result;
         };
         FactBase.prototype.GetFactKey = function () {
             var me = this;
             var result = "";
-            if (!IsNull(this.Concept)) {
-                result = this.Concept.FullName + ",";
+            if (!IsNull(this.FactString)) {
+                var parts = this.FactString.split(",");
+                parts.forEach(function (part) {
+                    if (!IsNull(part)) {
+                        if (Dimension.IsTyped(part)) {
+                            result += part.substring(0, part.lastIndexOf(":"));
+                        }
+                        else {
+                            result += part;
+                        }
+                        result += ",";
+                    }
+                });
             }
-            var lastdimns = "";
-            var ref = new Refrence(lastdimns);
-            this.Dimensions.forEach(function (dimension, index) {
-                var dimstr = Dimension.ToStringForKey(dimension);
-                dimstr = FactBase.Format(dimstr, ref);
-                result += Format("{0},", dimstr);
-            });
             return result;
         };
         Object.defineProperty(FactBase.prototype, "FactString", {
@@ -479,7 +489,7 @@ var Model;
             var facts = [];
             var fact = null;
             var factkey = cellfact.GetFactKey();
-            var factstring = cellfact.GetFactString();
+            var factstring = cellfact.FactString;
             if (factkey in me.FactDictionary) {
                 facts = me.FactDictionary[factkey];
                 if (facts.length > 0) {

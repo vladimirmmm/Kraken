@@ -293,6 +293,17 @@ namespace BaseModel
             return list;
         }
 
+        public List<Hierarchy<TClass>> Descendant()
+        {
+            var list = new List<Hierarchy<TClass>>();
+            foreach (var child in this.Children)
+            {
+                list.Add(child);
+                list.AddRange(child.Descendant());
+            }
+            return list;
+        }
+
         public List<Hierarchy<TClass>> GetLeafs()
         {
             var list = new List<Hierarchy<TClass>>();

@@ -141,18 +141,23 @@
 
         public ClearFilterFacts()
         {
-            $("input[type=text]","#FactFilter ").val("");
-            $("textarea","#FactFilter ").val("");
+            this.SelFromFact(s_listfilter_selector + " " + "input[type=text]").val("");
+            this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
             this.FilterFacts();
+        }
+        private GetFilterValue(selector: string): string {
+            var element = this.SelFromFact(s_listfilter_selector + " " + selector);
+            if (!IsNull(element)) {
+                return _Value(element).toLowerCase().trim();
+            }
+            return "";
         }
         public FilterFacts()
         {
             var me = this;
-            var f_label: string = me.SelFromFact(s_listfilter_selector + " #F_Label").val().toLowerCase().trim();
-            var f_concept: string = me.SelFromFact(s_listfilter_selector + " #F_Concept").val().toLowerCase().trim();
-            var f_context: string = me.SelFromFact(s_listfilter_selector + " #F_Context").val().toLowerCase().trim();
-            var f_dimension: string = me.SelFromFact(s_listfilter_selector + " #F_Dimension").val().toLowerCase().trim();
-            var f_value: string = me.SelFromFact(s_listfilter_selector + " #F_Value").val().toLowerCase().trim();
+            var f_context: string = me.GetFilterValue("#F_Context");
+            var f_factstring: string = me.GetFilterValue("#F_FactString");
+            var f_value: string = me.GetFilterValue("#F_Value");
             var context_id = "";
             var context_xml = "";
             var query = me.Instance.Facts.AsLinq<Model.InstanceFact>();
@@ -165,12 +170,14 @@
                 query = query.Where(i=> i.ContextID.toLowerCase().indexOf(context_id) > -1);
 
             }
-            if (!IsNull(f_concept))
-            {
-                query = query.Where(i=> i.Concept.FullName.toLowerCase().indexOf(f_concept) > -1);
-            }
-            if (!IsNull(f_dimension)) {
-                query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
+
+            if (!IsNull(f_factstring)) {
+                var factparts = f_factstring.split(" ");
+                factparts.forEach(function (factpart, ix) {
+                    if (!IsNull(factpart)) {
+                        query = query.Where(i=> i.FactString.toLowerCase().indexOf(factpart) > -1);
+                    }
+                });
             }
             if (!IsNull(f_value)) {
                 query = query.Where(i=> i.Value.toLowerCase()==f_value);
@@ -216,7 +223,7 @@
                                 cellobj.Row = kv.Value;
                             }
                         }
-                        if (cellobj.Extension=="*") {
+                        if (cellobj.Extension=="_") {
                             var extdictionary = IsNull(dynmicdata) ? null : dynmicdata.ExtDictionary;
                             if (!IsNull(extdictionary)) {
                                 var itemsofdict = GetProperties(extdictionary)
