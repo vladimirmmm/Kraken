@@ -34,11 +34,11 @@ var Control;
             this.s_find_selector = "#" + this.s_find_id;
             this.s_general_selector = "#" + this.s_general_id;
             var me = this;
-            $(window).resize(function () {
-                waitForFinalEvent(function () {
-                    me.SetHeight();
-                }, 200, "retek");
-            });
+            //$(window).resize(function () {
+            //    waitForFinalEvent(function () {
+            //        me.SetHeight();
+            //    }, 200, "retek");
+            //});
             $(window).on('hashchange', function () {
                 me.HashChanged();
             });
@@ -48,9 +48,9 @@ var Control;
             me.Table.HashChanged();
         };
         TaxonomyContainer.prototype.SetHeight = function () {
-            var bodyheight = $(window).height();
-            var pivotheight = (bodyheight - 50) + "px";
-            $(".pivotitem").css("max-height", pivotheight);
+            //var bodyheight = $(window).height();
+            //var pivotheight = (bodyheight - 50) + "px";
+            //$(".pivotitem").css("max-height", pivotheight);
         };
         TaxonomyContainer.prototype.Sel = function (selector) {
             var me = this;

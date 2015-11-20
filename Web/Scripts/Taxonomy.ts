@@ -43,11 +43,11 @@
             this.s_general_selector = "#" + this.s_general_id;
             var me = this;
 
-            $(window).resize(function () {
-                waitForFinalEvent(function () {
-                    me.SetHeight();
-                }, 200, "retek");
-            });
+            //$(window).resize(function () {
+            //    waitForFinalEvent(function () {
+            //        me.SetHeight();
+            //    }, 200, "retek");
+            //});
 
             $(window).on('hashchange', function () {
                 me.HashChanged();
@@ -62,9 +62,9 @@
 
 
         private SetHeight() {
-            var bodyheight = $(window).height();
-            var pivotheight = (bodyheight - 50) + "px";
-            $(".pivotitem").css("max-height", pivotheight);
+            //var bodyheight = $(window).height();
+            //var pivotheight = (bodyheight - 50) + "px";
+            //$(".pivotitem").css("max-height", pivotheight);
         }
         public Sel(selector: any): JQuery {
             var me = this;
