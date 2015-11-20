@@ -478,7 +478,19 @@ function ShowHideChild(selector, sender) {
     _Show(item);
 }
 function SetPivots() {
-    $("#maintable").resizableColumns();
+    $(".hresizable").resizable({
+        handles: 'e',
+        minWidth: 18
+    });
+    $(".vresizable").resizable({
+        handles: 's',
+        minHeight: 50,
+        stop: function (event, ui) {
+            var wheight = $("#LogWindow").parent().height();
+            $(".vresizable").height(ui.size.height);
+            //$("#LogWindow").height(wheight);
+        }
+    });
 }
 function Notify(message) {
     ShowNotification(message);

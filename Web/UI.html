@@ -57,39 +57,42 @@
     <div id="pivot" class="">
         <table id="maintable">
             <colgroup>
-                <col style="width: 250px" />
-                <col style="width: 700px" />
+                <col />
+                <col />
                 <col />
             </colgroup>
             <thead>
                 <tr class="colHeaders">
-                    <th class="th1 ui-resizable">
-                        <div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>
+                    <th class="th1 hresizable">
+                        &nbsp;
+                        <!--<div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>-->
                     </th>
-                    <th class="th2 ui-resizable">
-                        <div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>
+                    <th class="th2 hresizable">
+                        &nbsp;
+                        <!--<div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>-->
                     </th>
-                    <th class="ui-resizable">
-                        <div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>
+                    <th class="hresizable">
+                        &nbsp;
+                        <!--<div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>-->
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="th1">
-                        <div id="Tables" class="pivotitem" container-for="Taxonomy_Tables">
+                        <div id="Tables" class="pivotitem vresizable" container-for="Taxonomy_Tables">
 
                         </div>
                     </td>
                     <td class="th2">
-                        <div id="Contents" class="pivotitem">
+                        <div id="Contents" class="pivotitem vresizable">
                             <div id="MainContainer" class="contentcontainer">
                                 <div id="MainCommands" class="commands">
                                     <a activator-for="TaxonomyContainer" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this))">Taxonomy</a>
                                     <a activator-for="InstanceContainer" href="javascript:void(0)" onclick="app.instancecontainer.LoadContentToUI(Select(this));">Instance</a>
                                 </div>
                                 <div id="TaxonomyContainer" class="contentcontainer subcontent">
-                            
+
                                     <div id="TaxCommands" class="commands">
                                         <a activator-for="T_Labels" href=" javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this))">Labels</a>
                                         <a activator-for="T_Facts" href="javascript:void(0)" onclick="app.taxonomycontainer.LoadContentToUI(Select(this))">Facts</a>
@@ -103,7 +106,7 @@
 
 
                                     </div>
-                             
+
                                     <div id="T_Validations" class="subcontent" container-for="Taxonomy_Validations">
 
                                     </div>
@@ -151,7 +154,7 @@
                                     <div id="I_Settings" class="subcontent" container-for="Instance_Finds">
 
                                     </div>
-                                
+
                                 </div>
 
 
@@ -159,14 +162,37 @@
                         </div>
                     </td>
                     <td>
-                        <div id="ReportContainer" class="pivotitem">
+                        <div id="ReportContainer" class="pivotitem vresizable">
                         </div>
                         <script id="TableScript" type="text/javascript"></script>
 
                     </td>
                 </tr>
+    
             </tbody>
         </table>
+    </div>
+
+    <div id="LogWindow">
+        <div id="contentlog">
+            sdgsdgsd
+            <br />
+            asgfsagf<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            asgasg
+            <br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+            sdgsdgsdg<br />
+        </div>
     </div>
 </body>
 </html>

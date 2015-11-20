@@ -154,7 +154,6 @@
     <Content Include="Scripts\App.js" />
     <Content Include="Scripts\AppItems.js" />
     <Content Include="Scripts\Binding.js" />
-    <Content Include="Scripts\colResizable-1.5.min.js" />
     <Content Include="Scripts\Factories.js" />
     <Content Include="Scripts\Formatter.js" />
     <Content Include="Scripts\Instance.js" />

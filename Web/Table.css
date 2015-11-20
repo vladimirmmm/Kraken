@@ -1,4 +1,18 @@
-﻿table {
+﻿
+#LogWindow 
+{
+    position:fixed; width:100%; height:70px; 
+    background-color:white; 
+    bottom:0px; 
+    overflow-y:auto;
+    right:0px;
+    left:0px;
+    border-top:solid 1px black;
+}
+#contentlog {
+    margin:10px;
+}
+table {
     border-collapse: collapse;
     border: solid 1px black;
 }
@@ -111,6 +125,7 @@ ul {
 
 #maintable {
     table-layout: fixed;
+    height:100vh;
 }
 
     #maintable th {
@@ -370,7 +385,7 @@ iframe {
 }
 /*end splitter*/
 
-.rc-handle-container {
+/*.rc-handle-container {
     position: relative;
 }
 
@@ -390,7 +405,7 @@ table.rc-table-resizing {
     table.rc-table-resizing thead > th,
     table.rc-table-resizing thead > th > a {
         cursor: ew-resize;
-    }
+    }*/
 
 table.noborder, table.noborder th, table.noborder td {
     border: 0px solid black;
@@ -400,33 +415,6 @@ input, textarea {
     margin-right: 5px;
 }
 
-/*
-resizable columns
-*/
-.scrollContainer {
-    overflow: auto;
-    width: 700px;
-    height: 100%;
-}
-
-.resizeHelper, .ui-resizable-e {
-    cursor: e-resize;
-    width: 20px;
-    /*height: 100%;*/
-    top: 0;
-    right: 0px;
-    position: absolute;
-    z-index: 100;
-    font-size: 100%;
-}
-
-/* handle for FF */
-@-moz-document url-prefix() {
-    .resizeHelper, .ui-resizable-e {
-        position: relative;
-        float: right;
-    }
-}
 
 
 
@@ -685,4 +673,84 @@ select.celleditor {
 #ReportContainer {
     overflow-x:auto;
     overflow-y:auto;
+}
+
+
+/*!
+ * jQuery UI Resizable 1.11.4
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+.ui-resizable {
+	position: relative;
+}
+.ui-resizable-handle {
+	position: absolute;
+	font-size: 0.1px;
+	display: block;
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.ui-resizable-disabled .ui-resizable-handle,
+.ui-resizable-autohide .ui-resizable-handle {
+	display: none;
+}
+.ui-resizable-n {
+	cursor: n-resize;
+	height: 7px;
+	width: 100%;
+	top: -5px;
+	left: 0;
+}
+.ui-resizable-s {
+	cursor: s-resize;
+	height: 10px;
+	width: 100%;
+	bottom: -5px;
+	left: 0;
+}
+.ui-resizable-e {
+	cursor: e-resize;
+	width: 10px;
+	right: -5px;
+	top: 0;
+	height: 100%;
+}
+.ui-resizable-w {
+	cursor: w-resize;
+	width: 10px;
+	left: -5px;
+	top: 0;
+	height: 100%;
+}
+.ui-resizable-se {
+	cursor: se-resize;
+	width: 12px;
+	height: 12px;
+	right: 1px;
+	bottom: 1px;
+}
+.ui-resizable-sw {
+	cursor: sw-resize;
+	width: 9px;
+	height: 9px;
+	left: -5px;
+	bottom: -5px;
+}
+.ui-resizable-nw {
+	cursor: nw-resize;
+	width: 9px;
+	height: 9px;
+	left: -5px;
+	top: -5px;
+}
+.ui-resizable-ne {
+	cursor: ne-resize;
+	width: 9px;
+	height: 9px;
+	right: -5px;
+	top: -5px;
 }

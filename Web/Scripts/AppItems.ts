@@ -565,7 +565,20 @@ function ShowHideChild(selector: any, sender: any) {
 
 function SetPivots() {
 
-    $("#maintable").resizableColumns();
+    $(".hresizable").resizable({
+        handles: 'e',
+        minWidth: 18
+    });
+    $(".vresizable").resizable({
+        handles: 's',
+        minHeight: 50,
+        stop: function (event, ui) {
+            var wheight = $("#LogWindow").parent().height();
+            $(".vresizable").height(ui.size.height);
+            //$("#LogWindow").height(wheight);
+        }
+    });
+
 
 }
 
