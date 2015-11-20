@@ -216,6 +216,8 @@ namespace XBRLProcessor
             {
                 CurrentInstance.SetTaxonomy(CurrentTaxonomy);
                 CurrentXbrlInstance.LoadComplex();
+                Trigger_InstanceLoaded(filepath);
+
                 Logger.WriteLine("Loading Instance finished");
             };
             CurrentInstanceTaxonomyLoadFailed = (object o, TaxonomyEventArgs e) =>

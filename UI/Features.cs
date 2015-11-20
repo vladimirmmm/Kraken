@@ -68,6 +68,7 @@ namespace UI
             this.Engine.InstanceLoaded += Engine_InstanceLoaded;
             this.Settings.Load(null);
             this.Settings = Settings.Current;
+            ShowInBrowser(Engine.HtmlPath); 
         }
 
         private void Engine_TaxonomyLoaded(object sender, EventArgs e)
@@ -176,7 +177,7 @@ namespace UI
         {
             if (Engine.CurrentTaxonomy != null) 
             {
-                ShowInBrowser(Engine.HtmlPath); 
+                //ShowInBrowser(Engine.HtmlPath); 
             }
         }
         public void ClearProcessedTaxonmies() 
@@ -392,6 +393,8 @@ namespace UI
             Engine.InstanceLoaded += Engine_InstanceLoaded;
             Engine.TaxonomyLoad -= Engine_TaxonomyLoad;
             Engine.TaxonomyLoad += Engine_TaxonomyLoad;
+            Engine.TaxonomyLoaded -= Engine_TaxonomyLoaded;
+            Engine.TaxonomyLoaded += Engine_TaxonomyLoaded;
             Engine.LoadInstance(path);
 
       
@@ -411,6 +414,10 @@ namespace UI
         private void Engine_InstanceLoaded(object sender, EventArgs e)
         {
             UIReload();
+            var msg = new Message();
+            msg.Category="action";
+            msg.Data="instanceloaded";
+            ToUI(msg);
 
         }
 
@@ -562,10 +569,14 @@ namespace UI
         {
             if (UI.DispatcherCheckAccess())
             {
+                var msg = new Message();
+                msg.Category = "action";
+                msg.Data = "taxonomyloaded";
+                ToUI(msg);
                 //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
                 //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
                 //UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
-                ShowInBrowser(Engine.HtmlPath); 
+                //ShowInBrowser(Engine.HtmlPath); 
 
             }
             else

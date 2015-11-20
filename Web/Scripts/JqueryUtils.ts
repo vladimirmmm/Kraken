@@ -1,5 +1,11 @@
 ﻿/// <reference path="typings/jquery/jquery.d.ts" />
+function Log(item:string)
+{
+    var element = _SelectFirst("#contentlog");
 
+    $(element).append(Format("{0}<br/>", item));
+    element.scrollTop = element.scrollHeight;
+}
 function Select(sender): any {
     var $command = $(sender);
     var sel = "selected";

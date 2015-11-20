@@ -210,7 +210,7 @@ namespace UI
 
         void Browser_LoadCompleted(object sender, NavigationEventArgs e)
         {
-
+            isuiloaded = true;
         }
 
         private bool HtmlDocumentClickEventHandler(mshtml.IHTMLEventObj pEvtObj)
@@ -219,29 +219,46 @@ namespace UI
             return true;
         }
         private object ConsoleLocker = new Object();
+        private StringBuilder loggbuilder = new StringBuilder();
+
+        private bool isuiloaded = false;
         private void ShowMessage(string content) 
         {
             if (this.Dispatcher.CheckAccess())
             {
-                lock (ConsoleLocker)
+                String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
+
+                if (Features == null || !isuiloaded)
                 {
-                    String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
-                    TB_Console.Text += msg;
-                    if (TB_Console.LineCount > 3000)
-                    {
-                        var lines = TB_Console.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1000);
-                        var sb = new StringBuilder();
-                        foreach (var line in lines)
-                        {
-                            sb.AppendLine(line);
-                        }
-                        TB_Console.Text = sb.ToString();
-                    }
-                    TB_Console.Focus();
-                    TB_Console.CaretIndex = TB_Console.Text.Length;
-                    TB_Console.ScrollToEnd();
-                    TB_Console.UpdateLayout();
+                    loggbuilder.Append(msg);
                 }
+                else 
+                {
+                    var message = new Message();
+                    message.Category = "notfication";
+                    message.Data = loggbuilder.ToString()+ msg;
+                    loggbuilder.Clear();
+                    Features.ToUI(message);
+
+                }
+                //lock (ConsoleLocker)
+                //{
+                //    TB_Console.Text += msg;
+                //    if (TB_Console.LineCount > 3000)
+                //    {
+                //        var lines = TB_Console.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1000);
+                //        var sb = new StringBuilder();
+                //        foreach (var line in lines)
+                //        {
+                //            sb.AppendLine(line);
+                //        }
+                //        TB_Console.Text = sb.ToString();
+                //    }
+                //    TB_Console.Focus();
+                //    TB_Console.CaretIndex = TB_Console.Text.Length;
+                //    TB_Console.ScrollToEnd();
+                //    TB_Console.UpdateLayout();
+                //}
             }
             else 
             {

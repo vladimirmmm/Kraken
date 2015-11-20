@@ -10,7 +10,9 @@
             var me = this;
             var $containers = $('[container-for]');
 
-            var funcloader = function () { me.Load.call(me) };
+            var funcloader = function () {
+                //me.Load.call(me)
+            };
 
             var waiter: General.Waiter = new General.Waiter((i: RequestHandler) => i.succeded, funcloader);
             $(s_content_selector).hide();

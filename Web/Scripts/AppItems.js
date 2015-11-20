@@ -482,15 +482,20 @@ function SetPivots() {
         handles: 'e',
         minWidth: 18
     });
-    $(".vresizable").resizable({
-        handles: 's',
-        minHeight: 50,
-        stop: function (event, ui) {
-            var wheight = $("#LogWindow").parent().height();
-            $(".vresizable").height(ui.size.height);
-            //$("#LogWindow").height(wheight);
-        }
+    $("#LogWindow").resizable({
+        handles: 'n',
+        helper: "#resizable-helper",
+        minHeight: 50
     });
+    //$(".vresizable").resizable({
+    //    handles: 's',
+    //    minHeight: 50,
+    //    stop: function (event, ui) {
+    //        var wheight = $("#LogWindow").parent().height();
+    //        $(".vresizable").height(ui.size.height);
+    //        //$("#LogWindow").height(wheight);
+    //    }
+    //});
 }
 function Notify(message) {
     ShowNotification(message);
@@ -525,12 +530,20 @@ function Communication_Listener(data) {
         });
     }
     if (message.Category == "notfication") {
+        Log(message.Data);
     }
     if (message.Category == "error") {
     }
     if (message.Category == "action") {
+        message.Url = IsNull(message.Url) ? "" : message.Url;
         if (message.Url.toLowerCase() == "instance") {
             app.instancecontainer.HandleAction(message);
+        }
+        if (message.Data.toLowerCase() == "instanceloaded") {
+            app.Load();
+        }
+        if (message.Data.toLowerCase() == "taxonomyloaded") {
+            app.Load();
         }
     }
     if (message.Category == "debug") {
