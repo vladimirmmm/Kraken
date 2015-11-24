@@ -1,6 +1,6 @@
 var TemplateDictionary = [];
-var S_Bind_Start = "bind[";
-var S_Bind_End = "]";
+var S_Bind_Start = "$bind:";
+var S_Bind_End = "$";
 var TemplateDictionaryItem = (function () {
     function TemplateDictionaryItem() {
         this.Item = null;
@@ -197,7 +197,7 @@ function BindX(item, data) {
         else {
             bt = templatedictionaryitem.Template;
         }
-        item[0].innerHTML = bt.Bind(data);
+        item.html(bt.Bind(data));
     }
 }
 //# sourceMappingURL=Binding.js.map

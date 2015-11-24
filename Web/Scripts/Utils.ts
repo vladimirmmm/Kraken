@@ -305,7 +305,7 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
     msg.Id = requestid;
     msg.ContentType = contenttype;
    
-    if ('Notify' in window.external) {
+    if (IsDesktop()) {
         Communication_ToApp(msg);
     } else {
         Ajax("Instance/Index", "get",(<Dictionary>{ msg: msg }), AjaxResponse, contenttype);
@@ -1187,6 +1187,7 @@ function OuterHtml(item: JQuery): string
 
 function Replace(text:string, texttoreplace:string, textwithreplace:string):string
 {
+    if (IsNull(texttoreplace)) { return text;}
     var index = 0;
     do {
         text = text.replace(texttoreplace, textwithreplace);

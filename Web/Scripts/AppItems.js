@@ -469,7 +469,7 @@ function CreateErrorMsg(errormessage) {
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    ShowError(errortext);
+    Log(errortext);
     return true;
 }
 function ShowHideChild(selector, sender) {
@@ -510,7 +510,7 @@ function ShowError(message) {
 }
 function Communication_ToApp(message) {
     var strdata = JSON.stringify(message);
-    if ('Notify' in window.external) {
+    if (IsDesktop()) {
         window.external.Notify(strdata);
     }
     else {
@@ -554,5 +554,8 @@ function MessageReceived(message) {
 }
 //if (typeof console === "undefined") {
 window.onerror = ErrorHandler;
+function IsDesktop() {
+    return 'Notify' in window.external;
+}
 //} 
 //# sourceMappingURL=AppItems.js.map

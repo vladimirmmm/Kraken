@@ -380,7 +380,6 @@ iframe {
 
     #maintable th {
         height: 20px;
-        z-index:-5;
     }
 
 .th1 {
@@ -704,6 +703,7 @@ select.celleditor {
 	display: block;
 	-ms-touch-action: none;
 	touch-action: none;
+    z-index:-1;
 }
 .ui-resizable-disabled .ui-resizable-handle,
 .ui-resizable-autohide .ui-resizable-handle {

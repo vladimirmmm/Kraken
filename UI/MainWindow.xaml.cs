@@ -67,42 +67,6 @@ namespace UI
             }
         }
 
-        public void LoadMenu(MenuCommand command, MenuItem menuitem)
-        {
-            if (this.Dispatcher.CheckAccess())
-            {
-                ItemCollection itemcollection = null;
-                if (menuitem == null)
-                {
-                    itemcollection = this.Menu.Items;
-                    this.Menu.Items.Clear();
-                }
-                else
-                {
-                    itemcollection = menuitem.Items;
-                }
-
-                foreach (var c in command.Children)
-                {
-                    var m = new MenuItem();
-                    m.Header = c.DisplayName.Replace("_", "__");
-                    m.IsEnabled = c.Enabled;
-                    if (c.Children.Count == 0)
-                    {
-                        m.Click += (s, e) => { c.ExecuteAsync(); };
-                    }
-                    itemcollection.Add(m);
-                    LoadMenu(c, m);
-                }
-            }
-            else
-            {
-                this.Dispatcher.Invoke(() => { LoadMenu(command, menuitem); });
-
-            }
-
-        }
-
         private object slocker = new object();
         void fromJS(object param) 
         {
@@ -243,33 +207,13 @@ namespace UI
 
         private void B_LoadTaxonomy_Click(object sender, RoutedEventArgs e)
         {
-            var path = TB_TaxonomyPath.Text;
-            Utilities.Threading.ExecuteAsync(() => { engine.Features.LoadTaxonomy(path); });
-        }
-  
-        private void XML_Tree_Node_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            var td = (TaxonomyDocument)XML_Tree.SelectedItem;
-            if (td != null)
+            var taxonomy = engine.Features.Engine.CurrentTaxonomy;
+            if (taxonomy != null)
             {
-                if (e.ClickCount == 1)
-                {
-
-                }
-                if (e.ClickCount == 2)
-                {
-                    TB_Title.Text = String.Format("{0} - {1}", td.FileName, td.LocalPath);
-                    var content = td.Content;
-                    var folder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    var file = folder + "\\xtree-temp.xml";
-                    var securitytag = "<!-- saved from url=(0014)about:internet -->\r\n";
-                    System.IO.File.WriteAllText(file, securitytag + content);
-
-     
-
-                }
+                Utilities.Threading.ExecuteAsync(() => { engine.Features.LoadTaxonomy(taxonomy.EntryDocument.LocalPath); });
             }
         }
+  
 
         private void B_LoadLabel_Click(object sender, RoutedEventArgs e)
         {
@@ -306,57 +250,11 @@ namespace UI
 
         }
 
-        private void Table_Tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            var table = Table_Tree.SelectedItem as Table;
-            var extension = Table_Tree.SelectedItem as LayoutItem;
-            if (extension != null)
-            {
-                table = extension.Table;
-                table.CurrentExtension = extension;
-            }
-            if (table != null)
-            {
-                table.EnsureHtmlLayout();
-                Browser.Navigate(table.FullHtmlPath);
-                TB_Title.Text = String.Format("{0} - {1}", table.ID, table.FullHtmlPath);
 
-            }
-        }
-
-        private void XML_Tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-              var td = (TaxonomyDocument)XML_Tree.SelectedItem;
-              if (td != null)
-              {
-                  TB_TreeDocumentTitle.Text = String.Format("{0} - {1}", td.FileName, td.LocalPath);
-              }
-        }
 
         private void B_Test_Click(object sender, RoutedEventArgs e)
         {
-            //var x = new List<Utilities.KeyValue<string, string>>();
-            //x.Add(new KeyValue<string, string>("a", "111"));
-            //x.Add(new KeyValue<string, string>("b", "112"));
-  
-            //Browser.InvokeScript("test", Utilities.Converters.ToJson(x));
-
-            var table = Table_Tree.SelectedItem as Table;
-            var extension = Table_Tree.SelectedItem as LayoutItem;
-            if (extension != null)
-            {
-                table = extension.Table;
-                table.CurrentExtension = extension;
-            }
-            if (table != null)
-            {
-                table.LayoutCells.Clear();
-                table.LoadLayout();
-                table.CreateHtmlLayout(true);
-                //Browser.Navigate(table.HtmlPath);
-                //TB_Title.Text = String.Format("{0} - {1}", table.ID, table.HtmlPath);
-
-            }
+         
         }
 
         private void TB_FactFilter_TextChanged(object sender, TextChangedEventArgs e)

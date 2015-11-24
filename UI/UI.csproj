@@ -54,7 +54,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ControlNode.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="FeatureContext.cs" />
     <Compile Include="FeatureEnums.cs" />
@@ -163,7 +162,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="HTMLPage1.html" />
     <Content Include="Taxonomies\info.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

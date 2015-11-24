@@ -553,7 +553,7 @@ function CreateErrorMsg(errormessage: string): General.Message {
 
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    ShowError(errortext);
+    Log(errortext);
     return true;
 }
 
@@ -605,7 +605,7 @@ function ShowError(message: string) {
 
 function Communication_ToApp(message: General.Message) {
     var strdata = JSON.stringify(message);
-    if ('Notify' in window.external) {
+    if (IsDesktop()) {
         window.external.Notify(strdata);
     } else {
         console.log(strdata);
@@ -657,4 +657,10 @@ function MessageReceived(message: General.Message) {
 //if (typeof console === "undefined") {
 
 window.onerror = ErrorHandler;
+
+function IsDesktop()
+{
+    return 'Notify' in window.external;
+}
+
 //}

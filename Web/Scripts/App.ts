@@ -33,6 +33,7 @@ module Applications
             var me = this;
             var $containers = $('[container-for]');
             me.SetMenu();
+            SetPivots();
 
             var funcloader = function () {
                 //me.Load.call(me)
@@ -47,9 +48,11 @@ module Applications
                         };
                     }
                 }
-                $.connection.hub.start().done(function () {
-                    Log("SignalR Hub started")
-                });
+                if (!IsDesktop() && !IsNull($.connection) && !IsNull($.connection.hub)) {
+                    $.connection.hub.start().done(function () {
+                        Log("SignalR Hub started")
+                    });
+                }
              
             };
 
@@ -84,7 +87,13 @@ module Applications
                 $("#menucontainer>ul").menu({
                     position: { my: "left top", at: "left+5 top+20" }
                 });
-
+                $('#menucontainer > li').hover(
+                    function () {
+                        $(this).find('ul').stop(true, true).fadeIn("fast");
+                    },
+                    function () {
+                        $(this).find('ul').stop(true, true).fadeOut("fast");
+                    });
 
             }, function (error) {
                     Log("Error: "+error);
@@ -95,7 +104,7 @@ module Applications
         public Load()
         {
             var me = this;
-            SetPivots();
+         
             me.taxonomycontainer.SetExternals();
             me.instancecontainer.SetExternals();
         }

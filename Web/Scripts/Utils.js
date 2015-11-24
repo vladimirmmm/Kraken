@@ -242,7 +242,7 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
     msg.Parameters = parameters;
     msg.Id = requestid;
     msg.ContentType = contenttype;
-    if ('Notify' in window.external) {
+    if (IsDesktop()) {
         Communication_ToApp(msg);
     }
     else {
@@ -1032,6 +1032,9 @@ function OuterHtml(item) {
     //return item.wrapAll('<div>').parent().html(); 
 }
 function Replace(text, texttoreplace, textwithreplace) {
+    if (IsNull(texttoreplace)) {
+        return text;
+    }
     var index = 0;
     do {
         text = text.replace(texttoreplace, textwithreplace);

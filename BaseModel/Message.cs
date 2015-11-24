@@ -10,7 +10,8 @@ namespace BaseModel
     {
         public string Id { get; set; }
         public string Url { get; set; }
-        public Dictionary<string, string> Parameters { get; set; }
+        private Dictionary<string, string> _Parameters =new Dictionary<string,string>();
+        public Dictionary<string, string> Parameters { get { return _Parameters; } set { _Parameters = value; } }
         public string Category { get; set; }
         public string ContentType { get; set; }
         public string Error { get; set; }
@@ -19,7 +20,7 @@ namespace BaseModel
         public string GetParameter(string name)
         {
             var result = "";
-            if (Parameters.ContainsKey(name))
+            if (Parameters!=null && Parameters.ContainsKey(name))
             {
                 return Parameters[name];
             }

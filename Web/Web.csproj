@@ -315,6 +315,7 @@
     <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)UI\bin\Debug\Scripts\"
 xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)UI\bin\Debug\Layout\"
 xcopy /E /Y /I "$(ProjectDir)Table.css" "$(SolutionDir)UI\bin\Debug\"
+xcopy /E /Y /I "$(ProjectDir)JQueryUI.css" "$(SolutionDir)UI\bin\Debug\"
 xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)UI\bin\Debug\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,6 @@
 ﻿var TemplateDictionary: TemplateDictionaryItem[] = [];
-var S_Bind_Start = "bind[";
-var S_Bind_End = "]";
+var S_Bind_Start = "$bind:";
+var S_Bind_End = "$";
 
 class TemplateDictionaryItem {
     public Item: JQuery = null;
@@ -225,6 +225,7 @@ function BindX(item: JQuery, data: Object) {
         } else {
             bt = templatedictionaryitem.Template;
         }
-        item[0].innerHTML = bt.Bind(data);
+        item.html(bt.Bind(data));
+        //item[0].innerHTML = bt.Bind(data);
     }
 }

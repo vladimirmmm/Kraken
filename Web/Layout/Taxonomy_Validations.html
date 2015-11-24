@@ -28,11 +28,11 @@
     <ul class="list" binding-items="this">
         <li binding-type="template">
 
-            <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.ShowRuleDetail('{ID}'); Select(this);]">
-            bind[{ID}]
+            <a href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.ShowRuleDetail('{ID}'); Select(this);$">
+            $bind:{ID}$
             </a> 
-            &nbsp;<strong>bind[{Title}]</strong>
-            <div class="bind[validationrule_results_{ID}]">
+            &nbsp;<strong>$bind:Title}$</strong>
+            <div class="$bind:validationrule_results_{ID}]">
 
             </div>
 
@@ -43,12 +43,12 @@
 
 <div class="detail">
     <div class="parent">
-        <span class="rule" rule-id="bind[{ID}]"></span>
+        <span class="rule" rule-id="$bind:ID}]"></span>
         <div class="hmax30 trimmed">
-            <span>bind[DisplayText]</span>
+            <span>$bind:DisplayText$</span>
         </div>
         <div class="hmax30 trimmed">
-            <span>bind[OriginalExpression]</span>
+            <span>$bind:OriginalExpression$</span>
         </div>
     </div>
     <ul class="sublist" binding-items="this">
@@ -60,13 +60,13 @@
                     <th>Cells</th>
                 </tr>
                 <tr binding-type="template">
-                    <td>bind[{Name}]</td>
-                    <td class="right">bind[{Value}]</td>
+                    <td>$bind:Name}]</td>
+                    <td class="right">$bind:Value}$</td>
                     <td binding-items="CellsOfFacts">
                         <ul binding-items="this" binding-type="template">
                             <li>
-                                <a binding-type="template" href="javascript:void(0)" onclick="bind[app.taxonomycontainer.NavigateTo('{this}')]">
-                                    bind[this]
+                                <a binding-type="template" href="javascript:void(0)" onclick="$bind: app.taxonomycontainer.NavigateTo('{this}');$">
+                                    $bind:this$
                                 </a>
                             </li>
                         </ul>

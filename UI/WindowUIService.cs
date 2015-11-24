@@ -30,12 +30,12 @@ namespace UI
             ProcessRequest = (m) => { Features.ProcessRequest(m); };
             BrowseFile = (folder, file) => { return BrowsForFile("", ""); };
             BrowseFolder = (folder) => { return BrowsForFolder(""); };
-
+            ToUI = (Message m) => ToWindowUI(m);
 
         }
         private object BrowserLocker = new Object();
 
-        public void ToUI(Message msg)
+        public void ToWindowUI(Message msg)
         {
             if (this.DispatcherCheckAccess())
             {
@@ -55,7 +55,7 @@ namespace UI
             }
             else
             {
-                DispatcherInvoke(() => { ToUI(msg); });
+                DispatcherInvoke(() => { ToWindowUI(msg); });
             }
         }
 
