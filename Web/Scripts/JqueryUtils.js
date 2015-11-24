@@ -4,6 +4,24 @@ function Log(item) {
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
+function BrowseFile(callback) {
+    var uploader = _SelectFirst("#fileuploader");
+    _EnsureEventHandler(uploader, "change", function () {
+        var file = _Value(uploader);
+        Log("FB: " + file);
+        CallFunction(callback, [file]);
+    });
+    $(uploader).click();
+}
+function BrowseFolder(callback) {
+    var uploader = _SelectFirst("#fileuploader");
+    _EnsureEventHandler(uploader, "change", function () {
+        var file = _Value(uploader);
+        Log("FB: " + file);
+        CallFunction(callback, [file]);
+    });
+    $(uploader).click();
+}
 function Select(sender) {
     var $command = $(sender);
     var sel = "selected";
@@ -179,6 +197,7 @@ function Ajax(url, method, parameters, generichandler, contentType) {
             //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
             actioncenter.AddError(errormsg);
             SetProperty(result, "Error", exception);
+            Log("Error at " + Id + ": " + errormsg);
             generichandler(result);
         }
     });

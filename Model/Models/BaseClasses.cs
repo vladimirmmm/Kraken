@@ -1,4 +1,5 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using LogicalModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -387,12 +388,7 @@ namespace LogicalModel.Base
         }
     }
 
-    public class Identifiable
-    {
-        private string _ID = "";
-        public string ID { get { return _ID; } set { _ID = value; } }
 
-    }
 
     public class Link
     {

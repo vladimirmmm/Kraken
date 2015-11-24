@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using UI;
-using UI.Services;
 
 namespace Web.Controllers
 {
@@ -22,7 +21,7 @@ namespace Web.Controllers
         {
             var querys = HttpContext.Request.QueryString;
             //msg[Category]=ajax&msg[Url]=Layout/Taxonomy_Validations.html&msg[Id]=6b256208-c7b7-ada8-93d6-eee130f3c0ca&msg[ContentType]=text/html&_=1447835900729
-            var msg = new Message();
+            var msg = new BaseModel.Message();
             msg.Category = querys["msg[Category]"];
             msg.Url = querys["msg[Url]"];
             msg.Id = querys["msg[Id]"];
@@ -38,7 +37,7 @@ namespace Web.Controllers
                     msg.Parameters.Add(key, value);
                 }
             }
-            var features = MvcApplication.Features;
+            var features = MvcApplication.engine.Features;
             var jmsg = features.ProcessRequest(msg);
             JsonNetResult jsonNetResult = new JsonNetResult();
             //jsonNetResult.Formatting = Formatting.Indented;
@@ -47,10 +46,10 @@ namespace Web.Controllers
             return jsonNetResult;
         }
         [HttpPost]
-        public ActionResult Index(Message msg)
+        public ActionResult Index(BaseModel.Message msg)
         {
             //var querys = HttpContext.Request
-            var features = MvcApplication.Features;
+            var features = MvcApplication.engine.Features;
             var jmsg = features.ProcessRequest(msg);
             JsonNetResult jsonNetResult = new JsonNetResult();
             //jsonNetResult.Formatting = Formatting.Indented;

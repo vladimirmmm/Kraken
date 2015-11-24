@@ -20,16 +20,16 @@ namespace UI
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        public Features Features = null;
+    
         public Settings Settings = null;
         public SettingsWindow()
         {
             InitializeComponent();
         }
-        public void SetFeatures(Features features)
+        public void SetFeatures()
         {
-            this.Features = features;
-            this.Settings = features.Settings;
+            //this.Features = features;
+            //this.Settings = features.Settings;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -55,7 +55,7 @@ namespace UI
             Settings.ReloadTaxonomyOnInstanceLoaded = CB_ReloadTaxonomyOnInstanceLoaded.IsChecked.Value;
             Settings.ValidateOnInstanceLoaded = CB_ValidateOnInstanceLoaded.IsChecked.Value;
 
-            Features.SaveSettings();
+            //Features.SaveSettings();
         }
     }
 }

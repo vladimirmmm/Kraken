@@ -380,6 +380,7 @@ iframe {
 
     #maintable th {
         height: 20px;
+        z-index:-5;
     }
 
 .th1 {
@@ -680,7 +681,11 @@ select.celleditor {
     overflow-x:auto;
     overflow-y:auto;
 }
-
+#fileuploadcontainer {
+    z-index:-5;
+    position:absolute;
+    height:0px;
+}
 
 /*!
  * jQuery UI Resizable 1.11.4

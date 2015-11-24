@@ -12,6 +12,7 @@ interface JQueryStatic {
 interface JQuery {
     w8n(...any);
     serializeObject(...any);
+    menu(...any);
     padding(direction: string): number;
     pagination(total: any, options: any);
     resizable(options?: any);

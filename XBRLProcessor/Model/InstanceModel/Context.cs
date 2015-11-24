@@ -1,4 +1,5 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using LogicalModel;
 using LogicalModel.Base;
 using Model.DefinitionModel;
 using Newtonsoft.Json;

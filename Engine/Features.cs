@@ -1,4 +1,7 @@
-﻿using LogicalModel;
+﻿
+using BaseModel;
+using Engine.Services;
+using LogicalModel;
 using Microsoft.Win32;
 using System;
 using System.Collections;
@@ -6,13 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using XBRLProcessor;
 using Utilities;
-using UI.Services;
-using BaseModel;
 
-namespace UI
+
+namespace Engine
 {
     public abstract class UIService 
     {
@@ -23,10 +23,13 @@ namespace UI
         public Action ShowSettings = () => { };
         public Action<string> BrowserNavigate = (url) => { };
         public Action BrowserRefresh = () => { };
-        public Action<Message> ProcessRequest = (m) => {};
+        public Action<Message> ProcessRequest = (m) => { };
+        public Action<Message> ToUI = (m) => { };
         public Action<string> Log = (s) => { };
         public Action<string, string> BrowserInvokeScript = (script, parameters) => { };
-        public Action<MenuCommand, MenuItem> LoadMenu = (command, item) => { };
+        public Func<String, String> BrowseFolder = (folder) => { return ""; };
+        public Func<String,String,String> BrowseFile = (folder,file) => { return ""; };
+ 
 
 
     }
@@ -35,21 +38,23 @@ namespace UI
     {
         public MenuCommand CommandContainer = null;
         private Object BrowserLocker = new Object();
-        public XbrlEngine Engine = new XbrlEngine();
+        public TaxonomyEngine Engine = new XBRLProcessor.XbrlEngine();
         public DataService DataService = null;
-        private const string RegSettingsPath = @"Software\WKFS\X-TreeM\";
-        private const string RegKey_Recent_Taxonomies = "Recent_Taxonomies";
-        private const string RegKey_Recent_Instances = "Recent_Instances";
+
 
         public UIService UI = null;
         public Settings Settings = Settings.Current;
         public List<String> RecentInstances = new List<string>();
         public List<String> RecentTaxonomies = new List<string>();
 
-        public Features(UIService ui) 
+
+        private const string RegSettingsPath = @"Software\WKFS\X-TreeM\";
+        private const string RegKey_Recent_Taxonomies = "Recent_Taxonomies";
+        private const string RegKey_Recent_Instances = "Recent_Instances";
+
+        public void Start(UIService ui) 
         {
             this.UI = ui;
-            this.DataService = new Services.DataService(Engine);
             Load();
             this.Engine.TaxonomyLoaded += Engine_TaxonomyLoaded;
             this.Engine.InstanceLoaded += Engine_InstanceLoaded;
@@ -89,8 +94,8 @@ namespace UI
             //UI.TB_TaxonomyPath.Text = GetRegValue(RegSettingsPath + "LastTaxonomy"); //@"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2014-07-31\mod\corep_ind.xsd";
             CommandContainer = new MenuCommand("root", "",
                 new MenuCommand("File", "File",
-                    new MenuCommand("O_tax", "Open Taxonomy", (o) => { OpenTaxonomy(o); },()=> new object[]{BrowsForFile("","")}),
-                    new MenuCommand("O_inst", "Open Xbrl Instance", (o) => { OpenInstance(o); }, () => new object[] { BrowsForFile("", "") }),
+                    new MenuCommand("O_tax", "Open Taxonomy", (o) => { OpenTaxonomy(o); }, () => new object[] { UI.BrowseFile("","") }),
+                    new MenuCommand("O_inst", "Open Xbrl Instance", (o) => { OpenInstance(o); }, () => new object[] { UI.BrowseFile("", "") }),
                     new MenuCommand("Save_Xbrl_Instance", "Save Xbrl Instance", (o) => { }, null),
                     new MenuCommand("R_Inst", "Recent Instance", (o) => { }, null),
                     new MenuCommand("R_Tax", "Recent Taxonomies", (o) => { }, null),
@@ -98,14 +103,14 @@ namespace UI
                     ),
                 new MenuCommand("Instance", "Instance",
                     new MenuCommand("Validate_Insatnce", "Validate", (o) => { ValidateInstance(); }, null),
-                    new MenuCommand("Validate_Folder", "Validate Folder", (o) => { ValidateFolder(o); }, () => new object[] { BrowsForFolder("") }),
+                    new MenuCommand("Validate_Folder", "Validate Folder", (o) => { ValidateFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
                     new MenuCommand("SaveInstance", "Save", (o) => { SaveInstance(""); }, null),
-                    new MenuCommand("SaveInstanceAs", "Save As", (o) => { SaveInstanceAs(); },()=> new object[]{BrowsForFile("","")}),
+                    new MenuCommand("SaveInstanceAs", "Save As", (o) => { SaveInstanceAs(); }, () => new object[] { UI.BrowseFile("", "") }),
                     new MenuCommand("CloseInstance", "Close", (o) => { CloseInstance(); }, null),
                     new MenuCommand("TestInstance", "Test")
                     ),
                 new MenuCommand("Taxonomy", "Taxonomy",
-                    new MenuCommand("Process_Folder", "Process Folder", (o) => { ProcessFolder(o); }, () => new object[] { BrowsForFolder("") }),
+                    new MenuCommand("Process_Folder", "Process Folder", (o) => { ProcessFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
                     new MenuCommand("TestTaxonomy", "Test", (o) => { Taxonomy_Test(); }, null),
                     new MenuCommand("Z_Axis_Test", "Z Axis Test", (o) => { Extensions_Test(); }, null),
 
@@ -143,13 +148,17 @@ namespace UI
         {
             var sb = new StringBuilder();
             sb.AppendLine("{");
-            sb.AppendLine(String.Format("id:\"{0}\", displayname:\"{1}\"", command.ID, command.DisplayName));
-            sb.Append("children: [");
+            sb.AppendLine(String.Format("\"id\":\"{0}\", \"displayname\":\"{1}\", ", command.ID.Replace("\\", "\\\\"), command.DisplayName.Replace("\\", "\\\\")));
+            sb.Append("\"Children\": [");
 
-            foreach (var childcommand in command.Children) 
+            for (var i = 0; i < command.Children.Count;i++ )
             {
+                var childcommand = command.Children[i];
                 sb.Append(GetJsonObj(childcommand));
-                sb.AppendLine(", ");
+                if (i < command.Children.Count - 1)
+                {
+                    sb.AppendLine(", ");
+                }
 
             }
             sb.AppendLine("]");
@@ -163,7 +172,7 @@ namespace UI
         {
             var msg = new Message();
             msg.Category = "debug";
-            ToUI(msg);
+            UI.ToUI(msg);
         }
 
         public void ShowInstance() 
@@ -235,38 +244,57 @@ namespace UI
             }
         }
 
-        public void ShowTab(object treeitemobj)
-        {
-            if (UI.DispatcherCheckAccess())
-            {
-                var ti = treeitemobj as ControlNode;
-                var p = ti.Parent;
-                var tabid = "";
-                if (p == null)
-                {
-                    tabid = String.Format("{0}", ti.Title.ToLower());
-                }
-                else
-                {
-                    tabid = String.Format("{0}_{1}", p.Title.ToLower(), ti.Title.ToLower());
-
-                }
-         
-            }
-            else
-            {
-                UI.DispatcherInvoke(() => { ShowTab(treeitemobj); });
-            }
-     
-        }
-
         public void LoadRecent()
         {
             RegValueToList(RegKey_Recent_Taxonomies, RecentTaxonomies);
             RegValueToList(RegKey_Recent_Instances, RecentInstances);
            
         }
+        public static string GetSettingValue(string key, string defaultvalue = "")
+        {
+            return GetRegValue(RegSettingsPath + key);
+        }
+        public static void SetSettingValue(string key, string value )
+        {
+            SetRegValue(RegSettingsPath + key, value);
 
+        }
+        public static string GetRegValue(string key, string defaultvalue = "")
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            RegistryKey sk1 = rk.OpenSubKey(key);
+            if (sk1 == null)
+            {
+                SetRegValue(key, defaultvalue);
+                sk1 = rk.OpenSubKey(key);
+            }
+            return String.Format("{0}", sk1.GetValue(key));
+        }
+
+        private static void SetRegValue(string key, string value)
+        {
+            RegistryKey rk = Registry.CurrentUser;
+            RegistryKey sk1 = rk.CreateSubKey(key);
+            sk1.SetValue(key.ToUpper(), value);
+        }
+
+        private void RegValueToList(string regkey, List<string> items)
+        {
+            items.Clear();
+            var r_str = GetRegValue(RegSettingsPath + regkey);
+            var r_items = r_str.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries);
+            items.AddRange(r_items);
+        }
+
+        private void ListToRegValue(string regkey, List<string> items)
+        {
+            var sb = new StringBuilder();
+            foreach (var x in items)
+            {
+                sb.Append(x + ",");
+            }
+            SetRegValue(RegSettingsPath + regkey, sb.ToString());
+        }
         public void NavigateToCell(string report, string extension, string row, string column) 
         {
             var table = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.ID.ToLower() == report);
@@ -282,23 +310,7 @@ namespace UI
         }
    
         
-        private void RegValueToList(string regkey, List<string> items) 
-        {
-            items.Clear();
-            var r_str = GetRegValue(RegSettingsPath + regkey);
-            var r_items = r_str.Split(new string[] { ";","," }, StringSplitOptions.RemoveEmptyEntries);
-            items.AddRange(r_items);
-        }
-        
-        private void ListToRegValue(string regkey, List<string> items)
-        {
-            var sb = new StringBuilder();
-            foreach (var x in items)
-            {
-                sb.Append(x + ",");
-            }
-            SetRegValue(RegSettingsPath + regkey, sb.ToString());
-        }
+  
 
         public void SaveSettings() 
         {
@@ -323,7 +335,8 @@ namespace UI
                 var m = new MenuCommand(item, Utilities.Strings.GetFileName(item), (o) => { OpenTaxonomy(item); },null);
                 recent_taxonomy.Children.Add(m);
             }
-            UI.LoadMenu(CommandContainer, null);
+            //TODO MENU
+            //UI.LoadMenu(CommandContainer, null);
         }
 
         //public void OpenTaxonomy()
@@ -408,7 +421,7 @@ namespace UI
             var msg = new Message();
             msg.Category="action";
             msg.Data="instanceloaded";
-            ToUI(msg);
+            UI.ToUI(msg);
 
         }
 
@@ -437,7 +450,7 @@ namespace UI
                 string path = Engine.CurrentInstance.FullPath.Replace(".xbrl", "_modified.xbrl");
                 string folder = Utilities.Strings.GetFolder(path);
                 string filename = Utilities.Strings.GetFileName(path);
-                var filepath = BrowsForFile(folder, filename);
+                var filepath = UI.BrowseFile(folder, filename);
                 SaveInstance(filepath);
             }
         }
@@ -464,50 +477,11 @@ namespace UI
                 msg.Category="action";
                 msg.Url="Instance";
                 msg.Data="instancevalidated";
-                ToUI(msg);
+                UI.ToUI(msg);
             }
         }
 
-        public void ToUI(Message msg) 
-        {
-            if (UI.DispatcherCheckAccess())
-            {
-                lock (BrowserLocker)
-                {
-                    var id = msg.Url;
-                    try
-                    {
-                        //var sb_json = new StringBuilder();
-                        //sb_json.Append(Utilities.Converters.ToJson(msg));
-                        //var size = System.Text.ASCIIEncoding.Unicode.GetByteCount(msg.Data);
-                        //if (size > 1024 * 1024 * 1) 
-                        //{
 
-                        //}
-                        //msg = null;
-                        //var data = msg.Data;
-                        //msg.Data = "@$@$";
-                        //data = data.Replace("\"", "\\\"");
-                        //var msgjson = Utilities.Converters.ToJson(msg);
-                        //var parts= msgjson.Split(new string[]{"@$@$"},StringSplitOptions.RemoveEmptyEntries);
-                        //sb_json.Append(parts[0]);
-                        //sb_json.Append(data);
-                        //data=null;
-                        //sb_json.Append(parts[1]);
-                        UI.BrowserInvokeScript("Communication_Listener", Utilities.Converters.ToJson(msg));
-                    }
-                    catch (Exception ex) 
-                    {
-                        var str = ex.Message;
-                        Logger.WriteLine("Error at Features.ToUI ("+id+"): " + str);
-                    }
-                }
-            }
-            else
-            {
-                UI.DispatcherInvoke(() => { ToUI(msg); });
-            }
-        }
 
         public void ValidateFolder(object[] parameters)
         {
@@ -570,7 +544,7 @@ namespace UI
                 var msg = new Message();
                 msg.Category = "action";
                 msg.Data = "taxonomyloaded";
-                ToUI(msg);
+                UI.ToUI(msg);
                 //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
                 //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
                 //UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
@@ -618,98 +592,14 @@ namespace UI
             }
         }
 
-        public void LoadToLV(IEnumerable items, ListView lv) 
-        {
-            if (UI.DispatcherCheckAccess())
-            { 
-               lv.ItemsSource = items;
-            }
-            else
-            {
-                UI.DispatcherInvoke(() => { LoadToLV(items, lv); });
-            }
-        }
-        
        
         public void LoadTaxonomy(string path) 
         {
             Engine.LoadTaxonomy(path);
             //LoadTaxonomyToUI();
         }
-        public static string BrowsForFolder(string folder)
-        {
-            // Create OpenFileDialog 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = GetRegValue(RegSettingsPath + "LastFolder");
-            dlg.CheckFileExists = false;
-            dlg.CheckPathExists = false;
-            dlg.ValidateNames = false;
-            // Set filter for file extension and default file extension 
-            //dlg.DefaultExt = ".png";
-            //dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
-            dlg.FileName = "Folder.";
-
-            // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = dlg.ShowDialog();
 
 
-            // Get the selected file name and display in a TextBox 
-            if (result == true)
-            {
-                // Open document 
-                string filename = dlg.FileName;
-                folder = Utilities.Strings.GetFolder(filename);
-                SetRegValue(RegSettingsPath + "LastFolder", folder);
-                return folder;
-            }
-            return "";
-        }
-        public static string BrowsForFile(string folder,string proposedfilename)
-        {
-            // Create OpenFileDialog 
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = GetRegValue(RegSettingsPath + "LastFolder");
-            // Set filter for file extension and default file extension 
-            //dlg.DefaultExt = ".png";
-            //dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
-            dlg.ValidateNames = false;
-            dlg.CheckPathExists = false;
-            dlg.CheckFileExists = false;
-            dlg.FileName = proposedfilename;
-            // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = dlg.ShowDialog();
-
-
-            // Get the selected file name and display in a TextBox 
-            if (result == true)
-            {
-                // Open document 
-                string filename = dlg.FileName;
-                folder = Utilities.Strings.GetFolder(filename);
-                SetRegValue(RegSettingsPath + "LastFolder", folder);
-                return filename;
-            }
-            return "";
-        }
-
-        private static string GetRegValue(string key, string defaultvalue = "")
-        {
-            RegistryKey rk = Registry.CurrentUser;
-            RegistryKey sk1 = rk.OpenSubKey(key);
-            if (sk1 == null)
-            {
-                SetRegValue(key, defaultvalue);
-                sk1 = rk.OpenSubKey(key);
-            }
-            return String.Format("{0}", sk1.GetValue(key));
-        }
-
-        private  static void SetRegValue(string key, string value)
-        {
-            RegistryKey rk = Registry.CurrentUser;
-            RegistryKey sk1 = rk.CreateSubKey(key);
-            sk1.SetValue(key.ToUpper(), value);
-        }
 
 
         public void Search(string p)

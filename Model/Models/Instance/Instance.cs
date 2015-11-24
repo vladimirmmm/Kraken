@@ -244,6 +244,7 @@ namespace LogicalModel
         public virtual void SetTaxonomy(Taxonomy xbrlTaxonomy)
         {
             this.Taxonomy = xbrlTaxonomy;
+            this.TaxonomyModuleReference = String.IsNullOrEmpty(this.TaxonomyModuleReference) ? xbrlTaxonomy.TaxonomyModulePath : this.TaxonomyModuleReference;
             this.ModulePath = Utilities.Strings.GetLocalPath(TaxonomyEngine.LocalFolder, this.TaxonomyModuleReference);
 
 

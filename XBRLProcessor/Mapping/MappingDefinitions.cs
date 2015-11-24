@@ -57,8 +57,8 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("xlink:label", (XbrlIdentifiable i) => i.LabelID),
                     Mappings.PropertyMap("id", (XbrlIdentifiable i) => i.ID)
                 ),
-                Mappings.Map<LogicalModel.Base.Identifiable>("<identifiable>", 
-                    Mappings.PropertyMap("id", (LogicalModel.Base.Identifiable i) => i.ID)
+                Mappings.Map<BaseModel.Identifiable>("<identifiable>", 
+                    Mappings.PropertyMap("id", (BaseModel.Identifiable i) => i.ID)
                 ),
                 Mappings.Map<Arc>("<arc>", 
                     Mappings.PropertyMap("xlink:arcrole", (Arc i) => i.ArcRole),

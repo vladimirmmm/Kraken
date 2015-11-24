@@ -613,13 +613,14 @@ function Communication_ToApp(message: General.Message) {
 }
 
 function Communication_Listener(data: string) {
-    //Notify("Communication_Listener_Start");
     var message: General.Message = <General.Message>JSON.parse(data);
-    data = "";
+    MessageReceived(message);
+}
+function MessageReceived(message: General.Message) {
+    //Notify("Communication_Listener_Start");
 
     //Notify("Communication_Listener Parsed");
 
-    data = null;
     if (message.Category == "ajax") {
         asyncFunc(() => {
             //Notify("Calling AjaxResponse");

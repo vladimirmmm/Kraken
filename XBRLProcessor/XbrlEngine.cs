@@ -12,7 +12,7 @@ using XBRLProcessor.Models;
 
 namespace XBRLProcessor
 {
-    public partial class XbrlEngine: LogicalModel.TaxonomyEngine
+    public partial class XbrlEngine: TaxonomyEngine
     {
       
         public XbrlTaxonomy CurrentXbrlTaxonomy 

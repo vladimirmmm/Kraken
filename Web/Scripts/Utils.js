@@ -643,7 +643,8 @@ function ToHtmlAttributeListString(obj) {
     return str;
 }
 ;
-function RenderHierarchy(obj, itemformatter) {
+/*
+function RenderHierarchy(obj: Object[], itemformatter?: Function) {
     var html = "";
     if (obj instanceof Array) {
         if (obj.length > 0) {
@@ -656,6 +657,28 @@ function RenderHierarchy(obj, itemformatter) {
             });
             html += "</ul>";
         }
+    }
+    return html;
+};
+*/
+function RenderHierarchy(obj, itemformatter, level) {
+    if (level === void 0) { level = 0; }
+    var html = "";
+    var children = obj["Children"];
+    children = IsNull(children) ? [] : children;
+    if (level > 0) {
+        html += "<li>";
+        html += itemformatter(obj);
+    }
+    if (children.length > 0) {
+        html += "<ul>";
+        children.forEach(function (item) {
+            html += RenderHierarchy(item, itemformatter, level + 1);
+        });
+        html += "</ul>";
+    }
+    if (level > 0) {
+        html += "</li>\n";
     }
     return html;
 }

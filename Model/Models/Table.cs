@@ -12,26 +12,6 @@ using Utilities;
 
 namespace LogicalModel
 {
-    public class TableInfo : Identifiable
-    {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Type { get; set; }
-        public List<string> Tables = new List<string>();
-
-        public TableInfo() 
-        {
-
-        }
-
-        public void SetFrom(Table table) 
-        {
-            this.ID = table.ID;
-            this.Name = table.Name;     
-        }
-
-
-    }
 
     public class Table : Identifiable,ILabeled
     {

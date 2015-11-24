@@ -1,4 +1,6 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using Engine;
+using LogicalModel;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -27,9 +29,7 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        protected Features Features = null;
-
-        
+        private AppEngine engine = new AppEngine();
         public MainWindow()
         {
             InitializeComponent();
@@ -37,21 +37,18 @@ namespace UI
 
             //var uitw = new UITextWriter(ShowMessage);
             //Console.SetOut(uitw);
-            Utilities.Logger.action = ShowMessage;
+            //Utilities.Logger.action = ShowMessage;
 
             Browser.LoadCompleted += Browser_LoadCompleted;
             var ofs =new JsClass();
             ofs.UIAction=fromJS;
             Browser.ObjectForScripting = ofs;
             var mw =this;
-            var ui = new WindowUIService(this);
-      
-            this.Features = new Features(ui);
+            UIService ui = new WindowUIService(this);
+            engine.Start(ui);
+         
 
-            LoadMenu(this.Features.CommandContainer, null);
-            //this.Features.LoadFeatures(this.Features.FeatureContainer, null);
 
-            //tet();
 
         }
 
@@ -59,9 +56,9 @@ namespace UI
         {
             if (this.Dispatcher.CheckAccess())
             {
-                var window = new SettingsWindow();
-                window.SetFeatures(Features);
-                window.Show();
+                //var window = new SettingsWindow();
+                //window.SetFeatures(Features);
+                //window.Show();
             }
             else
             {
@@ -105,29 +102,6 @@ namespace UI
             }
 
         }
-        public void tet()
-        {
-            var l = new List<LogicalModel.Base.FactBase>();
-            var c =  200000;
-            for (int i = 0; i < c; i++)
-            {
-                var fact = new LogicalModel.Base.FactBase();
-                //fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[eba_dim:LEC]eba_typ:LE,[eba_dim:MCY]eba_MC:x27,[eba_dim:TRI]eba_TR:x6,");
-                fact.SetFromString("eba_met:mi235,[eba_dim:BAS]eba_BA:x9,[*:LEC]eba_typ:LE:1234,[*:MCY]eba_MC:x27,[*:TRI]eba_TR:x6,");
-              
-                l.Add(fact);
-            }
-
-            var x = 0;
-            Logger.WriteLine("take!!");
-            //System.Threading.Thread.Sleep(20 * 1000);
-
-            foreach (var fact in l)
-            {
-                fact.ClearObjects();
-            }
-            var zz = 0;
-        }
 
         private object slocker = new object();
         void fromJS(object param) 
@@ -144,7 +118,7 @@ namespace UI
                 response.Error = ex.Message;
                 response.Category = "error";
                 Logger.WriteLine(String.Format("Error at {0} - {1}: {2}", request.Id, request.Url, ex.Message));
-                Features.ToUI(response);
+                engine.Features.UI.ToUI(response);
 
             }
             var ajaxtag = "ajax";
@@ -172,8 +146,8 @@ namespace UI
                     //Features.ToUI(response);
 
                
-                        response = this.Features.ProcessRequest(request);
-                        Features.ToUI(response);
+                        response = engine.Features.ProcessRequest(request);
+                        engine.Features.UI.ToUI(response);
 
 
                 }
@@ -181,7 +155,7 @@ namespace UI
                 {
                     response.Error = ex.Message + "\r\n";
                     Logger.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
-                    Features.ToUI(response);
+                    engine.Features.UI.ToUI(response);
 
                 }
                 /*
@@ -222,13 +196,14 @@ namespace UI
         private StringBuilder loggbuilder = new StringBuilder();
 
         private bool isuiloaded = false;
-        private void ShowMessage(string content) 
+        
+        public void ShowMessage(string content) 
         {
             if (this.Dispatcher.CheckAccess())
             {
                 String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
 
-                if (Features == null || !isuiloaded)
+                if (engine.Features == null || !isuiloaded)
                 {
                     loggbuilder.Append(msg);
                 }
@@ -238,7 +213,7 @@ namespace UI
                     message.Category = "notfication";
                     message.Data = loggbuilder.ToString()+ msg;
                     loggbuilder.Clear();
-                    Features.ToUI(message);
+                    engine.Features.UI.ToUI(message);
 
                 }
                 //lock (ConsoleLocker)
@@ -269,7 +244,7 @@ namespace UI
         private void B_LoadTaxonomy_Click(object sender, RoutedEventArgs e)
         {
             var path = TB_TaxonomyPath.Text;
-            Utilities.Threading.ExecuteAsync(() => { Features.LoadTaxonomy(path); });
+            Utilities.Threading.ExecuteAsync(() => { engine.Features.LoadTaxonomy(path); });
         }
   
         private void XML_Tree_Node_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -304,7 +279,7 @@ namespace UI
                 dynamic doc = Browser.Document;
 
                 var htmlText = doc.documentElement.InnerHtml;
-                System.IO.File.WriteAllText(this.Features.Engine.HtmlPath.Replace(".html", "_Current.html"), htmlText);
+                System.IO.File.WriteAllText(engine.Features.Engine.HtmlPath.Replace(".html", "_Current.html"), htmlText);
                 doc = null;
             }
             catch (Exception ex) 
@@ -323,7 +298,6 @@ namespace UI
 
         private void TB_LabelFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Features.SearchLabels(TB_LabelFilter.Text);
          
         }
 

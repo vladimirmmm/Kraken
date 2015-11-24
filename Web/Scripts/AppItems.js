@@ -518,11 +518,12 @@ function Communication_ToApp(message) {
     }
 }
 function Communication_Listener(data) {
-    //Notify("Communication_Listener_Start");
     var message = JSON.parse(data);
-    data = "";
+    MessageReceived(message);
+}
+function MessageReceived(message) {
+    //Notify("Communication_Listener_Start");
     //Notify("Communication_Listener Parsed");
-    data = null;
     if (message.Category == "ajax") {
         asyncFunc(function () {
             //Notify("Calling AjaxResponse");

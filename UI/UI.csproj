@@ -58,10 +58,8 @@
     <Compile Include="Converters.cs" />
     <Compile Include="FeatureContext.cs" />
     <Compile Include="FeatureEnums.cs" />
-    <Compile Include="Features.cs" />
     <Compile Include="JsClass.cs" />
     <Compile Include="MenuCommand.cs" />
-    <Compile Include="Services\DataService.cs" />
     <Compile Include="SettingControl.xaml.cs">
       <DependentUpon>SettingControl.xaml</DependentUpon>
     </Compile>
@@ -69,6 +67,7 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UITextWriter.cs" />
+    <Compile Include="WindowUIService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -126,6 +125,10 @@
       <Project>{0ca83cc9-6c53-4f5e-90a9-fa68ec0d5201}</Project>
       <Name>BaseModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Engine\Engine.csproj">
+      <Project>{02355021-4c3f-44fc-8631-bfbde02e934a}</Project>
+      <Name>Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Model\LogicalModel.csproj">
       <Project>{30b9a494-ce56-4cc0-b1a5-f62d71857d29}</Project>
       <Name>LogicalModel</Name>
@@ -164,6 +167,9 @@
     <Content Include="Taxonomies\info.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

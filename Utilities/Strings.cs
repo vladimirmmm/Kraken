@@ -141,7 +141,7 @@ namespace Utilities
             {
                 sourcepath = sourcepath.Substring(w3index);
             }
-            if (!sourcepath.StartsWith(localrootfolder))
+            if (!sourcepath.StartsWith(localrootfolder.ToLower()))
             {
                 sourcepath = localrootfolder + sourcepath;
             }

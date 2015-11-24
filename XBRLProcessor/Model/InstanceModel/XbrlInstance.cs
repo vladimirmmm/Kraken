@@ -469,7 +469,7 @@ namespace Model.InstanceModel
             //return finds.Select(i=>i.Key).ToList();
         }
         
-        protected string GetNewID(IEnumerable<LogicalModel.Base.Identifiable> items, string format)
+        protected string GetNewID(IEnumerable<BaseModel.Identifiable> items, string format)
         {
             var nr = items.Count();
             var newid = "";

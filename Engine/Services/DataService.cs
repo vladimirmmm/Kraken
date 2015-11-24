@@ -1,4 +1,5 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using LogicalModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace UI.Services
+namespace Engine.Services
 {
     public class DataResult<T> 
     {
@@ -17,10 +18,12 @@ namespace UI.Services
     }
     public class DataService
     {
-        private TaxonomyEngine Engine=null;
-        public DataService(TaxonomyEngine engine)
+        private AppEngine AppEngine = null;
+        private TaxonomyEngine Engine = null;
+        public DataService(AppEngine engine)
         {
-            Engine = engine;
+            AppEngine = engine;
+            Engine = engine.Features.Engine;
         }
         public Message ProcessRequest(Message request)
         {
@@ -74,6 +77,30 @@ namespace UI.Services
                         var url = request.Url.Replace("/", "\\");
                         var content = System.IO.File.ReadAllText(url);
                         result.Data = content;
+                    }
+                    if (part0 == "ui")
+                    {
+                        if (part1 == "menu")
+                        {
+                            var commandid = request.GetParameter("command").ToLower();
+                            var p1 = request.GetParameter("p1").ToLower();
+                            if (!string.IsNullOrEmpty(commandid))
+                            {
+                                var command = this.AppEngine.Features.CommandContainer.Where(i => i.ID.ToLower() == commandid).FirstOrDefault();
+                                if (command != null) 
+                                {
+                                    var originalca = command.ContextAccessor;
+                                    command.ContextAccessor = () => { return new object[] { p1 }; };
+                                    command.Execute();
+                                    command.ContextAccessor = originalca;
+                                }
+                            }
+                            else
+                            {
+                                var json = AppEngine.Features.GetJsonObj(AppEngine.Features.CommandContainer);
+                                result.Data = json;
+                            }
+                        }
                     }
                     if (part0 == "taxonomy")
                     {
@@ -180,8 +207,8 @@ namespace UI.Services
                             }
                             if (part1 == "tables")
                             {
-                                var h = new BaseModel.Hierarchy<LogicalModel.TableInfo>();
-                                var tablegroups = Engine.CurrentTaxonomy.Module.TableGroups.Cast<LogicalModel.TableInfo>(i =>
+                                var h = new BaseModel.Hierarchy<TableInfo>();
+                                var tablegroups = Engine.CurrentTaxonomy.Module.TableGroups.Cast<TableInfo>(i =>
                                 {
                                     var ti = new TableInfo();
                                     ti.ID = i.ID;// String.IsNullOrEmpty(i.FilingIndicator) ? i.ID : i.FilingIndicator;
@@ -214,7 +241,7 @@ namespace UI.Services
                                         var ht = htg.Children.FirstOrDefault(i => i.Item.ID == tbl.ID);
                                         if (ht == null)
                                         {
-                                            ht = new BaseModel.Hierarchy<LogicalModel.TableInfo>(tbinfo);
+                                            ht = new BaseModel.Hierarchy<TableInfo>(tbinfo);
                                             htg.Children.Add(ht);
                                         }
 
