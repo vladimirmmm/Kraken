@@ -84,8 +84,11 @@ module Applications
             AjaxRequest("UI/Menu", "get", "json", null, function (data) {
                 var html = RenderHierarchy(data, f);
                 _Html(_SelectFirst("#menucontainer"), html);
-                $("#menucontainer>ul").menu({
+                var menu = $("#menucontainer>ul").menu({
                     position: { my: "left top", at: "left+5 top+20" }
+                });
+                $(menu).mouseleave(function () {
+                    menu.menu('collapseAll');
                 });
                 $('#menucontainer > li').hover(
                     function () {
