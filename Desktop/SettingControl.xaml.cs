@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reflection;
 
-namespace UI
+namespace Desktop
 {
     /// <summary>
     /// Interaction logic for Settings.xaml

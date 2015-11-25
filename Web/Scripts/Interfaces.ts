@@ -19,6 +19,7 @@ interface JQuery {
     colResizable(options?: any);
     resizableColumns(options?: any);
     datepicker(options?: any);
+    selectText();
 }
 
 interface External {

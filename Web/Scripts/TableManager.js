@@ -141,7 +141,22 @@ var Controls;
                 var me = (this);
                 CallFunction(me.Manager.OnLayoutChanged, [row]);
             };
+            this.DeleteFunction = null;
             this.Manager = manager;
+            var me = this;
+            this.DeleteFunction = function (e) {
+                if (e.which == 46) {
+                    var rowtodelete = null;
+                    me.Rows.forEach(function (row, ix) {
+                        if (_HasClass(row.UIElement, selectedclass)) {
+                            rowtodelete = row;
+                        }
+                    });
+                    if (!IsNull(rowtodelete)) {
+                        me.RemoveRow(rowtodelete);
+                    }
+                }
+            };
         }
         Table.prototype.GetRowOfCell = function (cellelement) {
             var me = this;

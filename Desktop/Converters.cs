@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace UI
+namespace Desktop
 {
     [ValueConversion(typeof(ItemsPresenter), typeof(Orientation))]
     public class ItemsPanelOrientationConverter : IValueConverter

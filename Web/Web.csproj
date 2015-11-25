@@ -172,6 +172,7 @@
     <Content Include="Layout\Taxonomy_Settings.html" />
     <Content Include="Layout\Taxonomy_Tables.html" />
     <Content Include="Layout\Taxonomy_Validations.html" />
+    <Content Include="Logo32x32.png" />
     <Content Include="Scripts\App.js" />
     <Content Include="Scripts\AppItems.js" />
     <Content Include="Scripts\Binding.js" />
@@ -256,9 +257,9 @@
       <Project>{02355021-4c3f-44fc-8631-bfbde02e934a}</Project>
       <Name>Engine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UI\UI.csproj">
+    <ProjectReference Include="..\Desktop\Desktop.csproj">
       <Project>{4e6f61a7-55c0-4bb2-af46-36158f9eca97}</Project>
-      <Name>UI</Name>
+      <Name>Desktop</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{47d3d74b-af77-4ea9-81d0-4150e53753cb}</Project>
@@ -312,11 +313,11 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)UI\bin\Debug\Scripts\"
-xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)UI\bin\Debug\Layout\"
-xcopy /E /Y /I "$(ProjectDir)Table.css" "$(SolutionDir)UI\bin\Debug\"
-xcopy /E /Y /I "$(ProjectDir)JQueryUI.css" "$(SolutionDir)UI\bin\Debug\"
-xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)UI\bin\Debug\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)Desktop\bin\Debug\Scripts\"
+xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)Desktop\bin\Debug\Layout\"
+xcopy /E /Y /I "$(ProjectDir)Table.css" "$(SolutionDir)Desktop\bin\Debug\"
+xcopy /E /Y /I "$(ProjectDir)JQueryUI.css" "$(SolutionDir)Desktop\bin\Debug\"
+xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)Desktop\bin\Debug\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

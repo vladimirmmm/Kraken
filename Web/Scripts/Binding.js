@@ -45,7 +45,7 @@ var BindingTemplate = (function () {
                 if (shouldenumerate) {
                     EnumerateObject(items, me, childfunc);
                     if (!hasdata) {
-                        childitems = Replace(childitems, "@X@", "");
+                        childitems = Bind_Replace(childitems, "@X@", "");
                     }
                     else {
                     }
@@ -54,11 +54,11 @@ var BindingTemplate = (function () {
                     childitems += child.Bind(items);
                 }
                 if (result_html.indexOf(child.ID) > -1) {
-                    result_html = Replace(result_html, child.ID, childitems);
+                    result_html = Bind_Replace(result_html, child.ID, childitems);
                 }
                 if (result_html.indexOf("@X@") > -1) {
                     {
-                        result_html = Replace(result_html, "@X@", childitems);
+                        result_html = Bind_Replace(result_html, "@X@", childitems);
                     }
                 }
             }
@@ -94,9 +94,9 @@ function BindLevel(html, data) {
         subbindings.forEach(function (subbinding) {
             var subbindingexpression = subbinding.indexOf("{") > -1 ? TextBetween(subbinding, "{", "}") : subbinding;
             var dataitem = Access(data, subbindingexpression);
-            s_html = Replace(s_html, subbinding, dataitem);
+            s_html = Bind_Replace(s_html, subbinding, dataitem);
         });
-        result_html = Replace(result_html, binding, s_html);
+        result_html = Bind_Replace(result_html, binding, s_html);
     });
     return result_html;
 }

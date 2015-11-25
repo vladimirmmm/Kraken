@@ -79,7 +79,7 @@ module Applications
 
             var f = function (item)
             {
-                return Format("<a href='javascript:void(0); app.MenuCommand(\"{0}\");'>{1}</a>", item.id, item.displayname);
+                return Format("<a href='javascript:void(0); app.MenuCommand(\"{0}\");'>{1}</a>", Replace(item.id,"\\","\\\\"), item.displayname);
             }
             AjaxRequest("UI/Menu", "get", "json", null, function (data) {
                 var html = RenderHierarchy(data, f);

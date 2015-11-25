@@ -180,9 +180,24 @@ module Controls {
             CallFunction(me.Manager.OnLayoutChanged, [row]);
 
         }
+        public DeleteFunction: Function = null;
 
         constructor(manager: ITableManager) {
             this.Manager = manager;
+            var me = this;
+            this.DeleteFunction = function (e) {
+                if (e.which == 46) {
+                    var rowtodelete: Controls.Row = null;
+                    me.Rows.forEach(function (row, ix) {
+                        if (_HasClass(row.UIElement, selectedclass)) {
+                            rowtodelete = row;
+                        }
+                    });
+                    if (!IsNull(rowtodelete)) {
+                        me.RemoveRow(rowtodelete);
+                    }
+                }
+            };
         }
 
         public GetRowOfCell(cellelement: Element): Row {

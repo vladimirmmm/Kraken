@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace UI
+namespace Desktop
 {
     [System.Runtime.InteropServices.ComVisibleAttribute(true)]
     public class JsClass

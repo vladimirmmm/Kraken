@@ -22,7 +22,7 @@ using System.Xml;
 using Utilities;
 using XBRLProcessor;
 
-namespace UI
+namespace Desktop
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

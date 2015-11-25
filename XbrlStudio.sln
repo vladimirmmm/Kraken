@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XBRLProcessor", "XBRLProcessor\XBRLProcessor.csproj", "{FE23080F-F638-4721-B590-F0117881F522}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{4E6F61A7-55C0-4BB2-AF46-36158F9ECA97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "Desktop\Desktop.csproj", "{4E6F61A7-55C0-4BB2-AF46-36158F9ECA97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{47D3D74B-AF77-4EA9-81D0-4150E53753CB}"
 EndProject

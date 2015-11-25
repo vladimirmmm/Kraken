@@ -22,9 +22,11 @@ namespace Utilities
         }
         public static void WriteLine(string item) 
         {
+
             if (action != null)
             {
-                action(item);
+                var text = String.Format("{0:yyyy-MM-dd hh:mm:ss} {1}", DateTime.Now, item);
+                action(text);
             }
         }
 

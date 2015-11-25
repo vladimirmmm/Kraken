@@ -1,6 +1,12 @@
 /// <reference path="typings/jquery/jquery.d.ts" />
+var logitems = 0;
 function Log(item) {
+    logitems++;
     var element = _SelectFirst("#contentlog");
+    if (logitems > 1000) {
+        _Html(element, "");
+        logitems = 1;
+    }
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
@@ -13,6 +19,24 @@ function BrowseFile(callback) {
     });
     $(uploader).click();
 }
+jQuery.fn.selectText = function () {
+    this.find('input').each(function () {
+        if ($(this).prev().length == 0 || !$(this).prev().hasClass('p_copy')) {
+            $('<p class="p_copy" style="position: absolute; z-index: -1;"></p>').insertBefore($(this));
+        }
+        $(this).prev().html($(this).val());
+    });
+    var doc = document;
+    var element = this[0];
+    console.log(this, element);
+    if (window.getSelection) {
+        var selection = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(element);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+};
 function BrowseFolder(callback) {
     var uploader = _SelectFirst("#fileuploader");
     _EnsureEventHandler(uploader, "change", function () {

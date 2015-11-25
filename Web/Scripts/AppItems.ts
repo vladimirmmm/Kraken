@@ -31,11 +31,11 @@ class UITableManager implements Controls.ITableManager {
     public RowID_Format: string = "R{0:D4}";
     public ColumnID_Format: string = "C{0:D4}";
     public ExtensionID_Format: string = "Z{0:D4}";
-
     TemplateRow: Controls.Row = null;
     TemplateColumn: Controls.Column = null;
 
     constructor() {
+
         this.AddEventHandlers();
     }
 
@@ -233,19 +233,8 @@ class UITableManager implements Controls.ITableManager {
                     }
                 }
             });
-            _EnsureEventHandler(window, "keyup", function (e) {
-                if (e.which == 46) {
-                    var rowtodelete: Controls.Row = null;
-                    table.Rows.forEach(function (row, ix) {
-                        if (_HasClass(row.UIElement, selectedclass)) {
-                            rowtodelete = row;
-                        }
-                    });
-                    if (!IsNull(rowtodelete)) {
-                        table.RemoveRow(rowtodelete);
-                    }
-                }
-            });
+            _RemoveEventHandler(window, "keyup", table.DeleteFunction)
+            _AddEventHandler(window, "keyup", table.DeleteFunction);
             //table.Rows.forEach(function (row, ix) {
             //    _EnsureEventHandler(row.UIElement, "click", me.OnRowSelected);
             //});
@@ -565,8 +554,14 @@ function ShowHideChild(selector: any, sender: any) {
 
 function SetPivots() {
 
-    $(".hresizable").resizable({
+    $("#colgroup1h").resizable({
         handles: 'e',
+        alsoResize: "#colgroup1",
+        minWidth: 18
+    });
+    $("#colgroup2h").resizable({
+        handles: 'e',
+        alsoResize: "#colgroup2",
         minWidth: 18
     });
 
@@ -575,15 +570,25 @@ function SetPivots() {
         helper: "#resizable-helper",
         minHeight: 50
     });
-    //$(".vresizable").resizable({
-    //    handles: 's',
-    //    minHeight: 50,
-    //    stop: function (event, ui) {
-    //        var wheight = $("#LogWindow").parent().height();
-    //        $(".vresizable").height(ui.size.height);
-    //        //$("#LogWindow").height(wheight);
-    //    }
-    //});
+    $("#contentlog").keydown(function (event) {
+        if (event.ctrlKey && event.keyCode == 65) {
+            console.log("Ctrl+A event captured!");
+            event.preventDefault();
+            $("#contentlog").selectText();
+        }
+    });
+    _AddEventHandler(window,"keyup", function (event) {
+
+        if (event.keyCode == 46) {
+            var focusedlement = $(':focus').length == 1 ? $(':focus')[0] : null;
+            var contentlog = _SelectFirst("#contentlog");
+            if (contentlog == focusedlement) {
+                _Html(contentlog, "");
+            }
+
+        }
+    });
+
 
 
 }
@@ -656,11 +661,16 @@ function MessageReceived(message: General.Message) {
 
 //if (typeof console === "undefined") {
 
-window.onerror = ErrorHandler;
+
 
 function IsDesktop()
 {
     return 'Notify' in window.external;
+}
+
+if (IsDesktop())
+{
+    window.onerror = ErrorHandler;
 }
 
 //}

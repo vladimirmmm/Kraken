@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Utilities;
 
-namespace UI
+namespace Desktop
 {
     public class WindowUIService : UIService
     {
@@ -31,6 +31,8 @@ namespace UI
             BrowseFile = (folder, file) => { return BrowsForFile("", ""); };
             BrowseFolder = (folder) => { return BrowsForFolder(""); };
             ToUI = (Message m) => ToWindowUI(m);
+            Utilities.Logger.action = Log;
+
 
         }
         private object BrowserLocker = new Object();
@@ -87,6 +89,7 @@ namespace UI
             }
             return "";
         }
+        
         public static string BrowsForFile(string folder, string proposedfilename)
         {
             // Create OpenFileDialog 

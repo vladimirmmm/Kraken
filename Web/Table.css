@@ -389,6 +389,16 @@ iframe {
 .th2 {
     width: 700px;
 }
+#colgroup1 {
+    width: 250px;
+}
+
+#colgroup2 {
+    width: 700px;
+}
+#maintable th.menucell {
+    overflow:visible;
+}
 /*end splitter*/
 
 /*.rc-handle-container {
