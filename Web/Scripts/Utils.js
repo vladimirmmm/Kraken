@@ -17,6 +17,7 @@ var _EnsureEventHandler = function (element, eventname, handler) {
 var _Attribute = function (element, attributename, attributevalue) { return ""; };
 var _RemoveAttribute = function (target, attributename) {
 };
+var _TagName = function (element) { return ""; };
 var _Property = function (element, propertyname) { return ""; };
 var _Value = function (element, value) { return ""; };
 var _Html = function (element, html) { return ""; };

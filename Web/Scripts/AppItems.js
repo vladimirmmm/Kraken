@@ -60,9 +60,14 @@ var UITableManager = (function () {
         var rowcells = [];
         table.HeaderRowCount = _Select("thead tr", element).length;
         rawrows.forEach(function (rawrow, ix) {
-            var rawdatacells = _Select("td", rawrow);
-            var rawheadercells = _Select("th", rawrow);
+            var rawdatacells = [];
+            var rawheadercells = [];
             var isdynamic = _HasClass(rawrow, "dynamic");
+            if (isdynamic) {
+                rawrow = _Clone(rawrow);
+            }
+            rawdatacells = _Select("td", rawrow);
+            rawheadercells = _Select("th", rawrow);
             if (rawdatacells.length > 0) {
                 if (columncells.length < 1) {
                     headerix = ix - 1;
@@ -72,15 +77,20 @@ var UITableManager = (function () {
                 var rowheadercell = rawheadercells[rawheadercells.length - 1];
                 rowcells.push(rowheadercell);
                 var row = new Controls.Row();
-                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell);
+                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, Controls.CellType.Header);
                 row.UIElement = rawrow;
+                columncells.forEach(function (cell, ix) {
+                    var column = new Controls.Column();
+                    column.ColID = _Html(cell).trim();
+                    table.Columns.push(column);
+                });
                 rawdatacells.forEach(function (cell, ix) {
                     var rowcode = _Html(rowheadercell).trim();
                     var colcell = columncells[ix]; //rowcells[ix];
                     var colcode = _Html(colcell).trim();
                     var cellid = Format("{0}|{1}", rowcode, colcode);
                     var cellobj = new Controls.Cell();
-                    cellobj.Type = 1 /* Data */;
+                    cellobj.Type = Controls.CellType.Data;
                     cellobj.RowID = rowcode;
                     cellobj.ColID = colcode;
                     cellobj.Value = _Html(cell).trim();
@@ -104,9 +114,9 @@ var UITableManager = (function () {
             }
         });
         var rowheader = new Controls.Row();
-        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i); }).ToArray();
+        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, Controls.CellType.Header); }).ToArray();
         var colheader = new Controls.Column();
-        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i); }).ToArray();
+        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, Controls.CellType.Header); }).ToArray();
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
         CallFunctionWithContext(me, me.OnLoaded, [table]);
@@ -165,10 +175,14 @@ var UITableManager = (function () {
     };
     UITableManager.prototype.SetCellsOfRow = function (row) {
         var me = this;
+        var table = app.taxonomycontainer.Table.UITable;
+        //for (var i = 0; i < table.Columns.length; i++)
+        //{
+        //}
         //this.CellEditorAssigner(row.UIElement);
-        row.Cells.forEach(function (cell, ix) {
-            //_Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
-        });
+        //row.Cells.forEach(function (cell, ix) {
+        //    //_Attribute(cell.UIElement, "title", _Attribute(cell.UIElement, "factstring"));
+        //});
         _EnsureEventHandler(row.UIElement, "click", function (e) {
             _Focus(this);
             _RemoveClass(_Select("tr", _Parent(row.UIElement)), selectedclass);
@@ -189,6 +203,7 @@ var UITableManager = (function () {
             _EnsureEventHandler(table.UIElement, "click", function (e) {
                 var element = e.target;
                 if (element instanceof HTMLTableDataCellElement) {
+                    me.OnCellSelected(element);
                     if (!_HasClass(element, "blocked")) {
                         EditCell(element, GetXbrlCellEditor, me.OnCellChanged);
                     }
@@ -203,11 +218,26 @@ var UITableManager = (function () {
             //    _EnsureEventHandler(column.UIElement, "click", me.OnColumnSelected);
             //});
         };
+        this.OnCellSelected = function (element) {
+            var cellid = _Attribute(element, "id");
+            var cell = app.taxonomycontainer.Table.UITable.GetCellByID(cellid);
+            if (cell != null) {
+                var mcell = new Model.Cell;
+                mcell.Extension = app.taxonomycontainer.Table.Current_ExtensionCode;
+                mcell.Report = app.taxonomycontainer.Table.Current_ReportID;
+                mcell.Row = cell.RowID;
+                mcell.Column = cell.ColID;
+                mcell.FactString = _Attribute(cell.UIElement, "factstring");
+                mcell.CellID = _Attribute(cell.UIElement, "id");
+                BindX($("#CellInfo"), mcell);
+                _Show(_SelectFirst("#CellInfo"));
+            }
+        };
         this.OnRowAdded = function (row) {
             var rowelement = row.UIElement;
             _AddClass(rowelement, "dynamicdata");
             _RemoveClass(rowelement, "dynamic");
-            _Attribute(rowelement, "style", "");
+            //_Attribute(rowelement, "style", "");
             me.SetCellsOfRow(row);
             _Show(row.UIElement);
         };
@@ -482,6 +512,7 @@ function SetPivots() {
         helper: "#resizable-helper",
         minHeight: 50
     });
+    $("#LogWindow").tabs();
     $("#contentlog").keydown(function (event) {
         if (event.ctrlKey && event.keyCode == 65) {
             console.log("Ctrl+A event captured!");

@@ -20,7 +20,17 @@ namespace Web.Hubs
 
             hubContext.Clients.All.sendMessage(msg);
         }
-
+        public override System.Threading.Tasks.Task OnConnected()
+        {
+            if (MvcApplication.engine.Features.CanLoadToUI())
+            {
+                var msg = new BaseModel.Message();
+                msg.Category = "action";
+                msg.Data = "instanceloaded";
+                SendMessage(msg);
+            }
+            return base.OnConnected();
+        }
     
     }
 }

@@ -10,8 +10,8 @@
 }
 #contentlog {
     overflow-y:auto;
-    margin:10px;
-    height:calc(100% - 30px);;
+    height:100%;
+   
     border:solid 1px black;
 
 }
@@ -774,4 +774,7 @@ select.celleditor {
 	height: 9px;
 	right: -5px;
 	top: -5px;
+}
+#tab_logs {
+     height:calc(100% - 40px);
 }

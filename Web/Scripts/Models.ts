@@ -201,16 +201,29 @@
             if (IsNull(target.Concept)) { target.Concept = item.Concept; }
             var targetdimensions = target.Dimensions.AsLinq<Dimension>();
             item.Dimensions.forEach(function (dimension, ix) {
-                var exisiting = targetdimensions.FirstOrDefault(i=> i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem);
-                if (IsNull(exisiting)) {
+                var existing: Dimension = null;
+                var dim: Dimension = null;
+                var existing_ix = -1;
+                for (var i = 0; i < target.Dimensions.length; i++)
+                {
+                    dim = target.Dimensions[i];
+                    if (dim.Domain == dimension.Domain && dim.DimensionItem == dimension.DimensionItem) {
+                        existing = dim;
+                        existing_ix = i;
+                        break;
+                    }
+                }
+                //var exisiting = targetdimensions.FirstOrDefault(i=> i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem);
+                if (IsNull(existing)) {
                     target.Dimensions.push(dimension);
                 } else
                 {
                     if (overwrite)
                     {
-                        RemoveFrom(exisiting, target.Dimensions);
-                        //removeFromArray(target.Dimensions, exisiting);
-                        target.Dimensions.push(dimension);
+                        target.Dimensions[existing_ix] = dimension;
+
+                        //RemoveFrom(exisiting, target.Dimensions);
+                        //target.Dimensions.push(dimension);
 
                     }
                 }

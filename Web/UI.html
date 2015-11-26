@@ -189,9 +189,25 @@
     </div>
 
     <div id="LogWindow">
-        <span id="resizable-helper">Log Window</span>
-        <div id="contentlog" tabindex="0">
+        <!--<span id="resizable-helper">Log Window</span>-->
+        <ul>
+            <li><a href="#tab_logs">Logs</a></li>
+            <li><a href="#tab_cell">Cell Info</a></li>
+        </ul>
+        <div id="tab_logs">
+            <div id="contentlog" tabindex="0">
 
+            </div>
+        </div>
+        <div id="tab_cell">
+            <div id="CellInfo" class="hidden">
+                <span>$bind:CellID: {CellID}$</span><br/>
+                <span>$bind:Report: {Report}$</span><br />
+                <span>$bind:Extension: {Extension}$</span><br />
+                <span>$bind:Row: {Row}$</span><br />
+                <span>$bind:Column: {Column}$</span><br />
+                <span>$bind:Fact: {FactString}$</span><br />
+            </div>
         </div>
     </div>
 

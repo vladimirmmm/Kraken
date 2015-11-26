@@ -27,8 +27,8 @@ module UI {
         public HtmlTemplatePath: string = "";
         
         private Current_CellID: string = "";
-        private Current_ExtensionCode: string = "";
-        private Current_ReportID: string = "";
+        public Current_ExtensionCode: string = "";
+        public Current_ReportID: string = "";
         private IsInstanceLoaded: boolean = false;
         constructor()
         {
@@ -260,6 +260,8 @@ module UI {
             var me = this;
             var templaterow = me.UITable.Manager.TemplateRow;
             if (!IsNull(templaterow)) {
+                var tbody = _SelectFirst("tbody", me.UITable.UIElement);
+                _Html(tbody, "");
                 var uirows = me.UITable.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement, "dynamicdata")).Select(i=> i.RowID).ToArray();
                 me.UITable.CanManageRows = false;
                 uirows.forEach(function (rowid, ix) {
@@ -280,10 +282,11 @@ module UI {
 
                 me.UITable.CanManageRows = false;
 
-                var templatefactstrings: string[] = [];
+                var templatefacts: Model.FactBase[] = [];
                 templaterow.Cells.forEach(function (cell, ix) {
                     var factstring = _Attribute(cell.UIElement, "factstring");
-                    templatefactstrings.push(factstring);
+                    var fact = Model.FactBase.GetFactFromString(factstring);
+                    templatefacts.push(fact);
                 });
                 rows.forEach(function (rowitem) {
                     var row = me.UITable.AddRow(-1, rowitem.Value);
@@ -297,27 +300,47 @@ module UI {
                     Model.FactBase.Merge(rowfact, me.CurrentExtension);
 
                     var rowfactdimensionsquery = rowfact.Dimensions.AsLinq<Model.Dimension>();
-
+                    var rowfactdict: Model.Dictionary<string> = {};
                     _Attribute(row.UIElement, "factstring", rowitem.Key);
 
-                    var cells = _Select("td", row.UIElement);
-                    cells.forEach(function (cellelement, ix) {
-                        var cellfactstring = templatefactstrings[ix];// _Attribute(cellelement, "factstring");
-                  
-                        var cfs = Replace(cellfactstring.trim(), ",", "");
-                        if (!IsNull(cfs)) {
-                            var dim = rowfactdimensionsquery.FirstOrDefault(i=> Model.Dimension.DomainMemberFullName(i).indexOf(cfs) == 0);
+                    //var cells = _Select("td", row.UIElement);
+                    row.Cells.forEach(function (cell, ix) {
+                        var cellelement = cell.UIElement;
+                        var templatefact = templatefacts[ix];
+                        if (templatefact.Concept == null && templatefact.Dimensions.length == 1) {
+                            var celldimension = templatefact.Dimensions[0];
+                            var dim = rowfactdimensionsquery.FirstOrDefault(i=> i.DimensionItem == celldimension.DimensionItem && i.Domain == celldimension.Domain);
                             if (dim != null) {
                                 var text = dim.DomainMember;
-                                _Text(cellelement, text);
-                            }
-                            else {
-                                var fact = Model.FactBase.GetFactFromString(cellfactstring);
-                                Model.FactBase.Merge(fact, rowfact, true);
-                                var fs = fact.GetFactString();
-                                _Attribute(cellelement, "factstring", fs);
+                                _Html(cellelement, text);
                             }
                         }
+                        else
+                        {
+                            var fact = new Model.FactBase();
+                            Model.FactBase.Merge(fact, templatefact, true);
+                            Model.FactBase.Merge(fact, rowfact, true);
+                            var fs = fact.GetFactString();
+                            _Attribute(cellelement, "factstring", fs);
+                        }
+                        //var cellfactstring = templatefact.FactString;// _Attribute(cellelement, "factstring");
+                  
+                        //var cfs = Replace(cellfactstring.trim(), ",", "");
+                        //if (!IsNull(cfs)) {
+                        //    var dim = rowfactdimensionsquery.FirstOrDefault(i=> Model.Dimension.DomainMemberFullName(i).indexOf(cfs) == 0);
+                        //    if (dim != null) {
+                        //        var text = dim.DomainMember;
+                        //        _Html(cellelement, text);
+                        //    }
+                        //    else {
+                        //        //var fact = Model.FactBase.GetFactFromString(cellfactstring);
+                        //        var fact = new Model.FactBase();
+                        //        Model.FactBase.Merge(fact, templatefact, true);
+                        //        Model.FactBase.Merge(fact, rowfact, true);
+                        //        var fs = fact.GetFactString();
+                        //        _Attribute(cellelement, "factstring", fs);
+                        //    }
+                        //}
 
                     });
                 });
@@ -395,23 +418,22 @@ module UI {
                 var reportid = TextBetween(hash, "report=", ";");
                 var cellid = TextBetween(hash, "cell=", ";");
                 var extcode = TextBetween(hash, "ext=", ";");
+                if (!IsNull(reportid)) {
+                    if (extcode == "000") { extcode = "000"; }
 
-                if (extcode == "000") { extcode = "000"; }
+                    me.Current_CellID = cellid;
+                    if (me.Current_ExtensionCode != extcode) {
+                        me.IsInstanceLoaded = false;
+                    }
+                    me.Current_ExtensionCode = extcode;
+                    if (me.Current_ReportID != reportid) {
+                        me.Current_ReportID = reportid;
+                        me.LoadTable(reportid);
+                    } else {
+                        me.SetNavigation();
 
-                me.Current_CellID = cellid;
-                if (me.Current_ExtensionCode != extcode) {
-                    me.IsInstanceLoaded = false;
+                    }
                 }
-                me.Current_ExtensionCode = extcode;
-                if (me.Current_ReportID != reportid) {
-                    me.Current_ReportID = reportid;
-                    me.LoadTable(reportid);
-                } else
-                {
-                    me.SetNavigation();
-
-                }
-
 
             }
 

@@ -21,6 +21,10 @@ namespace LogicalModel
         private string _HtmlPath = "";
         public static string DefaultExtensionCode = "000";
         public static string LabelCodeFormat = "{0:D5}";
+        public static string KeyLabelCodeFormat 
+        {
+            get { return "Key " + LabelCodeFormat; }
+        }
         public static string ExtensionLableContentFormat = "Extension {0}";
 
         public string Name { get; set; }
@@ -502,7 +506,7 @@ namespace LogicalModel
             columnsnode = GetAxisNode("x");
             extensionnode = GetAxisNode("z");
 
-            if (this.ID.Contains("27.01.04.12"))
+            if (this.ID.Contains("S.06.02.02"))
             {
 
             }
@@ -512,11 +516,12 @@ namespace LogicalModel
             var ix=0;
             var columnAxisnode = columnsnode.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
             var aspect_row_dimension = new List<Dimension>();
+            
             foreach (var aspect in aspects)
             {
                 aspect.Item.LabelID = aspect.Parent.Item.LabelID;
                 aspect.Item.Label = aspect.Parent.Item.Label;
-                aspect.Item.LabelCode = " ";
+                aspect.Item.LabelCode = String.Format(KeyLabelCodeFormat, ix);
                 aspect.Item.LabelID = "";
                 var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
                 if (rolenode != null)

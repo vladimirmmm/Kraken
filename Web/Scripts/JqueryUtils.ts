@@ -756,7 +756,9 @@ function _SetFunctions() {
     _Property = function (element: Element, propertyname: string) {
         return $(element).prop(propertyname);
     };
-
+    _TagName = function (element: Element) {
+        return IsNull(element) ? "" : element.tagName;
+    };
     _Value = Value;
 
     _Html = Content;
@@ -775,8 +777,14 @@ function _SetFunctions() {
 
 
     _Focus = (element: Element) => { $(element).focus(); };
-    _Show = (element: Element) => { $(element).show(); };
-    _Hide = (element: Element) => { $(element).hide(); };
+    _Show = (element: Element) => {
+        //$(element).show();
+        _RemoveClass(element, "hidden");
+    };
+    _Hide = (element: Element) => {
+        //$(element).hide();
+        _AddClass(element, "hidden");
+    };
     _IsVisible = (element: Element): boolean => { return $(element).is(':visible'); };
     _Clone = (element: Element) : Element => $(element).clone()[0];
 }

@@ -64,15 +64,17 @@ module Controls {
         public static Clear(cell: Cell) {
             _Html(cell.UIElement, "");
         }
-        public static ConvertFrom(element: Element): Cell {
+        public static ConvertFrom(element: Element, celltype:Controls.CellType): Cell {
             var cell = new Cell();
-            var tag = _Property(element, "tagName");
-            if (tag.toLowerCase() == "td") {
-                cell.Type = CellType.Data;
-            }
-            if (tag.toLowerCase() == "th") {
-                cell.Type = CellType.Header;
-            }
+            //var tag = _TagName(element).toLowerCase();
+            //if (tag == "td") {
+            //    cell.Type = CellType.Data;
+            //}
+            //if (tag == "th") {
+            //    cell.Type = CellType.Header;
+            //}
+            cell.Type = celltype;
+
             cell.Value = _Html(element).trim();
             cell.UIElement = element;
             return cell;
@@ -116,11 +118,12 @@ module Controls {
             row.Cells = [];
             var headercellelement = headercells.AsLinq<Element>().LastOrDefault();
             if (!IsNull(headercellelement)) {
-                row.HeaderCell = Cell.ConvertFrom(headercellelement);
+                row.HeaderCell = Cell.ConvertFrom(headercellelement, Controls.CellType.Header);
             }
             row.UIElement = element;
             datacells.forEach(function (cellelement, ix) {
-                var cell = Cell.ConvertFrom(cellelement);
+                var cell = Cell.ConvertFrom(cellelement, Controls.CellType.Data);
+
                 row.Cells.push(cell);
 
             });
@@ -144,6 +147,7 @@ module Controls {
     export class Table {
         public Manager: ITableManager = null;
         public UIElement: Element = null;
+        public BodyUIElement: Element = null;
         public ColumnHeader: Row = null;
         public RowHeader: Column = null;
         public Rows: Row[] = [];
@@ -199,7 +203,23 @@ module Controls {
                 }
             };
         }
+        public GetCellByID(id: string): Cell {
+            var parts = id.split("|");
+            var rowid = parts[0];
+            var colid = parts[1];
+            var row = this.GetRowByID(rowid);
+            var cell: Cell = null;
+            if (IsNull(row)) {
+                Log("Row not found " + id);
+            } else {
+                cell = row.Cells.AsLinq<Cell>().FirstOrDefault(i=> i.ColID == colid);
+                if (IsNull(cell)) {
+                    Log("Cell not found " + id);
+                }
+            }
+            return cell;
 
+        }
         public GetRowOfCell(cellelement: Element): Row {
             var me = this;
             var result: Row = null;
@@ -243,13 +263,14 @@ module Controls {
 
         public LoadfromHtml(element: Element) {
             this.UIElement = element;
+            this.BodyUIElement = _SelectFirst("tbody", this.UIElement);
+
             this.Manager.LoadLayoutFromHtml(element, this);
             this.LoadEventHandlers();
         }
 
         public AddRow(index: number = -1, id: string = ""): Row {
             var me = this;
-
             var templaterow = this.Manager.TemplateRow;
             var indexedrow = (index > -1 && index < this.Rows.length) ? this.Rows[0] : null;
             var lastrow = this.Rows.AsLinq<Row>().LastOrDefault()
@@ -257,7 +278,14 @@ module Controls {
             var newrow = me.GetNewRow();
             var newelement = _Clone(templaterow.UIElement);
             Row.SetRowFromElement(newrow, newelement);
+    
             Controls.Row.SetRowID(newrow, id);
+            for (var i = 0; i < me.Columns.length; i++) {
+                var cell = newrow.Cells[i];
+                var column = me.Columns[i];
+                cell.ColID = column.ColID;
+                cell.RowID = id;
+            }
             //Row.ClearDataCells(newrow);
 
             var newrowHeaderCell = newrow.Cells.AsLinq<Cell>().LastOrDefault(i=> i.Type == CellType.Header);
@@ -270,14 +298,18 @@ module Controls {
 
 
             me.Rows.push(newrow);
-
-            if (index == -1) {
-                _After(referencerow, newrow.UIElement);
+            if ($.contains(me.BodyUIElement, referencerow)) {
+                if (index == -1) {
+                    _After(referencerow, newrow.UIElement);
+                }
+                else {
+                    _Before(referencerow, newrow.UIElement);
+                }
             }
-            else {
-                _Before(referencerow, newrow.UIElement);
+            else
+            {
+                _Append(me.BodyUIElement, newrow.UIElement);
             }
-
             CallFunctionWithContext(me, me.OnRowAdded, [newrow]);
             CallFunctionWithContext(me, me.OnLayoutChanged, [newrow]);
 

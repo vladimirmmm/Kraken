@@ -189,6 +189,8 @@ var UI;
             var me = this;
             var templaterow = me.UITable.Manager.TemplateRow;
             if (!IsNull(templaterow)) {
+                var tbody = _SelectFirst("tbody", me.UITable.UIElement);
+                _Html(tbody, "");
                 var uirows = me.UITable.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).Select(function (i) { return i.RowID; }).ToArray();
                 me.UITable.CanManageRows = false;
                 uirows.forEach(function (rowid, ix) {
@@ -203,10 +205,11 @@ var UI;
                 var rowidcontainer = me.Instance.DynamicReportCells[reportid];
                 var rows = IsNull(rowidcontainer) ? [] : GetProperties(rowidcontainer.RowDictionary);
                 me.UITable.CanManageRows = false;
-                var templatefactstrings = [];
+                var templatefacts = [];
                 templaterow.Cells.forEach(function (cell, ix) {
                     var factstring = _Attribute(cell.UIElement, "factstring");
-                    templatefactstrings.push(factstring);
+                    var fact = Model.FactBase.GetFactFromString(factstring);
+                    templatefacts.push(fact);
                 });
                 rows.forEach(function (rowitem) {
                     var row = me.UITable.AddRow(-1, rowitem.Value);
@@ -218,24 +221,44 @@ var UI;
                     //Dynamic Attempt 6
                     Model.FactBase.Merge(rowfact, me.CurrentExtension);
                     var rowfactdimensionsquery = rowfact.Dimensions.AsLinq();
+                    var rowfactdict = {};
                     _Attribute(row.UIElement, "factstring", rowitem.Key);
-                    var cells = _Select("td", row.UIElement);
-                    cells.forEach(function (cellelement, ix) {
-                        var cellfactstring = templatefactstrings[ix]; // _Attribute(cellelement, "factstring");
-                        var cfs = Replace(cellfactstring.trim(), ",", "");
-                        if (!IsNull(cfs)) {
-                            var dim = rowfactdimensionsquery.FirstOrDefault(function (i) { return Model.Dimension.DomainMemberFullName(i).indexOf(cfs) == 0; });
+                    //var cells = _Select("td", row.UIElement);
+                    row.Cells.forEach(function (cell, ix) {
+                        var cellelement = cell.UIElement;
+                        var templatefact = templatefacts[ix];
+                        if (templatefact.Concept == null && templatefact.Dimensions.length == 1) {
+                            var celldimension = templatefact.Dimensions[0];
+                            var dim = rowfactdimensionsquery.FirstOrDefault(function (i) { return i.DimensionItem == celldimension.DimensionItem && i.Domain == celldimension.Domain; });
                             if (dim != null) {
                                 var text = dim.DomainMember;
-                                _Text(cellelement, text);
-                            }
-                            else {
-                                var fact = Model.FactBase.GetFactFromString(cellfactstring);
-                                Model.FactBase.Merge(fact, rowfact, true);
-                                var fs = fact.GetFactString();
-                                _Attribute(cellelement, "factstring", fs);
+                                _Html(cellelement, text);
                             }
                         }
+                        else {
+                            var fact = new Model.FactBase();
+                            Model.FactBase.Merge(fact, templatefact, true);
+                            Model.FactBase.Merge(fact, rowfact, true);
+                            var fs = fact.GetFactString();
+                            _Attribute(cellelement, "factstring", fs);
+                        }
+                        //var cellfactstring = templatefact.FactString;// _Attribute(cellelement, "factstring");
+                        //var cfs = Replace(cellfactstring.trim(), ",", "");
+                        //if (!IsNull(cfs)) {
+                        //    var dim = rowfactdimensionsquery.FirstOrDefault(i=> Model.Dimension.DomainMemberFullName(i).indexOf(cfs) == 0);
+                        //    if (dim != null) {
+                        //        var text = dim.DomainMember;
+                        //        _Html(cellelement, text);
+                        //    }
+                        //    else {
+                        //        //var fact = Model.FactBase.GetFactFromString(cellfactstring);
+                        //        var fact = new Model.FactBase();
+                        //        Model.FactBase.Merge(fact, templatefact, true);
+                        //        Model.FactBase.Merge(fact, rowfact, true);
+                        //        var fs = fact.GetFactString();
+                        //        _Attribute(cellelement, "factstring", fs);
+                        //    }
+                        //}
                     });
                 });
                 me.UITable.CanManageRows = true;
@@ -294,20 +317,22 @@ var UI;
                 var reportid = TextBetween(hash, "report=", ";");
                 var cellid = TextBetween(hash, "cell=", ";");
                 var extcode = TextBetween(hash, "ext=", ";");
-                if (extcode == "000") {
-                    extcode = "000";
-                }
-                me.Current_CellID = cellid;
-                if (me.Current_ExtensionCode != extcode) {
-                    me.IsInstanceLoaded = false;
-                }
-                me.Current_ExtensionCode = extcode;
-                if (me.Current_ReportID != reportid) {
-                    me.Current_ReportID = reportid;
-                    me.LoadTable(reportid);
-                }
-                else {
-                    me.SetNavigation();
+                if (!IsNull(reportid)) {
+                    if (extcode == "000") {
+                        extcode = "000";
+                    }
+                    me.Current_CellID = cellid;
+                    if (me.Current_ExtensionCode != extcode) {
+                        me.IsInstanceLoaded = false;
+                    }
+                    me.Current_ExtensionCode = extcode;
+                    if (me.Current_ReportID != reportid) {
+                        me.Current_ReportID = reportid;
+                        me.LoadTable(reportid);
+                    }
+                    else {
+                        me.SetNavigation();
+                    }
                 }
             }
             var currentextensioncode = this.Current_ExtensionCode;

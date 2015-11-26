@@ -37,15 +37,16 @@ var Controls;
         Cell.Clear = function (cell) {
             _Html(cell.UIElement, "");
         };
-        Cell.ConvertFrom = function (element) {
+        Cell.ConvertFrom = function (element, celltype) {
             var cell = new Cell();
-            var tag = _Property(element, "tagName");
-            if (tag.toLowerCase() == "td") {
-                cell.Type = 1 /* Data */;
-            }
-            if (tag.toLowerCase() == "th") {
-                cell.Type = 2 /* Header */;
-            }
+            //var tag = _TagName(element).toLowerCase();
+            //if (tag == "td") {
+            //    cell.Type = CellType.Data;
+            //}
+            //if (tag == "th") {
+            //    cell.Type = CellType.Header;
+            //}
+            cell.Type = celltype;
             cell.Value = _Html(element).trim();
             cell.UIElement = element;
             return cell;
@@ -86,11 +87,11 @@ var Controls;
             row.Cells = [];
             var headercellelement = headercells.AsLinq().LastOrDefault();
             if (!IsNull(headercellelement)) {
-                row.HeaderCell = Cell.ConvertFrom(headercellelement);
+                row.HeaderCell = Cell.ConvertFrom(headercellelement, 2 /* Header */);
             }
             row.UIElement = element;
             datacells.forEach(function (cellelement, ix) {
-                var cell = Cell.ConvertFrom(cellelement);
+                var cell = Cell.ConvertFrom(cellelement, 1 /* Data */);
                 row.Cells.push(cell);
             });
         };
@@ -114,6 +115,7 @@ var Controls;
         function Table(manager) {
             this.Manager = null;
             this.UIElement = null;
+            this.BodyUIElement = null;
             this.ColumnHeader = null;
             this.RowHeader = null;
             this.Rows = [];
@@ -158,6 +160,23 @@ var Controls;
                 }
             };
         }
+        Table.prototype.GetCellByID = function (id) {
+            var parts = id.split("|");
+            var rowid = parts[0];
+            var colid = parts[1];
+            var row = this.GetRowByID(rowid);
+            var cell = null;
+            if (IsNull(row)) {
+                Log("Row not found " + id);
+            }
+            else {
+                cell = row.Cells.AsLinq().FirstOrDefault(function (i) { return i.ColID == colid; });
+                if (IsNull(cell)) {
+                    Log("Cell not found " + id);
+                }
+            }
+            return cell;
+        };
         Table.prototype.GetRowOfCell = function (cellelement) {
             var me = this;
             var result = null;
@@ -198,6 +217,7 @@ var Controls;
         };
         Table.prototype.LoadfromHtml = function (element) {
             this.UIElement = element;
+            this.BodyUIElement = _SelectFirst("tbody", this.UIElement);
             this.Manager.LoadLayoutFromHtml(element, this);
             this.LoadEventHandlers();
         };
@@ -213,6 +233,12 @@ var Controls;
             var newelement = _Clone(templaterow.UIElement);
             Row.SetRowFromElement(newrow, newelement);
             Controls.Row.SetRowID(newrow, id);
+            for (var i = 0; i < me.Columns.length; i++) {
+                var cell = newrow.Cells[i];
+                var column = me.Columns[i];
+                cell.ColID = column.ColID;
+                cell.RowID = id;
+            }
             //Row.ClearDataCells(newrow);
             var newrowHeaderCell = newrow.Cells.AsLinq().LastOrDefault(function (i) { return i.Type == 2 /* Header */; });
             if (!IsNull(newrowHeaderCell)) {
@@ -220,11 +246,16 @@ var Controls;
             }
             me.Cells = me.Cells.concat(newrow.Cells);
             me.Rows.push(newrow);
-            if (index == -1) {
-                _After(referencerow, newrow.UIElement);
+            if ($.contains(me.BodyUIElement, referencerow)) {
+                if (index == -1) {
+                    _After(referencerow, newrow.UIElement);
+                }
+                else {
+                    _Before(referencerow, newrow.UIElement);
+                }
             }
             else {
-                _Before(referencerow, newrow.UIElement);
+                _Append(me.BodyUIElement, newrow.UIElement);
             }
             CallFunctionWithContext(me, me.OnRowAdded, [newrow]);
             CallFunctionWithContext(me, me.OnLayoutChanged, [newrow]);

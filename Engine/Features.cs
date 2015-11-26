@@ -62,7 +62,10 @@ namespace Engine
             this.Settings = Settings.Current;
             ShowInBrowser(Engine.HtmlPath); 
         }
-
+        public bool CanLoadToUI() 
+        {
+            return Engine.CurrentInstance != null;
+        }
         private void Engine_TaxonomyLoaded(object sender, EventArgs e)
         {
             LoadTaxonomyToUI();

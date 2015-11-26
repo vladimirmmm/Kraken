@@ -18,6 +18,7 @@ var _EnsureEventHandler = (element: any, eventname: string, handler: Function) =
 var _Attribute = (element: any, attributename: string, attributevalue?: string): string => "";
 var _RemoveAttribute = (target: any, attributename: string) => { };
 
+var _TagName = (element: any): string => "";
 var _Property = (element: any, propertyname: string): string => "";
 var _Value = (element: any, value?: string): string => "";
 var _Html = (element: any, html?: string): string => "";

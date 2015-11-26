@@ -638,6 +638,9 @@ function _SetFunctions() {
     _Property = function (element, propertyname) {
         return $(element).prop(propertyname);
     };
+    _TagName = function (element) {
+        return IsNull(element) ? "" : element.tagName;
+    };
     _Value = Value;
     _Html = Content;
     _Text = XText;
@@ -665,10 +668,12 @@ function _SetFunctions() {
         $(element).focus();
     };
     _Show = function (element) {
-        $(element).show();
+        //$(element).show();
+        _RemoveClass(element, "hidden");
     };
     _Hide = function (element) {
-        $(element).hide();
+        //$(element).hide();
+        _AddClass(element, "hidden");
     };
     _IsVisible = function (element) {
         return $(element).is(':visible');

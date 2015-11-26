@@ -211,15 +211,24 @@ var Model;
             }
             var targetdimensions = target.Dimensions.AsLinq();
             item.Dimensions.forEach(function (dimension, ix) {
-                var exisiting = targetdimensions.FirstOrDefault(function (i) { return i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem; });
-                if (IsNull(exisiting)) {
+                var existing = null;
+                var dim = null;
+                var existing_ix = -1;
+                for (var i = 0; i < target.Dimensions.length; i++) {
+                    dim = target.Dimensions[i];
+                    if (dim.Domain == dimension.Domain && dim.DimensionItem == dimension.DimensionItem) {
+                        existing = dim;
+                        existing_ix = i;
+                        break;
+                    }
+                }
+                //var exisiting = targetdimensions.FirstOrDefault(i=> i.Domain == dimension.Domain && i.DimensionItem == dimension.DimensionItem);
+                if (IsNull(existing)) {
                     target.Dimensions.push(dimension);
                 }
                 else {
                     if (overwrite) {
-                        RemoveFrom(exisiting, target.Dimensions);
-                        //removeFromArray(target.Dimensions, exisiting);
-                        target.Dimensions.push(dimension);
+                        target.Dimensions[existing_ix] = dimension;
                     }
                 }
             });

@@ -19,7 +19,7 @@ module Applications
                 }, function (error) { console.log(error); });
             }
 
-            if (In(lid, "o_tax", "o_tax", "validate_folder", "process_folder")) {
+            if (In(lid, "o_tax", "o_inst", "validate_folder", "process_folder")) {
                 BrowseFile(f);
             } else
             {

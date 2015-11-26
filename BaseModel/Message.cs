@@ -22,7 +22,7 @@ namespace BaseModel
             var result = "";
             if (Parameters!=null && Parameters.ContainsKey(name))
             {
-                return Parameters[name];
+                return String.Format("{0}", Parameters[name]);
             }
             return result;
         }

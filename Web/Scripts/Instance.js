@@ -167,24 +167,35 @@ var Control;
                         cellobj.SetFromCellID(cell);
                         var reportid = cellobj.Report;
                         var dynmicdata = me.Instance.DynamicReportCells[reportid];
-                        if (IsNull(cellobj.Column)) {
+                        if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || cellobj.Extension == "_") {
+                            var celldictionary = IsNull(dynmicdata) ? null : dynmicdata.CellOfFact;
+                            if (!IsNull(celldictionary)) {
+                                cellobj.SetFromCellID(celldictionary[instancefact.FactString]);
+                            }
+                        }
+                        /*
+
+                        if (IsNull(cellobj.Column))
+                        {
+
                         }
                         if (IsNull(cellobj.Row)) {
                             var rowdictionary = IsNull(dynmicdata) ? null : dynmicdata.RowDictionary;
-                            if (!IsNull(rowdictionary)) {
-                                var itemsofdict = GetProperties(rowdictionary);
-                                var kv = itemsofdict.AsLinq().FirstOrDefault(function (i) { return fullfactstring.indexOf(i.Key) > -1; });
+                            if (!IsNull(rowdictionary))
+                            {
+                                var itemsofdict = GetProperties(rowdictionary)
+                                var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
                                 cellobj.Row = kv.Value;
                             }
                         }
-                        if (cellobj.Extension == "_") {
+                        if (cellobj.Extension=="_") {
                             var extdictionary = IsNull(dynmicdata) ? null : dynmicdata.ExtDictionary;
                             if (!IsNull(extdictionary)) {
-                                var itemsofdict = GetProperties(extdictionary);
-                                var kv = itemsofdict.AsLinq().FirstOrDefault(function (i) { return fullfactstring.indexOf(i.Key) > -1; });
+                                var itemsofdict = GetProperties(extdictionary)
+                                var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
                                 cellobj.Extension = kv.Value;
                             }
-                        }
+                        }*/
                         instancefact.Cells[i] = cellobj.CellID;
                     }
                     ;

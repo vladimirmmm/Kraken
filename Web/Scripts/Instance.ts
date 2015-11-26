@@ -209,6 +209,15 @@
                         cellobj.SetFromCellID(cell);
                         var reportid = cellobj.Report;
                         var dynmicdata = me.Instance.DynamicReportCells[reportid];
+                        if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || cellobj.Extension == "_")
+                        {
+                            var celldictionary = IsNull(dynmicdata) ? null : dynmicdata.CellOfFact;
+                            if (!IsNull(celldictionary)) {
+                                cellobj.SetFromCellID(celldictionary[instancefact.FactString]);
+
+                            }
+                        }
+                        /*
 
                         if (IsNull(cellobj.Column))
                         {
@@ -230,7 +239,7 @@
                                 var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
                                 cellobj.Extension = kv.Value;
                             }
-                        }
+                        }*/
                         instancefact.Cells[i] = cellobj.CellID;
 
                     };
