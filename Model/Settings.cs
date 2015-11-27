@@ -46,6 +46,16 @@ namespace LogicalModel
     {
         private static string FileName = "Settings.json";
 
+        public string GetJsonObj() 
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var item in this) 
+            {
+                dict.Add(item.Key, item.Value.Value);
+            }
+            return Utilities.Converters.ToJson(dict);
+        }
+
         private static Settings _Current = null;
         public static Settings Current 
         {

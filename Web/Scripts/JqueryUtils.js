@@ -444,6 +444,12 @@ $.fn.extend({
         }
     }
 });
+jQuery.fn.center = function () {
+    this.css("position", "fixed");
+    this.css("top", ($(window).height() / 2) - (this.outerHeight() / 2));
+    this.css("left", ($(window).width() / 2) - (this.outerWidth() / 2));
+    return this;
+};
 $.fn.extend({
     editable: function () {
         var that = this, $edittextbox = $('<input type="text"></input>').css('min-width', that.width()), submitChanges = function () {
@@ -561,6 +567,20 @@ function BindVash(target, data, parent) {
             }
         }
     });
+}
+function GetFromData(form) {
+    return $(form).serializeArray();
+}
+function ConvertFormDataToObj(formdata) {
+    var result = {};
+    formdata.forEach(function (value) {
+        var key = value["name"];
+        var value = value["value"];
+        if (!IsNull(key)) {
+            result[key] = value;
+        }
+    });
+    return result;
 }
 function _SetFunctions() {
     _Select = function (CssSelector, from) {

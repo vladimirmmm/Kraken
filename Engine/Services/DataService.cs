@@ -55,6 +55,31 @@ namespace Engine.Services
                 {
                     var part0 = urlparts[0].ToLower();
                     var part1 = urlparts[1].ToLower();
+                    if (part0 == "settings")
+                    {
+                            var settings = Settings.Current;
+
+                        if (part1 == "get")
+                        {
+                            result.Data = settings.GetJsonObj() ;
+                        }
+                        if (part1 == "save")
+                        {
+
+                            settings.CheckValidationCells = request.GetParameter<bool>("CheckValidationCells");
+                            settings.ReDownloadFiles = request.GetParameter<bool>("ReDownloadFiles");
+                            settings.ReloadFullTaxonomy = request.GetParameter<bool>("ReloadFullTaxonomy");
+                            settings.ReloadFullTaxonomyButStructure = request.GetParameter<bool>("ReloadFullTaxonomyButStructure");
+                            if (settings.ReloadFullTaxonomy)
+                            {
+                                settings.ReloadFullTaxonomyButStructure = true;
+                            }
+                            settings.ReloadTaxonomyOnInstanceLoaded = request.GetParameter<bool>("ReloadTaxonomyOnInstanceLoaded");
+                            settings.ValidateOnInstanceLoaded = request.GetParameter<bool>("ValidateOnInstanceLoaded");
+
+                            this.AppEngine.Features.SaveSettings();
+                        }
+                    }
                     if (part0 == "instance")
                     {
                         if (Engine.CurrentInstance != null)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace BaseModel
 {
@@ -23,6 +24,20 @@ namespace BaseModel
             if (Parameters!=null && Parameters.ContainsKey(name))
             {
                 return String.Format("{0}", Parameters[name]);
+            }
+            return result;
+        }
+        public T GetParameter<T>(string name)
+        {
+            var stringval = GetParameter(name);
+            T result = default(T);
+            if (typeof(T)==typeof(bool))
+            {
+                var val = false;
+                if (stringval.ToLower().In("true", "on", "1")) {
+                    val = true;
+                }
+                return (T)(Object)val;
             }
             return result;
         }

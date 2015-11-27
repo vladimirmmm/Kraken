@@ -9,6 +9,7 @@ module Applications
 
         public MenuCommand(id: string)
         {
+            var me = this;
             var lid = id.toLowerCase();
             var parameters: Dictionary = { "command": lid };
 
@@ -18,14 +19,53 @@ module Applications
                     Log(Format("command {0} successfull!", lid));
                 }, function (error) { console.log(error); });
             }
-
+            var handled = false;
             if (In(lid, "o_tax", "o_inst", "validate_folder", "process_folder")) {
+                handled = true;
                 BrowseFile(f);
-            } else
+            } 
+            if (In(lid, "settings")) {
+                handled = true;
+                me.Settings_Show();
+            } 
+            if (!handled)
             {
                 f(null);
             }
             
+        }
+
+        public Settings_Save()
+        {
+            var me = this;
+            var settingscontainer = _SelectFirst("#EngineSettings");
+            var settingsform = _SelectFirst("form", settingscontainer);
+            var formdata = GetFromData(settingsform);
+            var parameters = <Dictionary>ConvertFormDataToObj(formdata);
+            AjaxRequest("Settings/Save", "post", "json", parameters, function (data) {
+                Log("Settings were saved succeassfully!");
+                me.Settings_Cancel();
+            }, null);
+
+        }
+        public Settings_Cancel() {
+            var settingscontainer = _SelectFirst("#EngineSettings");
+            _Hide(settingscontainer);
+        }
+        public Settings_Show() {
+            var settingscontainer = _SelectFirst("#EngineSettings");
+            AjaxRequest("Settings/Get", "get", "json", null, function (data) {
+                var control: HTMLInputElement = null;
+                var items = GetProperties(data);
+                items.forEach(function (item) {
+                    control = <HTMLInputElement>_SelectFirst("[name="+item.Key+"]", settingscontainer);
+                    control.checked = ToBool(item.Value);
+                });
+                $(settingscontainer).center();
+                _Show(settingscontainer);
+            }, null);
+           
+
         }
 
         public LoadContainers()

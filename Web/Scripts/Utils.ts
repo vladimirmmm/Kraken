@@ -158,7 +158,10 @@ function ToObject(items: General.KeyValue[]): Object
     return obj;
 }
 
-
+function ToBool(item: string): boolean
+{
+    return In(item.toLowerCase(), "true", "1");
+}
 function GetPart(data: any, startix: number, endix: number) {
     var part: any[] = [];
     if (IsArray(data)) {

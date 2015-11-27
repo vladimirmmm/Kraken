@@ -21,6 +21,7 @@ interface JQuery {
     resizableColumns(options?: any);
     datepicker(options?: any);
     selectText();
+    center();
 }
 
 interface External {

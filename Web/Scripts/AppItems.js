@@ -77,7 +77,7 @@ var UITableManager = (function () {
                 var rowheadercell = rawheadercells[rawheadercells.length - 1];
                 rowcells.push(rowheadercell);
                 var row = new Controls.Row();
-                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, Controls.CellType.Header);
+                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, 2 /* Header */);
                 row.UIElement = rawrow;
                 columncells.forEach(function (cell, ix) {
                     var column = new Controls.Column();
@@ -90,7 +90,7 @@ var UITableManager = (function () {
                     var colcode = _Html(colcell).trim();
                     var cellid = Format("{0}|{1}", rowcode, colcode);
                     var cellobj = new Controls.Cell();
-                    cellobj.Type = Controls.CellType.Data;
+                    cellobj.Type = 1 /* Data */;
                     cellobj.RowID = rowcode;
                     cellobj.ColID = colcode;
                     cellobj.Value = _Html(cell).trim();
@@ -114,9 +114,9 @@ var UITableManager = (function () {
             }
         });
         var rowheader = new Controls.Row();
-        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, Controls.CellType.Header); }).ToArray();
+        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, 2 /* Header */); }).ToArray();
         var colheader = new Controls.Column();
-        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, Controls.CellType.Header); }).ToArray();
+        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, 2 /* Header */); }).ToArray();
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
         CallFunctionWithContext(me, me.OnLoaded, [table]);

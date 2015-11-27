@@ -133,6 +133,9 @@ function ToObject(items) {
     });
     return obj;
 }
+function ToBool(item) {
+    return In(item.toLowerCase(), "true", "1");
+}
 function GetPart(data, startix, endix) {
     var part = [];
     if (IsArray(data)) {

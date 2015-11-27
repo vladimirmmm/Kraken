@@ -531,6 +531,13 @@ $.fn.extend({
         }
     }
 });
+jQuery.fn.center = function () {
+    this.css("position", "fixed");
+    this.css("top",($(window).height() / 2) - (this.outerHeight() / 2));
+    this.css("left",($(window).width() / 2) - (this.outerWidth() / 2));
+    return this;
+}
+
 $.fn.extend({
     editable: function () {
         var that = this,
@@ -661,7 +668,24 @@ function BindVash(target: any, data: any, parent?: any) {
         }
     });
 }
+function GetFromData(form: Element):any[]
+{
+    return $(form).serializeArray();
+}
+function ConvertFormDataToObj(formdata: any[]): Object
+{
+    var result = {};
+    formdata.forEach(function (value) {
+        var key = value["name"];
+        var value = value["value"];
+        if (!IsNull(key))
+        {
+            result[key] = value;
+        }
+    });
 
+    return result;
+}
 function _SetFunctions() {
     _Select = function (CssSelector: string, from?: HTMLElement) {
         if (IsNull(from)) {

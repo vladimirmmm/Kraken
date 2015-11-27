@@ -133,7 +133,7 @@ namespace Engine
                     ),
                new MenuCommand("Tools", "Tools",
                     new MenuCommand("ClearAllProcessedTaxonomies", "Clear All Processed Files", (o) => { ClearProcessedTaxonmies(); }, null),
-                    new MenuCommand("Settings", "Settings", (o) => { UI.ShowSettings(); }, null),
+                    new MenuCommand("Settings", "Settings", (o) => { }, null),
                     new MenuCommand("Debug_UI", "Debug UI", (o) => { DebugUI(); }, null)
                     ),
                new MenuCommand("Help", "Help",

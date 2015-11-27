@@ -21,7 +21,7 @@ namespace Desktop
     public partial class SettingsWindow : Window
     {
     
-        public Settings Settings = null;
+        public Settings settings = null;
         public SettingsWindow()
         {
             InitializeComponent();
@@ -34,26 +34,26 @@ namespace Desktop
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CB_CheckValidationCells.IsChecked = Settings.CheckValidationCells;
-            CB_ReDownloadFiles.IsChecked = Settings.ReDownloadFiles;
-            CB_ReloadFullTaxonomy.IsChecked = Settings.ReloadFullTaxonomy;
-            CB_ReloadFullTaxonomyButStructure.IsChecked = Settings.ReloadFullTaxonomyButStructure;
-            CB_ReloadTaxonomyOnInstanceLoaded.IsChecked = Settings.ReloadTaxonomyOnInstanceLoaded;
-            CB_ValidateOnInstanceLoaded.IsChecked = Settings.ValidateOnInstanceLoaded;
+            CB_CheckValidationCells.IsChecked = settings.CheckValidationCells;
+            CB_ReDownloadFiles.IsChecked = settings.ReDownloadFiles;
+            CB_ReloadFullTaxonomy.IsChecked = settings.ReloadFullTaxonomy;
+            CB_ReloadFullTaxonomyButStructure.IsChecked = settings.ReloadFullTaxonomyButStructure;
+            CB_ReloadTaxonomyOnInstanceLoaded.IsChecked = settings.ReloadTaxonomyOnInstanceLoaded;
+            CB_ValidateOnInstanceLoaded.IsChecked = settings.ValidateOnInstanceLoaded;
         }
 
         private void B_Save_Click(object sender, RoutedEventArgs e)
         {
-            Settings.CheckValidationCells = CB_CheckValidationCells.IsChecked.Value;
-            Settings.ReDownloadFiles = CB_ReDownloadFiles.IsChecked.Value;
-            Settings.ReloadFullTaxonomy = CB_ReloadFullTaxonomy.IsChecked.Value;
-            Settings.ReloadFullTaxonomyButStructure = CB_ReloadFullTaxonomyButStructure.IsChecked.Value;
-            if (Settings.ReloadFullTaxonomy)
+            settings.CheckValidationCells = CB_CheckValidationCells.IsChecked.Value;
+            settings.ReDownloadFiles = CB_ReDownloadFiles.IsChecked.Value;
+            settings.ReloadFullTaxonomy = CB_ReloadFullTaxonomy.IsChecked.Value;
+            settings.ReloadFullTaxonomyButStructure = CB_ReloadFullTaxonomyButStructure.IsChecked.Value;
+            if (settings.ReloadFullTaxonomy)
             {
-                Settings.ReloadFullTaxonomyButStructure = true;
+                settings.ReloadFullTaxonomyButStructure = true;
             }
-            Settings.ReloadTaxonomyOnInstanceLoaded = CB_ReloadTaxonomyOnInstanceLoaded.IsChecked.Value;
-            Settings.ValidateOnInstanceLoaded = CB_ValidateOnInstanceLoaded.IsChecked.Value;
+            settings.ReloadTaxonomyOnInstanceLoaded = CB_ReloadTaxonomyOnInstanceLoaded.IsChecked.Value;
+            settings.ValidateOnInstanceLoaded = CB_ValidateOnInstanceLoaded.IsChecked.Value;
 
             //Features.SaveSettings();
         }

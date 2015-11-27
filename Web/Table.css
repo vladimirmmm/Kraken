@@ -778,3 +778,10 @@ select.celleditor {
 #tab_logs {
      height:calc(100% - 40px);
 }
+.center-window {
+    background:#ffffff;
+    border:solid 1px #808080;
+    padding:10px;
+    position: absolute;
+ 
+}
