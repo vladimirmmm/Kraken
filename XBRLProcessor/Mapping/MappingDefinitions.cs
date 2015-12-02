@@ -30,12 +30,13 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("nillable", (Element i) => i.Nullable),
                     Mappings.PropertyMap("model:isDefaultMember", (Element i) => i.IsDefaultMember),
                     Mappings.PropertyMap("xbrli:periodType", (Element i) => i.PeriodType),
-                    Mappings.PropertyMap("model:domain", (Element i) => i.Domain),
+                    Mappings.PropertyMap("*:domain", (Element i) => i.Domain),
                     Mappings.PropertyMap("model:hierarchy", (Element i) => i.Hierarchy),
                     Mappings.PropertyMap("model:fromDate", (Element i) => i.FromDate),
                     Mappings.PropertyMap("model:toDate", (Element i) => i.ToDate),
                     Mappings.PropertyMap("model:creationDate", (Element i) => i.CreationDate),
-                    Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef)
+                    Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef),
+                    Mappings.PropertyMap("*:linkrole", (Element i) => i.LinkRole)
                 ),
                 Mappings.Map<XbrlUnit>("<unit>",
                     Mappings.PropertyMap("<unitId>", (XbrlUnit i) => i.UnitID),
@@ -347,6 +348,7 @@ namespace XBRLProcessor.Mapping
             toitem.Type = item.Type;
             toitem.Namespace = item.Namespace;
             toitem.TypedDomainRef = item.TypedDomainRef;
+            toitem.LinkRole = item.LinkRole;
             return toitem;
         }
 

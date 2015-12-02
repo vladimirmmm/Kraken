@@ -474,13 +474,17 @@
                     if (!IsNull(concept.Domain)) {
                         Model.QualifiedName.Set(concept.Domain);
                         concept.Domain.Name = IsNull(concept.Domain.Name) ? concept.Domain.ID : concept.Domain.Name;
-                        var hiers = me.Taxonomy.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
-                            .Where(i=> i.Item.Name == concept.Domain.Name
+                        /*
+                        i.Item.Name == concept.Domain.Name
                             && i.Item.Namespace == concept.Domain.Namespace
-                            && i.Item.Role == concept.HierarchyRole
+                            && 
+                        */
+                        var hiers = me.Taxonomy.Hierarchies.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
+                            .Where(i=>
+                                i.Item.Role == concept.HierarchyRole
                             );
                         var hier = hiers.FirstOrDefault();
-                        if (hier != null) {
+                        if (!IsNull(hier)) {
                             var clkp = new Model.ConceptLookUp();
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
                             var items = Model.Hierarchy.ToArray(hier);
@@ -494,6 +498,10 @@
                             });
                             clkp.OptionsHTML = ToOptionList(clkp.Values, true);
                             me.ConceptValues.push(clkp);
+                        }
+                        else
+                        {
+                            Log("Hierarchy not found for " + concept.Content);
                         }
                     }
                 });

@@ -121,7 +121,7 @@ namespace XBRLProcessor.Model
             sb.AppendLine(valueassertion.Test);
 
             //
-            if (valueassertion.ID.Contains("eba_v3764_s"))
+            if (valueassertion.ID.Contains("eba_v0648_m"))
             {
             }
             var factgroups = GetGroups(hrule);

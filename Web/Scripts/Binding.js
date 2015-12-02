@@ -24,7 +24,7 @@ var BindingTemplate = (function () {
     BindingTemplate.prototype.Bind = function (data) {
         var result_html = "";
         var me = this;
-        console.log("binding " + data);
+        //console.log("binding " + data);
         result_html = BindLevel(this.Content, data);
         var children = me.Children;
         if (!IsNull(me.Parent) && me.Parent.IsRecursive) {

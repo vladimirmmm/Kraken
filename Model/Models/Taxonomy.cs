@@ -291,24 +291,6 @@ namespace LogicalModel
                 LabelHandler.HandleTaxonomy(this);
                 Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
 
-                //fixing labelcodes for non en languages
-                //foreach (var label in this.TaxonomyLabels)
-                //{
-                //    if (label.Lang == "en")
-                //    {
-                //        var engkey = label.Key.Replace("[en]", "[" + Lang + "]");
-
-                //        if (String.IsNullOrEmpty(label.Code))
-                //        {
-                //            var engkey = label.Key.Replace("[" + label.Lang + "]", "[en]");
-                //            var englabel = FindLabel(engkey, false);
-                //            if (englabel != null)
-                //            {
-                //                label.Code = englabel.Code;
-                //            }
-                //        }
-                //    }
-                //}
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyLabels);
                 Utilities.FS.WriteAllText(TaxonomyLabelPath, jsoncontent);
             }
@@ -744,7 +726,7 @@ namespace LogicalModel
                     {
                         concept.Domain = new QualifiedName();
                         concept.Domain.Content = conceptelement.Domain;
-                        concept.HierarchyRole = conceptelement.Hierarchy;
+                        concept.HierarchyRole = String.IsNullOrEmpty(conceptelement.Hierarchy) ? conceptelement.LinkRole : conceptelement.Hierarchy;
                     }
                     concept.Name = conceptelement.Name;
                     concept.Namespace = conceptelement.Namespace;

@@ -3,6 +3,7 @@ using LogicalModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -464,9 +465,11 @@ namespace LogicalModel.Base
 
 
         private string _Domain = "";
+        [DefaultValue("")]
         public string Domain { get { return _Domain; } set { _Domain = value; } }
 
         private string _Hierarchy = "";
+        [DefaultValue("")]
         public string Hierarchy { get { return _Hierarchy; } set { _Hierarchy = value; } }
 
 
@@ -476,6 +479,9 @@ namespace LogicalModel.Base
         private string _TypedDomainRef = "";
         public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
 
+        private string _LinkRole = "";
+        [DefaultValue("")]
+        public string LinkRole { get { return _LinkRole; } set { _LinkRole = value; } }
 
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }

@@ -149,16 +149,13 @@ namespace XBRLProcessor.Models
             LogicalModel.Base.Element se = null;
             if (!this.SchemaElementDictionary.ContainsKey(dimensionitem))
             {
-                var ebadimensionkey = "";
+
                 if (dimensionitem.Contains(":"))
                 {
                     var items = dimensionitem.Split(':');
-            
-                    ebadimensionkey = String.Format("{0}:{1}", items[0], items[1]);
-                }
-                if (this.SchemaElementDictionary.ContainsKey(ebadimensionkey))
-                {
-                    se = this.SchemaElementDictionary[ebadimensionkey];
+                    var ns = items[0];
+                    var name = items[1];
+                    se =  this.SchemaElements.FirstOrDefault(i => i.Name == name && i.Namespace == ns);
                 }
             }
             else

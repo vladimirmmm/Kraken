@@ -15,7 +15,7 @@ namespace XBRLProcessor.Model
     {
         public List<LogicalModel.Base.FactGroup> GetGroups(Hierarchy<XbrlIdentifiable> hrule)
         {
-            if (hrule.Item.ID.Contains("0310")) 
+            if (hrule.Item.ID.Contains("eba_v0648_m")) 
             {
 
             }
@@ -42,6 +42,14 @@ namespace XBRLProcessor.Model
 
             }
             var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
+
+            //Load Typed domains
+            //var typeddimensionfilters = rule_dimensionfilters.Where(i => i is TypedDimensionFilter).Select(i=>i as TypedDimensionFilter).ToList();
+            //foreach (var typeddimensionfilter in typeddimensionfilters) 
+            //{
+                
+            //}
+
 
             var complementedrulefilters = rule_dimensionfilters.Where(i => i.Complement).ToList();
             foreach (var complementedrulefilter in complementedrulefilters)
@@ -73,6 +81,23 @@ namespace XBRLProcessor.Model
          
 
             var rule_dimensions = rule_dimensionfilters.Select(i => Mapping.Mappings.ToLogicalDimensions(i)).ToList();
+
+            //set typed dimension domains
+            foreach (var dimensionlist in rule_dimensions) 
+            {
+                foreach (var dim in dimensionlist) 
+                {
+                    if (dim.IsTyped) 
+                    {
+                        dim.Domain = Taxonomy.FindDimensionDomainString(dim.DimensionItem);
+                        if (string.IsNullOrEmpty(dim.Domain))
+                        {
+                            Logger.WriteLine(String.Format("Domain not found for dimension {0}", dim.DimensionItem));
+                        }
+                    }
+                }
+            }
+         
 
             var simple_rule_dimensions = rule_dimensions.Where(i => i.Count() == 1).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
             var complex_rule_dimension_groups = rule_dimensions.Where(i => i.Count() > 1).ToList();
@@ -137,24 +162,6 @@ namespace XBRLProcessor.Model
                 ruleset.Add(rulefacts);
             }
 
-            //    foreach (var rulefact in rulefacts)
-            //    {
-            //        var orrule_fg = new LogicalModel.Base.FactGroup();
-            //        orrule_fg.Concept = rulefact.Concept;
-            //        orrule_fg.Dimensions = rulefact.Dimensions;
-            //        foreach (var mainfactgroup in factgroups)
-            //        {
-            //            var x_fg = new LogicalModel.Base.FactGroup();
-            //            x_fg.Concept = mainfactgroup.Concept == null ? orrule_fg.Concept : mainfactgroup.Concept;
-            //            x_fg.Dimensions.AddRange(mainfactgroup.Dimensions);
-            //            LogicalModel.Dimension.MergeDimensions(x_fg.Dimensions, orrule_fg.Dimensions);
-            //            allfactgroups.Add(x_fg);
-                        
-            //        }
-            //    }
-             
-            //    return allfactgroups;
-            //}
             var allfactgroups = new List<LogicalModel.Base.FactGroup>();
 
             var factcombinations = Utilities.MathX.CartesianProductList(ruleset);
