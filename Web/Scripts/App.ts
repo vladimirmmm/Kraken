@@ -7,6 +7,9 @@ module Applications
         public instancecontainer: Control.InstanceContainer = new Control.InstanceContainer(); 
         public taxonomycontainer: Control.TaxonomyContainer = new Control.TaxonomyContainer(); 
 
+        public Tabs_Main: any = null;
+        public Tabs_Taxonomy: any = null;
+        public Tabs_instance: any = null;
         public MenuCommand(id: string)
         {
             var me = this;
@@ -97,7 +100,7 @@ module Applications
             };
 
             var waiter: General.Waiter = new General.Waiter((i: RequestHandler) => i.succeded, funcloader);
-            $(s_content_selector).hide();
+            //$(s_content_selector).hide();
             $containers.each(function (ix, item) {
                 var $item = $(item);
                 var contanerid = $item.attr("container-for");
@@ -106,7 +109,7 @@ module Applications
                 },
                 () => waiter.Check()
                 ], [function (error) {
-                        console.log(error);
+                        waiter.Check()
                     }]);
                 waiter.Items.push(ajaxrequest)
             });
@@ -119,7 +122,13 @@ module Applications
 
             var f = function (item)
             {
-                return Format("<a href='javascript:void(0); app.MenuCommand(\"{0}\");'>{1}</a>", Replace(item.id,"\\","\\\\"), item.displayname);
+                var dsname: string = item.displayname;
+                var s_ix = dsname.lastIndexOf("\\");
+                if (s_ix > -1)
+                {
+                    dsname = dsname.substring(s_ix + 1);
+                }
+                return Format("<a title='{1}' href='javascript:void(0); app.MenuCommand(\"{0}\");'>{2}</a>", Replace(item.id,"\\","\\\\"), item.displayname, dsname);
             }
             AjaxRequest("UI/Menu", "get", "json", null, function (data) {
                 var html = RenderHierarchy(data, f);

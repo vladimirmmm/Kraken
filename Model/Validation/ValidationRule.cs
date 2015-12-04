@@ -511,7 +511,8 @@ namespace LogicalModel.Validation
                             {
                                 if (rp.StringValue.Length > 29 || !Utilities.Strings.IsDigitsOnly(rp.StringValue, '.', '-'))
                                 {
-                                    Logger.WriteLine(String.Format("Invalid Value Detected: {0}", rp.StringValue));
+                                    var cells = Utilities.Strings.ArrayToString(rp.CurrentCells.ToArray());
+                                    Logger.WriteLine(String.Format("Invalid Value Detected at {2}: {0} Cells: {1}", rp.StringValue, cells, this.ID));
                                     rp.StringValue = "";
                                 }
                             }

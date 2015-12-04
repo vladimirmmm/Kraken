@@ -122,6 +122,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\1pixel.gif" />
+    <Content Include="Content\images\metroIcons.jpg" />
+    <Content Include="Content\images\metroIcons_light.jpg" />
+    <Content Include="Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\JQueryUI.css" />
+    <Content Include="Content\MetroJs.css" />
+    <Content Include="Content\Table.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -167,12 +186,11 @@
     <Content Include="Layout\Taxonomy_Concepts.html" />
     <Content Include="Layout\Taxonomy_Facts.html" />
     <Content Include="Layout\Taxonomy_General.html" />
-    <Content Include="Layout\Taxonomy_Hierarchies.html" />
+    <Content Include="Layout\Taxonomy_Hierarchy.html" />
     <Content Include="Layout\Taxonomy_Labels.html" />
     <Content Include="Layout\Taxonomy_Settings.html" />
     <Content Include="Layout\Taxonomy_Tables.html" />
     <Content Include="Layout\Taxonomy_Validations.html" />
-    <Content Include="Logo32x32.png" />
     <Content Include="Scripts\App.js" />
     <Content Include="Scripts\AppItems.js" />
     <Content Include="Scripts\Binding.js" />
@@ -192,6 +210,7 @@
     <Content Include="Scripts\jquery.splitter-0.15.0.js" />
     <Content Include="Scripts\JqueryUtils.js" />
     <Content Include="Scripts\Linq.js" />
+    <Content Include="Scripts\MetroJs.js" />
     <Content Include="Scripts\Models.js" />
     <Content Include="Scripts\splitter.js" />
     <Content Include="Scripts\System\Collections\Generic\List.js" />
@@ -200,12 +219,7 @@
     <Content Include="Scripts\TableManager.js" />
     <Content Include="Scripts\Taxonomy.js" />
     <Content Include="Scripts\Utils.js" />
-    <Content Include="JQueryUI.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Table.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Test.html" />
     <Content Include="UI.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -315,8 +329,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)Desktop\bin\Debug\Scripts\"
 xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)Desktop\bin\Debug\Layout\"
-xcopy /E /Y /I "$(ProjectDir)Table.css" "$(SolutionDir)Desktop\bin\Debug\"
-xcopy /E /Y /I "$(ProjectDir)JQueryUI.css" "$(SolutionDir)Desktop\bin\Debug\"
+xcopy /E /Y /I "$(ProjectDir)Content" "$(SolutionDir)Desktop\bin\Debug\"
 xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)Desktop\bin\Debug\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

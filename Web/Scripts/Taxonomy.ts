@@ -167,8 +167,8 @@
 
         public LoadContentToUI(sender: any) {
             var me = this;
-            ShowContentBySender(sender);
-            var target = $(sender).attr("activator-for");
+            var target = _Attribute(sender, "href");
+            var target = target.length > 0 ? target.substring(1) : "";
             me.LoadContentToUIX(target, sender);
         }
 
@@ -256,6 +256,7 @@
             this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
             this.FilterFacts();
         }
+
         private GetFilterValue(selector: string): string
         {
             var element = this.SelFromFact(s_listfilter_selector + " " + selector);
@@ -265,6 +266,7 @@
             }
             return "";
         }
+
         public FilterFacts() {
             var me = this;
             var f_factstring: string = me.GetFilterValue("#F_FactString");
@@ -413,8 +415,6 @@
             });
         }
 
-
-
         public GetCellValue(cellid: string): string {
             return "";
         }
@@ -487,11 +487,14 @@
                         if (!IsNull(hier)) {
                             var clkp = new Model.ConceptLookUp();
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
-                            var items = Model.Hierarchy.ToArray(hier);
+                            
+                            var subhier = Model.Hierarchy.FirstOrDefault(hier, (i:Model.Hierarchy<Model.QualifiedItem>) =>i.Item.Content == concept.Domain.Content)
+                            var items = Model.Hierarchy.ToArray(IsNull(subhier) ? hier : subhier);
+
                             items.forEach(function (item, index) {
-                                if (index > 0) {
+                                Model.QualifiedItem.Set(item);
+                                if (item.Name!="x0") {
                                     var v = {};
-                                    Model.QualifiedItem.Set(item);
                                     var id = Format("{0}:{1}", item.Namespace, item.Name);
                                     clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
                                 }

@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="Content\Table.css">
+    <link rel="stylesheet" type="text/css" href="Content\JQueryUI.css">
+    <link rel="stylesheet" type="text/css" href="Content\MetroJs.css">
+    <script src="Scripts\jquery-2.1.4.js" type="text/javascript"></script>
+    <script src="Scripts\jquery-ui-1.11.4.js" type="text/javascript"></script>
+    <script src="Scripts\MetroJs.js" type="text/javascript"></script>
+    <script src="Scripts\Utils.js" type="text/javascript"></script>
+
+</head>
+<body class="lime">
+    <script type="text/javascript">
+
+        var instance = null;
+        $(document).ready(function () {
+            // carousel mode: Pivot
+            // some options for the pivot
+            // the class that will symbolize the active pivot
+            var activeClass = 'accentColor';
+            // a placeholder for the active index
+            // the default direction
+            var aniDirection = 'forward';
+            // change the animationDirection based on the index
+            var toggleDirection = false;
+            // setup the pivot content using a carousel tile
+            // im using animationComplete as a primitive queue for speedy clickers
+  
+            $("#pivot11").liveTile({
+                animationComplete: function (tileData, $front, $back) {
+                    var tmp, newIndex = tileData.currentIndex;
+                    var pivot = $("#pivot11");
+
+                    var currentIndex = IsNull(pivot.attr("currentix")) ? 0 : pivot.attr("currentix");
+
+                    if (newIndex != currentIndex) {
+                        tmp = currentIndex;
+                        pivot.attr("currentix", newIndex);
+                        pivotSelected(pivot, tmp);
+                    } else {
+                        // do cool stuff with tiles and things!
+                    }
+                }
+            });
+            $("#pivot1").liveTile({
+                animationComplete: function (tileData, $front, $back) {
+                    var tmp, newIndex = tileData.currentIndex;
+                    var pivot = $("#pivot1");
+
+                    var currentIndex = IsNull(pivot.attr("currentix")) ? 0 : pivot.attr("currentix");
+                    if (newIndex != currentIndex) {
+                        tmp = currentIndex;
+                        pivot.attr("currentix", newIndex);
+                        pivotSelected(pivot, tmp);
+                    } else {
+                        // do cool stuff with tiles and things!
+                    }
+                }
+            });
+            // other tiles
+            $(".live-tile").not(".exclude").liveTile();
+
+            $("h2.item").click(function () {
+                var newIndex = $(this).index();
+                var parent = $(this).parent();
+                var pivotselector = parent.attr("pivot");
+                var pivot = $(pivotselector);
+                pivotSelected(pivot, newIndex);
+            });
+
+            function pivotSelected(pivot, newIndex) {
+                var currentIndex = IsNull(pivot.attr("currentix")) ? 0 : pivot.attr("currentix");
+                if (newIndex == currentIndex)
+                    return;
+                $("h2." + activeClass,).removeClass(activeClass);
+                $("h2.item").eq(newIndex).addClass(activeClass);
+                if (toggleDirection) {
+                    aniDirection = (newIndex > currentIndex) ? 'forward' : 'backward';
+                }
+                currentIndex = newIndex;
+                pivot.attr("currentix", newIndex);
+
+               // $("#pivot1").liveTile("goto", { index: currentIndex, animationDirection: aniDirection });
+                $(pivot).liveTile("goto", { index: currentIndex, animationDirection: aniDirection });
+            }
+
+
+        });
+    </script>
+    <div>
+        <div class="clear" pivot="#pivot1">
+            <h2 class="item accentColor">Pivot1</h2>
+            <h2 class="item">Pivot2</h2>
+            <h2 class="item">Pivot3</h2>
+            <h2 class="item">Pivot4</h2>
+        </div>
+        <div class="clear"></div>
+        <div id="pivot1" class="metropivot" data-mode="carousel" data-start-now="false" data-direction="horizontal" data-repeat="0">
+            <div>
+                <div>
+                    <div class="clear" pivot="#pivot11">
+                        <h2 class="item accentColor">Pivot11</h2>
+                        <h2 class="item">Pivot12</h2>
+                        <h2 class="item">Pivot13</h2>
+                        <h2 class="item">Pivot14</h2>
+                    </div>
+                    <div class="clear"></div>
+                    <div id="pivot11" class="metropivot" data-mode="carousel" data-start-now="false" data-direction="horizontal" data-repeat="0">
+                        <div>
+                            <div class="tile-strip two-wide">
+                                <div class="accent live-tile exclude two-wide half-tall">
+                                    <p><span class="metroLarge">Pivot Content 1</span></p>
+                                </div>
+                                <div class="accent light trans live-tile exclude two-wide half-tall">
+                                    <p><span class="metroLarge">Some More Content</span></p>
+                                </div>
+                                <div class="accent live-tile exclude two-wide half-tall">
+                                    <p><span class="metroLarge">Even More Content</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="clear">Pivot content 2</div>
+                            <div class="tile-strip two-wide">
+                                <div class="accent live-tile exclude two-tall half-wide"></div>
+                                <div class="accent live-tile exclude half-wide"></div>
+                                <div class="accent live-tile exclude half-tile"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="tile-strip two-wide">
+                                <div id="tile1d" class="live-tile" data-mode="flip" data-start-now="false" data-repeat="0" data-delay="0" data-play-onhover="true">
+                                    <div><p><span class="metroLarge">Live Tiles work just dandy inside of a pivot!</span></p></div>
+                                    <div><p><span class="metroLarge">See!</span></p></div>
+                                </div>
+                                <div class="live-tile exclude accent green"><p>Pivot content 3</p></div>
+                            </div>
+                        </div>
+                        <div>Pivot content 4</div>
+                    </div>
+
+                </div>
+            </div>
+            <div>
+                <div class="clear">Pivot content 2</div>
+                <div class="tile-strip two-wide">
+                    <div class="accent live-tile exclude two-tall half-wide"></div>
+                    <div class="accent live-tile exclude half-wide"></div>
+                    <div class="accent live-tile exclude half-tile"></div>
+                </div>
+            </div>
+            <div>
+                <div class="tile-strip two-wide">
+                    <div id="tile1d" class="live-tile" data-mode="flip" data-start-now="false" data-repeat="0" data-delay="0" data-play-onhover="true">
+                        <div><p><span class="metroLarge">Live Tiles work just dandy inside of a pivot!</span></p></div>
+                        <div><p><span class="metroLarge">See!</span></p></div>
+                    </div>
+                    <div class="live-tile exclude accent green"><p>Pivot content 3</p></div>
+                </div>
+            </div>
+            <div>Pivot content 4</div>
+        </div>
+
+    </div>
+</body>
+</html>

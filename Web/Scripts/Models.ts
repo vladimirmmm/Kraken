@@ -30,6 +30,23 @@
             return items; 
         }
 
+        public static FirstOrDefault<TClass>(item: Hierarchy<TClass>, func :Function): Hierarchy<TClass> {
+            var result: Hierarchy<TClass>= null;
+            if (func(item)) {
+                result = item;
+            }
+            else {
+                for (var i = 0; i < item.Children.length;i++){
+                    var child = item.Children[i];
+                    result = Hierarchy.FirstOrDefault(child, func);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+            return result;
+        }
+
     }
 
     export class Dimension {

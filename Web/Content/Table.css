@@ -383,18 +383,18 @@ iframe {
     }
 
 .th1 {
-    width: 250px;
+    width: 60%;
 }
 
 .th2 {
-    width: 700px;
+   
 }
 #colgroup1 {
-    width: 250px;
+    width: 600px;
 }
 
 #colgroup2 {
-    width: 700px;
+
 }
 #maintable th.menucell {
     overflow:visible;
@@ -445,7 +445,7 @@ input, textarea {
     font-size:12pt;
 }
 .commands a.selected {
-    color:black;
+    /*color:black;*/
     font-weight:bold;
     background-color:transparent;
     /*
@@ -463,9 +463,10 @@ input, textarea {
 
     }
 #MainCommands a.selected{
-
+/*
     border-right:solid 1px black;
     border-left:solid 1px black;
+    */
 }
 .detail, .filter 
 {

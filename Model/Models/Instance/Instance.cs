@@ -125,7 +125,8 @@ namespace LogicalModel
                     }
                 }
             }
-
+            var TaxValidation = new TaxonomyValidation(this.Taxonomy);
+            var invalidtypevalues = new StringBuilder();
             foreach (var fact in Facts) 
             {
                 if (this.Taxonomy.Facts.ContainsKey(fact.FactKey))
@@ -155,6 +156,7 @@ namespace LogicalModel
                     invalidfacts.Add(fact.FactKey);
                     sb_invalidfacts.Append(String.Format("<{0}|{1}|{2}>, ", fact.Concept.FullName, fact.ContextID, fact.Value));
                 }
+                TaxValidation.ValidateByConcept(fact, invalidtypevalues);
             }
           
             var reports = reportsdictionary.Keys.OrderBy(i=>i).ToList();
@@ -177,6 +179,8 @@ namespace LogicalModel
             AddMessage(messages, String.Format("Nr of invalid facts: {0}\r\n", invalidfacts.Count));
             AddMessage(messages, String.Format("Invalid facts: {0}\r\n", sb_invalidfacts.ToString()));
             AddMessage(messages, String.Format("Facts with no cells: {0}\r\n", factwithoutcells.Count));
+            AddMessage(messages, String.Format("Type Validation: \r\n{0}", invalidtypevalues));
+
             var rsb = new StringBuilder();
             var rsb_full = new StringBuilder();
             var rsbf = new StringBuilder();

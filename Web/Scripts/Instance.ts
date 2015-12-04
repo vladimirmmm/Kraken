@@ -71,8 +71,10 @@
             if (action == "instancevalidated")
             {
                 me.LoadValidationResults(function () {
-                    var $activator = ShowContentByID("#"+me.s_validation_id);
-                    me.LoadContentToUI($activator);
+                    var item = "#" + me.s_validation_id;
+                    me.LoadTab("#MainContainer", "#InstanceContainer");
+                    me.LoadTab("#InstanceContainer", item);
+                    me.LoadContentToUIX(item, null);
                 });
             }
         }
@@ -95,15 +97,22 @@
 
             }, function (error) { console.log(error); });
         }
-
+        private LoadTab(tabselector: string, contentselector: string) {
+            var index = $('a[href=' + contentselector + ']', tabselector).parent().index();
+            $(tabselector).tabs("option", "active", index);
+        }
         public LoadToUI()
         {
             var me = this;
-            S_Bind_End
             me.Sel(s_detail_selector).hide();
             //ShowContent("#" + me.s_fact_id, $("#TaxCommands"));
-           
-            ShowContentByID("#" + me.s_fact_id);
+            //app.Tabs_Main.tabs('load',"#InstanceContainer");
+            //app.Tabs_instance.tabs('load', "#" + me.s_fact_id);
+            me.LoadTab("#MainContainer", "#InstanceContainer");
+            me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
+            //$("#MainContainer").tabs('load', "#InstanceContainer");
+            //$("#InstanceContainer").tabs('load', "#" + me.s_fact_id);
+            me.LoadContentToUIX(me.s_fact_id, null);
             //ShowContentByID("#TaxonomyContainer");
 
             var facts: Model.FactBase[] = [];
@@ -217,29 +226,7 @@
 
                             }
                         }
-                        /*
-
-                        if (IsNull(cellobj.Column))
-                        {
-
-                        }
-                        if (IsNull(cellobj.Row)) {
-                            var rowdictionary = IsNull(dynmicdata) ? null : dynmicdata.RowDictionary;
-                            if (!IsNull(rowdictionary))
-                            {
-                                var itemsofdict = GetProperties(rowdictionary)
-                                var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
-                                cellobj.Row = kv.Value;
-                            }
-                        }
-                        if (cellobj.Extension=="_") {
-                            var extdictionary = IsNull(dynmicdata) ? null : dynmicdata.ExtDictionary;
-                            if (!IsNull(extdictionary)) {
-                                var itemsofdict = GetProperties(extdictionary)
-                                var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
-                                cellobj.Extension = kv.Value;
-                            }
-                        }*/
+        
                         instancefact.Cells[i] = cellobj.CellID;
 
                     };
@@ -303,20 +290,19 @@
             }
 
         }
+
         public LoadContentToUI(sender: any)
         {
-            var me = this;
-            ShowContentBySender(sender);
-            var target = $(sender).attr("activator-for");
+            var me = this;        
+            var target = _Attribute(sender,"href");
+            var target = target.length > 0 ? target.substring(1) : "";
+
             me.LoadContentToUIX(target, sender);
         }
+
         public LoadContentToUIX(contentid: string, sender: any)
         {
             var me = this;
-            //var $command = $(sender);
-            //var $commands = $command.parent().children("a");
-            //$commands.removeClass("selected");
-            //$command.addClass("selected");
 
             var text = $(sender).text();
        

@@ -24,6 +24,22 @@ var Model;
             });
             return items;
         };
+        Hierarchy.FirstOrDefault = function (item, func) {
+            var result = null;
+            if (func(item)) {
+                result = item;
+            }
+            else {
+                for (var i = 0; i < item.Children.length; i++) {
+                    var child = item.Children[i];
+                    result = Hierarchy.FirstOrDefault(child, func);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+            return result;
+        };
         return Hierarchy;
     })();
     Model.Hierarchy = Hierarchy;

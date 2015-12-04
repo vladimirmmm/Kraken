@@ -496,7 +496,14 @@ function ShowHideChild(selector, sender) {
     var item = _SelectFirst(selector, _Parent(sender));
     _Show(item);
 }
+function setStyle(cssText) {
+    var $style = $("<style type='text/css'>").appendTo('head');
+    $style.html(cssText);
+}
+;
 function SetPivots() {
+    var accentcolor = $(".accentColor").css("color");
+    setStyle(".selected {color: #a2c139} .ui-state-active>a {color: #a2c139}");
     $("#colgroup1h").resizable({
         handles: 'e',
         alsoResize: "#colgroup1",
@@ -512,12 +519,28 @@ function SetPivots() {
         helper: "#resizable-helper",
         minHeight: 50
     });
-    $("#LogWindow").tabs();
+    $("#LogWindow").tabs({});
+    app.Tabs_Main = $("#MainContainer").tabs({
+        show: { effect: "slide", direction: "right", duration: 200 },
+        beforeActivate: function (event, ui) {
+        }
+    });
+    app.Tabs_Taxonomy = $("#TaxonomyContainer").tabs({
+        show: { effect: "slide", direction: "right", duration: 200 },
+        beforeActivate: function (event, ui) {
+        }
+    });
+    app.Tabs_instance = $("#InstanceContainer").tabs({
+        show: { effect: "slide", direction: "right", duration: 200 },
+        beforeActivate: function (event, ui) {
+        }
+    });
     $("#contentlog").keydown(function (event) {
         if (event.ctrlKey && event.keyCode == 65) {
             console.log("Ctrl+A event captured!");
             event.preventDefault();
             $("#contentlog").selectText();
+            $("#contentlog").focus();
         }
     });
     _AddEventHandler(window, "keyup", function (event) {

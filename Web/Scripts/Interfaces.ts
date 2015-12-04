@@ -22,6 +22,7 @@ interface JQuery {
     datepicker(options?: any);
     selectText();
     center();
+    liveTile(options?: any);
 }
 
 interface External {

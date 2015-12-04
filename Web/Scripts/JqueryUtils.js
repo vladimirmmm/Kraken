@@ -7,6 +7,7 @@ function Log(item) {
         _Html(element, "");
         logitems = 1;
     }
+    item = Replace(item, "\r\n", "<br/>");
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
@@ -76,9 +77,10 @@ function Select(sender) {
     }
     return sender;
 }
-function ShowContent(selector, sender) {
+/*
+function ShowContent(selector: string, sender: any) {
     var id = selector.replace("#", "");
-    var $activator = $(sender); // $("[activator-for=" + id + "]");
+    var $activator = $(sender);// $("[activator-for=" + id + "]");
     Select($activator);
     var $content = $(selector);
     var $parents = ($activator.length == 0 ? $content : $activator).parents(s_contentcontainer_selector);
@@ -92,20 +94,26 @@ function ShowContent(selector, sender) {
         ShowError("ShowContent: " + selector + " has not items!");
     }
     $content.show();
+
     return $activator;
 }
-function ShowContentByID(selector) {
+
+function ShowContentByID(selector: string) {
     var id = selector.replace("#", "");
     var $activator = $("[activator-for=" + id + "]").first();
     ShowContent(selector, $activator);
     return $activator;
 }
-function ShowContentBySender(sender) {
+
+function ShowContentBySender(sender: any) {
     var $activator = $(sender);
     var targetselector = "#" + $activator.attr("activator-for");
     ShowContent(targetselector, sender);
+
     return $activator;
+
 }
+*/
 function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
     var me = this;
     var startix = pagesize * page;

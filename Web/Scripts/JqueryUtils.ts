@@ -10,7 +10,7 @@ function Log(item:string)
         _Html(element, "");
         logitems = 1;
     }
-   
+    item = Replace(item, "\r\n", "<br/>");
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
@@ -93,7 +93,7 @@ function Select(sender): any {
 
     return sender;
 }
-
+/*
 function ShowContent(selector: string, sender: any) {
     var id = selector.replace("#", "");
     var $activator = $(sender);// $("[activator-for=" + id + "]");
@@ -129,7 +129,7 @@ function ShowContentBySender(sender: any) {
     return $activator;
 
 }
-
+*/
 function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, pagesize: number, events?: Object) {
     var me = this;
     var startix = pagesize * page;

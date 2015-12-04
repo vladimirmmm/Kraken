@@ -54,8 +54,10 @@ var Control;
             var action = msg.Data.toLowerCase();
             if (action == "instancevalidated") {
                 me.LoadValidationResults(function () {
-                    var $activator = ShowContentByID("#" + me.s_validation_id);
-                    me.LoadContentToUI($activator);
+                    var item = "#" + me.s_validation_id;
+                    me.LoadTab("#MainContainer", "#InstanceContainer");
+                    me.LoadTab("#InstanceContainer", item);
+                    me.LoadContentToUIX(item, null);
                 });
             }
         };
@@ -78,12 +80,21 @@ var Control;
                 console.log(error);
             });
         };
+        InstanceContainer.prototype.LoadTab = function (tabselector, contentselector) {
+            var index = $('a[href=' + contentselector + ']', tabselector).parent().index();
+            $(tabselector).tabs("option", "active", index);
+        };
         InstanceContainer.prototype.LoadToUI = function () {
             var me = this;
-            S_Bind_End;
             me.Sel(s_detail_selector).hide();
             //ShowContent("#" + me.s_fact_id, $("#TaxCommands"));
-            ShowContentByID("#" + me.s_fact_id);
+            //app.Tabs_Main.tabs('load',"#InstanceContainer");
+            //app.Tabs_instance.tabs('load', "#" + me.s_fact_id);
+            me.LoadTab("#MainContainer", "#InstanceContainer");
+            me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
+            //$("#MainContainer").tabs('load', "#InstanceContainer");
+            //$("#InstanceContainer").tabs('load', "#" + me.s_fact_id);
+            me.LoadContentToUIX(me.s_fact_id, null);
             //ShowContentByID("#TaxonomyContainer");
             var facts = [];
             var dict = this.Instance.FactDictionary;
@@ -173,29 +184,6 @@ var Control;
                                 cellobj.SetFromCellID(celldictionary[instancefact.FactString]);
                             }
                         }
-                        /*
-
-                        if (IsNull(cellobj.Column))
-                        {
-
-                        }
-                        if (IsNull(cellobj.Row)) {
-                            var rowdictionary = IsNull(dynmicdata) ? null : dynmicdata.RowDictionary;
-                            if (!IsNull(rowdictionary))
-                            {
-                                var itemsofdict = GetProperties(rowdictionary)
-                                var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
-                                cellobj.Row = kv.Value;
-                            }
-                        }
-                        if (cellobj.Extension=="_") {
-                            var extdictionary = IsNull(dynmicdata) ? null : dynmicdata.ExtDictionary;
-                            if (!IsNull(extdictionary)) {
-                                var itemsofdict = GetProperties(extdictionary)
-                                var kv = itemsofdict.AsLinq<General.KeyValue>().FirstOrDefault(i=> fullfactstring.indexOf(i.Key) > -1);
-                                cellobj.Extension = kv.Value;
-                            }
-                        }*/
                         instancefact.Cells[i] = cellobj.CellID;
                     }
                     ;
@@ -252,16 +240,12 @@ var Control;
         };
         InstanceContainer.prototype.LoadContentToUI = function (sender) {
             var me = this;
-            ShowContentBySender(sender);
-            var target = $(sender).attr("activator-for");
+            var target = _Attribute(sender, "href");
+            var target = target.length > 0 ? target.substring(1) : "";
             me.LoadContentToUIX(target, sender);
         };
         InstanceContainer.prototype.LoadContentToUIX = function (contentid, sender) {
             var me = this;
-            //var $command = $(sender);
-            //var $commands = $command.parent().children("a");
-            //$commands.removeClass("selected");
-            //$command.addClass("selected");
             var text = $(sender).text();
             if (contentid == "Instance") {
             }
