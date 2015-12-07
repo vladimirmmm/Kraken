@@ -308,6 +308,7 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
     msg.Parameters = parameters;
     msg.Id = requestid;
     msg.ContentType = contenttype;
+    StartProgress("ajax");
    
     if (IsDesktop()) {
         Communication_ToApp(msg);
@@ -320,38 +321,41 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
 function AjaxResponse(message: General.Message)
 {
     
+    StopProgress("ajax");
 
     var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == message.Id);
     if (request != null) {
         var requesthandler = <RequestHandler>request.Value;
-        var stringdata = message.Data;
-        message.Data = "";
-        var response = stringdata;
-        if (message.ContentType.indexOf("json") > -1) {
-            if (!IsNull(stringdata)) {
-                
-                
-                response = JSON.parse(stringdata);
-                stringdata = "";
-            }
-        }
 
-        var ix = requests.indexOf(request);
-        if (ix > -1) {
-            requests.splice(ix, 1);
-        }
-
-        if (IsNull(message.Error)) {
-            requesthandler.succeded = true;
-            requesthandler.success.forEach(function (func: Function) {
-                func(response, requesthandler);
-            });
-        }
-        else {
+        if (!IsNull(message.Error)) {
             requesthandler.error.forEach(function (func: Function) {
-                func(response);
+                func(message.Error);
             });
-            ShowError("Response Error: " + response);
+            ShowError("Response Error: " + message.Error);
+        } else {
+            var stringdata = message.Data;
+            message.Data = "";
+            var response = stringdata;
+            if (message.ContentType.indexOf("json") > -1) {
+                if (!IsNull(stringdata)) {
+
+
+                    response = JSON.parse(stringdata);
+                    stringdata = "";
+                }
+            }
+
+            var ix = requests.indexOf(request);
+            if (ix > -1) {
+                requests.splice(ix, 1);
+            }
+
+            if (IsNull(message.Error)) {
+                requesthandler.succeded = true;
+                requesthandler.success.forEach(function (func: Function) {
+                    func(response, requesthandler);
+                });
+            }
         }
         //clearobject(response);
     } else
@@ -359,7 +363,12 @@ function AjaxResponse(message: General.Message)
         ShowError("Request not found! " + message.Id);
     }
 }
-
+function GetHashPart(item:string)
+{
+    var hash_ix = item.indexOf("#");
+    item = hash_ix > -1 ? item.substring(hash_ix + 1) : "";
+    return item;
+}
 function clearobject(item: any)
 {
     if (typeof item == "string") {

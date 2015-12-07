@@ -43,6 +43,11 @@
     <Compile Include="DocumentCollection.cs" />
     <Compile Include="Hierarchy.cs" />
     <Compile Include="Identifiable.cs" />
+    <Compile Include="Info.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Info.tt</DependentUpon>
+    </Compile>
     <Compile Include="Interfaces\IModelLoader.cs" />
     <Compile Include="JsonIgnore.cs" />
     <Compile Include="Message.cs" />
@@ -56,6 +61,15 @@
       <Project>{47d3d74b-af77-4ea9-81d0-4150e53753cb}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Info.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

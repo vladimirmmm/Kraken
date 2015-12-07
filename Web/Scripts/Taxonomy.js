@@ -150,8 +150,7 @@ var Control;
         };
         TaxonomyContainer.prototype.LoadContentToUI = function (sender) {
             var me = this;
-            var target = _Attribute(sender, "href");
-            var target = target.length > 0 ? target.substring(1) : "";
+            var target = GetHashPart(_Attribute(sender, "href"));
             me.LoadContentToUIX(target, sender);
         };
         TaxonomyContainer.prototype.LoadContentToUIX = function (contentid, sender) {

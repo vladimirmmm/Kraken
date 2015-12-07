@@ -77,43 +77,6 @@ function Select(sender) {
     }
     return sender;
 }
-/*
-function ShowContent(selector: string, sender: any) {
-    var id = selector.replace("#", "");
-    var $activator = $(sender);// $("[activator-for=" + id + "]");
-    Select($activator);
-    var $content = $(selector);
-    var $parents = ($activator.length == 0 ? $content : $activator).parents(s_contentcontainer_selector);
-    var $parent = $parents.first();
-    $parent.children(s_content_selector).hide();
-    if ($parent.length > 0) {
-        var id = $parent.attr("id");
-        ShowContentByID("#" + id);
-    }
-    if ($content.length == 0) {
-        ShowError("ShowContent: " + selector + " has not items!");
-    }
-    $content.show();
-
-    return $activator;
-}
-
-function ShowContentByID(selector: string) {
-    var id = selector.replace("#", "");
-    var $activator = $("[activator-for=" + id + "]").first();
-    ShowContent(selector, $activator);
-    return $activator;
-}
-
-function ShowContentBySender(sender: any) {
-    var $activator = $(sender);
-    var targetselector = "#" + $activator.attr("activator-for");
-    ShowContent(targetselector, sender);
-
-    return $activator;
-
-}
-*/
 function LoadPage($bindtarget, $pager, data, page, pagesize, events) {
     var me = this;
     var startix = pagesize * page;
@@ -204,7 +167,7 @@ function Ajax(url, method, parameters, generichandler, contentType) {
     if (method.toLowerCase() == "post") {
         params = JSON.stringify(parameters);
     }
-    StartProgress("ajax");
+    //StartProgress("ajax");
     //_App.ProgressManager.StartProgress("ajax");
     $.ajax({
         url: GetBaseURL() + url,

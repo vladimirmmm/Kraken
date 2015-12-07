@@ -246,6 +246,7 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
     msg.Parameters = parameters;
     msg.Id = requestid;
     msg.ContentType = contenttype;
+    StartProgress("ajax");
     if (IsDesktop()) {
         Communication_ToApp(msg);
     }
@@ -255,38 +256,46 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
     return requesthandler;
 }
 function AjaxResponse(message) {
+    StopProgress("ajax");
     var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == message.Id; });
     if (request != null) {
         var requesthandler = request.Value;
-        var stringdata = message.Data;
-        message.Data = "";
-        var response = stringdata;
-        if (message.ContentType.indexOf("json") > -1) {
-            if (!IsNull(stringdata)) {
-                response = JSON.parse(stringdata);
-                stringdata = "";
-            }
-        }
-        var ix = requests.indexOf(request);
-        if (ix > -1) {
-            requests.splice(ix, 1);
-        }
-        if (IsNull(message.Error)) {
-            requesthandler.succeded = true;
-            requesthandler.success.forEach(function (func) {
-                func(response, requesthandler);
+        if (!IsNull(message.Error)) {
+            requesthandler.error.forEach(function (func) {
+                func(message.Error);
             });
+            ShowError("Response Error: " + message.Error);
         }
         else {
-            requesthandler.error.forEach(function (func) {
-                func(response);
-            });
-            ShowError("Response Error: " + response);
+            var stringdata = message.Data;
+            message.Data = "";
+            var response = stringdata;
+            if (message.ContentType.indexOf("json") > -1) {
+                if (!IsNull(stringdata)) {
+                    response = JSON.parse(stringdata);
+                    stringdata = "";
+                }
+            }
+            var ix = requests.indexOf(request);
+            if (ix > -1) {
+                requests.splice(ix, 1);
+            }
+            if (IsNull(message.Error)) {
+                requesthandler.succeded = true;
+                requesthandler.success.forEach(function (func) {
+                    func(response, requesthandler);
+                });
+            }
         }
     }
     else {
         ShowError("Request not found! " + message.Id);
     }
+}
+function GetHashPart(item) {
+    var hash_ix = item.indexOf("#");
+    item = hash_ix > -1 ? item.substring(hash_ix + 1) : "";
+    return item;
 }
 function clearobject(item) {
     if (typeof item == "string") {

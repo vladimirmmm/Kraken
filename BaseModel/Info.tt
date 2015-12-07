@@ -1,0 +1,26 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
+
+<# 
+    // Get value of 'Custom Tool Namespace'
+    var serviceProvider = (IServiceProvider)Host;
+    var dte = (DTE)serviceProvider.GetService(typeof(DTE)); 
+	var activeSolutionProjects = (Array)dte.ActiveSolutionProjects;
+	var dteProject = (EnvDTE.Project)activeSolutionProjects.GetValue(0);
+	var defaultNamespace =  dteProject.Properties.Item("DefaultNamespace").Value;   
+ #>
+using Utilities;
+
+namespace <#=defaultNamespace#>
+{
+	public class Info : AssemblyBuildInfo 
+    {
+        public override string BuildID { get { return "<#=string.Format("{1}: {0:yyyy-MM-dd hh:mm}", DateTime.Now,dteProject.Name)#>"; } }
+    }
+}

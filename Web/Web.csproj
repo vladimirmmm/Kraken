@@ -196,8 +196,17 @@
     <Content Include="Scripts\Binding.js" />
     <Content Include="Scripts\Factories.js" />
     <Content Include="Scripts\Formatter.js" />
+    <Content Include="Scripts\Info.js">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Info.tt</DependentUpon>
+    </Content>
     <Content Include="Scripts\Instance.js" />
     <Content Include="Scripts\Interfaces.js" />
+    <Content Include="Scripts\Info.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Info.js</LastGenOutput>
+    </Content>
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
@@ -283,6 +292,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\App.ts" />
     <TypeScriptCompile Include="Scripts\AppItems.ts" />
+    <TypeScriptCompile Include="Scripts\AppModel.ts" />
     <TypeScriptCompile Include="Scripts\Binding.ts" />
     <TypeScriptCompile Include="Scripts\Factories.ts" />
     <TypeScriptCompile Include="Scripts\Instance.ts" />
@@ -329,7 +339,7 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)Desktop\bin\Debug\Scripts\"
 xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)Desktop\bin\Debug\Layout\"
-xcopy /E /Y /I "$(ProjectDir)Content" "$(SolutionDir)Desktop\bin\Debug\"
+xcopy /E /Y /I "$(ProjectDir)Content" "$(SolutionDir)Desktop\bin\Debug\Content\"
 xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)Desktop\bin\Debug\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

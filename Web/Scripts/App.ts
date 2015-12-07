@@ -10,6 +10,9 @@ module Applications
         public Tabs_Main: any = null;
         public Tabs_Taxonomy: any = null;
         public Tabs_instance: any = null;
+
+        public TaskManager = new ProgressManager("#progressbar");
+
         public MenuCommand(id: string)
         {
             var me = this;
@@ -51,10 +54,12 @@ module Applications
             }, null);
 
         }
+
         public Settings_Cancel() {
             var settingscontainer = _SelectFirst("#EngineSettings");
             _Hide(settingscontainer);
         }
+
         public Settings_Show() {
             var settingscontainer = _SelectFirst("#EngineSettings");
             AjaxRequest("Settings/Get", "get", "json", null, function (data) {
@@ -74,6 +79,7 @@ module Applications
         public LoadContainers()
         {
             var me = this;
+            Log(window["BuildID"]);
             var $containers = $('[container-for]');
             me.SetMenu();
             SetPivots();
