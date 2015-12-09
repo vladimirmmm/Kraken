@@ -206,6 +206,7 @@
     <Content Include="Scripts\Info.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Info.js</LastGenOutput>
+      <TransformOnBuild>True</TransformOnBuild>
     </Content>
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />

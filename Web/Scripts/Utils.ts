@@ -227,7 +227,15 @@ function RemoveFrom(item: Object, items: any[])
     items.splice(ix, 1);
 }
 
-
+function LastFrom(items: any[]): any
+{
+    var result = null;
+    if (items.length > 0)
+    {
+        result = items[items.length - 1];
+    }
+    return result;
+}
 
 
 

@@ -172,7 +172,8 @@ namespace LogicalModel
         {
             get
             {
-                return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect);
+                //return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect);
+                return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, LayoutItemCategory.Dynamic);
             }
         }
         public static bool IsLayoutLeaf(BaseModel.Hierarchy<LayoutItem> hli) 

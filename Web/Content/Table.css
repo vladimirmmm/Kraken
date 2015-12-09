@@ -26,7 +26,7 @@ tr
 {
     /*border-bottom: solid 1px black;*/
 }
-th, td{
+.report th, td{
     border-top:  solid 1px black;
     border-left:  solid 1px black;
     border-right:  solid 1px black;
@@ -50,7 +50,7 @@ tr.selected td
     
 
     }
-table.report, table.report thead th {
+table.report {
     border:  solid 1px black;
 }
 table.report tbody th,
@@ -58,6 +58,15 @@ table.report tbody td
 {
     border:  solid 0px black;
 }
+table.report, table.report thead th.placeholder {
+    border-top:  solid 1px transparent;
+    border-bottom:  solid 1px black;
+    border-left:  solid 1px black;
+    border-right:  solid 1px black;
+
+}
+
+
 table.report tbody tr
 {
     /*border: solid 1px transparent;*/
@@ -78,7 +87,10 @@ table.report tbody td.data {
     }
     table.report td.data 
     {
-        min-width:100px;
+        /*
+        min-width:120px;
+        max-width:120px;
+            */
     }
     table.report th.title 
     {
@@ -131,14 +143,13 @@ ul {
 
 #maintable {
     table-layout: fixed;
-    height:100vh;
 }
 
-    #maintable th {
+    #maintable>thead>th {
         position: relative;
     }
 
-    #maintable th, #maintable td {
+    #maintable>th, #maintable>td {
         padding: 2px 5px;
         /*text-align: left;*/
         overflow: hidden;
@@ -238,9 +249,6 @@ table.report tbody tr:nth-child(2n-1).selected {
         background: #ffffff;
     }
 
-.placeholder {
-    border-top-width: 0px;
-}
 
 .haschild {
     border-bottom-width: 0px;
@@ -374,11 +382,11 @@ iframe {
     height: 100%;
 }
 
-    #maintable td {
+    #maintable>td {
         height: 100%;
     }
 
-    #maintable th {
+    #maintable>thead>tr>th {
         height: 20px;
     }
 
@@ -398,6 +406,9 @@ iframe {
 }
 #maintable th.menucell {
     overflow:visible;
+}
+.colHeaders {
+    height:20px;
 }
 /*end splitter*/
 

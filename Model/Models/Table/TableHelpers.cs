@@ -218,8 +218,99 @@ namespace LogicalModel
             return results;
 
         }
-  
-        
+
+        public static void SetDynamicAxis(Table table, Hierarchy<LayoutItem> source, Hierarchy<LayoutItem> target)
+        {
+
+            //var rowsnode = table.GetAxisNode("y");
+            //var columnsnode = table.GetAxisNode("x");
+            //var extensionnode = table.GetAxisNode("z");
+
+            var aspects = source.Where(i => i.Item.IsAspect).ToList();
+
+            var targetAxisnode = target.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
+            if (targetAxisnode != null)
+            {
+                var aspect_source_dimensions = new List<Dimension>();
+
+                var ix = 0;
+                foreach (var aspect in aspects)
+                {
+                    aspect.Item.LabelID = aspect.Parent.Item.LabelID;
+                    aspect.Item.Label = aspect.Parent.Item.Label;
+                    aspect.Item.LabelCode = String.Format(Table.KeyLabelCodeFormat, ix);
+                    aspect.Item.LabelID = "";
+                    var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
+                    if (rolenode != null)
+                    {
+                        aspect.Item.Role = rolenode.Item.Role;
+
+                    }
+                    targetAxisnode.Children.Insert(ix, aspect);
+                    source.Remove(aspect.Parent);
+                    aspect.Parent = targetAxisnode;
+                    ix++;
+                    aspect_source_dimensions.AddRange(aspect.Item.Dimensions);
+                    //aspect.Item.Dimensions.Clear();
+                }
+                if (source.Children.Count==0)
+                {
+                    var dyn_li = new LayoutItem();
+
+                    dyn_li.ID = "dynamic_" + source.Item.Axis;
+                    dyn_li.Dimensions = aspect_source_dimensions;
+                    dyn_li.Category = LayoutItemCategory.Dynamic;
+                    //var dyn_h = new Hierarchy<LayoutItem>(dyn_li);
+                    source.Item = dyn_li;
+
+                }
+            }
+        }
+
+        public static void SetDynamicColumns(Table table)
+        {
+
+            var rowsnode = table.GetAxisNode("y");
+            var columnsnode = table.GetAxisNode("x");
+            var extensionnode = table.GetAxisNode("z");
+
+            var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();
+
+            var columnAxisnode = columnsnode.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
+            var aspect_row_dimension = new List<Dimension>();
+
+            var ix = 0;
+            foreach (var aspect in aspects)
+            {
+                aspect.Item.LabelID = aspect.Parent.Item.LabelID;
+                aspect.Item.Label = aspect.Parent.Item.Label;
+                aspect.Item.LabelCode = String.Format(Table.KeyLabelCodeFormat, ix);
+                aspect.Item.LabelID = "";
+                var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
+                if (rolenode != null)
+                {
+                    aspect.Item.Role = rolenode.Item.Role;
+
+                }
+                columnAxisnode.Children.Insert(ix, aspect);
+                rowsnode.Remove(aspect.Parent);
+                aspect.Parent = columnAxisnode;
+                ix++;
+                aspect_row_dimension.AddRange(aspect.Item.Dimensions);
+                //aspect.Item.Dimensions.Clear();
+            }
+            if (rowsnode.Children.Count == 0)
+            {
+                var dynrow_li = new LayoutItem();
+
+                dynrow_li.ID = "dynrow";
+                dynrow_li.Dimensions = aspect_row_dimension;
+                dynrow_li.Category = LayoutItemCategory.Dynamic;
+                var dyn_h = new Hierarchy<LayoutItem>(dynrow_li);
+                rowsnode = dyn_h;
+
+            }
+        }
 
     }
 }

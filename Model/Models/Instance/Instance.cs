@@ -430,7 +430,7 @@ namespace LogicalModel
                     }
                     else 
                     {
-                        Logger.WriteLine("No Cell found for " + fact.FactString);
+                        //Logger.WriteLine("No Cell found for " + fact.FactString);
 
                     }
                 }

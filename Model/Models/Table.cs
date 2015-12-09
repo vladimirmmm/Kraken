@@ -211,6 +211,7 @@ namespace LogicalModel
             {
 
                 AddPlaceHolderIfNotExists(item, placeholder, 0);
+                item.Item.IsAbstract = true;
 
             }
             foreach (var child in item.Children)
@@ -420,7 +421,7 @@ namespace LogicalModel
             }
         }
 
-        private Hierarchy<LayoutItem> GetAxisNode(string axis) 
+        public Hierarchy<LayoutItem> GetAxisNode(string axis) 
         {
             var nodes = LayoutRoot.Where(i => String.Equals(i.Item.Axis, axis, StringComparison.InvariantCultureIgnoreCase)).OrderBy(i => i.Order).ToList();
             var axislayoutitem = new LayoutItem();
@@ -510,7 +511,15 @@ namespace LogicalModel
             {
 
             }
+             var aspects=new List<Hierarchy<LayoutItem>>();
+             aspects.AddRange(rowsnode.Where(i => i.Item.IsAspect));
+             aspects.AddRange(columnsnode.Where(i => i.Item.IsAspect));
 
+            TableHelpers.SetDynamicAxis(this, rowsnode, columnsnode);
+            TableHelpers.SetDynamicAxis(this, columnsnode, rowsnode);
+
+        
+            /*
             var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();
     
             var ix=0;
@@ -548,10 +557,8 @@ namespace LogicalModel
 
             }
 
-            if (this.ID.Contains("S.25.01.08.01")) 
-            {
+            */
 
-            }
             FixLayoutItem(columnsnode,null);
             SetSpans(columnsnode,null);
 
@@ -560,10 +567,13 @@ namespace LogicalModel
             Func<Hierarchy<LayoutItem>, bool> IsChildren = i => 
                 ( !i.Children.Any(j => j.Item.IsVisible) && i.Item.IsVisible) 
                 && i!=columnsnode;
-            Columns = columnsnode.Where(i=>IsChildren(i));
-            
-    
-            Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural && !i.Item.IsAbstract).ToList();
+
+            //Columns = columnsnode.Where(i => IsChildren(i));
+            Columns = columnsnode.ToHierarchyList().Where(i => i.Item.IsVisible).ToList();
+
+
+            //Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural && !i.Item.IsAbstract).ToList();
+            Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsVisible).ToList();
             Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
 
             FixLabelCodes(Columns, Table.LabelCodeFormat);
@@ -704,16 +714,28 @@ namespace LogicalModel
                                     {
                                     }
                                     var aspectcolumnitem = cell.LayoutColumn.Item;
-                                    aspectcolumnitem = aspectcolumnitem.IsAspect ? aspectcolumnitem : cell.LayoutColumn.Parent.Item;
-                                    if (aspectcolumnitem.IsAspect)
+                                    //aspectcolumnitem = aspectcolumnitem.IsAspect ? aspectcolumnitem : cell.LayoutColumn.Parent.Item;
+                                    if (cell.LayoutColumn.Parent != null && !aspectcolumnitem.IsAspect) 
                                     {
-                                        cell.Dimensions = aspectcolumnitem.Dimensions;
+                                        aspectcolumnitem = cell.LayoutColumn.Parent.Item;
+                                    }
+
+                                    //if (aspectcolumnitem.IsAspect)
+                                    //{
+                                    //    cell.Dimensions = aspectcolumnitem.Dimensions;
+                                    //}
+                                    if (cell.Concept==null
+                                        && cell.LayoutColumn.Item.Category != LayoutItemCategory.BreakDown
+                                        && cell.LayoutRow.Item.Category != LayoutItemCategory.BreakDown
+                                        )
+                                    {
+                                        //cell.Dimensions = aspectcolumnitem.Dimensions;
                                     }
                                     else
                                     {
-                                        if (this.ID.Contains("09"))
-                                        {
-                                        }
+                                        //if (this.ID.Contains("09"))
+                                        //{
+                                        //}
                                         cell.IsBlocked = true;
                                         if (!blocked.ContainsKey(cell.ToString()))
                                         {
@@ -834,7 +856,14 @@ namespace LogicalModel
             }
             foreach (var column in Columns) 
             {
-                columncoderow = columncoderow + String.Format("<th {0} {1}>{2}</th>\r\n", "", "", column.Item.LabelCode);
+                var colclass = "";
+                //if (column.Item.IsAspect || column.Item.Dimensions.FirstOrDefault(i => i.IsTyped) != null || column.Item.IsDynamic)
+                if (column.Item.IsDynamic)
+                {
+                    colclass = "dynamic";
+                }
+                colclass = String.IsNullOrEmpty(colclass) ? "" : "class=\"" + colclass + "\"";
+                columncoderow = columncoderow + String.Format("<th {0} {1}>{2}</th>\r\n", colclass, "", column.Item.LabelCode);
 
             }
             sb.AppendLine("<tr>");
@@ -851,7 +880,8 @@ namespace LogicalModel
                 var level = row.GetLevel(rowsnode); //-3 for the LayoutRoot and -2 for the Rows roots node
                 var sublevelcount = level > -1 ? maxlevel - level : maxlevel;
                 var rowclass = "";
-                if (row.Item.IsAspect || row.Item.Dimensions.FirstOrDefault(i=>i.IsTyped)!=null || row.Item.IsDynamic)
+                //if (row.Item.IsAspect || row.Item.Dimensions.FirstOrDefault(i => i.IsTyped) != null || row.Item.IsDynamic)
+                if ( row.Item.IsDynamic)
                 {
                     rowclass = "dynamic";
                 }

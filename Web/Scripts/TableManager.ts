@@ -31,6 +31,8 @@ module Controls {
         EditCell(cell: Cell);
 
         ManageRows(table: Table);
+        ManageColumns(table: Table);
+
         Clear(table: Table);
 
         CellEditorAssigner: Function;
@@ -66,13 +68,6 @@ module Controls {
         }
         public static ConvertFrom(element: Element, celltype:Controls.CellType): Cell {
             var cell = new Cell();
-            //var tag = _TagName(element).toLowerCase();
-            //if (tag == "td") {
-            //    cell.Type = CellType.Data;
-            //}
-            //if (tag == "th") {
-            //    cell.Type = CellType.Header;
-            //}
             cell.Type = celltype;
 
             cell.Value = _Html(element).trim();
@@ -80,37 +75,51 @@ module Controls {
             return cell;
         }
 
+        public static SetID(cell: Cell, id: string = "") {
+            if (!IsNull(id))
+            {
+               
+            }
+            var cellid = Format("{0}|{1}", cell.RowID, cell.ColID);
+            _Attribute(cell.UIElement, "id", cellid);
+        }
+
         public HasData(): boolean {
             return !IsNull(_Html(this.UIElement).trim());
         }
     }
 
-    export class Row {
-        public RowID: string = "";
-        public HeaderCell: Cell = null;
-        public Cells: Cell[] = [];
-        public He
+    export class CellContainer implements IHasUI, IIdentifiable
+    {
         public UIElement: Element;
+        public ID: string = "";
+        public HeaderCell: Cell = null;
 
+        public Cells: Cell[] = [];
+        public static SetID(container: CellContainer, id: string)
+        {
+            container.ID = id;
+            var headercell = container.HeaderCell;
+            var existingrowid = _Html(headercell.UIElement).trim();
+            _Html(headercell.UIElement, id);
+            _Attribute(container.UIElement, "id", id);
+        }
         public HasData(): boolean {
             var cellswithData = this.Cells.AsLinq<Cell>().FirstOrDefault(i=> i.HasData());
             return cellswithData != null;
         }
+    }
+    interface IHasUI
+    {
+        UIElement: Element
+    }
+    interface IIdentifiable {
+        ID: string
+    }
 
-        public static SetRowID(row: Controls.Row, ID: string) {
-            row.RowID = ID;
-            var headercell = row.HeaderCell;
-            var existingrowid = _Html(headercell.UIElement).trim();
-            _Html(headercell.UIElement, row.RowID);
-            _Attribute(row.UIElement, "id", row.RowID);
-            row.Cells.forEach(function (cell, ix) {
-                var cellid = _Attribute(cell.UIElement, "id").trim();
-                if (cellid.indexOf("|") == 0) {
-                    cellid = row.RowID + cellid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                }
-            });
-        }
+    export class Row extends CellContainer {
+        //public RowID: string = "";
+        public UIElement: Element;
 
         public static SetRowFromElement(row: Row, element: Element) {
             var headercells = _Select("th", element);
@@ -130,6 +139,18 @@ module Controls {
 
         }
 
+        public static SetHeaderRowFromElement(row: Row, element: Element) {
+            var headercells = _Select("th", element);
+            row.Cells = [];
+            row.UIElement = element;
+            headercells.forEach(function (cellelement, ix) {
+                var cell = Cell.ConvertFrom(cellelement, Controls.CellType.Header);
+                row.Cells.push(cell);
+
+            });
+
+        }
+
         public static ClearDataCells(row: Row) {
             row.Cells.forEach(function (cell, ix) {
                 _Html(cell.UIElement, "");
@@ -137,11 +158,12 @@ module Controls {
         }
     }
 
-    export class Column {
-        public ColID: string = "";
-        public Cells: Cell[] = [];
-        public UIElement: Element;
+    export class Column extends CellContainer {
+        //public ColID: string = "";
+        public static RemoveFromUI(col:Column)
+        {
 
+        }
     }
 
     export class Table {
@@ -154,11 +176,14 @@ module Controls {
         public Columns: Column[] = [];
         public Cells: Cell[] = [];
 
+        public HeaderRows: Row[] = [];
+
         public HeaderRowCount: number = 0;
         public HeaderColCount: number = 0;
 
         public Keys: string[] = [];
         public CanManageRows: boolean = true;
+        public CanManageColumns: boolean = true;
 
         //public static RowID_Format: string="R{0:D4}";
         //public static ColumnID_Format: string = "C{0:D4}";
@@ -170,11 +195,27 @@ module Controls {
             CallFunction(me.Manager.OnRowRemoved, [row]);
             //me.Manager.OnRowRemoved(row);
         }
+        public OnColumnRemoved: Function = function (col: Column) {
+            var me = <Table>(this);
+            //me.ManageRows();
+
+            CallFunction(me.Manager.OnColumnRemoved, [col]);
+            //me.Manager.OnRowRemoved(row);
+        }
         public OnRowAdded: Function = function (row: Row) {
             var me = <Table>(this);
             //me.ManageRows();
          
             CallFunction(me.Manager.OnRowAdded, [row]);
+      
+            //me.Manager.OnRowAdded(row);
+        }
+
+        public OnColumnAdded: Function = function (col: Column) {
+            var me = <Table>(this);
+            //me.ManageRows();
+         
+            CallFunction(me.Manager.OnColumnAdded, [col]);
       
             //me.Manager.OnRowAdded(row);
         }
@@ -232,12 +273,20 @@ module Controls {
             return result;
         }
 
+        public GetColOfCell(cellelement: Element): Column {
+            var me = this;
+            var result: Column = null;
+            var rowelement = _Parent(cellelement);
+            var ix = Property(cellelement, "cellIndex") - _Select("th", rowelement).length;
+            if (ix > -1 && ix < me.Columns.length)
+            {
+                result = me.Columns[ix];
+            }
+            return result;
+        }
+
         public ValidateRow(rowid: string): boolean {
             return true;
-        }
-        public GetNewRow(): Row {
-            var newrow = new Row();
-            return newrow
         }
 
         private LoadEventHandlers() {
@@ -261,6 +310,14 @@ module Controls {
             });
         }
 
+        public LoadColEventHandlers(col: Column) {
+            var me = this;
+            //_EnsureEventHandler(row.UIElement, "click",() => me.Manager.OnRowSelected(row));
+            //row.Cells.forEach(function (cell, ix) {
+            //    //_EnsureEventHandler(cell.UIElement, "click", me.Manager.OnCellSelected);
+            //});
+        }
+
         public LoadfromHtml(element: Element) {
             this.UIElement = element;
             this.BodyUIElement = _SelectFirst("tbody", this.UIElement);
@@ -274,17 +331,18 @@ module Controls {
             var templaterow = this.Manager.TemplateRow;
             var indexedrow = (index > -1 && index < this.Rows.length) ? this.Rows[0] : null;
             var lastrow = this.Rows.AsLinq<Row>().LastOrDefault()
-            var referencerow = (index == -1) ? IsNull(lastrow) ? templaterow.UIElement : lastrow.UIElement : indexedrow.UIElement;
-            var newrow = me.GetNewRow();
+            var referencerow = (index == -1) ? IsNull(lastrow) ? null : lastrow.UIElement : indexedrow.UIElement;
+            var newrow = new Row();
             var newelement = _Clone(templaterow.UIElement);
             Row.SetRowFromElement(newrow, newelement);
     
-            Controls.Row.SetRowID(newrow, id);
+            Controls.Row.SetID(newrow, id);
             for (var i = 0; i < me.Columns.length; i++) {
                 var cell = newrow.Cells[i];
                 var column = me.Columns[i];
-                cell.ColID = column.ColID;
+                cell.ColID = column.ID;
                 cell.RowID = id;
+                Controls.Cell.SetID(cell);
             }
             //Row.ClearDataCells(newrow);
 
@@ -319,11 +377,84 @@ module Controls {
             return newrow;
         }
 
+        public AddColumn(index: number = -1, id: string = ""): Column {
+            var me = this;
+            var templatecol = this.Manager.TemplateColumn;
+            var indexedcol = (index > -1 && index < this.Columns.length) ? this.Columns[0] : null;
+            var lastcol = this.Columns.AsLinq<Column>().LastOrDefault()
+            var referencecol = (index == -1) ? IsNull(lastcol) ? null : lastcol.UIElement : indexedcol.UIElement;
 
+            var newcol = new Column();
+
+            newcol.UIElement = _Clone(templatecol.UIElement);
+            _Append(me.ColumnHeader.UIElement, newcol.UIElement);
+            var headercell = Cell.ConvertFrom(newcol.UIElement, CellType.Header);
+            newcol.HeaderCell = headercell;
+            var extensioncolspan = Number(_Attribute(_SelectFirst("th#Extension"), "colspan"));
+            for (var i = 0; i < me.HeaderRows.length - 1; i++)
+            {
+                var lastcell = <Cell>LastFrom(me.HeaderRows[i].Cells);
+                var existingcolspan = _Attribute(lastcell.UIElement, "colspan");
+                if (IsNull(existingcolspan))
+                {
+                    existingcolspan = "1";
+                }
+                var newcolspan = Number(existingcolspan) + 1;
+                //var colspan = 
+                _Attribute(lastcell.UIElement, "colspan", Format("{0}", newcolspan));
+            }
+
+            var templatecolumncontainer = _Append(_Parent(templatecol.UIElement), newcol.UIElement);
+
+            this.Rows.forEach(function (row, ix) {
+                var cell = new Cell();
+                cell.UIElement = _Clone(templatecol.Cells[ix].UIElement);
+                _Append(row.UIElement, cell.UIElement);
+                cell.RowID = row.ID;
+                cell.ColID = id;
+                newcol.Cells.push(cell);
+
+            });
+
+            //Row.SetRowFromElement(newrow, newelement);
+
+            Controls.Column.SetID(newcol, id);
+            for (var i = 0; i < me.Rows.length; i++) {
+                var cell = newcol.Cells[i];
+                var row = me.Rows[i];
+                cell.ColID = id;
+                cell.RowID = row.ID;
+                Controls.Cell.SetID(cell);
+            }
+            //Row.ClearDataCells(newrow);
+
+            var newcolHeaderCell = newcol.Cells.AsLinq<Cell>().LastOrDefault(i=> i.Type == CellType.Header);
+
+            if (!IsNull(newcolHeaderCell)) {
+                me.ColumnHeader.Cells.push(newcolHeaderCell);
+
+            }
+            me.Cells = me.Cells.concat(newcol.Cells);
+
+
+            me.Columns.push(newcol);
+      
+            CallFunctionWithContext(me, me.OnColumnAdded, [newcol]);
+            CallFunctionWithContext(me, me.OnLayoutChanged, [newcol]);
+
+            me.LoadColEventHandlers(newcol);
+            //ShowNotification(Format("Row {0} was added!", newrow.RowID));
+
+            return newcol;
+        }
 
         public GetRowByID(id: string): Row {
-            var row = this.Rows.AsLinq<Row>().FirstOrDefault(i=> i.RowID == id);
+            var row = this.Rows.AsLinq<Row>().FirstOrDefault(i=> i.ID == id);
             return row;
+        }
+        public GetColumnByID(id: string): Column {
+            var column = this.Columns.AsLinq<Column>().FirstOrDefault(i=> i.ID == id);
+            return column;
         }
         public GetRowByElement(element: Element): Row {
             var row = this.Rows.AsLinq<Row>().FirstOrDefault(i=> i.UIElement == element);
@@ -333,7 +464,7 @@ module Controls {
         public RemoveRowByID(rowid: string) {
        
             var rowtoremove = this.GetRowByID(rowid);
-            if (!IsNull(rowtoremove) && rowtoremove.RowID!="emptyrow") {
+            if (!IsNull(rowtoremove) && rowtoremove.ID!="emptyrow") {
                 this.RemoveRow(rowtoremove);
             }
 
@@ -353,6 +484,39 @@ module Controls {
                 _Remove(row.UIElement);
                 CallFunctionWithContext(me, me.OnRowRemoved, [row]);
                 CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
+                //ShowNotification(Format("Row {0} was removed!", row.RowID));
+
+            } else {
+                //ShowNotification(Format("Row {0} was NOT removed! The last row can't be removed!", row.RowID));
+
+            }
+            return true;
+        }
+        public RemoveColumnByID(colid: string) {
+
+            var coltoremove = this.GetColumnByID(colid);
+            if (!IsNull(coltoremove) && coltoremove.ID != "emptycolumn") {
+                this.RemoveColumn(coltoremove);
+            }
+
+
+        }
+        public RemoveColumn(col: Column): boolean {
+            var me = this;
+            if (me.Columns.length > 1) {
+                var ix = this.Columns.indexOf(col);
+
+                col.Cells.forEach(function (cell, ix) {
+                    _Remove(cell.UIElement);
+                    RemoveFrom(cell, me.Cells);
+                });
+                col.Cells = [];
+                RemoveFrom(col, me.ColumnHeader.Cells);
+                RemoveFrom(col, me.Columns);
+                _Remove(col.UIElement);
+         
+                CallFunctionWithContext(me, me.OnColumnRemoved, [col]);
+                CallFunctionWithContext(me, me.OnLayoutChanged, [col]);
                 //ShowNotification(Format("Row {0} was removed!", row.RowID));
 
             } else {

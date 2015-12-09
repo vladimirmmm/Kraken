@@ -191,6 +191,13 @@ function RemoveFrom(item, items) {
     var ix = items.indexOf(item);
     items.splice(ix, 1);
 }
+function LastFrom(items) {
+    var result = null;
+    if (items.length > 0) {
+        result = items[items.length - 1];
+    }
+    return result;
+}
 function CallFunctionFrom(eventcontainer, eventname, args) {
     if (!IsNull(eventcontainer)) {
         if (eventname in eventcontainer && IsFunction(eventcontainer[eventname])) {

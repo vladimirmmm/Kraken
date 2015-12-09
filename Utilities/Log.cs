@@ -12,6 +12,7 @@ namespace Utilities
         public static void WriteLine(Exception item)
         {
             var sb = new StringBuilder();
+
             sb.Append(String.Format("Error: {0}\r\n StackTrace:{1}\r\n", item.Message, item.StackTrace));
             if (item.InnerException != null) 
             {
@@ -25,6 +26,7 @@ namespace Utilities
 
             if (action != null)
             {
+                item = Utilities.Strings.HtmlEncode(item);
                 var text = String.Format("{0:yyyy-MM-dd hh:mm:ss} {1}", DateTime.Now, item);
                 action(text);
             }

@@ -115,11 +115,11 @@ function SetPivots() {
         alsoResize: "#colgroup1",
         minWidth: 18
     });
-    $("#colgroup2h").resizable({
-        handles: 'e',
-        alsoResize: "#colgroup2",
-        minWidth: 18
-    });
+    //$("#colgroup2h").resizable({
+    //    handles: 'e',
+    //    alsoResize: "#colgroup2",
+    //    minWidth: 18
+    //});
     $("#LogWindow").resizable({
         handles: 'n',
         helper: "#resizable-helper",

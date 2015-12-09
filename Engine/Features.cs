@@ -61,6 +61,13 @@ namespace Engine
             this.Settings.Load(null);
             this.Settings = Settings.Current;
             ShowInBrowser(Engine.HtmlPath); 
+
+            //AppDomain.CurrentDomain.UnhandledException+=CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Logger.WriteLine((Exception)e.ExceptionObject);
         }
         public bool CanLoadToUI() 
         {
@@ -342,14 +349,6 @@ namespace Engine
             //UI.LoadMenu(CommandContainer, null);
         }
 
-        //public void OpenTaxonomy()
-        //{
-        //    var path = BrowsForFile("","");
-        //    if (!String.IsNullOrEmpty(path))
-        //    {
-        //        OpenTaxonomy(path);
-        //    }
-        //}
 
         public void AddToRecent(List<String> items,string RegID, string item) 
         {
