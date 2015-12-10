@@ -60,6 +60,11 @@ class UITableManager implements Controls.ITableManager {
                 if (isdynamic) {
                     me.TemplateColumn = column;
                 }
+                else
+                {
+                    table.Columns.push(column);
+                }
+
 
             });
         }
@@ -75,95 +80,66 @@ class UITableManager implements Controls.ITableManager {
 
             var dynamiccol_ix = -1;
 
-            //if (rawdatacells.length > 0) {
-            /*
-                if (columncells.length < 1) {
-                    headerix = ix - 1;
-                    var headerrow = datarows[headerix];
-                    rowheader.UIElement = headerrow;
-                    columncells = _Select("th", headerrow);
-               
-                    columncells.forEach(function (columnelement, ix) {
-                        //var t_columnelement = _Clone(columnelement);
-                        var t_columnelement = columnelement;
-                        var headercell = Controls.Cell.ConvertFrom(t_columnelement, Controls.CellType.Header);
-                        var colid = _Html(t_columnelement).trim()
-                        headercell.ColID = colid;
-                        var column = new Controls.Column();
-                        column.HeaderCell = headercell;
-                        column.ID = colid;
-                        column.UIElement = t_columnelement;
-                        //table.Columns.push(column);
-                        var isdynamic = _HasClass(t_columnelement, "dynamic");
-                        if (isdynamic) {
-                            me.TemplateColumn = column;
-                        }
 
-                    });
-                }
-            */
-                var rowheadercell = rawheadercells[rawheadercells.length - 1];
-                rowcells.push(rowheadercell);
-                var row = new Controls.Row();
-                row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, Controls.CellType.Header);
-                row.UIElement = datarow;
+            var rowheadercell = rawheadercells[rawheadercells.length - 1];
+            rowcells.push(rowheadercell);
+            var row = new Controls.Row();
+            row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, Controls.CellType.Header);
+            row.UIElement = datarow;
 
-                rawdatacells.forEach(function (cell, ix) {
-                    var column = table.Columns[ix];
+            rawdatacells.forEach(function (cell, ix) {
+                var column = table.Columns[ix];
 
-                    var rowcode = _Html(rowheadercell).trim();
+                var rowcode = _Html(rowheadercell).trim();
 
-                    var colcell = columncells[ix]; //rowcells[ix];
-                    var colcode = _Html(colcell).trim();
+                var colcell = columncells[ix]; //rowcells[ix];
+                var colcode = _Html(colcell).trim();
 
-                    var cellid = Format("{0}|{1}", rowcode, colcode);
+                var cellid = Format("{0}|{1}", rowcode, colcode);
 
-                    var cellobj = new Controls.Cell();
-                    cellobj.Type = Controls.CellType.Data;
-                    cellobj.RowID = rowcode;
-                    cellobj.ColID = colcode;
-                    cellobj.Value = _Html(cell).trim();
-                    cellobj.UIElement = cell;
+                var cellobj = new Controls.Cell();
+                cellobj.Type = Controls.CellType.Data;
+                cellobj.RowID = rowcode;
+                cellobj.ColID = colcode;
+                cellobj.Value = _Html(cell).trim();
+                cellobj.UIElement = cell;
 
-                    //add the cell to the column
-                    if (IsNull(column)) {
-                        if (!IsNull(me.TemplateColumn))
-                        {
-                            me.TemplateColumn.Cells.push(cellobj);
-                        }
-                    } else {
-                        column.Cells.push(cellobj);
+                //add the cell to the column
+                if (IsNull(column)) {
+                    if (!IsNull(me.TemplateColumn)) {
+                        me.TemplateColumn.Cells.push(cellobj);
                     }
-                    //add the cell to the row
-                    row.Cells.push(cellobj);
-                    if (!isdynamic) {
-                        table.Cells.push(cellobj);
-                    }
-                });
-                if (isdynamic) {
-                    me.TemplateRow = row;
-                    Controls.Row.ClearDataCells(me.TemplateRow);
-                    _Hide(me.TemplateRow.UIElement);
                 } else {
-                    table.Rows.push(row);
+                    column.Cells.push(cellobj);
+                }
+                //add the cell to the row
+                row.Cells.push(cellobj);
+                if (!isdynamic) {
+                    table.Cells.push(cellobj);
+                }
+            });
+            if (isdynamic) {
+                me.TemplateRow = row;
+                Controls.Row.ClearDataCells(me.TemplateRow);
+                _Hide(me.TemplateRow.UIElement);
+            } else {
+                table.Rows.push(row);
 
+            }
+            if (rawheadercells.length > table.HeaderColCount) {
+                table.HeaderColCount = rawheadercells.length;
+            }
+            if (!IsNull(me.TemplateColumn)) {
+                for (var i = 0; i < me.TemplateColumn.Cells.length; i++) {
+                    var t_cell = me.TemplateColumn.Cells[i];
+                    var t_uielement = _Clone(t_cell.UIElement);
+                    _Remove(t_cell.UIElement);
+                    t_cell.UIElement = t_uielement;
                 }
-                if (rawheadercells.length > table.HeaderColCount) {
-                    table.HeaderColCount = rawheadercells.length;
-                }
-                if (!IsNull(me.TemplateColumn))
-                {
-                    for (var i = 0; i < me.TemplateColumn.Cells.length; i++)
-                    {
-                        var t_cell = me.TemplateColumn.Cells[i];
-                        var t_uielement = _Clone(t_cell.UIElement);
-                        _Remove(t_cell.UIElement);
-                        t_cell.UIElement = t_uielement;
-                    }
-                    var t_coluielement = _Clone(me.TemplateColumn.UIElement);
-                    _Remove(me.TemplateColumn.UIElement);
-                    me.TemplateColumn.UIElement = t_coluielement;
-                }
+                var t_coluielement = _Clone(me.TemplateColumn.UIElement);
+                _Remove(me.TemplateColumn.UIElement);
+                me.TemplateColumn.UIElement = t_coluielement;
+            }
             //}
         });
 
@@ -515,10 +491,10 @@ class Editor {
         var containerlineheight = Target.css('line-height');
         var containerbackgroundcolor = Target.parent().css('background-color');
 
-        this.$Me.width(containerwidth);
+        //this.$Me.width(containerwidth);
         //this.$Me.css("width", "100%");
         if (containerheight >0) {
-            this.$Me.height(containerheight);
+            this.$Me.css("height",containerheight);
         }
         this.$Me.css('margin', "0px");
 
@@ -543,7 +519,7 @@ class Editor {
         this.$Me.focus();
         if (IsNull(this.CustomTrigger)) {
             this.$Me.blur(function () {
-                //me.Save();
+                me.Save();
                 return true;
             });
         }

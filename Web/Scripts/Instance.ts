@@ -74,7 +74,7 @@
                     var item = "#" + me.s_validation_id;
                     me.LoadTab("#MainContainer", "#InstanceContainer");
                     me.LoadTab("#InstanceContainer", item);
-                    me.LoadContentToUIX(item, null);
+                    me.LoadContentToUIX(me.s_validation_id, null);
                 });
             }
         }
@@ -105,14 +105,11 @@
         {
             var me = this;
             me.Sel(s_detail_selector).hide();
-            //ShowContent("#" + me.s_fact_id, $("#TaxCommands"));
-            //app.Tabs_Main.tabs('load',"#InstanceContainer");
-            //app.Tabs_instance.tabs('load', "#" + me.s_fact_id);
-            me.LoadTab("#MainContainer", "#InstanceContainer");
-            me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
-            //$("#MainContainer").tabs('load', "#InstanceContainer");
-            //$("#InstanceContainer").tabs('load', "#" + me.s_fact_id);
+            //me.LoadTab("#MainContainer", "#InstanceContainer");
+            //me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
+
             me.LoadContentToUIX(me.s_fact_id, null);
+            
             //ShowContentByID("#TaxonomyContainer");
 
             var facts: Model.FactBase[] = [];

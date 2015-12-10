@@ -412,38 +412,6 @@ namespace LogicalModel
 
         }
         
-        public void ManageUIFile(string filename)
-        {
-            var devfolder = @"C:\My\Developement\XTree-M\XTree-M\Model\";
-            var taxpath = TaxonomyLayoutFolder + filename;
-            var devpath = devfolder + filename;
-            var buildpath = filename;
-            var finfo_dev = new System.IO.FileInfo(devpath);
-            var finfo_build = new System.IO.FileInfo(buildpath);
-
-            if (finfo_dev.LastWriteTime > finfo_build.LastWriteTime) 
-            {
-                System.IO.File.Copy(finfo_dev.FullName, finfo_build.FullName, true);
-                finfo_build = new System.IO.FileInfo(finfo_build.FullName);
-
-            }
-
-            if (!System.IO.File.Exists(taxpath))
-            {
-                Utilities.FS.EnsurePath(taxpath);
-                System.IO.File.Copy(finfo_build.FullName, taxpath, true);
-            }
-            else 
-            {
-                var finfo_tax = new System.IO.FileInfo(taxpath);
-                if (finfo_build.LastWriteTime > finfo_tax.LastWriteTime)
-                {
-                    System.IO.File.Copy(finfo_build.FullName, finfo_tax.FullName, true);
-                }
-            }
-
-
-        }
         
         public void ManageUIFiles() 
         {
@@ -566,17 +534,18 @@ namespace LogicalModel
 
                 CodeDomProvider codeProvider = CodeDomProvider.CreateProvider("CSharp");
                 string Output = this.TaxonomyValidationDotNetLibPath;
-
+                string pdbfilename = Utilities.Strings.GetFileName(Output).Replace(".dll", ".pdb");
                 System.CodeDom.Compiler.CompilerParameters parameters = new CompilerParameters();
                 //Make sure we generate an EXE, not a DLL
                 parameters.GenerateExecutable = false;
                 parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
-                parameters.IncludeDebugInformation = true;
+                //parameters.IncludeDebugInformation = true;
                 parameters.TempFiles = new TempFileCollection(".", false);
                 var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
                 var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 parameters.ReferencedAssemblies.Add(logicalmodelassembly.Location);
+                //parameters.CompilerOptions = " /pdb:" + pdbfilename;
 
                 foreach (var assemblyname in logicalreferences)
                 {
@@ -652,8 +621,10 @@ namespace LogicalModel
                     templibpath = templibpath.Replace(originalfolder, dlltempfolder);
                     temppdbpath = temppdbpath.Replace(originalfolder, dlltempfolder);
 
-                    System.IO.File.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
-                    System.IO.File.Copy(pdbpath, temppdbpath);
+                    Utilities.FS.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
+                    Utilities.FS.Copy(pdbpath, temppdbpath);
+                    //System.IO.File.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
+                    //System.IO.File.Copy(pdbpath, temppdbpath);
 
                     var assembly = Assembly.LoadFile(templibpath);
                     var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));

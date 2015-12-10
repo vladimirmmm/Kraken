@@ -13,8 +13,8 @@ namespace LogicalModel.Validation
         public string ID { get; set; }
         public string HasAllFind { get; set; }
         public FactGroup FactGroup = null;
-        private List<SimlpeValidationParameter> _Parameters = new List<SimlpeValidationParameter>();
-        public List<SimlpeValidationParameter> Parameters { get { return _Parameters; } set { _Parameters = value; } }
+        private List<SimpleValidationParameter> _Parameters = new List<SimpleValidationParameter>();
+        public List<SimpleValidationParameter> Parameters { get { return _Parameters; } set { _Parameters = value; } }
         public string Message = "";
 
         public string GetDetails()
@@ -70,7 +70,7 @@ namespace LogicalModel.Validation
                         dynamicresult.Parameters.AddRange(rule.Parameters.Select(i =>
                         {
 
-                            var sp = new SimlpeValidationParameter();
+                            var sp = new SimpleValidationParameter();
                             sp.Name = i.Name;
                             sp.BindAsSequence = i.BindAsSequence;
                             return sp;

@@ -134,6 +134,12 @@ namespace Utilities
             }
             return result;
         }
+        public static bool IsDate(String dt, string format)
+        {
+            DateTime result = DateTime.Now.AddYears(-200);
+            return DateTime.TryParseExact(dt, format, dci, DateTimeStyles.None, out result);
+           
+        }
         //public static DateTime StringToDateTime(String dt, string format)
         //{
         //    DateTime result = DateTime.Now.AddYears(-200);
@@ -149,5 +155,10 @@ namespace Utilities
         //    return result;
         //}
 
+
+        public static bool IsInteger(string p)
+        {
+            return !String.IsNullOrEmpty(p) && p.All(char.IsDigit) ;
+        }
     }
 }

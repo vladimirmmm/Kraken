@@ -59,6 +59,9 @@ var UITableManager = (function () {
                 if (isdynamic) {
                     me.TemplateColumn = column;
                 }
+                else {
+                    table.Columns.push(column);
+                }
             });
         }
         datarows.forEach(function (datarow, ix) {
@@ -71,33 +74,6 @@ var UITableManager = (function () {
             rawdatacells = _Select("td", datarow);
             rawheadercells = _Select("th", datarow);
             var dynamiccol_ix = -1;
-            //if (rawdatacells.length > 0) {
-            /*
-                if (columncells.length < 1) {
-                    headerix = ix - 1;
-                    var headerrow = datarows[headerix];
-                    rowheader.UIElement = headerrow;
-                    columncells = _Select("th", headerrow);
-               
-                    columncells.forEach(function (columnelement, ix) {
-                        //var t_columnelement = _Clone(columnelement);
-                        var t_columnelement = columnelement;
-                        var headercell = Controls.Cell.ConvertFrom(t_columnelement, Controls.CellType.Header);
-                        var colid = _Html(t_columnelement).trim()
-                        headercell.ColID = colid;
-                        var column = new Controls.Column();
-                        column.HeaderCell = headercell;
-                        column.ID = colid;
-                        column.UIElement = t_columnelement;
-                        //table.Columns.push(column);
-                        var isdynamic = _HasClass(t_columnelement, "dynamic");
-                        if (isdynamic) {
-                            me.TemplateColumn = column;
-                        }
-
-                    });
-                }
-            */
             var rowheadercell = rawheadercells[rawheadercells.length - 1];
             rowcells.push(rowheadercell);
             var row = new Controls.Row();
@@ -432,10 +408,10 @@ var Editor = (function () {
         var containerfontsize = Target.css('font-size');
         var containerlineheight = Target.css('line-height');
         var containerbackgroundcolor = Target.parent().css('background-color');
-        this.$Me.width(containerwidth);
+        //this.$Me.width(containerwidth);
         //this.$Me.css("width", "100%");
         if (containerheight > 0) {
-            this.$Me.height(containerheight);
+            this.$Me.css("height", containerheight);
         }
         this.$Me.css('margin', "0px");
         this.$Me.css('font-family', containerfontfamily);
@@ -455,7 +431,7 @@ var Editor = (function () {
         this.$Me.focus();
         if (IsNull(this.CustomTrigger)) {
             this.$Me.blur(function () {
-                //me.Save();
+                me.Save();
                 return true;
             });
         }

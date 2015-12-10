@@ -15,6 +15,16 @@ namespace LogicalModel.Validation
         public Dictionary<String, Func<List<ValidationParameter>, bool>> FunctionDictionary = new Dictionary<string, Func<List<ValidationParameter>, bool>>();
         public Functions functions = new Functions();
     }
+    public class ConceptValidationRule : SimpleValidationRule 
+    {
+        public Func<InstanceFact, bool> IsOk = (f) => true;
+    
+    }
+    public class TypedDimensionValidationRule : SimpleValidationRule
+    {
+        public Func<string, bool> IsOk = (s) => true;
+
+    }
     public class SimpleValidationRule
     {
         public String ID { get; set; }
@@ -22,6 +32,7 @@ namespace LogicalModel.Validation
         public virtual String OriginalExpression { get; set; }
         protected List<String> _Tables = new List<string>();
         public virtual List<String> Tables { get { return _Tables; } set { _Tables = value; } }
+
 
         public SimpleValidationRule() 
         {
@@ -193,7 +204,7 @@ namespace LogicalModel.Validation
                         p.CurrentCells.Clear();
                         var itemfacts = new List<string>();
 
-                        var sp = new SimlpeValidationParameter();
+                        var sp = new SimpleValidationParameter();
                         sp.Name = p.Name;
                         sp.BindAsSequence = p.BindAsSequence;
                         vruleresult.Parameters.Add(sp);
@@ -621,7 +632,8 @@ namespace LogicalModel.Validation
         }
     }
     
-    public class SimlpeValidationParameter 
+
+    public class SimpleValidationParameter 
     {
         public string Name { get; set; }
         private List<String> _Facts = new List<String>();
@@ -641,9 +653,9 @@ namespace LogicalModel.Validation
         }
 
 
-        internal SimlpeValidationParameter Copy()
+        internal SimpleValidationParameter Copy()
         {
-            var sp = new SimlpeValidationParameter();
+            var sp = new SimpleValidationParameter();
             foreach (var item in _CellsOfFacts)
             {
                 sp.CellsOfFacts.Add(item.Key, item.Value.ToArray().ToList());

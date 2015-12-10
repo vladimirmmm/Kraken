@@ -126,6 +126,7 @@ namespace LogicalModel
                 }
             }
             var TaxValidation = new TaxonomyValidation(this.Taxonomy);
+
             var invalidtypevalues = new StringBuilder();
             foreach (var fact in Facts) 
             {
@@ -156,7 +157,8 @@ namespace LogicalModel
                     invalidfacts.Add(fact.FactKey);
                     sb_invalidfacts.Append(String.Format("<{0}|{1}|{2}>, ", fact.Concept.FullName, fact.ContextID, fact.Value));
                 }
-                TaxValidation.ValidateByConcept(fact, invalidtypevalues);
+                TaxValidation.ValidateByTypedDimension(fact, results, invalidtypevalues);
+                TaxValidation.ValidateByConcept(fact, results, invalidtypevalues);
             }
           
             var reports = reportsdictionary.Keys.OrderBy(i=>i).ToList();

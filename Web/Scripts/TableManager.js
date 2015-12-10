@@ -273,6 +273,11 @@ var Controls;
             var newelement = _Clone(templaterow.UIElement);
             Row.SetRowFromElement(newrow, newelement);
             Controls.Row.SetID(newrow, id);
+            newrow.Cells.forEach(function (cell, ix) {
+                var column = me.Columns[ix];
+                var cellid = Format("{0}|{1}", id, column.ID);
+                _Attribute(cell.UIElement, "id", cellid);
+            });
             for (var i = 0; i < me.Columns.length; i++) {
                 var cell = newrow.Cells[i];
                 var column = me.Columns[i];

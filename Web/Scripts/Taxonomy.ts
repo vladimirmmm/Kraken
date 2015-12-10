@@ -408,7 +408,8 @@
                     strvalue = numericval.toFixed(2).toString() + "  " + strvalue;
                 } else {
                     if (parameter.Facts.length == 1) {
-                        strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
+                        //strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
+                        strvalue = parameter.Value;
                     }
                 }
                 parameter.Value = strvalue;

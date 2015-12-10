@@ -87,8 +87,9 @@ table.report tbody td.data {
     }
     table.report td.data 
     {
-        /*
         min-width:120px;
+
+        /*
         max-width:120px;
             */
     }
@@ -102,6 +103,7 @@ table.report tbody td.data {
     }
     table.report tbody tr {
         border-top:solid 1px transparent;
+        height:23px;
     }
     table.report tbody tr:nth-child(2n-1) {
         background-color:#cecece;
@@ -311,6 +313,9 @@ table.report tbody tr:nth-child(2n-1).selected {
 
 .dynamicdata {
     min-height: 20pt;
+}
+th.dynamicdata {
+    width:120px;
 }
 
 .w_large {
@@ -690,12 +695,17 @@ input[type=text].celleditor {
     border: solid 0px;
     margin: 0px;
     padding: 0px;
+    width:100%;
 }
+
 select.celleditor {
     border: solid 0px red;
     margin: 0px;
     padding: 0px;
     left:0px;
+    width:100%;
+   /* max-width:120px;*/
+    
 }
 
 #ReportContainer {

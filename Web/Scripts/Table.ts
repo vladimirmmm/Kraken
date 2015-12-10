@@ -295,42 +295,8 @@ module UI {
                 });
                 rows.forEach(function (rowitem) {
                     var row = me.UITable.AddRow(-1, rowitem.Value);
-                    //me.SetCellIDs(row, null);
                     me.SetDataCells(row, rowitem, templatefacts);
-                    /*
-                    var rowfact = new Model.FactBase();
-                    rowfact.FactString = rowitem.Key;
-                    Model.FactBase.LoadFromFactString(rowfact);
-                    //Dynamic Attempt 6
-                    Model.FactBase.Merge(rowfact, me.CurrentExtension);
-
-                    var rowfactdimensionsquery = rowfact.Dimensions.AsLinq<Model.Dimension>();
-                    var rowfactdict: Model.Dictionary<string> = {};
-                    _Attribute(row.UIElement, "factstring", rowitem.Key);
-
-                    //var cells = _Select("td", row.UIElement);
-                    row.Cells.forEach(function (cell, ix) {
-                        var cellelement = cell.UIElement;
-                        var templatefact = templatefacts[ix];
-                        if (templatefact.Concept == null && templatefact.Dimensions.length == 1) {
-                            var celldimension = templatefact.Dimensions[0];
-                            var dim = rowfactdimensionsquery.FirstOrDefault(i=> i.DimensionItem == celldimension.DimensionItem && i.Domain == celldimension.Domain);
-                            if (dim != null) {
-                                var text = dim.DomainMember;
-                                _Html(cellelement, text);
-                            }
-                        }
-                        else
-                        {
-                            var fact = new Model.FactBase();
-                            Model.FactBase.Merge(fact, templatefact, true);
-                            Model.FactBase.Merge(fact, rowfact, true);
-                            var fs = fact.GetFactString();
-                            _Attribute(cellelement, "factstring", fs);
-                        }
-
-                    });
-                    */
+                   
                 });
                 me.UITable.CanManageRows = true;
                 me.UITable.Manager.ManageRows(me.UITable);
