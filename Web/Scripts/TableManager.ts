@@ -34,6 +34,7 @@ module Controls {
         ManageColumns(table: Table);
 
         Clear(table: Table);
+        ClearDynamicItems(table: Table);
 
         CellEditorAssigner: Function;
 
@@ -480,7 +481,7 @@ module Controls {
 
         public RemoveRow(row: Row): boolean {
             var me = this;
-            if (me.Rows.length > 1) {
+            //if (me.Rows.length > 1) {
                 var ix = this.Rows.indexOf(row);
 
                 row.Cells.forEach(function (cell, ix) {
@@ -491,12 +492,10 @@ module Controls {
                 _Remove(row.UIElement);
                 CallFunctionWithContext(me, me.OnRowRemoved, [row]);
                 CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
-                //ShowNotification(Format("Row {0} was removed!", row.RowID));
 
-            } else {
-                //ShowNotification(Format("Row {0} was NOT removed! The last row can't be removed!", row.RowID));
-
-            }
+            //} else {
+            //
+            //}
             return true;
         }
         public RemoveColumnByID(colid: string) {
@@ -510,7 +509,7 @@ module Controls {
         }
         public RemoveColumn(col: Column): boolean {
             var me = this;
-            if (me.Columns.length > 1) {
+            //if (me.Columns.length > 1) {
                 var ix = this.Columns.indexOf(col);
 
                 col.Cells.forEach(function (cell, ix) {
@@ -524,12 +523,9 @@ module Controls {
          
                 CallFunctionWithContext(me, me.OnColumnRemoved, [col]);
                 CallFunctionWithContext(me, me.OnLayoutChanged, [col]);
-                //ShowNotification(Format("Row {0} was removed!", row.RowID));
 
-            } else {
-                //ShowNotification(Format("Row {0} was NOT removed! The last row can't be removed!", row.RowID));
-
-            }
+            //} else {
+            //}
             return true;
         }
 

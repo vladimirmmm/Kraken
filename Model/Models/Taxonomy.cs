@@ -218,31 +218,42 @@ namespace LogicalModel
             LogicalModel.Table.LabelAccessor = FindLabel;
         
         }
-
+        private LogicalModel.Label GetLabel(string key) 
+        {
+            var label = TaxonomyLabelDictionary[key];
+            if (String.IsNullOrEmpty(label.Code))
+            {
+                var ix = key.IndexOf("[");
+                var engkey = key.Remove(key.IndexOf("["), 4).Insert(ix, "[en]");
+                if (TaxonomyLabelDictionary.ContainsKey(engkey))
+                {
+                    var englabel = TaxonomyLabelDictionary[engkey];
+                    label.Code = englabel.Code;
+                }
+            }
+            return label;
+        }
         public LogicalModel.Label FindLabel(string key, bool log=true)
         {
             key = key.ToLower();
            
             if (TaxonomyLabelDictionary.ContainsKey(key))
             {
-                var label = TaxonomyLabelDictionary[key];
-                if (String.IsNullOrEmpty(label.Code)) 
-                {
-                    var ix = key.IndexOf("[");
-                    var engkey = key.Remove(key.IndexOf("["), 4).Insert(ix, "[en]");
-                    if (TaxonomyLabelDictionary.ContainsKey(engkey))
-                    {
-                        var englabel = TaxonomyLabelDictionary[engkey];
-                        label.Code = englabel.Code;
-                    }
-                }
-                return label;
+                return GetLabel(key);
             }
             else
             {
-                if (log)
+                key = key.Replace(LogicalModel.Label.labelprefix, "");
+                if (TaxonomyLabelDictionary.ContainsKey(key))
                 {
-                    //Logger.WriteLine(String.Format("Label {0} was not found!", key));
+                    return GetLabel(key);
+                }
+                else
+                {
+                    if (log)
+                    {
+                        //Logger.WriteLine(String.Format("Label {0} was not found!", key));
+                    }
                 }
             }
             return null;
@@ -369,12 +380,29 @@ namespace LogicalModel
             //refresh files
             ManageUIFiles();
             //
-
-            if (!System.IO.File.Exists(TaxonomyModulePath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            var shouldload = !System.IO.File.Exists(TaxonomyModulePath) || Settings.Current.ReloadFullTaxonomyButStructure;
+            if (!shouldload)
             {
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyModulePath);
+                this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
+                foreach (var tablepath in Module.TablePaths)
+                {
+                    var fulltablepath = Utilities.Strings.ResolveRelativePath(this.TaxonomyLayoutFolder, tablepath);
+                    if (!Utilities.FS.FileExists(fulltablepath)) 
+                    {
+                        shouldload = true;
+                    }
+
+                }
+            }
+            if (shouldload)
+            {
+                this.Tables.Clear();
+
                 PopulateTableGroups();
                
                 LoadGeneral();
+
                 TableHandler.HandleTaxonomy(this);
 
                 var jsoncontent = Utilities.Converters.ToJson(Module);
@@ -394,7 +422,7 @@ namespace LogicalModel
             {
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyModulePath);
                 this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
-
+                this.Tables.Clear();
                 foreach (var tablepath in Module.TablePaths)
                 {
                     var fulltablepath = Utilities.Strings.ResolveRelativePath(this.TaxonomyLayoutFolder, tablepath);
@@ -623,8 +651,7 @@ namespace LogicalModel
 
                     Utilities.FS.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
                     Utilities.FS.Copy(pdbpath, temppdbpath);
-                    //System.IO.File.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
-                    //System.IO.File.Copy(pdbpath, temppdbpath);
+  
 
                     var assembly = Assembly.LoadFile(templibpath);
                     var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));

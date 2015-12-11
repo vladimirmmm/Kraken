@@ -73,7 +73,9 @@ class UITableManager implements Controls.ITableManager {
             var rawheadercells: Element[] = [];
             var isdynamic = _HasClass(datarow, "dynamic");
             if (isdynamic) {
-                datarow = _Clone(datarow);
+                var trow = _Clone(datarow);
+                _Remove(datarow);
+                datarow = trow;
             }
             rawdatacells = _Select("td", datarow);
             rawheadercells = _Select("th", datarow);
@@ -86,7 +88,7 @@ class UITableManager implements Controls.ITableManager {
             var row = new Controls.Row();
             row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, Controls.CellType.Header);
             row.UIElement = datarow;
-
+            row.ID = _Html(row.HeaderCell.UIElement).trim();
             rawdatacells.forEach(function (cell, ix) {
                 var column = table.Columns[ix];
 
@@ -121,7 +123,7 @@ class UITableManager implements Controls.ITableManager {
             if (isdynamic) {
                 me.TemplateRow = row;
                 Controls.Row.ClearDataCells(me.TemplateRow);
-                _Hide(me.TemplateRow.UIElement);
+                //_Remove(me.TemplateRow.UIElement);
             } else {
                 table.Rows.push(row);
 
@@ -154,9 +156,9 @@ class UITableManager implements Controls.ITableManager {
     }
 
     public ManageRows(table: Controls.Table) {
-        Notify("ManageRows");
+        //Notify("ManageRows");
         var me = this;
-
+        table.CanManageRows = true;
         if (!IsNull(me.TemplateRow)) {
             var rowsquery = table.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement, "dynamicdata"));
 
@@ -172,8 +174,9 @@ class UITableManager implements Controls.ITableManager {
     }
 
     public ManageColumns(table: Controls.Table) {
-        Notify("ManageColumns");
+        //Notify("ManageColumns");
         var me = this;
+        table.CanManageColumns = true;
 
         if (!IsNull(me.TemplateColumn)) {
             var columnsquery = table.Columns.AsLinq<Controls.Column>().Where(i=> _HasClass(i.UIElement, "dynamicdata"));
@@ -230,10 +233,51 @@ class UITableManager implements Controls.ITableManager {
         });
     }
     public Clear(table: Controls.Table) {
+        var me = this;
         table.Cells.forEach(function (cell, ix) {
             Controls.Cell.Clear(cell);
             //_Attribute(cell.UIElement, "factstring", "");
         });
+
+
+    }
+    public ClearDynamicItems(table: Controls.Table) {
+        var me = this;
+        table.Cells.forEach(function (cell, ix) {
+            Controls.Cell.Clear(cell);
+            //_Attribute(cell.UIElement, "factstring", "");
+        });
+        var rowquery = table.Rows.AsLinq<Controls.Row>();
+        var colquery = table.Columns.AsLinq<Controls.Column>();
+
+        var staticrows = rowquery.Where(i=> !_HasClass(i.UIElement, "dynamicdata")).ToArray();
+        var staticcols = colquery.Where(i=> !_HasClass(i.UIElement, "dynamicdata")).ToArray();
+
+        var dynamicrows = rowquery.Where(i=> _HasClass(i.UIElement, "dynamicdata")).ToArray();
+        var dynamiccols = colquery.Where(i=> _HasClass(i.UIElement, "dynamicdata")).ToArray();
+
+        var emptyrow = rowquery.FirstOrDefault(i=> !i.HasData());
+        var emptycol = colquery.FirstOrDefault(i=> !i.HasData());
+
+        //_Html(table.BodyUIElement, "");
+        //staticrows.forEach(function (row) {
+
+        //});
+        table.CanManageRows = false;
+        dynamicrows.forEach(function (row) {
+            table.RemoveRow(row);
+        });
+        //me.ManageRows(table);
+
+        table.CanManageColumns = false;
+        dynamiccols.forEach(function (col) {
+            table.RemoveColumn(col);
+
+        });
+        //me.ManageColumns(table);
+
+
+
     }
     public Validate(): boolean {
         return true;

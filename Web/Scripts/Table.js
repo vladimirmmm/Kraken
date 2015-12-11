@@ -90,12 +90,7 @@ var UI;
             var me = this;
             me.UITable = Factories.GetTablewithManager();
             me.UITable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
-            //_EnsureEventHandler(_Select("table.report tr"), "click", function () {
-            //    _RemoveClass(_Select("table.report tr"), selectedclass);
-            //    _AddClass(this, selectedclass);
-            //});
             this.LoadCellsFromHtml();
-            //this.SetCellEditors();
             var hash = window.location.hash;
         };
         Table.prototype.HighlightCell = function () {
@@ -198,14 +193,15 @@ var UI;
             var templaterow = me.UITable.Manager.TemplateRow;
             var templatecol = me.UITable.Manager.TemplateColumn;
             if (!IsNull(templaterow)) {
-                _Html(tbody, "");
-                var uirows = me.UITable.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).Select(function (i) { return i.ID; }).ToArray();
-                me.UITable.CanManageRows = false;
-                uirows.forEach(function (rowid, ix) {
-                    var count = uirows.length;
-                    me.UITable.RemoveRowByID(rowid);
-                });
-                me.UITable.CanManageRows = true;
+                me.UITable.Manager.ClearDynamicItems(me.UITable);
+                //_Html(tbody, "");
+                //var uirows = me.UITable.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement, "dynamicdata")).Select(i=> i.ID).ToArray();
+                //me.UITable.CanManageRows = false;
+                //uirows.forEach(function (rowid, ix) {
+                //    var count = uirows.length;
+                //    me.UITable.RemoveRowByID(rowid);
+                //});
+                //me.UITable.CanManageRows = true;
                 var templatefacts = [];
                 //s
                 me.UITable.CanManageRows = false;
@@ -218,17 +214,17 @@ var UI;
                     var row = me.UITable.AddRow(-1, rowitem.Value);
                     me.SetDataCells(row, rowitem, templatefacts);
                 });
-                me.UITable.CanManageRows = true;
+                //me.UITable.CanManageRows = true;
                 me.UITable.Manager.ManageRows(me.UITable);
             }
             if (!IsNull(templatecol)) {
-                var uicols = me.UITable.Columns.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).Select(function (i) { return i.ID; }).ToArray();
-                me.UITable.CanManageColumns = false;
-                uicols.forEach(function (colid, ix) {
-                    var count = uicols.length;
-                    me.UITable.RemoveColumnByID(colid);
-                });
-                me.UITable.CanManageColumns = true;
+                //var uicols = me.UITable.Columns.AsLinq<Controls.Column>().Where(i=> _HasClass(i.UIElement, "dynamicdata")).Select(i=> i.ID).ToArray();
+                //me.UITable.CanManageColumns = false;
+                //uicols.forEach(function (colid, ix) {
+                //    var count = uicols.length;
+                //    me.UITable.RemoveColumnByID(colid);
+                //});
+                //me.UITable.CanManageColumns = true;
                 var templatefacts = [];
                 //s
                 me.UITable.CanManageColumns = false;
@@ -242,7 +238,7 @@ var UI;
                     //me.SetCellIDs(row, null);
                     me.SetDataCells(col, colitem, templatefacts);
                 });
-                me.UITable.CanManageColumns = true;
+                //me.UITable.CanManageColumns = true;
                 me.UITable.Manager.ManageColumns(me.UITable);
             }
         };
@@ -293,8 +289,8 @@ var UI;
             }
             return "";
         };
-        /*private SetCellIDs(row: Controls.Row, col: Controls.Column)
-        {
+        /*
+        private SetCellIDs(row: Controls.CellContainer, col: Controls.Column) {
             if (!IsNull(row)) {
                 var rowid = _Attribute(row.UIElement, "id");
                 row.Cells.forEach(function (cell, index) {
@@ -315,29 +311,8 @@ var UI;
                     //_Attribute(cell.UIElement, "title", cellid);
                 });
             }
-        }*/
-        Table.prototype.SetCellIDs = function (row, col) {
-            if (!IsNull(row)) {
-                var rowid = _Attribute(row.UIElement, "id");
-                row.Cells.forEach(function (cell, index) {
-                    var cellid = _Attribute(cell.UIElement, "id");
-                    cellid = cellid.substring(cellid.indexOf("|"));
-                    cellid = rowid + cellid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                    //_Attribute(cell.UIElement, "title", cellid);
-                });
-            }
-            if (!IsNull(col)) {
-                var colid = _Attribute(col.UIElement, "id");
-                col.Cells.forEach(function (cell, index) {
-                    var cellid = _Attribute(cell.UIElement, "id");
-                    cellid = cellid.substring(0, cellid.indexOf("|") + 1);
-                    cellid = cellid + colid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                    //_Attribute(cell.UIElement, "title", cellid);
-                });
-            }
-        };
+        }
+        */
         Table.prototype.SetExtensionByCode = function (code) {
             if (this.Extensions.Count() > 0) {
                 var ext = this.Extensions.FirstOrDefault();
@@ -388,10 +363,6 @@ var UI;
     })();
     UI.Table = Table;
 })(UI || (UI = {}));
-//var UITable: UI.Table = null;
 function SetExtension(extjson) {
 }
-//function LoadInstance(instancejson:string) {
-//    Table.LoadInstance(window[var_currentinstance]);
-//} 
 //# sourceMappingURL=Table.js.map

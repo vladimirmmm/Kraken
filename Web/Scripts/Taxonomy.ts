@@ -43,11 +43,12 @@
             this.s_general_selector = "#" + this.s_general_id;
             var me = this;
 
-            //$(window).resize(function () {
-            //    waitForFinalEvent(function () {
-            //        me.SetHeight();
-            //    }, 200, "retek");
-            //});
+            $(window).resize(function () {
+                waitForFinalEvent(function () {
+                    me.SetHeight();
+                }, 200, "retek");
+            });
+            me.SetHeight();
 
             $(window).on('hashchange', function () {
                 me.HashChanged();
@@ -62,9 +63,11 @@
 
 
         private SetHeight() {
-            //var bodyheight = $(window).height();
-            //var pivotheight = (bodyheight - 50) + "px";
-            //$(".pivotitem").css("max-height", pivotheight);
+            var bodyheight = $("td.th2").height();
+            var pivotheight1 = (bodyheight - 70) + "px";
+            var pivotheight2 = (bodyheight - 110) + "px";
+            $("#Contents > .ui-tabs > .ui-tabs-panel").css("max-height", pivotheight1);
+            $("#Contents > .ui-tabs > .ui-tabs-panel > .ui-tabs-panel").css("max-height", pivotheight2);
         }
         public Sel(selector: any): JQuery {
             var me = this;
@@ -142,7 +145,7 @@
         public LoadValidationResults(onloaded: Function) {
             var me = this;
             AjaxRequest("Taxonomy/ValidationRules", "get", "json", null, function (data) {
-                me.Taxonomy.ValidationRules = data;
+                me.Taxonomy.ValidationRules = IsNull(data) ? [] : data;
                 me.Taxonomy.ValidationRules.forEach(function (v: Model.ValidationRule) {
                     v.Title = Truncate(v.DisplayText, 100)
                 });

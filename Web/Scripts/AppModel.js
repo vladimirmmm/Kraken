@@ -47,7 +47,7 @@ var UITableManager = (function () {
             columncells.forEach(function (columnelement, ix) {
                 //var t_columnelement = _Clone(columnelement);
                 var t_columnelement = columnelement;
-                var headercell = Controls.Cell.ConvertFrom(t_columnelement, Controls.CellType.Header);
+                var headercell = Controls.Cell.ConvertFrom(t_columnelement, 2 /* Header */);
                 var colid = _Html(t_columnelement).trim();
                 headercell.ColID = colid;
                 var column = new Controls.Column();
@@ -69,7 +69,9 @@ var UITableManager = (function () {
             var rawheadercells = [];
             var isdynamic = _HasClass(datarow, "dynamic");
             if (isdynamic) {
-                datarow = _Clone(datarow);
+                var trow = _Clone(datarow);
+                _Remove(datarow);
+                datarow = trow;
             }
             rawdatacells = _Select("td", datarow);
             rawheadercells = _Select("th", datarow);
@@ -77,8 +79,9 @@ var UITableManager = (function () {
             var rowheadercell = rawheadercells[rawheadercells.length - 1];
             rowcells.push(rowheadercell);
             var row = new Controls.Row();
-            row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, Controls.CellType.Header);
+            row.HeaderCell = Controls.Cell.ConvertFrom(rowheadercell, 2 /* Header */);
             row.UIElement = datarow;
+            row.ID = _Html(row.HeaderCell.UIElement).trim();
             rawdatacells.forEach(function (cell, ix) {
                 var column = table.Columns[ix];
                 var rowcode = _Html(rowheadercell).trim();
@@ -86,7 +89,7 @@ var UITableManager = (function () {
                 var colcode = _Html(colcell).trim();
                 var cellid = Format("{0}|{1}", rowcode, colcode);
                 var cellobj = new Controls.Cell();
-                cellobj.Type = Controls.CellType.Data;
+                cellobj.Type = 1 /* Data */;
                 cellobj.RowID = rowcode;
                 cellobj.ColID = colcode;
                 cellobj.Value = _Html(cell).trim();
@@ -109,7 +112,6 @@ var UITableManager = (function () {
             if (isdynamic) {
                 me.TemplateRow = row;
                 Controls.Row.ClearDataCells(me.TemplateRow);
-                _Hide(me.TemplateRow.UIElement);
             }
             else {
                 table.Rows.push(row);
@@ -130,15 +132,16 @@ var UITableManager = (function () {
             }
             //}
         });
-        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, Controls.CellType.Header); }).ToArray();
-        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, Controls.CellType.Header); }).ToArray();
+        rowheader.Cells = rowcells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, 2 /* Header */); }).ToArray();
+        colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, 2 /* Header */); }).ToArray();
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
         CallFunctionWithContext(me, me.OnLoaded, [table]);
     };
     UITableManager.prototype.ManageRows = function (table) {
-        Notify("ManageRows");
+        //Notify("ManageRows");
         var me = this;
+        table.CanManageRows = true;
         if (!IsNull(me.TemplateRow)) {
             var rowsquery = table.Rows.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); });
             var emptyrow = rowsquery.FirstOrDefault(function (i) { return !i.HasData(); });
@@ -149,8 +152,9 @@ var UITableManager = (function () {
         }
     };
     UITableManager.prototype.ManageColumns = function (table) {
-        Notify("ManageColumns");
+        //Notify("ManageColumns");
         var me = this;
+        table.CanManageColumns = true;
         if (!IsNull(me.TemplateColumn)) {
             var columnsquery = table.Columns.AsLinq().Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); });
             var emptycol = columnsquery.FirstOrDefault(function (i) { return !i.HasData(); });
@@ -200,10 +204,39 @@ var UITableManager = (function () {
         });
     };
     UITableManager.prototype.Clear = function (table) {
+        var me = this;
         table.Cells.forEach(function (cell, ix) {
             Controls.Cell.Clear(cell);
             //_Attribute(cell.UIElement, "factstring", "");
         });
+    };
+    UITableManager.prototype.ClearDynamicItems = function (table) {
+        var me = this;
+        table.Cells.forEach(function (cell, ix) {
+            Controls.Cell.Clear(cell);
+            //_Attribute(cell.UIElement, "factstring", "");
+        });
+        var rowquery = table.Rows.AsLinq();
+        var colquery = table.Columns.AsLinq();
+        var staticrows = rowquery.Where(function (i) { return !_HasClass(i.UIElement, "dynamicdata"); }).ToArray();
+        var staticcols = colquery.Where(function (i) { return !_HasClass(i.UIElement, "dynamicdata"); }).ToArray();
+        var dynamicrows = rowquery.Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).ToArray();
+        var dynamiccols = colquery.Where(function (i) { return _HasClass(i.UIElement, "dynamicdata"); }).ToArray();
+        var emptyrow = rowquery.FirstOrDefault(function (i) { return !i.HasData(); });
+        var emptycol = colquery.FirstOrDefault(function (i) { return !i.HasData(); });
+        //_Html(table.BodyUIElement, "");
+        //staticrows.forEach(function (row) {
+        //});
+        table.CanManageRows = false;
+        dynamicrows.forEach(function (row) {
+            table.RemoveRow(row);
+        });
+        //me.ManageRows(table);
+        table.CanManageColumns = false;
+        dynamiccols.forEach(function (col) {
+            table.RemoveColumn(col);
+        });
+        //me.ManageColumns(table);
     };
     UITableManager.prototype.Validate = function () {
         return true;

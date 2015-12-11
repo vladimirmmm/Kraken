@@ -8,7 +8,7 @@ namespace LogicalModel
 {
     public class Label
     {
-        private static string labelprefix = "";
+        public static string labelprefix = "";
         public string _LocalID = "";
         public string _LabelID = "";
         public string _Content = "";
@@ -92,6 +92,16 @@ namespace LogicalModel
             l.FileName = fileid;
             l.Lang = Taxonomy.Lang;
             l.LocalID = localID;
+            return l.Key;
+        }
+
+        public static string GetKeyWithoutPrefix(string fileid, string localID)
+        {
+            var l = new Label();
+
+            l.FileName = fileid;
+            l.Lang = Taxonomy.Lang;
+            l.LocalID = localID.StartsWith(labelprefix) ? localID.Substring(labelprefix.Length) : localID;
             return l.Key;
         }
     }

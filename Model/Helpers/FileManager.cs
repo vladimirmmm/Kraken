@@ -78,14 +78,14 @@ namespace LogicalModel.Helpers
 
         }
 
-        public static void SaveToJson<T>(IEnumerable<T> items, string pathformat, int itemsperpart=100) 
+        public static void SaveToJson<T>(IEnumerable<T> items, string pathformat, int itemsperpart=20) 
         {
             int pageCount = (items.Count() + itemsperpart - 1) / itemsperpart;
             for (int i = 0; i < pageCount; i++) 
             {
                 var startix = i * itemsperpart;
-
-                var json = Utilities.Converters.ToJson(items.Skip(startix).Take(itemsperpart));
+                var rules = items.Skip(startix).Take(itemsperpart).ToList();
+                var json = Utilities.Converters.ToJson(rules);
                 var filepath = String.Format(pathformat, i);
                 Utilities.FS.WriteAllText(filepath, json);
       

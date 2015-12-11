@@ -384,19 +384,19 @@ var Controls;
         };
         Table.prototype.RemoveRow = function (row) {
             var me = this;
-            if (me.Rows.length > 1) {
-                var ix = this.Rows.indexOf(row);
-                row.Cells.forEach(function (cell, ix) {
-                    RemoveFrom(cell, me.Cells);
-                });
-                RemoveFrom(row, me.RowHeader.Cells);
-                RemoveFrom(row, me.Rows);
-                _Remove(row.UIElement);
-                CallFunctionWithContext(me, me.OnRowRemoved, [row]);
-                CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
-            }
-            else {
-            }
+            //if (me.Rows.length > 1) {
+            var ix = this.Rows.indexOf(row);
+            row.Cells.forEach(function (cell, ix) {
+                RemoveFrom(cell, me.Cells);
+            });
+            RemoveFrom(row, me.RowHeader.Cells);
+            RemoveFrom(row, me.Rows);
+            _Remove(row.UIElement);
+            CallFunctionWithContext(me, me.OnRowRemoved, [row]);
+            CallFunctionWithContext(me, me.OnLayoutChanged, [row]);
+            //} else {
+            //
+            //}
             return true;
         };
         Table.prototype.RemoveColumnByID = function (colid) {
@@ -407,21 +407,20 @@ var Controls;
         };
         Table.prototype.RemoveColumn = function (col) {
             var me = this;
-            if (me.Columns.length > 1) {
-                var ix = this.Columns.indexOf(col);
-                col.Cells.forEach(function (cell, ix) {
-                    _Remove(cell.UIElement);
-                    RemoveFrom(cell, me.Cells);
-                });
-                col.Cells = [];
-                RemoveFrom(col, me.ColumnHeader.Cells);
-                RemoveFrom(col, me.Columns);
-                _Remove(col.UIElement);
-                CallFunctionWithContext(me, me.OnColumnRemoved, [col]);
-                CallFunctionWithContext(me, me.OnLayoutChanged, [col]);
-            }
-            else {
-            }
+            //if (me.Columns.length > 1) {
+            var ix = this.Columns.indexOf(col);
+            col.Cells.forEach(function (cell, ix) {
+                _Remove(cell.UIElement);
+                RemoveFrom(cell, me.Cells);
+            });
+            col.Cells = [];
+            RemoveFrom(col, me.ColumnHeader.Cells);
+            RemoveFrom(col, me.Columns);
+            _Remove(col.UIElement);
+            CallFunctionWithContext(me, me.OnColumnRemoved, [col]);
+            CallFunctionWithContext(me, me.OnLayoutChanged, [col]);
+            //} else {
+            //}
             return true;
         };
         return Table;

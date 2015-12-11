@@ -516,48 +516,8 @@ namespace LogicalModel
              aspects.AddRange(columnsnode.Where(i => i.Item.IsAspect));
 
             TableHelpers.SetDynamicAxis(this, rowsnode, columnsnode);
-            TableHelpers.SetDynamicAxis(this, columnsnode, rowsnode);
-
-        
-            /*
-            var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();
-    
-            var ix=0;
-            var columnAxisnode = columnsnode.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
-            var aspect_row_dimension = new List<Dimension>();
+            TableHelpers.SetDynamicAxis(this, columnsnode, rowsnode);       
             
-            foreach (var aspect in aspects)
-            {
-                aspect.Item.LabelID = aspect.Parent.Item.LabelID;
-                aspect.Item.Label = aspect.Parent.Item.Label;
-                aspect.Item.LabelCode = String.Format(KeyLabelCodeFormat, ix);
-                aspect.Item.LabelID = "";
-                var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
-                if (rolenode != null)
-                {
-                    aspect.Item.Role = rolenode.Item.Role;
-
-                }
-                columnAxisnode.Children.Insert(ix, aspect);
-                rowsnode.Remove(aspect.Parent);
-                aspect.Parent = columnAxisnode;
-                ix++;
-                aspect_row_dimension.AddRange(aspect.Item.Dimensions);
-                //aspect.Item.Dimensions.Clear();
-            }
-            if (rowsnode.Children.Count == 0) 
-            {
-                var dynrow_li = new LayoutItem();
-
-                dynrow_li.ID = "dynrow";
-                dynrow_li.Dimensions = aspect_row_dimension;
-                dynrow_li.Category = LayoutItemCategory.Dynamic;
-                var dyn_h = new Hierarchy<LayoutItem>(dynrow_li);
-                rowsnode = dyn_h;
-
-            }
-
-            */
 
             FixLayoutItem(columnsnode,null);
             SetSpans(columnsnode,null);
@@ -628,8 +588,17 @@ namespace LogicalModel
                                 cell.LayoutColumn = col;
                                 cell.Column = col.Item.LabelCode;
                                 cell.Concept = row.Item.Concept != null ? row.Item.Concept : col.Item.Concept;
-                                cell.Dimensions.AddRange(row.Item.Dimensions);
-                                cell.Dimensions.AddRange(col.Item.Dimensions);
+                                var isrowkey = row.Item.IsDynamic && cell.Concept == null;
+                                var iscolkey = col.Item.IsDynamic && cell.Concept == null;
+                                if (!isrowkey)
+                                {
+                                    cell.Dimensions.AddRange(row.Item.Dimensions);
+                                }
+                                if (!iscolkey)
+                                {
+                                    cell.Dimensions.AddRange(col.Item.Dimensions);
+                                }
+                                cell.IsKey = isrowkey || iscolkey;
                                 SetDimensions(cell);
 
                                 LayoutCells.Add(cell);
@@ -714,16 +683,12 @@ namespace LogicalModel
                                     {
                                     }
                                     var aspectcolumnitem = cell.LayoutColumn.Item;
-                                    //aspectcolumnitem = aspectcolumnitem.IsAspect ? aspectcolumnitem : cell.LayoutColumn.Parent.Item;
                                     if (cell.LayoutColumn.Parent != null && !aspectcolumnitem.IsAspect) 
                                     {
                                         aspectcolumnitem = cell.LayoutColumn.Parent.Item;
                                     }
 
-                                    //if (aspectcolumnitem.IsAspect)
-                                    //{
-                                    //    cell.Dimensions = aspectcolumnitem.Dimensions;
-                                    //}
+                               
                                     if (cell.Concept==null
                                         && cell.LayoutColumn.Item.Category != LayoutItemCategory.BreakDown
                                         && cell.LayoutRow.Item.Category != LayoutItemCategory.BreakDown
@@ -733,9 +698,6 @@ namespace LogicalModel
                                     }
                                     else
                                     {
-                                        //if (this.ID.Contains("09"))
-                                        //{
-                                        //}
                                         cell.IsBlocked = true;
                                         if (!blocked.ContainsKey(cell.ToString()))
                                         {
@@ -930,6 +892,10 @@ namespace LogicalModel
                     {
                         cssclass+=" blocked";
                     }
+                    if (cell.IsKey)
+                    {
+                        cssclass += " key";
+                    }
                     sb.AppendLine(String.Format("<td id=\"{0}\" factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>", alt, cssclass, cell.FactKey));
                 }
 
@@ -970,28 +936,7 @@ namespace LogicalModel
             cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMemeber).OrderBy(i=>i.DomainMemberFullName).ToList();
             cell.Dimensions = cell.Dimensions.Distinct().ToList();
         }
-        //public void SetDimensions(Hierarchy<LayoutItem> item)
-        //{
-        //    var current = item.Parent;
-        //    while (current != null)
-        //    {
-        //        MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
 
-        //        if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
-        //        {
-        //        }
-
-        //        current = current.Parent;
-        //    }
-        //    item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMemeber).ToList();
-        //}
-        //public void SetDimensions(List<Hierarchy<LayoutItem>> items)
-        //{
-        //    foreach (var item in items)
-        //    {
-        //        SetDimensions(item);
-        //    }
-        //}
 
         private void MergeDimensions(List<Dimension> target, List<Dimension> items)
         {

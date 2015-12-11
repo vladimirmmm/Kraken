@@ -10,7 +10,7 @@ function Log(item:string)
         _Html(element, "");
         logitems = 1;
     }
-    item = Replace(item, "\r\n", "<br/>");
+    item = Replace(item.trim(), "\r\n", "<br/>");
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
@@ -21,8 +21,20 @@ function BrowseFile(callback: Function)
     var uploader = _SelectFirst("#fileuploader");
     _EnsureEventHandler(uploader, "change", function () {
         var file = _Value(uploader);
-        Log("FB: " + file);
+        Log("file: " + file);
         CallFunction(callback, [file]);
+    });
+    $(uploader).click();
+
+}
+function BrowseFolder(callback: Function) {
+    var uploader = _SelectFirst("#fileuploader");
+    _EnsureEventHandler(uploader, "change", function () {
+        var file = _Value(uploader);
+        var lastsep = file.lastIndexOf("\\") + 1;
+        var folder = file.substring(0, lastsep);
+        Log("Folder: " + folder);
+        CallFunction(callback, [folder]);
     });
     $(uploader).click();
 
@@ -46,18 +58,6 @@ jQuery.fn.selectText = function () {
     }
 };
 
-function BrowseFolder(callback: Function)
-{
-    var uploader = _SelectFirst("#fileuploader");
-    _EnsureEventHandler(uploader, "change", function () {
-        var file = _Value(uploader);
-        Log("FB: " + file);
-        CallFunction(callback, [file]);
-
-    });
-    $(uploader).click();
-
-}
 function Select(sender): any {
     var $command = $(sender);
     var sel = "selected";

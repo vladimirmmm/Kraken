@@ -363,11 +363,7 @@ namespace XBRLProcessor.Models
                     var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == hier.Item.Namespace);
                     var foldername = Utilities.Strings.GetFolderName(nsdoc.LocalPath);
                     hier.Item.NamespaceFolder = foldername;
-                    //var hierchildrens = hier.All();
-                    //foreach (var hierchildren in hierchildrens) 
-                    //{
-                    //    hierchildren.Item.NamespaceFolder = foldername;
-                    //}
+             
                     var logicalhierarchy = hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem);
                     this.Hierarchies.Add(logicalhierarchy);
                 }
@@ -446,13 +442,9 @@ namespace XBRLProcessor.Models
                         }
                     }
                     var root = hier.Items.FirstOrDefault();
-                    //hier.Items = hier.Items.Where(i => tablegroups.Any(j => j.ID == i.ID) || i == root).ToList();
                     var hierarchy = hier.GetHierarchy();
                     var leafs = hierarchy.GetLeafs();
                     this.Module.TableGroups.Clear();
-                    //this.Module.TableGroups.Item = new LogicalModel.TableGroup();
-                    //this.Module.TableGroups.Item.ID = "Tables";
-                    //this.Module.TableGroups.Item.Label = new LogicalModel.Label();
 
                     var tgs = hierarchy.Cast<LogicalModel.TableGroup>(i => {
                 
@@ -494,34 +486,7 @@ namespace XBRLProcessor.Models
 
                     }
                     this.Module.TableGroups = tgs;
-                    //foreach (var leaf in leafs) 
-                    //{
-                    //    var parent = leaf.Parent.Item;
-                    //    var parentID = parent.LabelID.ToLower();
-                    //    var tableID= leaf.Item.ID;
-
-                    //    var tablegroup = this.Module.TableGroups.Where(i => i.Item.ID == parent.ID).FirstOrDefault();
-                    //    if (tablegroup == null) 
-                    //    {
-                    //        var tgitem = new LogicalModel.TableGroup();
-                    //        tablegroup = new Hierarchy<LogicalModel.TableGroup>(tgitem);
-                    //        tgitem.ID = parent.ID;
-                    //        tgitem.LabelID = parent.LabelID;
-                    //        tgitem.Label = parent.Label;
-                    //        var find = filingindicators.FirstOrDefault(i => parentID.Contains(i.ToLower()));
-                    //        if (find == null) 
-                    //        {
-                    //            find = filingindicators.FirstOrDefault(i => parent.LabelCode.Contains(i.ToLower()));
-
-                    //        }
-                    //        tgitem.FilingIndicator = find;
-                    //        this.Module.TableGroups.Children.Add(tablegroup);
-
-
-                    //    }
-                    //    tablegroup.TableIDs.Add(leaf.Item.ID);
-
-                    //}
+                    
 
                 }
             }
@@ -541,20 +506,7 @@ namespace XBRLProcessor.Models
                     hier.LoadFromXml(genlinknode);
                     foreach (var h in hier.Items)
                     {
-                        //var folder = Utilities.Strings.GetFolderName(doc.LocalFolder);
-                        //folder = "tab";
-                        //var labelid = h.LabelID;
-                        //if (labelid.StartsWith("loc_"))
-                        //{
-                        //    labelid = labelid.Substring(4);
-                        //}
-                        //h.ID = labelid;
-                        //var labelkey = LogicalModel.Label.GetKey(folder, labelid);
-                        //var label = FindLabel(labelkey);
-                        //if (label != null)
-                        //{
-                        //    h.Label = label;
-                        //}
+  
                     }
                     var hierarchy = hier.GetHierarchy();
                     hierarchy.Item.ParentRole = "assertionset";

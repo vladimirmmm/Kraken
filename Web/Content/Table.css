@@ -85,6 +85,10 @@ table.report tbody td.data {
     td.data input[type=text] {
         text-align: right;
     }
+    table.report td.key    
+    {
+        background:#efdd7a;
+    }
     table.report td.data 
     {
         min-width:120px;
@@ -107,7 +111,9 @@ table.report tbody td.data {
     }
     table.report tbody tr:nth-child(2n-1) {
         background-color:#cecece;
-    
+    }
+     table.report tbody tr:nth-child(2n-1) td.key{
+        background-color:#dcd6b8;
     }
 
 body {

@@ -83,6 +83,11 @@ namespace LogicalModel.Validation
                 {
                     var labelkey = LogicalModel.Label.GetKey("val", LabelID);
                     _Label = Taxonomy.FindLabel(labelkey);
+                    //if (_Label == null) 
+                    //{
+                    //    labelkey = LogicalModel.Label.GetKeyWithoutPrefix("val", LabelID);
+                    //    _Label = Taxonomy.FindLabel(labelkey);
+                    //}
                 }
                 return _Label;
             }

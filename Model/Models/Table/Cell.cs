@@ -3,6 +3,7 @@ using LogicalModel.Base;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,11 @@ namespace LogicalModel
         private string _Column = "";
         [JsonProperty]
         public string Column { get { return _Column; } set { _Column = value; } }
+
+        private bool _IsKey = false;
+        [JsonProperty]
+        [DefaultValue(false)]
+        public bool IsKey { get { return _IsKey; } set { _IsKey = value; } }
 
         public Hierarchy<LayoutItem> LayoutRow = null;
         public Hierarchy<LayoutItem> LayoutColumn = null;
@@ -77,14 +83,6 @@ namespace LogicalModel
         public string FactKey 
         {
             get {
-                //var sb = new StringBuilder();
-                //sb.AppendFormat("{0},", this.Concept);
-                //var dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-                //foreach (var dim in dimensions)
-                //{
-                //    sb.AppendFormat("{0},", dim.DomainMemberFullName);
-                //}
-                //return sb.ToString();
                 return this.GetFactKey();
             }
         }

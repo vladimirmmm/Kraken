@@ -176,6 +176,10 @@ margin-bottom:0px;
 .ui-tabs-panel {
     clear:both;
 }
+.ui-tabs>.ui-tabs-panel {
+    overflow-y:auto;
+
+}
 .ui-tabs li {
     clear:none;
 }

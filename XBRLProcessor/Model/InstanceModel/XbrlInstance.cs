@@ -186,9 +186,12 @@ namespace Model.InstanceModel
             {
                 var micontext = Contexts.FirstOrDefault(i => i.ID == miconceptfact.ContextID);
                 var miunit = Units.FirstOrDefault(i => i.ID == miconceptfact.UnitID);
-                var measurestring = miunit.Measure.Content.ToLower();
-                var taxunit = Taxonomy.Units.FirstOrDefault(i => i.Measure.Content.ToLower() == measurestring);
-                ReportingMonetaryUnit = taxunit;
+                if (miunit != null)
+                {
+                    var measurestring = miunit.Measure.Content.ToLower();
+                    var taxunit = Taxonomy.Units.FirstOrDefault(i => i.Measure.Content.ToLower() == measurestring);
+                    ReportingMonetaryUnit = taxunit;
+                }
             }
             var firstcontext = Contexts.FirstOrDefault();
             if (firstcontext != null)

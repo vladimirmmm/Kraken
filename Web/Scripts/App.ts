@@ -26,9 +26,13 @@ module Applications
                 }, function (error) { console.log(error); });
             }
             var handled = false;
-            if (In(lid, "o_tax", "o_inst", "validate_folder", "process_folder")) {
+            if (In(lid, "o_tax", "o_inst")) {
                 handled = true;
                 BrowseFile(f);
+            } 
+            if (In(lid, "validate_folder", "process_folder")) {
+                handled = true;
+                BrowseFolder(f);
             } 
             if (In(lid, "settings")) {
                 handled = true;

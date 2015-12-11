@@ -108,6 +108,10 @@ namespace Utilities
                     }
                 }
             }
+            else 
+            {
+                Logger.WriteLine(String.Format("FS.Copy > File {0} does not exists!", source));
+            }
         }
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overwrite)
         {
