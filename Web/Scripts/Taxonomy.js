@@ -7,9 +7,9 @@ var Control;
             this.ValidationRules = [];
             this.ConceptValues = [];
             this.TableStructure = null;
-            this.CurrentFacts = null;
+            this.CurrentFacts = [];
             this.LPageSize = 10;
-            this.PageSize = 20;
+            this.PageSize = 10;
             this.s_fact_id = "T_Facts";
             this.s_label_id = "T_Labels";
             this.s_concept_id = "T_Concepts";
@@ -26,6 +26,8 @@ var Control;
             this.s_units_selector = "";
             this.s_find_selector = "";
             this.s_general_selector = "";
+            this.ui_factdetail = null;
+            this.ui_vruledetail = null;
             this.FactServiceFunction = null;
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_label_selector = "#" + this.s_label_id;
@@ -160,19 +162,23 @@ var Control;
             var me = this;
             if (contentid == "Taxonomy") {
             }
+            if (contentid == "Taxonomy") {
+            }
             if (contentid == me.s_label_id) {
                 LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
             }
             if (contentid == me.s_validation_id) {
                 me.ShowValidationResults();
             }
-            if (contentid == me.s_fact_id) {
+            if (In(contentid, me.s_fact_id, me.s_main_id)) {
                 var eventhandlers = {
                     onloading: function (data) {
                         //EnumerateObject(data, me,(item, itemname) => { item["PropertyName"] = itemname; });
                     }
                 };
-                LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
+                if (me.CurrentFacts.length == 0) {
+                    LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
+                }
             }
         };
         TaxonomyContainer.prototype.ClearFilterLabels = function () {
@@ -255,9 +261,12 @@ var Control;
                     SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
                 });
                 fact.Cells = cells;
-                var $factdetail = me.SelFromFact(s_detail_selector);
-                BindX($factdetail, fact);
-                $factdetail.show();
+                if (me.ui_factdetail == null) {
+                    me.ui_factdetail = me.SelFromFact(s_detail_selector)[0];
+                }
+                BindX(me.ui_factdetail, fact);
+                _Show(me.ui_factdetail);
+                app.ShowOnBottomTab(me.ui_factdetail, "#tab_fact");
             }
             else {
                 Notify(Format("Fact {0} was not found!", factkey));
@@ -265,29 +274,25 @@ var Control;
         };
         TaxonomyContainer.prototype.HideFactDetails = function () {
             var me = this;
-            var $factdetail = me.SelFromFact(s_detail_selector);
-            $factdetail.hide();
+            _Hide(me.ui_factdetail);
         };
         TaxonomyContainer.prototype.CloseRuleDetail = function () {
             var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
+            _Hide(me.ui_vruledetail);
         };
         TaxonomyContainer.prototype.ShowRuleDetail = function (ruleid) {
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
-            var $valdetail = me.SelFromValidation(s_detail_selector);
-            if ($valdetail.is(':visible')) {
-                $valdetail.hide();
+            if (me.ui_vruledetail == null) {
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector)[0];
             }
-            else {
-                if (ruleid == previousruleid) {
-                    $valdetail.show();
-                }
+            if (ruleid == previousruleid) {
+                _Show(me.ui_vruledetail);
             }
             if (ruleid != previousruleid) {
                 var rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
-                BindX(me.SelFromValidation(s_parent_selector), rule);
+                var parent = $(s_parent_selector, me.ui_vruledetail);
+                BindX(parent, rule);
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
                     var results = data;
                     var eventhandlers = {
@@ -297,11 +302,12 @@ var Control;
                             });
                         }
                     };
-                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1, eventhandlers);
+                    var list = $(s_sublist_selector, me.ui_vruledetail);
+                    var listpager = $(s_sublistpager_selector, me.ui_vruledetail);
+                    LoadPage(list, listpager, results, 0, 1, eventhandlers);
                 }, function (error) {
                     console.log(error);
                 });
-                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
                         $(this).removeClass("hmax30");
@@ -310,7 +316,8 @@ var Control;
                         $(this).addClass("hmax30");
                     }
                 });
-                $valdetail.show();
+                _Show(me.ui_vruledetail);
+                app.ShowOnBottomTab(me.ui_vruledetail, "#tab_vrule");
             }
         };
         TaxonomyContainer.prototype.TableInfoSelected = function (id, ttype, sender) {
@@ -356,6 +363,9 @@ var Control;
                     if (parameter.Facts.length == 1) {
                         //strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
                         strvalue = parameter.Value;
+                        if (IsNull(strvalue)) {
+                            strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
+                        }
                     }
                 }
                 parameter.Value = strvalue;

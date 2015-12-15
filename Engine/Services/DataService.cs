@@ -184,7 +184,7 @@ namespace Engine.Services
                                 {
                                     query = query.Where(i => i.Value.Any(j => j.Contains(cellid)));
                                 }
-                                rs.Items = query.Skip(pagesize * page).Take(pagesize * (page + 1)).ToList();
+                                rs.Items = query.Skip(pagesize * page).Take(pagesize).ToList();
                                 rs.Total = query.Count();
                                 json = Utilities.Converters.ToJson(rs);
 

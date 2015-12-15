@@ -1,4 +1,4 @@
-﻿<div id="TaxonomyInfo">
+﻿<div id="TaxonomyInfo" binding-type="template">
     <h1 title="$bind:TaxonomyName$">
         $bind:TaxonomyID$
     </h1>
@@ -7,27 +7,7 @@
 
     </h2>
 </div>
-<!--<div id="tabletreeviewx">
-    <ul class="" binding-items="Children" binding-type="template" binding-mode="recursive">
-        <li binding-type="template" class="$bind:Item.Type$">
-            <a href="javascript:void(0)" title="$bind:Item.Description$" onclick="$bind:app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);$">
-                $bind:Item.Name$
-            </a>
-            &nbsp;
-            @X@
-        </li>
-    </ul>
-</div>
 
-<div id="test2">
-    <ul class="" binding-items="this" binding-type="template">
-        <li binding-type="template" class="$bind:Item.Type$">
-            <a href="javascript:void(0)" title="$bind:Item.Description$" onclick="$bind:app.taxonomycontainer.TableInfoSelected('{Item.ID}','{Item.Type}', this);$">
-                $bind:Item.Name$
-            </a>
-        </li>
-    </ul>
-</div>-->
 <div id="tabletreeview">
     <ul class="treeview" binding-items="Children" binding-mode="recursive">
         <li binding-type="template" class="$bind:Item.Type$">

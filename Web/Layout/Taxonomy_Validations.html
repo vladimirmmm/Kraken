@@ -1,5 +1,5 @@
 ﻿
-    <div class="listfilter filter">
+<div class="listfilter filter">
     <table class=" noborder">
         <tr>
             <td>
@@ -29,8 +29,8 @@
         <li binding-type="template">
 
             <a href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.ShowRuleDetail('{ID}'); Select(this);$">
-            $bind:{ID}$
-            </a> 
+                $bind:{ID}$
+            </a>
             &nbsp;<strong>$bind:Title$</strong>
             <div class="$bind:validationrule_results_{ID}$">
 
@@ -41,8 +41,8 @@
     </ul>
 </div>
 
-<div class="detail">
-    <div class="parent">
+<div class="detail" >
+    <div class="parent" binding-type="template">
         <span class="rule" rule-id="$bind:ID$"></span>
         <div class="hmax30 trimmed">
             <span>$bind:DisplayText$</span>
@@ -51,8 +51,9 @@
             <span>$bind:OriginalExpression$</span>
         </div>
     </div>
-    <ul class="sublist" binding-items="this">
-        <li binding-type="template">
+    <br />
+    <div class="sublist" binding-items="this">
+        <div binding-type="template">
             <table binding-items="Parameters" class="sublist">
                 <tr>
                     <th>Name</th>
@@ -75,9 +76,11 @@
 
                 </tr>
             </table>
-        </li>
-    </ul>
-            <div class="sublistpager pagination">
+        </div>
+    </div>
+    <br />
+    <div class="sublistpager pagination">
 
-            </div>
+    </div>
+    <br />
 </div>

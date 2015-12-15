@@ -7,9 +7,9 @@
         public ConceptValues: Model.ConceptLookUp[] = [];
 
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
-        public CurrentFacts: Model.KeyValuePair<string, string[]>[] = null;
+        public CurrentFacts: Model.KeyValuePair<string, string[]>[] = [];
         public LPageSize: number = 10;
-        public PageSize: number = 20;
+        public PageSize: number = 10;
 
 
         private s_fact_id: string = "T_Facts";
@@ -31,6 +31,9 @@
         private s_units_selector: string = "";
         private s_find_selector: string = "";
         private s_general_selector: string = "";
+
+        private ui_factdetail: Element = null;
+        private ui_vruledetail: Element = null;
 
         private FactServiceFunction: General.FunctionWithCallback = null;
 
@@ -88,6 +91,7 @@
         }
         public SelFromValidation(selector: any): JQuery {
             var me = this;
+
             return $(selector, me.Sel(me.s_validation_selector));
         }
 
@@ -152,6 +156,7 @@
                 CallFunction(onloaded);
             }, function (error) { console.log(error); });
         }
+
         public ShowValidationResults() {
             var me = this;
             var eventhandlers = { onpaging: () => { me.CloseRuleDetail(); } };
@@ -181,6 +186,9 @@
             if (contentid == "Taxonomy") {
 
             }
+            if (contentid == "Taxonomy") {
+
+            }
             if (contentid == me.s_label_id) {
                 LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
 
@@ -188,14 +196,16 @@
             if (contentid == me.s_validation_id) {
                 me.ShowValidationResults();
             }
-            if (contentid == me.s_fact_id) {
+            if (In(contentid, me.s_fact_id, me.s_main_id)) {
                 var eventhandlers = {
                     onloading: (data: any) => {
                         //EnumerateObject(data, me,(item, itemname) => { item["PropertyName"] = itemname; });
                     }
 
                 };
-                LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
+                if (me.CurrentFacts.length == 0) {
+                    LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
+                }
 
             }
         }
@@ -297,9 +307,13 @@
                     SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
                 });
                 fact.Cells = cells;
-                var $factdetail = me.SelFromFact(s_detail_selector);
-                BindX($factdetail, fact);
-                $factdetail.show();
+                if (me.ui_factdetail == null)
+                {
+                    me.ui_factdetail = me.SelFromFact(s_detail_selector)[0];
+                }
+                BindX(me.ui_factdetail, fact);
+                _Show(me.ui_factdetail);
+                app.ShowOnBottomTab(me.ui_factdetail, "#tab_fact");
             } else {
                 Notify(Format("Fact {0} was not found!", factkey));
             }
@@ -309,34 +323,34 @@
 
         public HideFactDetails() {
             var me = this;
-            var $factdetail = me.SelFromFact(s_detail_selector);
-            $factdetail.hide();
+            _Hide(me.ui_factdetail);
+       
 
         }
 
         public CloseRuleDetail() {
             var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
+            _Hide(me.ui_vruledetail);
+
 
         }
 
         public ShowRuleDetail(ruleid: string) {
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
-            var $valdetail = me.SelFromValidation(s_detail_selector);
-            if ($valdetail.is(':visible')) {
-                $valdetail.hide();
+            if (me.ui_vruledetail == null) {
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector)[0];
             }
-            else {
-                if (ruleid == previousruleid) {
-                    $valdetail.show();
-                }
+    
+            if (ruleid == previousruleid) {
+                _Show(me.ui_vruledetail);
             }
             if (ruleid != previousruleid) {
                 var rule = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
 
-                BindX(me.SelFromValidation(s_parent_selector), rule);
+                var parent = $(s_parent_selector, me.ui_vruledetail);
+
+                BindX(parent, rule);
 
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
                     var results = <Model.ValidationRuleResult[]>data;
@@ -349,11 +363,12 @@
                         }
                     };
 
-                    LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), results, 0, 1, eventhandlers);
+                    var list = $(s_sublist_selector, me.ui_vruledetail);
+                    var listpager = $(s_sublistpager_selector, me.ui_vruledetail);
+                    LoadPage(list, listpager, results, 0, 1, eventhandlers);
 
                 }, function (error) { console.log(error); });
 
-                me.SelFromValidation(".validationrule_results_" + ruleid).append($valdetail);
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
                         $(this).removeClass("hmax30");
@@ -362,7 +377,9 @@
 
                     }
                 });
-                $valdetail.show();
+                _Show(me.ui_vruledetail);
+                app.ShowOnBottomTab(me.ui_vruledetail, "#tab_vrule");
+
             }
         }
 
@@ -413,6 +430,10 @@
                     if (parameter.Facts.length == 1) {
                         //strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
                         strvalue = parameter.Value;
+                        if (IsNull(strvalue))
+                        {
+                            strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
+                        }
                     }
                 }
                 parameter.Value = strvalue;
@@ -461,6 +482,7 @@
             },
             function (error) { console.log(error); });
         }
+
         public LoadConceptValues() {
             var me = this;
             var concepts: Model.Concept[] = <Model.Concept[]>GetPropertiesArray(me.Taxonomy.Concepts);
@@ -514,6 +536,7 @@
                 });
             }
         }
+
         public GetConcepOptions(concept: string): string {
             var clkp = this.ConceptValues.AsLinq<Model.ConceptLookUp>().FirstOrDefault(i=> i.Concept == concept);
             if (clkp != null) {

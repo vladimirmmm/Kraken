@@ -21,6 +21,8 @@ var Control;
             this.s_unit_selector = "";
             this.s_find_selector = "";
             this.s_general_selector = "";
+            this.ui_factdetail = null;
+            this.ui_vruledetail = null;
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_validation_selector = "#" + this.s_validation_id;
             this.s_unit_selector = "#" + this.s_units_id;
@@ -55,8 +57,8 @@ var Control;
             if (action == "instancevalidated") {
                 me.LoadValidationResults(function () {
                     var item = "#" + me.s_validation_id;
-                    me.LoadTab("#MainContainer", "#InstanceContainer");
-                    me.LoadTab("#InstanceContainer", item);
+                    LoadTab("#MainContainer", "#InstanceContainer");
+                    LoadTab("#InstanceContainer", item);
                     me.LoadContentToUIX(me.s_validation_id, null);
                 });
             }
@@ -80,13 +82,9 @@ var Control;
                 console.log(error);
             });
         };
-        InstanceContainer.prototype.LoadTab = function (tabselector, contentselector) {
-            var index = $('a[href=' + contentselector + ']', tabselector).parent().index();
-            $(tabselector).tabs("option", "active", index);
-        };
         InstanceContainer.prototype.LoadToUI = function () {
             var me = this;
-            me.Sel(s_detail_selector).hide();
+            //me.Sel(s_detail_selector).hide();
             //me.LoadTab("#MainContainer", "#InstanceContainer");
             //me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
             me.LoadContentToUIX(me.s_fact_id, null);
@@ -186,16 +184,20 @@ var Control;
                     instancefact.Dimensions.forEach(function (dimension, ix) {
                         SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
                     });
-                    var $factdetail = me.SelFromFact(s_detail_selector);
-                    BindX($factdetail, instancefact);
-                    $factdetail.show();
+                    if (me.ui_factdetail == null) {
+                        me.ui_factdetail = me.SelFromFact(s_detail_selector)[0];
+                    }
+                    BindX(me.ui_factdetail, instancefact);
+                    _Show(me.ui_factdetail);
+                    app.ShowOnBottomTab(me.ui_factdetail, "#tab_fact");
                 }
             }
         };
         InstanceContainer.prototype.CloseFactDetails = function () {
             var me = this;
-            var $factdetail = me.SelFromFact(s_detail_selector);
-            $factdetail.hide();
+            _Hide(me.ui_factdetail);
+            //var $factdetail = me.SelFromFact(s_detail_selector);
+            //$factdetail.hide();
         };
         InstanceContainer.prototype.ShowValidationResults = function () {
             var me = this;
@@ -268,26 +270,18 @@ var Control;
             }
         };
         InstanceContainer.prototype.ShowRuleDetail = function (ruleid) {
-            var showvaldetail = function () {
-                $valdetail.show();
-                var $rulecontainer = me.SelFromValidation(".validationrule_results_" + ruleid);
-                $rulecontainer.append($valdetail);
-                $valdetail.focus();
-            };
             var me = this;
             var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
-            var $valdetail = me.SelFromValidation(s_detail_selector);
-            if ($valdetail.is(':visible')) {
-                $valdetail.hide();
+            if (me.ui_vruledetail == null) {
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector)[0];
             }
-            else {
-                if (ruleid == previousruleid) {
-                    showvaldetail();
-                }
+            if (ruleid == previousruleid) {
+                _Show(me.ui_vruledetail);
             }
             if (ruleid != previousruleid) {
                 var rule = this.ValidationErrors.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
-                BindX(me.SelFromValidation(s_parent_selector), rule);
+                var parent = $(s_parent_selector, me.ui_vruledetail);
+                BindX(parent, rule);
                 LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
@@ -297,13 +291,13 @@ var Control;
                         $(this).addClass("hmax30");
                     }
                 });
-                showvaldetail();
+                _Show(me.ui_vruledetail);
+                app.ShowOnBottomTab(me.ui_vruledetail, "#tab_vrule");
             }
         };
         InstanceContainer.prototype.CloseRuleDetail = function () {
             var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
+            _Hide(me.ui_vruledetail);
         };
         InstanceContainer.prototype.HashChanged = function () {
         };

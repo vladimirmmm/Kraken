@@ -696,6 +696,7 @@ namespace XBRLProcessor.Models
             {
                 FileID = FileID.Remove(FileID.IndexOf("-lab-") + 5);
             }
+   
             var newlabel = new LogicalModel.Label();
             newlabel.LabelID = labelid;
             newlabel.Lang = lang;
@@ -712,15 +713,26 @@ namespace XBRLProcessor.Models
             else 
             {
             }
-            if (role.In(Roles.LabelCodeRoles))
+            var handled = false;
+       
+            if (!handled && role.In(Roles.LabelCodeRoles))
             {
                 label.Code = labeltext;
+                handled = true;
+
             }
-            if (role.In(Roles.LabelTextRoles))
+            if (!handled && role.In(Roles.LabelTextRoles))
             {
                 label.Content = labeltext;
-            }
+                handled = true;
 
+            }
+            if (!handled && role.In(Roles.FindRoles))
+            {
+                label.Type = LogicalModel.Literals.FilingIndicator;
+                label.Content = labeltext;
+                handled = true;
+            }
             return result;
         }
 
@@ -805,16 +817,6 @@ namespace XBRLProcessor.Models
                 }
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
-
-                var tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.Item.TableIDs.Contains(logicaltable.ID));
-                if (tablegroup != null)
-                {
-                    logicaltable.FilingIndicator = tablegroup.Item.FilingIndicator;
-                }
-                else 
-                {
-
-                }
              
                 //for debug
                 Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));

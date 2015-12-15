@@ -2,6 +2,7 @@
 var logitems: number = 0;
 function Log(item:string)
 {
+    item = IsNull(item) ? "" : item;
     logitems++;
     var element = _SelectFirst("#contentlog");
 
@@ -14,7 +15,10 @@ function Log(item:string)
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
-
+function LoadTab(tabselector: string, contentselector: string) {
+    var index = $('a[href=' + contentselector + ']', tabselector).parent().index();
+    $(tabselector).tabs("option", "active", index);
+}
 
 function BrowseFile(callback: Function)
 {

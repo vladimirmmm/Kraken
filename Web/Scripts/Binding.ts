@@ -3,6 +3,7 @@ var S_Bind_Start = "$bind:";
 var S_Bind_End = "$";
 
 class TemplateDictionaryItem {
+    //public Item: Element = null;
     public Item: JQuery = null;
     public Template: BindingTemplate = null;
 }
@@ -206,26 +207,29 @@ function GetBindingTemplate(target: JQuery) {
 
 
 
-function BindX(item: JQuery, data: Object) {
-    if (item.length == 0) {
-        ShowNotification("BindX: " + item.selector + " has no items!");
+function BindX(item: any, data: Object) {
+    var jitem = $(item);
+    if (jitem.length == 0) {
+        ShowNotification("BindX: " + jitem.selector + " has no items!");
     } else {
         var bt: BindingTemplate = null;
-        var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>().FirstOrDefault(i=> i.Item[0] == item[0]);
+        var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>()
+            .FirstOrDefault(i=> i.Item[0] == jitem[0]);
         if (templatedictionaryitem == null) {
-            if (item.length > 0) {
-                bt = GetBindingTemplate(item);
+            if (jitem.length > 0) {
+                bt = GetBindingTemplate(jitem);
                 templatedictionaryitem = new TemplateDictionaryItem();
-                templatedictionaryitem.Item = item;
+                templatedictionaryitem.Item = jitem;//.clone()[0];
                 templatedictionaryitem.Template = bt;
                 TemplateDictionary.push(templatedictionaryitem);
             } else {
-                console.log(item.selector + " was not found! (BindX)");
+                console.log(jitem.selector + " was not found! (BindX)");
             }
         } else {
             bt = templatedictionaryitem.Template;
         }
-        item.html(bt.Bind(data));
+        jitem.html(bt.Bind(data));
+        jitem.removeAttr("binding-type");
         //item[0].innerHTML = bt.Bind(data);
     }
 }

@@ -23,9 +23,7 @@
     <script src="Scripts\JqueryUtils.js" type="text/javascript"></script>
     <script src="Scripts\Binding.js" type="text/javascript"></script>
 
-    <script src="Scripts\Info.js" type="text/javascript"></script>
     <script src="Scripts\AppItems.js" type="text/javascript"></script>
-    <script src="Scripts\Info.js" type="text/javascript"></script>
     <script src="Scripts\Factories.js" type="text/javascript"></script>
     <script src="Scripts\Interfaces.js" type="text/javascript"></script>
 
@@ -113,11 +111,12 @@
 
                                         <ul id="TaxCommands" class="commands">
                                             <li>
-                                                <a href="#T_Labels" onclick="app.taxonomycontainer.LoadContentToUI(this)">Labels</a>
-                                            </li>
-                                            <li>
                                                 <a href="#T_Facts" onclick="app.taxonomycontainer.LoadContentToUI(this)">Facts</a>
                                             </li>
+                                            <li>
+                                                <a href="#T_Labels" onclick="app.taxonomycontainer.LoadContentToUI(this)">Labels</a>
+                                            </li>
+                                        
                                             <li>
                                                 <a href="#T_Concepts" onclick="app.taxonomycontainer.LoadContentToUI(this);">Concepts</a>
                                             </li>
@@ -230,22 +229,24 @@
             </tbody>
         </table>
     </div>
-
+    <div id="tempcontainer" class="hidden"></div>
     <div id="LogWindow">
         <!--<span id="resizable-helper">Log Window</span>-->
         <ul>
             <li><a href="#tab_logs">Logs</a></li>
             <li><a href="#tab_cell">Cell Info</a></li>
+            <li><a href="#tab_fact">Fact</a></li>
+            <li><a href="#tab_vrule">Validation</a></li>
             <li>
                 <progress id="progressbar" class="hidden"></progress>
             </li>
         </ul>
-        <div id="tab_logs">
+        <div id="tab_logs" class="tabdiv">
             <div id="contentlog" tabindex="0">
 
             </div>
         </div>
-        <div id="tab_cell">
+        <div id="tab_cell" class="tabdiv">
             <div id="CellInfo" class="hidden">
                 <span>$bind:CellID: {CellID}$</span><br />
                 <span>$bind:Report: {Report}$</span><br />
@@ -254,6 +255,12 @@
                 <span>$bind:Column: {Column}$</span><br />
                 <span>$bind:Fact: {FactString}$</span><br />
             </div>
+        </div>
+        <div id="tab_fact" class="tabdiv">
+
+        </div>
+        <div id="tab_vrule" class="tabdiv">
+
         </div>
     </div>
 

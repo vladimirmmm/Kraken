@@ -89,6 +89,10 @@ table.report tbody td.data {
     {
         background:#efdd7a;
     }
+    table.report td.editing {
+            background:#ffffff;
+
+    }  
     table.report td.data 
     {
         min-width:120px;
@@ -112,9 +116,12 @@ table.report tbody td.data {
     table.report tbody tr:nth-child(2n-1) {
         background-color:#cecece;
     }
-     table.report tbody tr:nth-child(2n-1) td.key{
+    table.report tbody tr:nth-child(2n-1) td.key{
         background-color:#dcd6b8;
     }
+    table.report tbody tr:nth-child(2n-1) td.editing {
+        background:#ffffff;
+    }  
 
 body {
     font-family: 'Segoe UI',Verdana;
@@ -803,9 +810,10 @@ select.celleditor {
 	right: -5px;
 	top: -5px;
 }
-#tab_logs {
+.tabdiv {
      height:calc(100% - 40px);
 }
+
 .center-window {
     background:#ffffff;
     border:solid 1px #808080;

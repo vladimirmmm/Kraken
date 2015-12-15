@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace LogicalModel
         public string _Code = "";
         public string _Lang = "";
         public string _FileName = "";
+        public string _Type = "";
 
         public static void SetLabelPrefix(string prefix) 
         {
@@ -28,7 +30,15 @@ namespace LogicalModel
         {
             get { return String.Format("{0} [{1}] {2}", _LabelID, _Code, _Content);  }
         }
-
+        [DefaultValue("")]
+        public string Type
+        {
+            get { return _Type; }
+            set
+            {
+                _Type = value;
+            }
+        }
         public string LocalID
         {
             get { return _LocalID; }

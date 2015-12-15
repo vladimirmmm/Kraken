@@ -535,7 +535,7 @@ class Editor {
         var containerlineheight = Target.css('line-height');
         var containerbackgroundcolor = Target.parent().css('background-color');
 
-        //this.$Me.width(containerwidth);
+        this.$Me.width(containerwidth);
         //this.$Me.css("width", "100%");
         if (containerheight >0) {
             this.$Me.css("height",containerheight);
@@ -563,7 +563,9 @@ class Editor {
         this.$Me.focus();
         if (IsNull(this.CustomTrigger)) {
             this.$Me.blur(function () {
-                me.Save();
+                if (!window["keepcelleditoropen"]) {
+                    me.Save();
+                }
                 return true;
             });
         }

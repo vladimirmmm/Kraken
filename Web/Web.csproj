@@ -196,18 +196,8 @@
     <Content Include="Scripts\Binding.js" />
     <Content Include="Scripts\Factories.js" />
     <Content Include="Scripts\Formatter.js" />
-    <Content Include="Scripts\Info.js">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Info.tt</DependentUpon>
-    </Content>
     <Content Include="Scripts\Instance.js" />
     <Content Include="Scripts\Interfaces.js" />
-    <Content Include="Scripts\Info.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Info.js</LastGenOutput>
-      <TransformOnBuild>True</TransformOnBuild>
-    </Content>
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

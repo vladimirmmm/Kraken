@@ -163,6 +163,19 @@ module Applications
 
         }
 
+        public ShowOnBottomTab(element:Element, tabselector:string)
+        {
+            var tmpcontainer = _SelectFirst("#tempcontainer");
+            var tab = _SelectFirst(tabselector);
+            var children = _Children(tab);
+            children.forEach(function (child) {
+                _Append(tmpcontainer, child);
+            });
+            _Append(tab, element);
+            LoadTab("#LogWindow", tabselector);
+           
+        }
+
         public Load()
         {
             var me = this;

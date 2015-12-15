@@ -1,6 +1,7 @@
 /// <reference path="typings/jquery/jquery.d.ts" />
 var logitems = 0;
 function Log(item) {
+    item = IsNull(item) ? "" : item;
     logitems++;
     var element = _SelectFirst("#contentlog");
     if (logitems > 1000) {
@@ -10,6 +11,10 @@ function Log(item) {
     item = Replace(item.trim(), "\r\n", "<br/>");
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
+}
+function LoadTab(tabselector, contentselector) {
+    var index = $('a[href=' + contentselector + ']', tabselector).parent().index();
+    $(tabselector).tabs("option", "active", index);
 }
 function BrowseFile(callback) {
     var uploader = _SelectFirst("#fileuploader");

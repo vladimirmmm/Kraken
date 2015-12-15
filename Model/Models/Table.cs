@@ -322,6 +322,20 @@ namespace LogicalModel
 
         public void LoadDefinitions() 
         {
+            var folder = this.FolderName;
+            var findlabel = Taxonomy.TaxonomyLabels.FirstOrDefault(
+                i => i.Type == Literals.FilingIndicator && i.FileName == folder);
+
+            if (findlabel != null)
+            {
+                this.FilingIndicator = findlabel.Content;
+            }
+            else 
+            {
+                Logger.WriteLine(String.Format("Filing Indicator not found for table {0}", this.ID));
+            }
+      // " http://www.eurofiling.info/xbrl/role/filing-indicator-code"
+
             var slices = new List<IEnumerable<QualifiedName>>();
             var sb_fact = new StringBuilder();
             FactKeys.Clear();

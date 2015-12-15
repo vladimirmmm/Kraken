@@ -49,6 +49,7 @@
     <Compile Include="Expression\Parser.cs" />
     <Compile Include="Helpers\FileManager.cs" />
     <Compile Include="Helpers\QNameHelper.cs" />
+    <Compile Include="Literals.cs" />
     <Compile Include="Models\BaseClasses.cs" />
     <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\Dimensions\DimensionDomain.cs" />
