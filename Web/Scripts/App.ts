@@ -106,11 +106,14 @@ module Applications
                         Log("SignalR Hub started")
                     });
                 }
+                StopProgress("layout");
              
             };
 
             var waiter: General.Waiter = new General.Waiter((i: RequestHandler) => i.succeded, funcloader);
             //$(s_content_selector).hide();
+            StartProgress("layout");
+
             $containers.each(function (ix, item) {
                 var $item = $(item);
                 var contanerid = $item.attr("container-for");
