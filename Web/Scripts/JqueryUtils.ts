@@ -20,27 +20,59 @@ function LoadTab(tabselector: string, contentselector: string) {
     $(tabselector).tabs("option", "active", index);
 }
 
+function Toggle(element: Element, property: string, values: string[])
+{
+    if (property == "position")
+    {
+        var jelement = $(element).parent();
+        var current = jelement.css("position");
+        var ix = values.indexOf(current);
+        ix = ix < 0 ? 0 : (ix + 1) % values.length;
+        jelement.css("position", values[ix]);
+    }
+}
+
 function BrowseFile(callback: Function)
 {
-    var uploader = _SelectFirst("#fileuploader");
-    _EnsureEventHandler(uploader, "change", function () {
-        var file = _Value(uploader);
-        Log("file: " + file);
-        CallFunction(callback, [file]);
-    });
-    $(uploader).click();
+    if (IsDesktop()) {
+        var me = this;
+        AjaxRequest("Browse/File", "get", "text/html", { }, function (data) {
+            var file = <string>data;
+            Log("file: " + file);
+            CallFunction(callback, [file]);
+        },null);
+    }
+    else {
+        var uploader = _SelectFirst("#fileuploader");
+        _EnsureEventHandler(uploader, "change", function () {
+            var file = _Value(uploader);
+            Log("file: " + file);
+            CallFunction(callback, [file]);
+        });
+        $(uploader).click();
+    }
 
 }
 function BrowseFolder(callback: Function) {
-    var uploader = _SelectFirst("#fileuploader");
-    _EnsureEventHandler(uploader, "change", function () {
-        var file = _Value(uploader);
-        var lastsep = file.lastIndexOf("\\") + 1;
-        var folder = file.substring(0, lastsep);
-        Log("Folder: " + folder);
-        CallFunction(callback, [folder]);
-    });
-    $(uploader).click();
+    if (IsDesktop()) {
+        var me = this;
+        AjaxRequest("Browse/Folder", "get", "text/html", {}, function (data) {
+            var file = <string>data;
+            Log("folder: " + file);
+            CallFunction(callback, [file]);
+        }, null);
+    }
+    else {
+        var uploader = _SelectFirst("#fileuploader");
+        _EnsureEventHandler(uploader, "change", function () {
+            var file = _Value(uploader);
+            var lastsep = file.lastIndexOf("\\") + 1;
+            var folder = file.substring(0, lastsep);
+            Log("Folder: " + folder);
+            CallFunction(callback, [folder]);
+        });
+        $(uploader).click();
+    }
 
 }
 jQuery.fn.selectText = function () {
@@ -98,8 +130,10 @@ function Select(sender): any {
     return sender;
 }
 
-function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, pagesize: number, events?: Object) {
+function LoadPage(bindtarget: Element, pager: Element, data: any, page: number, pagesize: number, events?: Object) {
     var me = this;
+    var $bindtarget = $(bindtarget);
+    var $pager = $(pager);
     var startix = pagesize * page;
     var endix = startix + pagesize;
     var itemspart = GetPart(data, startix, endix);
@@ -121,7 +155,7 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, 
                 next_show_always: true,
                 callback: function (pageix) {
                     CallFunctionFrom(events, "onpaging");
-                    LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
+                    LoadPage(bindtarget, pager, data, pageix, pagesize, events);
                     CallFunctionFrom(events, "onpaged");
                     return false;
                 },
@@ -132,10 +166,12 @@ function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, 
 
 }
 
-function LoadPageAsync($bindtarget: JQuery, $pager: JQuery,
+function LoadPageAsync(bindtarget: Element, pager: Element,
     functionwithcallback: General.FunctionWithCallback,
     page: number, pagesize: number, parameters:Object, events?: Object) {
     var me = this;
+    var $bindtarget = $(bindtarget);
+    var $pager = $(pager);
     var startix = pagesize * page;
     var endix = startix + pagesize;
     functionwithcallback.Callback = (result: DataResult) => {
@@ -157,7 +193,7 @@ function LoadPageAsync($bindtarget: JQuery, $pager: JQuery,
                     next_show_always: true,
                     callback: function (pageix) {
                         CallFunctionFrom(events, "onpaging");
-                        LoadPageAsync($bindtarget, $pager, functionwithcallback,
+                        LoadPageAsync(bindtarget, pager, functionwithcallback,
                             pageix, pagesize, parameters, events);
                         CallFunctionFrom(events, "onpaged");
                         return false;

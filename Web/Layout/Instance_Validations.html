@@ -16,7 +16,9 @@
 </ul>
 
 
-<div class="detail" >
+<div class="detail absolutetabcontent hidden">
+    <a href="javascript:void(0)" onclick="Toggle(this, 'position', ['static','absolute']);">&nbsp;Minimize/Maximize</a>
+
     <div class="parent" binding-type="template">
         <span class="rule" rule-id="$bind:ID$"></span>
         <div class="hmax30 trimmed">
@@ -52,34 +54,7 @@
             </table>
         </li>
     </ul>
-    <!--
-         <ul class="sublist">
-        <li binding-type="template">
-            <table binding-items="Parameters">
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Cells</th>
-                </tr>
-                <tr binding-type="template">
-                    <td>$bind:Name$</td>
-                    <td class="right">$bind:Value$</td>
-                    <td binding-items="CellsOfFacts">
-                        <ul binding-items="this" binding-type="template">
-                            <li>
-                                <a binding-type="template" href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.NavigateTo('{this}')$">
-                                    $bind:this$
-                                </a>
-                            </li>
-                        </ul>
-
-                    </td>
-
-                </tr>
-            </table>
-        </li>
-    </ul>
-    -->
+  
     <div class="sublistpager pagination">
 
     </div>

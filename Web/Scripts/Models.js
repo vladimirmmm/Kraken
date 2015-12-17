@@ -571,7 +571,7 @@ var Model;
             this.FactList = [];
             this.Module = null;
             this.Concepts = [];
-            this.Hierarchies = [];
+            this.Hierarchies = null;
             this.ConceptValues = [];
         }
         return Taxonomy;

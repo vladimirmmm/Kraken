@@ -75,22 +75,20 @@
                         <div id="menucontainer" class="horizontal"></div>
                     </th>
                 </tr>
-                <tr class="colHeaders">
+                <!--<tr class="colHeaders">
                     <th id="colgroup1h" class="th1 hresizable">
                         &nbsp;
-                        <!--<div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>-->
                     </th>
                     <th id="colgroup2h" class="th2 ">
                         &nbsp;
-                        <!--<div class="resizeHelper ui-resizable-handle ui-resizable-e">&nbsp;</div>-->
                     </th>
-                </tr>
+                </tr>-->
             </thead>
             <tbody>
                 <tr>
-                    <td class="th2">
+                    <td class="th2" id="resizablecol1">
                         <!-- href="#tab_logs" -->
-                        <div id="Contents" class="pivotitem vresizable">
+                        <div id="Contents" class=" vresizable">
                             <div id="MainContainer" class="contentcontainer">
                                 <ul id="MainCommands" class="commands">
                                     <li>
@@ -104,7 +102,7 @@
                                     </li>
 
                                 </ul>
-                                <div id="Tables" class="contentcontainer vresizable" container-for="Taxonomy_Tables">
+                                <div id="Tables" class="pivotitem vresizable" container-for="Taxonomy_Tables">
 
                                 </div>
                                     <div id="TaxonomyContainer" class="contentcontainer subcontent">
@@ -133,22 +131,25 @@
                                                 <a href="#T_Settings" onclick="app.taxonomycontainer.LoadContentToUI(this);">Settings</a>
                                             </li>
                                         </ul>
-                                        <div id="T_Labels" class="subcontent" container-for="Taxonomy_Labels">
+                                        <div id="T_Labels" class="subcontent pivotitem" container-for="Taxonomy_Labels">
 
 
                                         </div>
 
-                                        <div id="T_Validations" class="subcontent" container-for="Taxonomy_Validations">
+                                        <div id="T_Validations" class="subcontent pivotitem" container-for="Taxonomy_Validations">
 
                                         </div>
 
-                                        <div id="T_Facts" class="subcontent" container-for="Taxonomy_Facts">
+                                        <div id="T_Facts" class="subcontent pivotitem" container-for="Taxonomy_Facts">
 
                                         </div>
-                                        <div id="T_General" class="subcontent" container-for="Taxonomy_General">
+                                        <div id="T_General" class="subcontent pivotitem" container-for="Taxonomy_General">
 
                                         </div>
-                                        <div id="T_Hierarchies" class="subcontent" container-for="Taxonomy_Hierarchy">
+                                        <div id="T_Hierarchies" class="subcontent pivotitem" container-for="Taxonomy_Hierarchy">
+
+                                        </div>
+                                        <div id="T_Concepts" class="subcontent pivotitem" container-for="Taxonomy_Concepts">
 
                                         </div>
                                     </div>
@@ -176,29 +177,29 @@
                                                 <a href="#I_Settings" onclick="app.instancecontainer.LoadContentToUI(this);">Settings</a>
                                             </li>
                                         </ul>
-                                        <div id="I_Facts" class="subcontent" container-for="Instance_Facts">
+                                        <div id="I_Facts" class="subcontent pivotitem" container-for="Instance_Facts">
 
                                         </div>
 
 
-                                        <div id="I_Validations" class="subcontent" container-for="Instance_Validations">
+                                        <div id="I_Validations" class="subcontent pivotitem" container-for="Instance_Validations">
 
                                         </div>
 
-                                        <div id="I_Units" class="subcontent" container-for="Instance_Units">
+                                        <div id="I_Units" class="subcontent pivotitem" container-for="Instance_Units">
 
                                         </div>
 
-                                        <div id="I_General" class="general subcontent" container-for="Instance_General">
+                                        <div id="I_General" class="general subcontent pivotitem" container-for="Instance_General">
 
 
                                         </div>
 
-                                        <div id="I_Finds" class="subcontent" container-for="Instance_Finds">
+                                        <div id="I_Finds" class="subcontent pivotitem" container-for="Instance_Finds">
 
                                         </div>
 
-                                        <div id="I_Settings" class="subcontent" container-for="Instance_Finds">
+                                        <div id="I_Settings" class="subcontent pivotitem" container-for="Instance_Finds">
 
                                         </div>
 
@@ -221,7 +222,7 @@
                         <div container-for="App_Settings">
 
                         </div>
-                        <div id="fileuploadcontainer">
+                        <div id="fileuploadcontainer" class="hidden">
                             <input type="file" id="fileuploader" defaultvalue="." />
                         </div>
                     </td>

@@ -27,7 +27,7 @@ namespace Engine.Services
         }
         public Message ProcessRequest(Message request)
         {
-            Logger.WriteLine("ProcessRequest " + request.Url);
+            //Logger.WriteLine("ProcessRequest " + request.Url);
             Message result = new Message();
             result.Id = request.Id;
             result.Url = request.Url;
@@ -126,6 +126,20 @@ namespace Engine.Services
                                 result.Data = json;
                             }
                         }
+                    } 
+                    if (part0 == "browse")
+                    {
+                        var json = "";
+                        if (part1 == "file")
+                        {
+                            json = AppEngine.Features.UI.BrowseFile("","");
+                        }
+                        if (part1 == "folder")
+                        {
+                            json = AppEngine.Features.UI.BrowseFolder("");
+
+                        }
+                        result.Data = json;
                     }
                     if (part0 == "taxonomy")
                     {

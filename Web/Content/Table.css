@@ -349,7 +349,7 @@ th.dynamicdata {
     overflow: auto;
     min-height: 200px;
     max-height: 700px;
-    width: 100%;
+    width: calc(100% - 20px);
 }
 
 iframe {
@@ -812,6 +812,7 @@ select.celleditor {
 }
 .tabdiv {
      height:calc(100% - 40px);
+     overflow:auto;
 }
 
 .center-window {
@@ -820,4 +821,17 @@ select.celleditor {
     padding:10px;
     position: absolute;
  
+}
+.absolutetabcontent {
+
+    position:absolute;
+    bottom:0px;
+    left:450px;
+    padding:5px;
+    background:#ffffff;
+    border:solid 1px #000000;
+     width:calc(100% - 20px);
+
+
+
 }

@@ -21,8 +21,8 @@ class BindingTemplate {
     public IsRecursive: boolean = false;
     public PageSize: number = 0;
 
-    public Bind(data: Object): string {
-
+    public Bind(data: Object, level:number=0, maxlevel:number=-1): string {
+     
         var result_html: string = "";
         var me = this;
         //console.log("binding " + data);
@@ -32,6 +32,9 @@ class BindingTemplate {
         {
             children = [me.Parent];
             //result_html += me.Parent.Bind(data);
+        }
+        if (level > maxlevel && maxlevel > -1) {
+            return "";
         }
         children.forEach(function (child) {
             var accessorexpr =  child.AccessorExpression;
@@ -45,12 +48,12 @@ class BindingTemplate {
                 var hasdata = false;
 
                 var childfunc = function (item) {
-                    childitems += child.Bind(item);
+                    childitems += child.Bind(item, level + 1, maxlevel);
                     hasdata = true;
                 };
                 if (shouldenumerate) {
 
-                    EnumerateObject(items,me, childfunc);
+                    EnumerateObject(items, me, childfunc);
                     if (!hasdata) {
                         childitems = Bind_Replace(childitems, "@X@", "");
                     } else
@@ -60,7 +63,7 @@ class BindingTemplate {
                 }
                 else
                 {
-                    childitems += child.Bind(items);
+                    childitems += child.Bind(items, level + 1, maxlevel);
                 }
 
             
@@ -207,7 +210,7 @@ function GetBindingTemplate(target: JQuery) {
 
 
 
-function BindX(item: any, data: Object) {
+function BindX(item: any, data: Object, maxlevel:number=-1) {
     var jitem = $(item);
     if (jitem.length == 0) {
         ShowNotification("BindX: " + jitem.selector + " has no items!");
@@ -228,8 +231,25 @@ function BindX(item: any, data: Object) {
         } else {
             bt = templatedictionaryitem.Template;
         }
-        jitem.html(bt.Bind(data));
+        _Html(jitem[0], bt.Bind(data, 0, maxlevel));
         jitem.removeAttr("binding-type");
         //item[0].innerHTML = bt.Bind(data);
+    }
+}
+
+function GetBindingTemplateX(item: any): BindingTemplate
+{
+    var jitem = $(item);
+    if (jitem.length == 0) {
+        Log("BindX: " + jitem.selector + " has no items!");
+        return null;
+    } else {
+        var bt: BindingTemplate = null;
+        var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>()
+            .FirstOrDefault(i=> i.Item[0] == jitem[0]);
+        if (templatedictionaryitem != null) {
+            bt = templatedictionaryitem.Template;
+        }
+        return bt;
     }
 }

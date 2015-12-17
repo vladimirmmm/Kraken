@@ -616,13 +616,15 @@ function ToHierarchy(items, idproperty, parentproperty, rootid) {
     return Children;
 }
 ;
-function ForAll(hierarchy, childrenproperty, func) {
-    func(hierarchy);
+function ForAll(hierarchy, childrenproperty, func, parent, level) {
+    if (parent === void 0) { parent = null; }
+    if (level === void 0) { level = 0; }
+    func(hierarchy, parent, level);
     if (childrenproperty in hierarchy) {
         var children = hierarchy[childrenproperty];
         if (!IsNull(children) && IsArray(children)) {
             children.forEach(function (item) {
-                ForAll(item, childrenproperty, func);
+                ForAll(item, childrenproperty, func, hierarchy, level + 1);
             });
         }
     }

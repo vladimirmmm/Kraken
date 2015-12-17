@@ -37,23 +37,23 @@
             this.s_general_selector = "#" + this.s_general_id;
         }
 
-        public Sel(selector: any): JQuery
+        public Sel(selector: any): Element
         {
             var me = this;
-            return $(selector, "#" + me.s_main_id);
+            return _SelectFirst(selector, _SelectFirst("#" + me.s_main_id));
         }
 
-        public SelFrom(parentselector: any, selector: any): JQuery {
+        public SelFrom(parentselector: any, selector: any): Element {
             var me = this;
-            return $(selector, me.Sel(parentselector));
+            return _SelectFirst(selector, me.Sel(parentselector));
         }
-        public SelFromFact(selector: any): JQuery {
+        public SelFromFact(selector: any): Element {
             var me = this;
-            return $(selector, me.Sel(me.s_fact_selector));
+            return _SelectFirst(selector, me.Sel(me.s_fact_selector));
         }
-        public SelFromValidation(selector: any): JQuery {
+        public SelFromValidation(selector: any): Element {
             var me = this;
-            return $(selector, me.Sel(me.s_validation_selector));
+            return _SelectFirst(selector, me.Sel(me.s_validation_selector));
         }
 
         public SetExternals() {
@@ -147,8 +147,8 @@
 
         public ClearFilterFacts()
         {
-            this.SelFromFact(s_listfilter_selector + " " + "input[type=text]").val("");
-            this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "input[type=text]"), "");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "textarea"), "");
             this.FilterFacts();
         }
         private GetFilterValue(selector: string): string {
@@ -232,7 +232,7 @@
                         SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
                     });
                     if (me.ui_factdetail == null) {
-                        me.ui_factdetail = me.SelFromFact(s_detail_selector)[0];
+                        me.ui_factdetail = me.SelFromFact(s_detail_selector);
                     }
                     BindX(me.ui_factdetail, instancefact);
                     _Show(me.ui_factdetail);
@@ -342,9 +342,9 @@
         {
      
             var me = this;
-            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
+            var previousruleid = _Attribute(me.SelFromValidation(s_parent_selector + " .rule"), "rule-id");
             if (me.ui_vruledetail == null) {
-                me.ui_vruledetail = me.SelFromValidation(s_detail_selector)[0];
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector);
             }
 
             if (ruleid == previousruleid) {
@@ -356,8 +356,9 @@
                 var parent = $(s_parent_selector, me.ui_vruledetail);
 
                 BindX(parent, rule);
-
-                LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
+                var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
+                var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
+                LoadPage(list, listpager, rule.Results, 0, 1);
 
                 
 

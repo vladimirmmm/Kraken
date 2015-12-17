@@ -133,7 +133,7 @@ function SetPivots() {
     var accentcolor = $(".accentColor").css("color");
     setStyle(".selected {color: #a2c139} .ui-state-active>a {color: #a2c139}");
 
-    $("#colgroup1h").resizable({
+    $("#resizablecol1").resizable({
         handles: 'e',
         alsoResize: "#colgroup1",
         minWidth: 18
@@ -147,7 +147,10 @@ function SetPivots() {
     $("#LogWindow").resizable({
         handles: 'n',
         helper: "#resizable-helper",
-        minHeight: 50
+        minHeight: 50,
+        stop: function (event, ui) {
+            $(this).css("width", '');
+        }
     });
 
     $("#LogWindow").tabs({

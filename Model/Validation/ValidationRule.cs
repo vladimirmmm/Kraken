@@ -174,7 +174,7 @@ namespace LogicalModel.Validation
 
             }
             var conceptonlyresults = ValidationRuleResult.GetResultsForConceptOnly(this);
-            if (conceptonlyresults.Count > 1) 
+            if (conceptonlyresults.Count > 0) 
             {
                 results.AddRange(conceptonlyresults);
             }
@@ -354,9 +354,10 @@ namespace LogicalModel.Validation
                     
 
 
-                    var mainparameter = Parameters.FirstOrDefault(i => !i.IsGeneral);
-                    var parameterfactgroup = mainparameter.FactGroups[result.FactGroup.GetFactKey()];
-                    var fact = parameterfactgroup.FullFacts.FirstOrDefault();
+                    //var mainparameter = Parameters.FirstOrDefault(i => !i.IsGeneral);
+                    //var parameterfactgroup = mainparameter.FactGroups[result.FactGroup.GetFactKey()];
+                    var resultfactgroup = result.FactGroup;
+                    var fact = resultfactgroup.FullFacts.FirstOrDefault();
                     var instancefacts = instance.GetFacts(fact.GetFactKey());
                     foreach (var instancefact in instancefacts)
                     {
@@ -379,9 +380,31 @@ namespace LogicalModel.Validation
                         foreach (var p in dynamicresult.Parameters)
                         {
                             var rp = this.Parameters.FirstOrDefault(i => i.Name == p.Name);
+                            var key=resultfactgroup.GetFactKey();
+                            FactGroup parameterfactgroup = null;
+                            if (rp.FactGroups.ContainsKey(key))
+                            {
+                                parameterfactgroup = rp.FactGroups[key];
+                            }
+                            else 
+                            {
+                                if (rp.FactGroups.Count == 1)
+                                {
+                                    parameterfactgroup = resultfactgroup;
+                                }
+                                else 
+                                {
+                                }
+                            }
+
                             p.Facts.Clear();
                             p.CellsOfFacts.Clear();
-                            var rpfactgroup = rp.FactGroups[parameterfactgroup.GetFactKey()];
+                            //var rpfactgroup = rp.FactGroups[parameterfactgroup.GetFactKey()];
+                            if (rp.FactGroups.Count>1)
+                            {
+
+                            }
+                            var rpfactgroup = parameterfactgroup;
                             foreach (var rpfact in rpfactgroup.FullFacts)
                             {
                                 var newfact = new FactBase();

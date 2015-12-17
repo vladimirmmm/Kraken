@@ -124,10 +124,13 @@ namespace XBRLProcessor.Model
             if (valueassertion.ID.Contains("eba_v0648_m"))
             {
             }
-            var factgroups = GetGroups(hrule);
+            var factgroups = GetGroups(hrule, logicalrule);
             if (factgroups.Count == 1 &&  factgroups.FirstOrDefault().Concept!=null && factgroups.FirstOrDefault().GetFactKey().IndexOf("[") < 0) 
             {
+                /*
+                var mainfactgroup = factgroups.FirstOrDefault();
                 var factkey = factgroups.FirstOrDefault().GetFactKey();
+
                 var factsofconcept = Taxonomy.Facts.Where(i => i.Key.StartsWith(factkey)).ToList();
                 if (factsofconcept.Count > 0) 
                 {
@@ -137,13 +140,20 @@ namespace XBRLProcessor.Model
                 {
                     var factgroup = new LogicalModel.Base.FactGroup();
                     factgroup.SetFromString(factkvp.Key);
-                    factgroups.Add(factgroup);
+                    if (!mainfactgroup.Not(factgroup))
+                    {
+                        factgroups.Add(factgroup);
 
-                    var fb = new LogicalModel.Base.FactBase();
-                    fb.SetFromString(factkvp.Key);
-                    factgroup.Facts.Add(fb);
+                        var fb = new LogicalModel.Base.FactBase();
+                        fb.SetFromString(factkvp.Key);
+                        factgroup.Facts.Add(fb);
+                    }
+                    else 
+                    {
+
+                    }
                 }
-
+                */
             }
        
             foreach (var fv in factvariables) 

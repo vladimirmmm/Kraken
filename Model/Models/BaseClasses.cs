@@ -322,7 +322,7 @@ namespace LogicalModel.Base
             get { return GetFullFacts(); } 
            // set { _Facts = value; } 
         }
-
+        public Func<FactBase, bool> Not = (f) => false;
         public void SetFacts(List<FactBase> facts) 
         {
             _Facts = facts;

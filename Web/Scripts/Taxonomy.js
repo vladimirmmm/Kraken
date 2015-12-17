@@ -20,6 +20,8 @@ var Control;
             this.s_find_id = "T_Filing";
             this.s_general_id = "T_General";
             this.s_main_id = "TaxonomyContainer";
+            this.s_concept_selector = "";
+            this.s_hierarchy_selector = "";
             this.s_fact_selector = "";
             this.s_label_selector = "";
             this.s_validation_selector = "";
@@ -29,6 +31,8 @@ var Control;
             this.ui_factdetail = null;
             this.ui_vruledetail = null;
             this.FactServiceFunction = null;
+            this.s_concept_selector = "#" + this.s_concept_id;
+            this.s_hierarchy_selector = "#" + this.s_hierarchy_id;
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_label_selector = "#" + this.s_label_id;
             this.s_validation_selector = "#" + this.s_validation_id;
@@ -59,23 +63,31 @@ var Control;
         };
         TaxonomyContainer.prototype.Sel = function (selector) {
             var me = this;
-            return $(selector, "#" + me.s_main_id);
+            return _SelectFirst(selector, _SelectFirst("#" + me.s_main_id));
         };
         TaxonomyContainer.prototype.SelFrom = function (parentselector, selector) {
             var me = this;
-            return $(selector, me.Sel(parentselector));
+            return _SelectFirst(selector, me.Sel(parentselector));
         };
         TaxonomyContainer.prototype.SelFromLabel = function (selector) {
             var me = this;
-            return $(selector, me.Sel(me.s_label_selector));
+            return _SelectFirst(selector, me.Sel(me.s_label_selector));
+        };
+        TaxonomyContainer.prototype.SelFromConcept = function (selector) {
+            var me = this;
+            return _SelectFirst(selector, me.Sel(me.s_concept_selector));
+        };
+        TaxonomyContainer.prototype.SelFromHierarchy = function (selector) {
+            var me = this;
+            return _SelectFirst(selector, me.Sel(me.s_hierarchy_selector));
         };
         TaxonomyContainer.prototype.SelFromFact = function (selector) {
             var me = this;
-            return $(selector, me.Sel(me.s_fact_selector));
+            return _SelectFirst(selector, me.Sel(me.s_fact_selector));
         };
         TaxonomyContainer.prototype.SelFromValidation = function (selector) {
             var me = this;
-            return $(selector, me.Sel(me.s_validation_selector));
+            return _SelectFirst(selector, me.Sel(me.s_validation_selector));
         };
         TaxonomyContainer.prototype.SetExternals = function () {
             var me = this;
@@ -90,13 +102,14 @@ var Control;
             });
             AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
                 me.TableStructure = data;
-                ForAll(me.TableStructure, "Children", function (item) {
+                ForAll(me.TableStructure, "Children", function (item, parent) {
                     if (!IsNull(item) && !IsNull(item.Item)) {
                         item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
+                        item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
                     }
                 });
-                BindX($("#tabletreeview"), me.TableStructure);
+                BindX($("#tabletreeview"), me.TableStructure, 5);
             }, function (error) {
                 console.log(error);
             });
@@ -107,7 +120,13 @@ var Control;
             });
             me.LoadValidationResults(null);
             AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
-                me.Taxonomy.Hierarchies = data;
+                var hierarchy = new Model.Hierarchy();
+                hierarchy.Item = new Model.QualifiedItem();
+                hierarchy.Item.ID = "Root";
+                hierarchy.Item.Label = new Model.Label();
+                hierarchy.Item.Label.Content = "Hierarchies";
+                hierarchy.Children = data;
+                me.Taxonomy.Hierarchies = hierarchy;
                 me.LoadConceptValues();
             }, function (error) {
                 console.log(error);
@@ -120,8 +139,10 @@ var Control;
             me.FactServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
                 var p = args[0];
                 AjaxRequest("Taxonomy/Facts", "get", "json", p, function (data) {
-                    me.CurrentFacts = data.Items;
-                    fwc.Callback(data);
+                    if (!IsNull(data.Items)) {
+                        me.CurrentFacts = data.Items;
+                        fwc.Callback(data);
+                    }
                 }, null);
             });
         };
@@ -164,6 +185,20 @@ var Control;
             }
             if (contentid == "Taxonomy") {
             }
+            if (contentid == me.s_concept_id) {
+                LoadPage(me.SelFromConcept(s_list_selector), me.SelFromConcept(s_listpager_selector), me.Taxonomy.Concepts, 0, me.LPageSize);
+            }
+            if (contentid == me.s_hierarchy_id) {
+                ForAll(me.Taxonomy.Hierarchies, "Children", function (item, parent, level) {
+                    if (!IsNull(item) && !IsNull(item.Item)) {
+                        item.Item["CssClass"] = level > 2 ? "hidden" : "";
+                        item["uid"] = IsNull(parent) ? item.Item.Content : parent["uid"] + ">" + item.Item.Content;
+                    }
+                });
+                StartProgress("hierarhcy");
+                BindX(me.SelFromHierarchy("#hierarchytreeview"), me.Taxonomy.Hierarchies, 2);
+                StopProgress("hierarhcy");
+            }
             if (contentid == me.s_label_id) {
                 LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
             }
@@ -181,6 +216,44 @@ var Control;
                 }
             }
         };
+        TaxonomyContainer.prototype.LoadHierarchy = function () {
+            var me = this;
+            var target = event.target;
+            if (_TagName(target).toLowerCase() != "li") {
+                target = _Parents(target).AsLinq().FirstOrDefault(function (i) { return _TagName(i).toLowerCase() == "li"; });
+            }
+            var uid = _Attribute(target, "uid");
+            var data = Model.Hierarchy.FirstOrDefault(me.Taxonomy.Hierarchies, function (i) { return i["uid"] == uid; });
+            if (data.Children.length > 0) {
+                var template = GetBindingTemplateX(me.SelFromHierarchy("#hierarchytreeview"));
+                if (template != null) {
+                    var html = template.Bind(data, 0, 2);
+                    var elements = $.parseHTML(html);
+                    elements.forEach(function (e) {
+                        _Append(target, e);
+                    });
+                }
+            }
+        };
+        TaxonomyContainer.prototype.LoadTableInfo = function () {
+            var me = this;
+            var target = event.target;
+            if (_TagName(target).toLowerCase() != "li") {
+                target = _Parents(target).AsLinq().FirstOrDefault(function (i) { return _TagName(i).toLowerCase() == "li"; });
+            }
+            var uid = _Attribute(target, "uid");
+            var data = Model.Hierarchy.FirstOrDefault(me.TableStructure, function (i) { return i["uid"] == uid; });
+            if (!IsNull(data) && data.Children.length > 0) {
+                var template = GetBindingTemplateX(_SelectFirst("#tabletreeview"));
+                if (template != null) {
+                    var html = template.Bind(data, 0, 2);
+                    var elements = $.parseHTML(html);
+                    elements.forEach(function (e) {
+                        _Append(target, e);
+                    });
+                }
+            }
+        };
         TaxonomyContainer.prototype.ClearFilterLabels = function () {
             $("input[type=text]", "#LabelFilter ").val("");
             $("textarea", "#LabelFilter ").val("");
@@ -188,9 +261,9 @@ var Control;
         };
         TaxonomyContainer.prototype.FilterLabels = function () {
             var me = this;
-            var f_key = me.SelFromLabel(s_listfilter_selector + " #F_Key").val().toLowerCase().trim();
-            var f_code = me.SelFromLabel(s_listfilter_selector + " #F_Code").val().toLowerCase().trim();
-            var f_content = me.SelFromLabel(s_listfilter_selector + " #F_Content").val().toLowerCase().trim();
+            var f_key = _Value(me.SelFromLabel(s_listfilter_selector + " #F_Key")).toLowerCase().trim();
+            var f_code = _Value(me.SelFromLabel(s_listfilter_selector + " #F_Code")).toLowerCase().trim();
+            var f_content = _Value(me.SelFromLabel(s_listfilter_selector + " #F_Content")).toLowerCase().trim();
             var query = me.Taxonomy.Labels.AsLinq();
             if (!IsNull(f_content)) {
                 query = query.Where(function (i) { return i.Content.toLowerCase().indexOf(f_content) > -1; });
@@ -212,8 +285,8 @@ var Control;
         };
         TaxonomyContainer.prototype.FilterValidations = function () {
             var me = this;
-            var f_ruleid = me.SelFromValidation(s_listfilter_selector + " #F_RuleID").val().toLowerCase().trim();
-            var f_ruletext = me.SelFromValidation(s_listfilter_selector + " #F_RuleText").val().toLowerCase().trim();
+            var f_ruleid = _Value(me.SelFromValidation(s_listfilter_selector + " #F_RuleID")).toLowerCase().trim();
+            var f_ruletext = _Value(me.SelFromValidation(s_listfilter_selector + " #F_RuleText")).toLowerCase().trim();
             var query = me.Taxonomy.ValidationRules.AsLinq();
             if (!IsNull(f_ruletext)) {
                 query = query.Where(function (i) { return i.DisplayText.toLowerCase().indexOf(f_ruletext) > -1; });
@@ -228,8 +301,8 @@ var Control;
             LoadPage(me.SelFromValidation(s_list_selector), me.SelFromValidation(s_listpager_selector), query.ToArray(), 0, me.LPageSize, eventhandlers);
         };
         TaxonomyContainer.prototype.ClearFilterFacts = function () {
-            this.SelFromFact(s_listfilter_selector + " " + "input[type=text]").val("");
-            this.SelFromFact(s_listfilter_selector + " " + "textarea").val("");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "input[type=text]"), "");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "textarea"), "");
             this.FilterFacts();
         };
         TaxonomyContainer.prototype.GetFilterValue = function (selector) {
@@ -262,7 +335,7 @@ var Control;
                 });
                 fact.Cells = cells;
                 if (me.ui_factdetail == null) {
-                    me.ui_factdetail = me.SelFromFact(s_detail_selector)[0];
+                    me.ui_factdetail = me.SelFromFact(s_detail_selector);
                 }
                 BindX(me.ui_factdetail, fact);
                 _Show(me.ui_factdetail);
@@ -282,9 +355,9 @@ var Control;
         };
         TaxonomyContainer.prototype.ShowRuleDetail = function (ruleid) {
             var me = this;
-            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
+            var previousruleid = _Attribute(me.SelFromValidation(s_parent_selector + " .rule"), "rule-id");
             if (me.ui_vruledetail == null) {
-                me.ui_vruledetail = me.SelFromValidation(s_detail_selector)[0];
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector);
             }
             if (ruleid == previousruleid) {
                 _Show(me.ui_vruledetail);
@@ -302,8 +375,8 @@ var Control;
                             });
                         }
                     };
-                    var list = $(s_sublist_selector, me.ui_vruledetail);
-                    var listpager = $(s_sublistpager_selector, me.ui_vruledetail);
+                    var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
+                    var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
                     LoadPage(list, listpager, results, 0, 1, eventhandlers);
                 }, function (error) {
                     console.log(error);
@@ -412,10 +485,10 @@ var Control;
         TaxonomyContainer.prototype.LoadConceptValues = function () {
             var me = this;
             var concepts = GetPropertiesArray(me.Taxonomy.Concepts);
-            if (me.Taxonomy.Hierarchies.length > 0 && concepts.length > 0) {
+            if (!IsNull(me.Taxonomy.Hierarchies) && concepts.length > 0) {
                 me.ConceptValues = [];
                 var htemp = new Model.Hierarchy();
-                me.Taxonomy.Hierarchies.forEach(function (hierarchy) {
+                me.Taxonomy.Hierarchies.Children.forEach(function (hierarchy) {
                     Model.QualifiedItem.Set(hierarchy.Item);
                 });
                 concepts.forEach(function (concept) {
@@ -428,7 +501,7 @@ var Control;
                             && i.Item.Namespace == concept.Domain.Namespace
                             &&
                         */
-                        var hiers = me.Taxonomy.Hierarchies.AsLinq().Where(function (i) { return i.Item.Role == concept.HierarchyRole; });
+                        var hiers = me.Taxonomy.Hierarchies.Children.AsLinq().Where(function (i) { return i.Item.Role == concept.HierarchyRole; });
                         var hier = hiers.FirstOrDefault();
                         if (!IsNull(hier)) {
                             var clkp = new Model.ConceptLookUp();

@@ -22,7 +22,9 @@ var BindingTemplate = (function () {
         this.IsRecursive = false;
         this.PageSize = 0;
     }
-    BindingTemplate.prototype.Bind = function (data) {
+    BindingTemplate.prototype.Bind = function (data, level, maxlevel) {
+        if (level === void 0) { level = 0; }
+        if (maxlevel === void 0) { maxlevel = -1; }
         var result_html = "";
         var me = this;
         //console.log("binding " + data);
@@ -30,6 +32,9 @@ var BindingTemplate = (function () {
         var children = me.Children;
         if (!IsNull(me.Parent) && me.Parent.IsRecursive) {
             children = [me.Parent];
+        }
+        if (level > maxlevel && maxlevel > -1) {
+            return "";
         }
         children.forEach(function (child) {
             var accessorexpr = child.AccessorExpression;
@@ -40,7 +45,7 @@ var BindingTemplate = (function () {
                 var childitems = "";
                 var hasdata = false;
                 var childfunc = function (item) {
-                    childitems += child.Bind(item);
+                    childitems += child.Bind(item, level + 1, maxlevel);
                     hasdata = true;
                 };
                 if (shouldenumerate) {
@@ -52,7 +57,7 @@ var BindingTemplate = (function () {
                     }
                 }
                 else {
-                    childitems += child.Bind(items);
+                    childitems += child.Bind(items, level + 1, maxlevel);
                 }
                 if (result_html.indexOf(child.ID) > -1) {
                     result_html = Bind_Replace(result_html, child.ID, childitems);
@@ -176,7 +181,8 @@ function GetBindingTemplate(target) {
     }
     return roottemplate;
 }
-function BindX(item, data) {
+function BindX(item, data, maxlevel) {
+    if (maxlevel === void 0) { maxlevel = -1; }
     var jitem = $(item);
     if (jitem.length == 0) {
         ShowNotification("BindX: " + jitem.selector + " has no items!");
@@ -199,8 +205,23 @@ function BindX(item, data) {
         else {
             bt = templatedictionaryitem.Template;
         }
-        jitem.html(bt.Bind(data));
+        _Html(jitem[0], bt.Bind(data, 0, maxlevel));
         jitem.removeAttr("binding-type");
+    }
+}
+function GetBindingTemplateX(item) {
+    var jitem = $(item);
+    if (jitem.length == 0) {
+        Log("BindX: " + jitem.selector + " has no items!");
+        return null;
+    }
+    else {
+        var bt = null;
+        var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == jitem[0]; });
+        if (templatedictionaryitem != null) {
+            bt = templatedictionaryitem.Template;
+        }
+        return bt;
     }
 }
 //# sourceMappingURL=Binding.js.map

@@ -13,9 +13,9 @@ namespace XBRLProcessor.Model
 {
     public partial class XbrlValidation
     {
-        public List<LogicalModel.Base.FactGroup> GetGroups(Hierarchy<XbrlIdentifiable> hrule)
+        public List<LogicalModel.Base.FactGroup> GetGroups(Hierarchy<XbrlIdentifiable> hrule, LogicalModel.Validation.ValidationRule rule)
         {
-            if (hrule.Item.ID.Contains("eba_v0648_m")) 
+            if (hrule.Item.ID.Contains("v0784_m")) 
             {
 
             }
@@ -49,12 +49,13 @@ namespace XBRLProcessor.Model
             //{
                 
             //}
-
-
+            var NotFunctions = new List<Func<LogicalModel.Base.FactBase, bool>>();
+            //rule_dimensionfilters = rule_dimensionfilters.Where(i=>i.Dimension.QName)
             var complementedrulefilters = rule_dimensionfilters.Where(i => i.Complement).ToList();
             foreach (var complementedrulefilter in complementedrulefilters)
             {
                 var explicitdimfilter = complementedrulefilter as ExplicitDimensionFilter;
+                var typeddimfilter = complementedrulefilter as TypedDimensionFilter;
                 if (explicitdimfilter != null)
                 {
 
@@ -75,6 +76,12 @@ namespace XBRLProcessor.Model
                     explicitdimfilter.Complement = false;
 
                 }
+
+                if (typeddimfilter != null)
+                {
+                    NotFunctions.Add((f) => f.Dimensions.Any(i => i.DimensionItem == typeddimfilter.Dimension.QName.Content));
+                }
+
             }
 
             rule_dimensionfilters = rule_dimensionfilters.Where(i => !i.Complement).ToList();
@@ -127,6 +134,7 @@ namespace XBRLProcessor.Model
                 factgroups.Add(factgroup);
                 factgroup.Dimensions.AddRange(complex_fact_dimensions.Where(i => !i.IsDefaultMemeber));
                 factgroup.Dimensions.AddRange(simple_rule_dimensions);
+                factgroup.Not = (f) => NotFunctions.Any(nf => nf(f));
                 FixDomains(factgroup.Dimensions);
                 factgroup.Concept = concept;
 
@@ -184,9 +192,11 @@ namespace XBRLProcessor.Model
                 allfactgroups.Add(x_fg);
 
             }
+
+            var result = new List<LogicalModel.Base.FactGroup>();
             if (allfactgroups.Count > 0)
             {
-                return allfactgroups;
+                result= allfactgroups;
             }
             else
             {
@@ -194,11 +204,13 @@ namespace XBRLProcessor.Model
                 {
                     fg.Dimensions = fg.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
                 }
-                return factgroups;
+                result= factgroups;
             }
+
+            return result;
         }
 
-        public List<LogicalModel.Base.FactBase> GetFacts(Hierarchy<XbrlIdentifiable> fv) 
+        public List<LogicalModel.Base.FactBase> GetFacts(Hierarchy<XbrlIdentifiable> fv ) 
         {
             var facts = new List<LogicalModel.Base.FactBase>();
             var factvariable = fv.Item as FactVariable;
@@ -263,53 +275,7 @@ namespace XBRLProcessor.Model
                 }
 
             }
-            /*
-            if (or_filters.Count == 0)
-            {
-
-
-                var param_concepts = GetConcepts(fv);
-                var param_dimensions = GetDimensions(fv).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
-                var groups = param_dimensions.GroupBy(i => i.DimensionItemWithDomain);
-
-                var simpledimensions = groups.Where(i => i.Count() == 1).SelectMany(i => i).ToList();
-                var dimensionsets = new List<IEnumerable<LogicalModel.Dimension>>();
-
-                var multigroups = groups.Where(i => i.Count() > 1).ToList();
-
-                var multidimensions = new List<List<LogicalModel.Dimension>>();
-                foreach (var group in multigroups)
-                {
-                    multidimensions.Add(group.ToList());
-
-                }
-
-                if (multidimensions.Count > 0)
-                {
-                    dimensionsets.AddRange(Utilities.MathX.CartesianProduct(multidimensions));
-
-                }
-                else
-                {
-                    dimensionsets.Add(new List<LogicalModel.Dimension>());
-
-                }
-                foreach (var dimensionset in dimensionsets)
-                {
-                    var fact = new LogicalModel.Base.FactBase();
-                    fact.Concept = param_concepts.Count == 1 ? param_concepts.FirstOrDefault() : null;
-                    fact.Dimensions.AddRange(dimensionset);
-                    fact.Dimensions.AddRange(simpledimensions);
-                    facts.Add(fact);
-                }
-
-            }
-            foreach (var fact in facts) 
-            {
-                FixDomains(fact.Dimensions);
-            }
-            return facts
-            */
+            
             foreach (var fact in multipliedfacts) 
             {
                 FixDomains(fact.Dimensions);

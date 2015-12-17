@@ -1,1 +1,12 @@
-﻿
+﻿<div id="hierarchytreeview" onclick="app.taxonomycontainer.LoadHierarchy(this)">
+    <ul class="treeview" binding-items="Children" binding-mode="recursive">
+        <li binding-type="template" uid="$bind:{uid}$">
+            <a href="javascript:void(0)" onclick="">
+                $bind:Item.Label.LocalID$
+            </a>
+            &nbsp;
+            <span>$bind:{Item.Label.Content} | C:{Item.Label.Code} D:{Item.Label.FileName} R:{Item.Role}$</span>
+            @X@
+        </li>
+    </ul>
+</div>

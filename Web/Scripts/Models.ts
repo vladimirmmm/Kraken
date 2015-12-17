@@ -578,7 +578,7 @@
         public Module: TaxonomyModule = null;
 
         public Concepts: Model.Concept[] = [];
-        public Hierarchies: Model.Hierarchy<Model.QualifiedItem>[] = [];
+        public Hierarchies: Model.Hierarchy<Model.QualifiedItem> = null;
         public ConceptValues: Model.ConceptLookUp[] = [];
 
     }

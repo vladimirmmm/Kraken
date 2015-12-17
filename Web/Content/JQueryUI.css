@@ -177,7 +177,7 @@ margin-bottom:0px;
     clear:both;
 }
 .ui-tabs>.ui-tabs-panel {
-    overflow-y:auto;
+    /*overflow-y:auto;*/
 
 }
 .ui-tabs li {
