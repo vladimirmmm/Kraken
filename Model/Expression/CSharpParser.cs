@@ -103,7 +103,10 @@ namespace LogicalModel.Expressions
                     if (!expr.IsParameter && !expr.IsString) 
                     {
                         //this is for decimal;
-                        
+                        if (String.IsNullOrEmpty(expr.StringValue)) 
+                        { 
+
+                        }
                         return expr.StringValue + "m";
                     }
                 }

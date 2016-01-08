@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Utilities;
@@ -104,7 +105,8 @@ namespace Engine
             //UI.TB_TaxonomyPath.Text = GetRegValue(RegSettingsPath + "LastTaxonomy"); //@"C:\My\Tasks\!Tools\Taxonomies\XBRl taxonomy 2.2\XBRL Taxonomy and Supporting Documents.2.2\Taxonomy\2.2.0.0\www.eba.europa.eu\eu\fr\xbrl\crr\fws\corep\its-2013-02\2014-07-31\mod\corep_ind.xsd";
             CommandContainer = new MenuCommand("root", "",
                 new MenuCommand("File", "File",
-                    new MenuCommand("O_tax", "Open Taxonomy", (o) => { OpenTaxonomy(o); }, () => new object[] { UI.BrowseFile("","") }),
+                    new MenuCommand("O_tax_l", "Open Taxonomy (local)", (o) => { OpenTaxonomy(o); }, () => new object[] { UI.BrowseFile("", "") }),
+                    new MenuCommand("O_tax_w", "Open Taxonomy (web)", (o) => { OpenTaxonomy(o); }, () => new object[] { UI.BrowseFile("", "") }),
                     new MenuCommand("O_inst", "Open Xbrl Instance", (o) => { OpenInstance(o); }, () => new object[] { UI.BrowseFile("", "") }),
                     new MenuCommand("Save_Xbrl_Instance", "Save Xbrl Instance", (o) => { }, null),
                     new MenuCommand("R_Inst", "Recent Instance", (o) => { }, null),
@@ -123,6 +125,8 @@ namespace Engine
                     new MenuCommand("Process_Folder", "Process Folder", (o) => { ProcessFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
                     new MenuCommand("TestTaxonomy", "Test", (o) => { Taxonomy_Test(); }, null),
                     new MenuCommand("Z_Axis_Test", "Z Axis Test", (o) => { Extensions_Test(); }, null),
+                    new MenuCommand("Export_Layout", "Export Layout", (o) => { Export_Layout(); }, null),
+                    new MenuCommand("Export_Validations", "Export Validations", (o) => { Export_Validations(); }, null),
 
                     new MenuCommand("Refresh_all_but_Structure", "Refresh all (but Structure)", (o) => { ClearTaxonomy(ClearEnum.AllButStructure); }, null),
                     new MenuCommand("Refresh", "Refresh",
@@ -541,21 +545,25 @@ namespace Engine
 
         public void LoadTaxonomyToUI()
         {
-            if (UI.DispatcherCheckAccess())
+            if (this.Engine.CurrentTaxonomy != null)
             {
-                var msg = new Message();
-                msg.Category = "action";
-                msg.Data = "taxonomyloaded";
-                UI.ToUI(msg);
-                //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
-                //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
-                //UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
-                //ShowInBrowser(Engine.HtmlPath); 
+                if (UI.DispatcherCheckAccess())
+                {
 
-            }
-            else
-            {
-                UI.DispatcherInvoke(() => { LoadTaxonomyToUI(); });
+                    var msg = new Message();
+                    msg.Category = "action";
+                    msg.Data = "taxonomyloaded";
+                    UI.ToUI(msg);
+                    //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
+                    //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
+                    //UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
+                    //ShowInBrowser(Engine.HtmlPath); 
+
+                }
+                else
+                {
+                    UI.DispatcherInvoke(() => { LoadTaxonomyToUI(); });
+                }
             }
         }
 
@@ -634,13 +642,119 @@ namespace Engine
             return DataService.ProcessRequest(request);
         }
 
+        public void OnUIReady() 
+        {
+            var engineassembly = Assembly.GetAssembly(this.GetType());
+            var engineassemblyfileinfo = new System.IO.FileInfo(engineassembly.Location);
+            Logger.WriteLine(String.Format("Engine Version: {0:" + Utilities.Converters.DateTimeFormat + "}", engineassemblyfileinfo.LastWriteTime));
+
+            Logger.WriteLine(GetUIVersion());
+            LoadTaxonomyToUI();
+        }
+        private string GetUIVersion() 
+        {
+            var uifiles = System.IO.Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Scripts", "*.ts");
+            DateTime lastdate = DateTime.Now.AddYears(-100);
+            foreach (var uifile in uifiles)
+            {
+                var fileinfo = new System.IO.FileInfo(uifile);
+                if (fileinfo.LastWriteTime > lastdate)
+                {
+                    lastdate = fileinfo.LastWriteTime;
+             
+                }
+            }
+            return String.Format("UI Version: {0:" + Utilities.Converters.DateTimeFormat + "}", lastdate);
+        }
+        
+        public string GetAppInfo()
+        {
+            var sb = new StringBuilder();
+            var engineassembly = Assembly.GetAssembly(this.GetType());
+            var modules = engineassembly.GetReferencedAssemblies().ToList();
+            sb.AppendLine(GetAssimblyInfoString(engineassembly));
+
+            foreach (var module in modules)
+            {
+                var asm = Assembly.Load(module);
+                var infostring = GetAssimblyInfoString(asm);
+                if (infostring.Contains("Vladimir"))
+                {
+                    sb.AppendLine(infostring);
+
+                }
+            }
+            sb.AppendLine(GetUIVersion());
+
+            return sb.ToString();
+        }
+
+        private string GetAssimblyInfoString(Assembly asm) 
+        {
+            var copyright = GetCopyRightInfo(asm);
+            var fileinfo = new System.IO.FileInfo(asm.Location);
+            var builddate = fileinfo.LastWriteTime;
+            var name = asm.FullName;
+            return String.Format("{0} {1} {2}", name, builddate, copyright);
+        }
+
+
+        public string GetCopyRightInfo(Assembly asm) 
+        {
+            object[] attribs = asm.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), true);
+            var result="";
+            if(attribs.Length > 0)
+            {
+                result = ((AssemblyCopyrightAttribute)attribs[0]).Copyright;
+            }
+            return result;
+        }
         public void Taxonomy_Test() 
         {
             var dimensions = this.Engine.CurrentTaxonomy.GetAllDimensions();
             var text = Utilities.Strings.ArrayToString(dimensions.ToArray(),"\r\n");
             Utilities.Logger.WriteLine(text);
         }
+        public void Export_Layout()
+        {
+            if (Engine.CurrentTaxonomy != null)
+            {
+                var files = System.IO.Directory.GetFiles(Engine.CurrentTaxonomy.ModuleFolder, "*.html", System.IO.SearchOption.AllDirectories);
 
+                var sb = new StringBuilder();
+                sb.AppendLine("<!DOCTYPE html><html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />");
+                sb.AppendLine("<style>" + System.IO.File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Table.css") + "\r\n</style>");
+                sb.AppendLine("</head>");
+                sb.AppendLine("<body>");
+                foreach (var file in files)
+                {
+                    sb.AppendLine(String.Format("{0}<br/>", System.IO.File.ReadAllText(file)));
+                }
+                sb.AppendLine("</body>");
+                sb.AppendLine("</html>");
+
+                var outputpath = String.Format("{0}AllTemplates_{1}.html", TaxonomyEngine.LocalFolder, Engine.CurrentTaxonomy.Module.Name);
+                Utilities.FS.WriteAllText(outputpath, sb.ToString());
+                Utilities.Logger.WriteLine(String.Format("Validation Rules exported to {0}", outputpath));
+            }
+        }
+        public void Export_Validations()
+        {
+            if (Engine.CurrentTaxonomy != null) 
+            {
+                var sb = new StringBuilder();
+                foreach (var rule in Engine.CurrentTaxonomy.SimpleValidationRules)
+                {
+                    sb.AppendLine(String.Format("Rule {0}", rule.ID));
+                    sb.AppendLine(String.Format("Message: {0}", rule.DisplayText));
+                    sb.AppendLine(String.Format("Formula: {0}", rule.OriginalExpression));
+                    sb.AppendLine("_____________________________________________________");
+                }
+                var outputpath = String.Format("{0}ValidationsRules_{1}.txt", TaxonomyEngine.LocalFolder, Engine.CurrentTaxonomy.Module.Name);
+                Utilities.FS.WriteAllText(outputpath, sb.ToString());
+                Utilities.Logger.WriteLine(String.Format("Validation Rules exported to {0}", outputpath));
+            }
+        }
         public void Extensions_Test() 
         {
             var taxonomycontainerfolder = TaxonomyEngine.LocalFolder;

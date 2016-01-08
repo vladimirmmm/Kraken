@@ -16,17 +16,17 @@
 </ul>
 
 
-<div class="detail absolutetabcontent hidden">
-    <a href="javascript:void(0)" onclick="Toggle(this, 'position', ['static','absolute']);">&nbsp;Minimize/Maximize</a>
+<div class="detail bordered absolutetabcontent hidden">
+    <a href="javascript:void(0)" onclick="Toggle(this, 'attr:class', ['detail bordered', 'detail bordered absolutetabcontent']);">&nbsp;Minimize/Maximize</a>
 
     <div class="parent" binding-type="template">
         <span class="rule" rule-id="$bind:ID$"></span>
-        <div class="hmax30 trimmed">
+        <p>
             <span>$bind:DisplayText$</span>
-        </div>
-        <div class="hmax30 trimmed">
-            <span>$bind:OriginalExpression$</span>
-        </div>
+        </p>
+        <p>
+            Formula: <span>$bind:OriginalExpression$</span>
+        </p>
     </div>
     <ul class="sublist" binding-items="this">
         <li binding-type="template">
@@ -54,7 +54,7 @@
             </table>
         </li>
     </ul>
-  
+
     <div class="sublistpager pagination">
 
     </div>

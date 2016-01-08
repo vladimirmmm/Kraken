@@ -1,8 +1,20 @@
 ﻿/// <reference path="typings/jquery/jquery.d.ts" />
 var logitems: number = 0;
+var errortag = "[error]"
+function ActivateLogUI() {
+    var element = _SelectFirst("#contentlog");
+    element.scrollTop = element.scrollHeight;
+
+}
 function Log(item:string)
 {
-    item = IsNull(item) ? "" : item;
+    
+    item = IsNull(item) ? "" : item.trim();
+    var error
+    if (item.indexOf(errortag) == 0)
+    {
+        item ="<span class=\"error\">"+ item.substring(errortag.length)+"</span>";
+    }
     logitems++;
     var element = _SelectFirst("#contentlog");
 
@@ -11,35 +23,49 @@ function Log(item:string)
         _Html(element, "");
         logitems = 1;
     }
-    item = Replace(item.trim(), "\r\n", "<br/>");
+    item = Replace(item, "\r\n", "<br/>");
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
 function LoadTab(tabselector: string, contentselector: string) {
     var index = $('a[href=' + contentselector + ']', tabselector).parent().index();
     $(tabselector).tabs("option", "active", index);
+ 
+ 
 }
 
-function Toggle(element: Element, property: string, values: string[])
-{
-    if (property == "position")
-    {
-        var jelement = $(element).parent();
-        var current = jelement.css("position");
-        var ix = values.indexOf(current);
-        ix = ix < 0 ? 0 : (ix + 1) % values.length;
-        jelement.css("position", values[ix]);
+function Toggle(element: Element, property: string, values: string[]) {
+    var jelement = $(element).parent();
+    var accessor: Function = null;
+    var setter: Function = null;
+    if (property.indexOf("css:") == 0) {
+        var cssproperty = property.substring(4).trim();
+        accessor = () => jelement.css(cssproperty);
+        setter = (val) => jelement.css(cssproperty, val);
+
     }
+    if (property.indexOf("attr:") == 0) {
+        var attrproperty = property.substring(5).trim();
+        accessor = () => jelement.attr(attrproperty);
+        setter = (val) => jelement.attr(attrproperty, val);
+    }
+
+    var ix = values.indexOf(accessor());
+    ix = ix < 0 ? 0 : (ix + 1) % values.length;
+    var newval = values[ix];
+    setter(newval);
+
+
 }
 
-function BrowseFile(callback: Function)
+function BrowseFile(lid:string, callback: Function)
 {
     if (IsDesktop()) {
         var me = this;
         AjaxRequest("Browse/File", "get", "text/html", { }, function (data) {
             var file = <string>data;
             Log("file: " + file);
-            CallFunction(callback, [file]);
+            CallFunction(callback, [lid, file]);
         },null);
     }
     else {
@@ -47,19 +73,19 @@ function BrowseFile(callback: Function)
         _EnsureEventHandler(uploader, "change", function () {
             var file = _Value(uploader);
             Log("file: " + file);
-            CallFunction(callback, [file]);
+            CallFunction(callback, [lid, file]);
         });
         $(uploader).click();
     }
 
 }
-function BrowseFolder(callback: Function) {
+function BrowseFolder(lid: string, callback: Function) {
     if (IsDesktop()) {
         var me = this;
         AjaxRequest("Browse/Folder", "get", "text/html", {}, function (data) {
             var file = <string>data;
             Log("folder: " + file);
-            CallFunction(callback, [file]);
+            CallFunction(callback, [lid, file]);
         }, null);
     }
     else {
@@ -69,7 +95,7 @@ function BrowseFolder(callback: Function) {
             var lastsep = file.lastIndexOf("\\") + 1;
             var folder = file.substring(0, lastsep);
             Log("Folder: " + folder);
-            CallFunction(callback, [folder]);
+            CallFunction(callback, [lid, folder]);
         });
         $(uploader).click();
     }
@@ -249,19 +275,19 @@ function Ajax(url: string, method: string, parameters: Dictionary, generichandle
             var Id = this.url.toString();
             result = ResultFormatter(data);
             console.log(Format("Request succeeded - {0}", Id));
-            generichandler(result);
+            CallFunction(generichandler, [result]);
             callback(result);
         },
         error: function (exception) {
             StopProgress("ajax");
             var Id = this.url.toString();
             var errorobj = GetErrorObj(exception, this.contentType)
-            var errormsg = Format("Request failed: {0}", errorobj.message);
+            var errormsg = Format(errortag + "Request [{0}] failed: {1}", Id, errorobj.message);
             //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
             actioncenter.AddError(errormsg);
             SetProperty(result, "Error", exception);
-            Log("Error at " + Id + ": " + errormsg);
-            generichandler(result);
+            Log(errormsg);
+            CallFunction(generichandler, [result]);
 
         }
     });
@@ -804,6 +830,7 @@ function _SetFunctions() {
     _Css = Css;
 
 
+    _Center = (element: Element) => { $(element).center(); };
     _Focus = (element: Element) => { $(element).focus(); };
     _Show = (element: Element) => {
         //$(element).show();

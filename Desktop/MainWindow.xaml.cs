@@ -68,7 +68,7 @@ namespace Desktop
         }
 
         private object slocker = new object();
-        void fromJS(object param) 
+        void fromJS(object param)
         {
             var request = new Message();
             var response = new Message();
@@ -77,7 +77,7 @@ namespace Desktop
             {
                 request = Utilities.Converters.JsonTo<Message>(param.ToString());
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 response.Error = ex.Message;
                 response.Category = "error";
@@ -85,33 +85,23 @@ namespace Desktop
                 engine.Features.UI.ToUI(response);
 
             }
-            var ajaxtag = "ajax";
-            if (request.Category == "notification")
-            {
-                lock (slocker)
-                {
-                    Logger.WriteLine(request.Data);
-                }
-            }
+            //if (request.Category == "notification")
+            //{
+            //    lock (slocker)
+            //    {
+            //        Logger.WriteLine(request.Data);
+            //    }
+            //}
 
 
 
-            //Action a = ()=>{
-            //      response = this.Features.ProcessRequest(request);
-            //        Features.ToUI(response);
-            //};
-         
-
-            if (request.Category == ajaxtag) 
-            {
+            //if (request.Category == ajaxtag)
+            //{
                 try
                 {
-                    //response = this.Features.ProcessRequest(request);
-                    //Features.ToUI(response);
 
-               
-                        response = engine.Features.ProcessRequest(request);
-                        engine.Features.UI.ToUI(response);
+                    response = engine.Features.ProcessRequest(request);
+                    engine.Features.UI.ToUI(response);
 
 
                 }
@@ -122,27 +112,9 @@ namespace Desktop
                     engine.Features.UI.ToUI(response);
 
                 }
-                /*
-                new Thread(() =>
-                {
-                    Thread.CurrentThread.IsBackground = true;
-                    try
-                    {
-                        response = this.Features.ProcessRequest(request);
-                        Features.ToUI(response);
 
-                    }
-                    catch (Exception ex)
-                    {
-                        response.Error = ex.Message + "\r\n";
-                        Logger.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
-                        Features.ToUI(response);
 
-                    }
-                }).Start();
-                */
-
-            }
+            //}
 
         }
 
@@ -165,7 +137,8 @@ namespace Desktop
         {
             if (this.Dispatcher.CheckAccess())
             {
-                String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
+                //String msg = String.Format("{0:yyyy:MM:dd hh:mm:ss} {1} \r\n", DateTime.Now, content.Trim());
+                String msg = String.Format("{0}", content.Trim());
 
                 if (engine.Features == null || !isuiloaded)
                 {
@@ -180,24 +153,7 @@ namespace Desktop
                     engine.Features.UI.ToUI(message);
 
                 }
-                //lock (ConsoleLocker)
-                //{
-                //    TB_Console.Text += msg;
-                //    if (TB_Console.LineCount > 3000)
-                //    {
-                //        var lines = TB_Console.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1000);
-                //        var sb = new StringBuilder();
-                //        foreach (var line in lines)
-                //        {
-                //            sb.AppendLine(line);
-                //        }
-                //        TB_Console.Text = sb.ToString();
-                //    }
-                //    TB_Console.Focus();
-                //    TB_Console.CaretIndex = TB_Console.Text.Length;
-                //    TB_Console.ScrollToEnd();
-                //    TB_Console.UpdateLayout();
-                //}
+     
             }
             else 
             {

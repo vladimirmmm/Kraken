@@ -56,7 +56,7 @@ namespace LogicalModel.Validation
                 var factgroup = theparameter.FactGroups.Values.FirstOrDefault();
 
                 var firstfactkey = theparameter.FactGroups.FirstOrDefault().Key;
-                if (firstfactkey.IndexOf("[") < 0)
+                if (firstfactkey.IndexOf("[") < 0 && !string.IsNullOrEmpty(firstfactkey))
                 {
                     factgroup.LoadObjects();
                     var factsofconcept = rule.Taxonomy.Facts.Where(i => i.Key.StartsWith(firstfactkey)).ToList();

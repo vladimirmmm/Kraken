@@ -125,21 +125,46 @@ namespace XBRLProcessor.Models
         public override void LoadFactDictionary()
         {
             FactsOfConcepts.Clear();
+            FactsOfDimensions.Clear();
+            var ix=-1;
             foreach (var fact in this.Facts)
             {
+                ix++;
+                FactsIndex.Add(ix, fact.Key);
                 //AddFactToDictionary(fact);
-                var conceptkey = fact.Key.Remove(fact.Key.IndexOf(","));
+                var keyparts = fact.Key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                var conceptkey = keyparts[0];
                 List<string> keylist = null;
                 if (!FactsOfConcepts.ContainsKey(conceptkey))
                 {
                     keylist = new List<string>();
                     FactsOfConcepts.Add(conceptkey, keylist);
                 }
-                else 
+                else
                 {
                     keylist = FactsOfConcepts[conceptkey];
                 }
                 keylist.Add(fact.Key);
+
+                for (int i = 0; i < keyparts.Length; i++)
+                {
+                    var id = keyparts[i];
+                    if (i > 0) {
+                        id = id.Substring(id.IndexOf(":"));
+                    }
+
+                    List<int> keylist2 = null;
+                    if (!FactsOfDimensions.ContainsKey(id))
+                    {
+                        keylist2 = new List<int>();
+                        FactsOfDimensions.Add(id, keylist2);
+                    }
+                    else
+                    {
+                        keylist2 = FactsOfDimensions[id];
+                    }
+                    keylist2.Add(ix);
+                }
             }
         }
         public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
@@ -422,7 +447,7 @@ namespace XBRLProcessor.Models
                     foreach (var h in hier.Items) 
                     {
                         var folder = Utilities.Strings.GetFolderName(predoc.LocalFolder);
-                        var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef);
+                        var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef, XbrlEngine.LocalFolder);
                         folder = Utilities.Strings.GetFolderName(href);
                         //folder = "tab";
                         var labelid = h.LabelID;
@@ -555,6 +580,7 @@ namespace XBRLProcessor.Models
     
                 var expressionfile = this.ModuleFolder + "expressions.txt";
                 Utilities.FS.WriteAllText(TaxonomyTestPath, "");
+                Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
 
                 foreach (var validdoc in validationdocuments)
                 {
@@ -579,13 +605,16 @@ namespace XBRLProcessor.Models
                         {
 
                             var valueassertion = assertion.Item as ValueAssertion;
-                            Utilities.FS.WriteAllText(TaxonomyValidationFolder + valueassertion.ID + ".txt",
-                            assertion.ToHierarchyString(i => i.ToString()));
 
+                            
                             if (valueassertion != null)
                             {
-                                var logicalrule = validation.GetLogicalRule(assertion);
-                                if (logicalrule.FunctionName.Contains("desprvbbkvbasis6"))
+                                var logicalrule = validation.GetLogicalRule(assertion, validdoc);
+                                var rawval = logicalrule.DisplayText+"\r\n"+logicalrule.OriginalExpression+"\r\n"+ assertion.ToHierarchyString(i => i.ToString()) + "\r\n";
+                                Utilities.FS.AppendAllText(TaxonomyValidationFolder + "Validations_XML.txt", rawval);
+                                //var logicalrule_tmp = validation.GetLogicalRule_Tmp(assertion, validdoc);
+
+                                if (logicalrule.FunctionName.Contains("boiv78712w"))
                                 {
 
                                 }

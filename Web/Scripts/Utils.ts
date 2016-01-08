@@ -39,6 +39,7 @@ var _Height = (element: any, value?: any) : number => -1;
 
 var _Focus = (element: any) => { };
 var _Show = (element: any) => { };
+var _Center = (element: any) => { };
 var _Hide = (element: any) => { };
 var _IsVisible = (element: any):boolean => false;
 var _Clone = (element: Element):Element => null;
@@ -278,7 +279,7 @@ function AjaxRequest(url: string, method: string, contenttype: string, parameter
 
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
 }
-
+/*
 function AjaxRequestComplexX(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
  
 
@@ -298,7 +299,7 @@ function AjaxRequestComplexX(url: string, method: string, contenttype: string, p
     return requesthandler;
 
 } 
-
+*/
 function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
 
 

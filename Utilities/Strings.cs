@@ -88,6 +88,17 @@ namespace Utilities
             }
             return absolutePath;
         }
+        public static string ResolveRelativePath(string referencePath, string relativePath,string localrootpath)
+        {
+            if (relativePath.StartsWith("http://") || relativePath.StartsWith("https://"))
+            {
+                return GetLocalPath(localrootpath, relativePath);
+            }
+            else 
+            {
+                return ResolveRelativePath(referencePath, relativePath);
+            }
+        }
         public static string ResolveRelativePath(string referencePath, string relativePath)
         {
             var hashix = relativePath.IndexOf("#");
@@ -95,6 +106,8 @@ namespace Utilities
             {
                 relativePath = relativePath.Remove(hashix);
             }
+         
+
             Uri uri = new Uri(Path.Combine(referencePath, relativePath));
             var path = "";
             if (uri.Scheme != "http")

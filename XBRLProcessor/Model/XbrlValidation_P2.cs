@@ -1,4 +1,5 @@
 ﻿using BaseModel;
+using LogicalModel.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,9 +121,29 @@ namespace XBRLProcessor.Model
             var conceptsfound = new List<LogicalModel.Concept>();
             foreach (var conceptrule in rule_concepts) 
             {
-                if (this.Taxonomy.Concepts.ContainsKey(conceptrule.Content)){
+                if (this.Taxonomy.Concepts.ContainsKey(conceptrule.Content))
+                {
                     var existingconcept = this.Taxonomy.Concepts[conceptrule.Content];
                     conceptsfound.Add(existingconcept);
+                }
+                else 
+                {
+                    var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(Document.XmlDocument);
+                    var ns = nsm.LookupNamespace(conceptrule.Namespace);
+                    var nsdocument = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i=>i.TargetNamespace==ns);
+                    if (nsdocument!=null)
+                    {
+                        var nsprefix  = nsdocument.TargetNamespacePrefix;
+                        var lookupconcept = new LogicalModel.Base.QualifiedName();
+                        lookupconcept.Namespace = nsprefix;
+                        lookupconcept.Name = conceptrule.Name;
+                        if (this.Taxonomy.Concepts.ContainsKey(lookupconcept.Content))
+                        {
+                            var existingconcept = this.Taxonomy.Concepts[lookupconcept.Content];
+                            conceptsfound.Add(existingconcept);
+                        }
+                    }
+            
                 }
             }
             LogicalModel.Concept concept = conceptsfound.SingleOrDefault();
@@ -480,6 +501,122 @@ namespace XBRLProcessor.Model
             }
         }
 
+        public List<FactBaseQuery> GetFactQuery(Hierarchy<XbrlIdentifiable> item)
+        {
+            //or queries
+            var orfilters = item.Where(i => i.Item is OrFilter).ToList();
+            var querycombinationpool = new List<List<FactBaseQuery>>();
+            foreach (var orfilter in orfilters)
+            {
 
+                var orfilteritem = orfilter.Item as OrFilter;
+                var andfilters = orfilter.Where(i => i.Item is AndFilter).ToList();
+                var orquerycombinationpool = new List<List<FactBaseQuery>>();
+                var queries = new List<FactBaseQuery>();
+                foreach (var andfilter in andfilters)
+                {
+                    var andfilteritem = andfilter.Item as AndFilter;
+
+                    var levelquerypool = new List<List<FactBaseQuery>>();
+
+                    foreach (var filteritem in andfilter.Children)
+                    {
+                        var levelfilteritem = filteritem.Item as Filter;
+                        var levelqueries = levelfilteritem.GetQueries();
+                        //queries.AddRange(levelqueries);
+                        levelquerypool.Add(levelqueries);
+                    }
+                    var andqueries = CombineQueries(levelquerypool.ToArray());
+                    queries.AddRange(andqueries);
+                    //orquerycombinationpool.Add(andqueries);
+
+                }
+
+                //List<FactBaseQuery> queries = CombineQueries(orquerycombinationpool.ToArray());
+
+                item.Children.Remove(orfilter);
+                querycombinationpool.Add(queries);
+            }
+            var mergedqueries = CombineQueries(querycombinationpool.ToArray());
+
+            //root level
+            var rootfilters = item.Where(i => i.Item is Filter).ToList();
+            var rootquerypool = new List<List<FactBaseQuery>>();
+
+            foreach (var rootfilter in rootfilters)
+            {
+                var rootfilterItem  = rootfilter.Item as Filter;
+                rootquerypool.Add(rootfilterItem.GetQueries());
+
+            }
+
+            var rootqueries = CombineQueries(rootquerypool.ToArray());
+
+            var allqueries = CombineQueries(rootqueries, mergedqueries);
+
+            return allqueries;
+        }
+
+        public List<string> GetFacts(FactBaseQuery fbq)
+        {
+            var factsofrule = new List<string>();
+
+            var rulefactquery = fbq;
+            var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
+            if (dimparts.Count > 0)
+            {
+                var ids = new List<int>();
+                foreach (var dim in dimparts)
+                {
+                    ids = ids.Count == 0 ? Taxonomy.FactsOfDimensions[dim] : ids.Intersect(Taxonomy.FactsOfDimensions[dim]).ToList();
+                }
+                foreach (var id in ids)
+                {
+                    var key = Taxonomy.FactsIndex[id];
+                    factsofrule.Add(key);
+                }
+            }
+            var facts = rulefactquery.ToQueryable(factsofrule.AsQueryable());
+            return facts.ToList();
+        }
+
+        public void Merge(FactBaseQuery source, FactBaseQuery target)
+        {
+            if (target.TrueFilters.Length > 150) 
+            { 
+
+            }
+            target.TrueFilters = target.TrueFilters + source.TrueFilters ;
+            target.FalseFilters = target.FalseFilters + source.FalseFilters ;
+            var originalfilter = target.Filter;
+            target.Filter = null;
+            target.Filter = (s) => originalfilter(s) && source.Filter(s);
+
+        }
+
+        public List<FactBaseQuery> CombineQueries(params List<FactBaseQuery>[] querypool) 
+        {
+            var nonempty = querypool.Where(i => i.Count > 0);
+
+            var combinedqueries = MathX.CartesianProduct(nonempty);
+
+            var mergedqueries = new List<FactBaseQuery>();
+            foreach (var combination in combinedqueries)
+            {
+                var mergedquery = new FactBaseQuery();
+                foreach (var fbq in combination)
+                {
+                    Merge(fbq, mergedquery);
+                }
+                mergedqueries.Add(mergedquery);
+            }
+            return mergedqueries;
+        }
+
+        public List<FactBaseQuery> GetQueries(Hierarchy<XbrlIdentifiable> filter)
+        {
+            var filterItem = filter.Item as Filter;
+            return filterItem.GetQueries();
+        }
     }
 }

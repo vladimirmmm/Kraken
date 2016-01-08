@@ -43,6 +43,8 @@ var _Focus = function (element) {
 };
 var _Show = function (element) {
 };
+var _Center = function (element) {
+};
 var _Hide = function (element) {
 };
 var _IsVisible = function (element) { return false; };
@@ -224,9 +226,12 @@ function asyncFunc(func) {
 function AjaxRequest(url, method, contenttype, parameters, success, error) {
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
 }
-function AjaxRequestComplexX(url, method, contenttype, parameters, success, error) {
+/*
+function AjaxRequestComplexX(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
+ 
+
     var requestid = Guid();
-    var requesthandler = { error: error, success: success, Id: requestid, succeded: false };
+    var requesthandler = <RequestHandler>{ error: error, success: success, Id: requestid, succeded: false};
     var kv = new General.KeyValue();
     kv.Key = requestid;
     kv.Value = requesthandler;
@@ -239,7 +244,9 @@ function AjaxRequestComplexX(url, method, contenttype, parameters, success, erro
     msg.ContentType = contenttype;
     Communication_ToApp(msg);
     return requesthandler;
+
 }
+*/
 function AjaxRequestComplex(url, method, contenttype, parameters, success, error) {
     var requestid = Guid();
     var requesthandler = { error: error, success: success, Id: requestid, succeded: false };

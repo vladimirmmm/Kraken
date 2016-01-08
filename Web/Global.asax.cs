@@ -14,11 +14,23 @@ namespace Web
     public class MvcApplication : System.Web.HttpApplication
     {
         public static AppEngine engine = new AppEngine();
-       
+
+        public static void RegisterRoutes(RouteCollection routes)
+        {
+            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+            routes.MapRoute(
+                "Default",                                              // Route name
+                "{controller}/{action}/{id}",                           // URL with parameters
+                new { controller = "Home", action = "Index", id = "" }  // Parameter defaults
+            );
+
+        }
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            RegisterRoutes(RouteTable.Routes);
             var ui = new WebUIService();
             Utilities.Logger.action = ui.Log;
             engine.Start(ui);

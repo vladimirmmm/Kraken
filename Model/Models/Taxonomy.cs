@@ -59,6 +59,8 @@ namespace LogicalModel
             set { _Facts = value; }
         }
         public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<int>> FactsOfDimensions = new Dictionary<string, List<int>>();
+        public Dictionary<int, string> FactsIndex = new Dictionary<int, string>();
    
         public Dictionary<string, List<String>> Cells = new Dictionary<string, List<String>>();
 

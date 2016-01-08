@@ -14,8 +14,9 @@ namespace Web.Controllers
         // GET: Home
         public ActionResult Index()
         {
-            ViewBag.Title = "XBRL";
-            return View();
+            return Redirect("UI.html");
+
+
         }
         [HttpPost]
         public ActionResult Index(FormCollection form)

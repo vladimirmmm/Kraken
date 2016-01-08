@@ -169,7 +169,7 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().FactGroups;
-            if (this.ID.Contains("0310")) 
+            if (this.ID.Contains("de_sprv_vcrs_0030")) 
             {
 
             }
@@ -603,14 +603,17 @@ namespace LogicalModel.Validation
                     {
                         var hasdata = false;
                         var tg = Taxonomy.Module.TableGroups.FirstOrDefault(i => i.Item.FilingIndicator == find);
-                        foreach (var tableid in tg.Item.TableIDs)
+                        if (tg != null)
                         {
-                            var tbl = Taxonomy.Tables.FirstOrDefault(i => i.ID == tableid);
-
-                            if (tbl.InstanceFactsCount > 0) 
+                            foreach (var tableid in tg.Item.TableIDs)
                             {
-                                hasdata = true;
-                                break;
+                                var tbl = Taxonomy.Tables.FirstOrDefault(i => i.ID == tableid);
+
+                                if (tbl.InstanceFactsCount > 0)
+                                {
+                                    hasdata = true;
+                                    break;
+                                }
                             }
                         }
                         if (!hasdata) 

@@ -190,7 +190,6 @@ ul {
 }
 
 #Contents > div {
-    min-width: 400px;
     background: #ffffff;
 }
 
@@ -814,12 +813,19 @@ select.celleditor {
      height:calc(100% - 40px);
      overflow:auto;
 }
-
-.center-window {
+.window 
+{
     background:#ffffff;
     border:solid 1px #808080;
     padding:10px;
+}
+.centered {
     position: absolute;
+    top: 50%;  /* position the top  edge of the element at the middle of the parent */
+    left: 50%; /* position the left edge of the element at the middle of the parent */
+
+    transform: translate(-50%, -50%); /* This is a shorthand of
+                                         translateX(-50%) and translateY(-50%) */
  
 }
 .absolutetabcontent {
@@ -829,9 +835,15 @@ select.celleditor {
     left:450px;
     padding:5px;
     background:#ffffff;
+    width:calc(100% - 470px);
+
+
+
+}
+.bordered {
     border:solid 1px #000000;
-    width:calc(100% - 20px);
 
-
-
+}
+.error {
+    color:#ff0000;
 }

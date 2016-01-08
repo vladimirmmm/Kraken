@@ -37,7 +37,8 @@ namespace XBRLProcessor
             this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
             this.Syntax.Operators.AddItem(OperatorEnum.And, " and ");
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " and ");
-            this.Syntax.Operators.AddItem(OperatorEnum.Division, "/");
+            //this.Syntax.Operators.AddItem(OperatorEnum.Division, "/");
+            this.Syntax.Operators.AddItem(OperatorEnum.Division, " div ");
             this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, ">=");
             this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, "<=");
             this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
@@ -106,6 +107,11 @@ namespace XBRLProcessor
                         }
                     }
                 }
+            }
+            if (items.Length == 2 && items[0] == Syntax.Operators[OperatorEnum.Subtraction])
+            {
+                var simpleexpression = GetSimpleExpression(Syntax.Operators[OperatorEnum.Subtraction] + items[1]);
+                expression = simpleexpression;
             }
 
             return expression;

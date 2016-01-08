@@ -93,7 +93,7 @@ function CreateErrorMsg(errormessage) {
     return msg;
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+    var errortext = errortag + 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
     Log(errortext);
     return true;
 }
@@ -128,7 +128,14 @@ function SetPivots() {
             $(this).css("width", '');
         }
     });
-    $("#LogWindow").tabs({});
+    $("#LogWindow").tabs({
+        /* show: { effect: "slide", direction: "right", duration: 200 }*/
+        activate: function (event, ui) {
+            if (ui.newPanel[0] == $("#tab_logs")[0]) {
+                ActivateLogUI();
+            }
+        }
+    });
     app.Tabs_Main = $("#MainContainer").tabs({
         show: { effect: "slide", direction: "right", duration: 200 },
         beforeActivate: function (event, ui) {
@@ -179,7 +186,7 @@ function Communication_ToApp(message) {
         window.external.Notify(strdata);
     }
     else {
-        console.log(strdata);
+        Ajax("Instance/Index", "get", { msg: message }, null, "json");
     }
 }
 function Communication_Listener(data) {

@@ -43,6 +43,7 @@ namespace Web.Controllers
             msg.Category = querys["msg[Category]"];
             msg.Url = querys["msg[Url]"];
             msg.Id = querys["msg[Id]"];
+            msg.Data = querys["msg[Data]"];
             msg.ContentType = querys["msg[ContentType]"];
             var parameterkeys = querys.AllKeys.Where(i => i.Contains("msg[Parameters]")).ToList();
             msg.Parameters = new Dictionary<string, string>();

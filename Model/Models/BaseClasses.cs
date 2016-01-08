@@ -79,7 +79,42 @@ namespace LogicalModel.Base
             }
         }
     }
+    public class FactBaseQuery 
+    {
+        public string FalseFilters = "";
+        public string TrueFilters = "";
+        public Func<string, bool> Filter = (s) => true;
 
+        public List<String> ToList(IQueryable<String> queryable) 
+        {
+            return queryable.Where(i => Filter(i)).ToList();
+        }
+
+        public List<string> GetConcepts() 
+        {
+            var filterparts = TrueFilters.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).Where(i=>!String.IsNullOrEmpty(i)).ToList();
+            var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
+            return conceptfilterparts;
+        }
+
+        public List<string> GetDimensions()
+        {
+            var filterparts = TrueFilters.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).Where(i => !String.IsNullOrEmpty(i)).ToList();
+            var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
+            var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
+            return conceptfilterparts.Concat(dimparts).ToList();
+        }
+
+        public IQueryable<String> ToQueryable(IQueryable<String> queryable)
+        {
+          
+            return queryable.Where(i => Filter(i));
+        }
+        public override string ToString()
+        {
+            return String.Format("{0} NOT: {1}", TrueFilters, FalseFilters);
+        }
+    }
     public class FactBase 
     {
 
@@ -109,7 +144,12 @@ namespace LogicalModel.Base
                 SetFromString(value);
             }
         }
-
+        public static FactBase GetFactFrom(string factstring)
+        {
+            var fact = new FactBase();
+            fact.FactString = factstring;
+            return fact;
+        }
         public static void MergeFact(FactBase target, FactBase source)
         {
             if (target.Concept == null) 
@@ -285,12 +325,14 @@ namespace LogicalModel.Base
             }
             return false;
         }
+        
         public void SetTyped() 
         {
             foreach (var dim in Dimensions) {
                 dim.SetTyped();
             }
         }
+        
         public override string ToString()
         {
             return GetFactString();

@@ -13,39 +13,50 @@ module Applications
 
         public TaskManager = new ProgressManager("#progressbar");
 
+        private MenuAccessorFunction: Function = null;
+
         public MenuCommand(id: string)
         {
             var me = this;
             var lid = id.toLowerCase();
-            var parameters: Dictionary = { "command": lid };
+            var parameters: Dictionary = {};
 
-            var f = (p1) => {
+            me.MenuAccessorFunction = (lid, p1) => {
                 parameters["p1"] = p1;
+                parameters["command"] = lid;
                 AjaxRequest("UI/Menu", "get", "json", parameters, function (data) {
-                    Log(Format("command {0} successfull!", lid));
+                    //Log(Format("command {0} successfull!", lid));
                 }, function (error) { console.log(error); });
             }
             var handled = false;
-            if (In(lid, "o_tax", "o_inst")) {
+            if (In(lid, "o_tax_l", "o_inst")) {
                 handled = true;
-                BrowseFile(f);
+                BrowseFile(lid, me.MenuAccessorFunction);
+            } 
+            if (In(lid, "o_tax_w")) {
+                handled = true;
+                me.OpenWebPath(lid);
             } 
             if (In(lid, "validate_folder", "process_folder")) {
                 handled = true;
-                BrowseFolder(f);
+                BrowseFolder(lid, me.MenuAccessorFunction);
             } 
             if (In(lid, "settings")) {
                 handled = true;
                 me.Settings_Show();
             } 
+            if (In(lid, "about")) {
+                handled = true;
+                me.ShowAbout(lid);
+            } 
             if (!handled)
             {
-                f(null);
+                me.MenuAccessorFunction(lid, null);
             }
             
         }
 
-        public Settings_Save()
+        public Settings_Save(element:Element)
         {
             var me = this;
             var settingscontainer = _SelectFirst("#EngineSettings");
@@ -54,14 +65,9 @@ module Applications
             var parameters = <Dictionary>ConvertFormDataToObj(formdata);
             AjaxRequest("Settings/Save", "post", "json", parameters, function (data) {
                 Log("Settings were saved succeassfully!");
-                me.Settings_Cancel();
+                me.CloseWindow(element);
             }, null);
 
-        }
-
-        public Settings_Cancel() {
-            var settingscontainer = _SelectFirst("#EngineSettings");
-            _Hide(settingscontainer);
         }
 
         public Settings_Show() {
@@ -73,11 +79,49 @@ module Applications
                     control = <HTMLInputElement>_SelectFirst("[name="+item.Key+"]", settingscontainer);
                     control.checked = ToBool(item.Value);
                 });
-                $(settingscontainer).center();
+                //_Center(settingscontainer);
                 _Show(settingscontainer);
             }, null);
            
 
+        }
+
+        public OpenWebPath(lid:string)
+        {
+            var me = this;
+            var pathcontainer = _SelectFirst("#AppPath");
+            _Show(pathcontainer);
+            //_Center(pathcontainer);
+            var input = _SelectFirst("textarea", pathcontainer);
+            var okbutton = _SelectFirst(".ok", pathcontainer);
+            var okfunction = () => {
+                var val = _Value(input);
+                var items = val.split("\r\n");
+                var path = items[0];
+                CallFunction(me.MenuAccessorFunction, [lid, path]);
+                me.CloseWindow(okbutton);
+            };
+            _EnsureEventHandler(okbutton, "click", okfunction);
+
+
+        }
+        public ShowAbout(lid: string) {
+            var me = this;
+            var aboutcontainer = _SelectFirst("#AppAbout");
+            var infocontainer = _SelectFirst("div.infocontainer", aboutcontainer);
+            _Show(aboutcontainer);
+            //_Center(aboutcontainer);
+
+            AjaxRequest("App/Info", "get", "text", null, function (data) {
+                var html = Replace(data, "\r\n", "<br/>");
+                _Html(infocontainer, html);
+
+            },null);
+        }
+        public CloseWindow(element: Element)
+        {
+            var control = _Parent(element, ".window");
+            _Hide(control);
         }
 
         public LoadContainers()
@@ -103,11 +147,17 @@ module Applications
                 }
                 if (!IsDesktop() && !IsNull($.connection) && !IsNull($.connection.hub)) {
                     $.connection.hub.start().done(function () {
-                        Log("SignalR Hub started")
+                        //Log("SignalR Hub started");
+                        ShowNotification("SignalR Hub started. UI ready.");
+
                     });
                 }
+                if (IsDesktop())
+                {
+                    ShowNotification("UI ready.");
+
+                }
                 StopProgress("layout");
-             
             };
 
             var waiter: General.Waiter = new General.Waiter((i: RequestHandler) => i.succeded, funcloader);
@@ -161,7 +211,7 @@ module Applications
                     });
 
             }, function (error) {
-                    Log("Error: "+error);
+                    Log(errortag + error);
                 });
 
         }

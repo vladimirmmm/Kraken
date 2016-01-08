@@ -114,7 +114,7 @@ function CreateErrorMsg(errormessage: string): General.Message {
 }
 
 function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
+    var errortext = errortag + 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
     Log(errortext);
     return true;
 }
@@ -155,7 +155,11 @@ function SetPivots() {
 
     $("#LogWindow").tabs({
        /* show: { effect: "slide", direction: "right", duration: 200 }*/
-
+        activate: function (event, ui) {
+            if (ui.newPanel[0] == $("#tab_logs")[0]) {
+                ActivateLogUI();
+            }
+        }
     });
 
     app.Tabs_Main = $("#MainContainer").tabs({
@@ -222,7 +226,9 @@ function Communication_ToApp(message: General.Message) {
     if (IsDesktop()) {
         window.external.Notify(strdata);
     } else {
-        console.log(strdata);
+
+        Ajax("Instance/Index", "get",(<Dictionary>{ msg: message }), null, "json");
+
     }
 }
 

@@ -1,4 +1,4 @@
-﻿<div id="EngineSettings" class="center-window hidden">
+﻿<div id="EngineSettings" class="centered window hidden">
     <form>
         <ul>
             <li>
@@ -26,7 +26,7 @@
                 <label>CheckValidationCells</label>
             </li>
         </ul>
-        <input type="button" value="Save" onclick="app.Settings_Save()" />
-        <input type="button" value="Cancel" onclick="app.Settings_Cancel()" />
+        <input type="button" value="Save" onclick="app.Settings_Save(this)" />
+        <input type="button" value="Cancel" onclick="app.CloseWindow(this)" />
     </form>
 </div>

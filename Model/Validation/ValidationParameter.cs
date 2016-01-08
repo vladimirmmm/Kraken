@@ -26,6 +26,18 @@ namespace LogicalModel.Validation
     {
         public string Name { get; set; }
         public string RuleID = null;
+
+        private List<List<String>> _TaxFacts = new List<List<String>>();
+        public List<List<String>> TaxFacts
+        {
+            get { return _TaxFacts; }
+            set
+            {
+                _TaxFacts = value;
+
+            }
+        }
+
         private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
         public Dictionary<string, FactGroup> FactGroups
         {
@@ -55,10 +67,10 @@ namespace LogicalModel.Validation
 
         public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
-        public InstanceFact[] Facts
-        {
-            get { return CurrentFacts.ToArray();  }
-        }
+        //public InstanceFact[] Facts
+        //{
+        //    get { return CurrentFacts.ToArray();  }
+        //}
         public InstanceFact FirstFact 
         {
             get 
@@ -252,7 +264,7 @@ namespace LogicalModel.Validation
             return !Equals(lhs, rhs.DecimalValue);
         }
 
-        
+        //> <
         public static bool operator >=(ValidationParameter lhs, decimal rhs)
         {
             return lhs.DecimalValue>= rhs;
@@ -270,7 +282,7 @@ namespace LogicalModel.Validation
             return lhs <= rhs.DecimalValue;
         }
 
-
+       
         public static bool operator >(ValidationParameter lhs, decimal rhs)
         {
             return lhs.DecimalValue>rhs;
@@ -287,7 +299,7 @@ namespace LogicalModel.Validation
         {
             return lhs< rhs.DecimalValue;
         }
-
+        //+ -
         public static decimal operator +(ValidationParameter lhs, decimal rhs)
         {
             return lhs.DecimalValue + rhs;
@@ -305,7 +317,34 @@ namespace LogicalModel.Validation
             return lhs - rhs.DecimalValue;
         }
 
+        //* /
+        public static decimal operator *(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue * rhs;
+        }
+        public static decimal operator /(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue / rhs;
+        }
+        public static decimal operator *(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs * rhs.DecimalValue;
+        }
+        public static decimal operator /(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs / rhs.DecimalValue;
+        }
 
+        public static decimal operator *(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.DecimalValue * rhs.DecimalValue;
+        }
+        public static decimal operator /(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.DecimalValue / rhs.DecimalValue;
+        }
+
+        //== !=
         public static bool operator ==(ValidationParameter lhs, bool rhs)
         {
             return Equals(lhs.BooleanValue, rhs);
@@ -360,7 +399,7 @@ namespace LogicalModel.Validation
         }
 
 
-
+        // >= <=
         public static bool operator >=(ValidationParameter lhs, ValidationParameter rhs)
         {
             //return !Equals(lhs.DecimalValue, rhs.DecimalValue) || !Equals(lhs.Treshold, rhs.Treshold);

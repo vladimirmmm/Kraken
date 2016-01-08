@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicalModel.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,10 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     public class GeneralFilter : Filter
     {
         public string Test { get; set; }
+
+        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
+        {
+            return (fs) => true;
+        }
     }
 }

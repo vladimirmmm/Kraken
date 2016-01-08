@@ -1,14 +1,23 @@
 /// <reference path="typings/jquery/jquery.d.ts" />
 var logitems = 0;
+var errortag = "[error]";
+function ActivateLogUI() {
+    var element = _SelectFirst("#contentlog");
+    element.scrollTop = element.scrollHeight;
+}
 function Log(item) {
-    item = IsNull(item) ? "" : item;
+    item = IsNull(item) ? "" : item.trim();
+    var error;
+    if (item.indexOf(errortag) == 0) {
+        item = "<span class=\"error\">" + item.substring(errortag.length) + "</span>";
+    }
     logitems++;
     var element = _SelectFirst("#contentlog");
     if (logitems > 1000) {
         _Html(element, "");
         logitems = 1;
     }
-    item = Replace(item.trim(), "\r\n", "<br/>");
+    item = Replace(item, "\r\n", "<br/>");
     $(element).append(Format("{0}<br/>", item));
     element.scrollTop = element.scrollHeight;
 }
@@ -17,21 +26,31 @@ function LoadTab(tabselector, contentselector) {
     $(tabselector).tabs("option", "active", index);
 }
 function Toggle(element, property, values) {
-    if (property == "position") {
-        var jelement = $(element).parent();
-        var current = jelement.css("position");
-        var ix = values.indexOf(current);
-        ix = ix < 0 ? 0 : (ix + 1) % values.length;
-        jelement.css("position", values[ix]);
+    var jelement = $(element).parent();
+    var accessor = null;
+    var setter = null;
+    if (property.indexOf("css:") == 0) {
+        var cssproperty = property.substring(4).trim();
+        accessor = function () { return jelement.css(cssproperty); };
+        setter = function (val) { return jelement.css(cssproperty, val); };
     }
+    if (property.indexOf("attr:") == 0) {
+        var attrproperty = property.substring(5).trim();
+        accessor = function () { return jelement.attr(attrproperty); };
+        setter = function (val) { return jelement.attr(attrproperty, val); };
+    }
+    var ix = values.indexOf(accessor());
+    ix = ix < 0 ? 0 : (ix + 1) % values.length;
+    var newval = values[ix];
+    setter(newval);
 }
-function BrowseFile(callback) {
+function BrowseFile(lid, callback) {
     if (IsDesktop()) {
         var me = this;
         AjaxRequest("Browse/File", "get", "text/html", {}, function (data) {
             var file = data;
             Log("file: " + file);
-            CallFunction(callback, [file]);
+            CallFunction(callback, [lid, file]);
         }, null);
     }
     else {
@@ -39,18 +58,18 @@ function BrowseFile(callback) {
         _EnsureEventHandler(uploader, "change", function () {
             var file = _Value(uploader);
             Log("file: " + file);
-            CallFunction(callback, [file]);
+            CallFunction(callback, [lid, file]);
         });
         $(uploader).click();
     }
 }
-function BrowseFolder(callback) {
+function BrowseFolder(lid, callback) {
     if (IsDesktop()) {
         var me = this;
         AjaxRequest("Browse/Folder", "get", "text/html", {}, function (data) {
             var file = data;
             Log("folder: " + file);
-            CallFunction(callback, [file]);
+            CallFunction(callback, [lid, file]);
         }, null);
     }
     else {
@@ -60,7 +79,7 @@ function BrowseFolder(callback) {
             var lastsep = file.lastIndexOf("\\") + 1;
             var folder = file.substring(0, lastsep);
             Log("Folder: " + folder);
-            CallFunction(callback, [folder]);
+            CallFunction(callback, [lid, folder]);
         });
         $(uploader).click();
     }
@@ -221,19 +240,19 @@ function Ajax(url, method, parameters, generichandler, contentType) {
             var Id = this.url.toString();
             result = ResultFormatter(data);
             console.log(Format("Request succeeded - {0}", Id));
-            generichandler(result);
+            CallFunction(generichandler, [result]);
             callback(result);
         },
         error: function (exception) {
             StopProgress("ajax");
             var Id = this.url.toString();
             var errorobj = GetErrorObj(exception, this.contentType);
-            var errormsg = Format("Request failed: {0}", errorobj.message);
+            var errormsg = Format(errortag + "Request [{0}] failed: {1}", Id, errorobj.message);
             //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
             actioncenter.AddError(errormsg);
             SetProperty(result, "Error", exception);
-            Log("Error at " + Id + ": " + errormsg);
-            generichandler(result);
+            Log(errormsg);
+            CallFunction(generichandler, [result]);
         }
     });
 }
@@ -695,6 +714,9 @@ function _SetFunctions() {
         $(element).removeClass(classname);
     };
     _Css = Css;
+    _Center = function (element) {
+        $(element).center();
+    };
     _Focus = function (element) {
         $(element).focus();
     };
