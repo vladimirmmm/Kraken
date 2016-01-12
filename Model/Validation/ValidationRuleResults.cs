@@ -12,7 +12,7 @@ namespace LogicalModel.Validation
         public bool IsOk = true;
         public string ID { get; set; }
         public string HasAllFind { get; set; }
-        public FactGroup FactGroup = null;
+        public List<string> FactGroup = null;
         private List<SimpleValidationParameter> _Parameters = new List<SimpleValidationParameter>();
         public List<SimpleValidationParameter> Parameters { get { return _Parameters; } set { _Parameters = value; } }
         public string Message = "";
@@ -44,7 +44,7 @@ namespace LogicalModel.Validation
 
             return sb.ToString();
         }
-
+        /*
         public static List<ValidationRuleResult> GetResultsForConceptOnly(ValidationRule rule)
         {
             var results = new List<ValidationRuleResult>();
@@ -124,7 +124,7 @@ namespace LogicalModel.Validation
             }
             return results;
         }
-
+        */
         public override string ToString()
         {
             return String.Format("{0} - {1}", this.GetType().Name, this.ID);

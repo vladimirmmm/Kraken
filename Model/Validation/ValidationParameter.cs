@@ -38,25 +38,25 @@ namespace LogicalModel.Validation
             }
         }
 
-        private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
-        public Dictionary<string, FactGroup> FactGroups
-        {
-            get { return _FactGroups; }
-            set
-            {
-                _FactGroups = value;
+        //private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
+        //public Dictionary<string, FactGroup> FactGroups
+        //{
+        //    get { return _FactGroups; }
+        //    set
+        //    {
+        //        _FactGroups = value;
 
-            }
-        }
+        //    }
+        //}
 
-        public void SetMyFactBase()
-        {
-            foreach (var key in FactGroups.Keys) 
-            {
-                var fg = FactGroups[key];
-                fg.SetFromString(key);
-            }
-        }
+        //public void SetMyFactBase()
+        //{
+        //    foreach (var key in FactGroups.Keys) 
+        //    {
+        //        var fg = FactGroups[key];
+        //        fg.SetFromString(key);
+        //    }
+        //}
 
         private string _FallBackValue ="0";
         [DefaultValue("0")]
@@ -199,14 +199,14 @@ namespace LogicalModel.Validation
 
         public void ClearObjects()
         {
-            foreach (var fg in FactGroups.Values) 
-            {
-                fg.ClearObjects();
-                foreach (var fact in fg.Facts) 
-                {
-                    fact.ClearObjects();
-                }
-            }
+            //foreach (var fg in FactGroups.Values) 
+            //{
+            //    fg.ClearObjects();
+            //    foreach (var fact in fg.Facts) 
+            //    {
+            //        fact.ClearObjects();
+            //    }
+            //}
         }
         public override bool Equals(object obj)
         {

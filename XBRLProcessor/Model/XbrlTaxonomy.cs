@@ -618,9 +618,9 @@ namespace XBRLProcessor.Models
                             {
                                // var logicalrule = validation.GetLogicalRule(assertion, validdoc);
                                 var xasssertion = assertion.Copy();
-                                var logicalrule_tmp = validation.GetLogicalRule_Tmp(assertion, validdoc);
+                                var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
 
-                                var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
+                                //var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
 
                                 if (logicalrule.FunctionName.Contains("boiv78712w"))
                                 {
@@ -680,7 +680,7 @@ namespace XBRLProcessor.Models
                     rule.SetTaxonomy(this);
                     foreach (var p in rule.Parameters) 
                     {
-                        p.SetMyFactBase();
+                        //p.SetMyFactBase();
                         p.ClearObjects();
                     }
 

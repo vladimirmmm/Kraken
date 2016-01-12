@@ -106,6 +106,7 @@ namespace XBRLProcessor.Model
            
         }
 
+        /*
         public LogicalModel.Validation.ValidationRule GetLogicalRule(Hierarchy<XbrlIdentifiable> hrule, XbrlTaxonomyDocument document) 
         {
             this.Document = document;
@@ -245,7 +246,8 @@ namespace XBRLProcessor.Model
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyTestPath, sb.ToString());
             return logicalrule;
         }
-
+        */
+        
         public LogicalModel.Validation.ValidationRule GetLogicalRule_Tmp(Hierarchy<XbrlIdentifiable> hrule, XbrlTaxonomyDocument document)
         {
             this.Document = document;

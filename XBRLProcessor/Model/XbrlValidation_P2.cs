@@ -363,12 +363,13 @@ namespace XBRLProcessor.Model
             sb.AppendLine("parameter: " + parameter.Name + " " + sequence);
             var c_sb = new StringBuilder();
             var log = false;
-            foreach (var factgroup in parameter.FactGroups.Values) 
+            foreach (var factgroup in parameter.TaxFacts) 
             {
-                foreach (var fact in factgroup.FullFacts)
+                foreach (var factid in factgroup)
                 {
                     var cellslist = new List<List<String>>();
-                    var factkey = fact.GetFactKey();
+                    var factkey = Taxonomy.FactsIndex[factid];
+                    var fact = FactBase.GetFactFrom(factkey);
                     if (Taxonomy.Facts.ContainsKey(factkey))
                     {
                         var cells = Taxonomy.Facts[factkey];

@@ -164,155 +164,228 @@ namespace LogicalModel.Validation
             }
             return values;
         }
-        
+
         public List<ValidationRuleResult> GetAllResults()
         {
             var results = new List<ValidationRuleResult>();
-            var factgroups = Parameters.FirstOrDefault().FactGroups;
-            if (this.ID.Contains("de_sprv_vcrs_0030")) 
+            var factgroups = Parameters.FirstOrDefault().TaxFacts;
+            if (this.ID.Contains("de_sprv_vcrs_0030"))
             {
 
             }
-            var conceptonlyresults = ValidationRuleResult.GetResultsForConceptOnly(this);
-            if (conceptonlyresults.Count > 0) 
+            for (int i = 0; i < factgroups.Count; i++)
             {
-                results.AddRange(conceptonlyresults);
-            }
-            else
-            {
-                foreach (var factgroupkey in factgroups.Keys)
+                var vruleresult = new ValidationRuleResult();
+                results.Add(vruleresult);
+                vruleresult.ID = this.ID;
+
+                foreach (var p in Parameters)
                 {
-                    var factgroup = factgroups[factgroupkey];
-                    //var firstfact = factgroup.Facts.FirstOrDefault();
-                    factgroup.FactString = factgroupkey;//factgroup.GetFactString();
-                    var vruleresult = new ValidationRuleResult();
-                    results.Add(vruleresult);
-                    vruleresult.ID = this.ID;
-                    vruleresult.FactGroup = factgroup;
+                    if (p.IsGeneral) { continue; }
+                    p.Clear();
+                    p.CurrentCells.Clear();
+                    var itemfacts = new List<string>();
+                  
 
+                    var sp = new SimpleValidationParameter();
+                    sp.Name = p.Name;
+                    sp.BindAsSequence = p.BindAsSequence;
+                    vruleresult.Parameters.Add(sp);
 
-                    foreach (var p in Parameters)
+                    var facts = p.TaxFacts[i];
+
+                    if (p.BindAsSequence)
                     {
-
-                        var fg_factstring = factgroup.FactString;
-
-                        if (p.IsGeneral)
+                        //set the cells
+                        itemfacts.AddRange(facts.Select(f => Taxonomy.FactsIndex[f]));
+                        foreach (var tax_fact in itemfacts)
                         {
-                            continue;
-                        }
-                        p.Clear();
-                        //var parameterfactgroup = p.FactGroups.Count == 1 ? p.FactGroups.FirstOrDefault() : p.FactGroups.FirstOrDefault(i => i.GetFactString() == fg_factstring);
-
-                        var parameterfactgroup = p.FactGroups[fg_factstring];
-
-
-                        p.CurrentCells.Clear();
-                        var itemfacts = new List<string>();
-
-                        var sp = new SimpleValidationParameter();
-                        sp.Name = p.Name;
-                        sp.BindAsSequence = p.BindAsSequence;
-                        vruleresult.Parameters.Add(sp);
-
-                        if (p.BindAsSequence)
-                        {
-                            //set the cells
-                            itemfacts.AddRange(parameterfactgroup.FullFacts.Select(i => i.GetFactKey()));
-                            foreach (var tax_fact in parameterfactgroup.FullFacts)
+                            var taxfactkey = tax_fact;
+                            if (Taxonomy.Facts.ContainsKey(taxfactkey))
                             {
-                                var taxfactkey = tax_fact.GetFactKey();
-                                if (Taxonomy.Facts.ContainsKey(taxfactkey))
+
+                                var cells = Taxonomy.Facts[taxfactkey];
+
+
+                                //sp.Facts.Add(taxfactkey);
+                                if (!sp.CellsOfFacts.ContainsKey(taxfactkey))
                                 {
-
-                                    var cells = Taxonomy.Facts[taxfactkey];
-
-
-                                    //sp.Facts.Add(taxfactkey);
-                                    if (!sp.CellsOfFacts.ContainsKey(taxfactkey))
-                                    {
-                                        sp.CellsOfFacts.Add(taxfactkey, new List<string>());
-                                    }
-                                    sp.CellsOfFacts[taxfactkey].AddRange(cells);
+                                    sp.CellsOfFacts.Add(taxfactkey, new List<string>());
                                 }
-                                else
-                                {
-                                    //Cell is blocked maybe.
-                                }
-                            }
-
-                            //p.CurrentCells.AddRange(cells);
-                            //
-
-                        }
-                        else
-                        {
-                            if (parameterfactgroup.FullFacts.Count > 1)
-                            {
-                                Logger.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
+                                sp.CellsOfFacts[taxfactkey].AddRange(cells);
                             }
                             else
                             {
-                                var fact = parameterfactgroup.FullFacts.FirstOrDefault();
-                                var factkey = fact.GetFactKey();
-                                itemfacts.Add(factkey);
-
-                                //set the cells
-                                var cells = new List<String>();
-                                if (Taxonomy.Facts.ContainsKey(factkey))
-                                {
-                                    cells.AddRange(Taxonomy.Facts[factkey]);
-                                }
-                                //p.CurrentCells.AddRange(cells);
-
-                                if (!sp.CellsOfFacts.ContainsKey(factkey))
-                                {
-                                    sp.CellsOfFacts.Add(factkey, new List<string>());
-
-                                }
-                                sp.CellsOfFacts[factkey].AddRange(cells);
+                                //Cell is blocked maybe.
                             }
                         }
 
-                        sp.Facts.AddRange(itemfacts);
+                        //p.CurrentCells.AddRange(cells);
+                        //
 
                     }
+                    else
+                    {
+                        if (facts.Count > 1)
+                        {
+                            Logger.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
+                        }
+                        else
+                        {
+                            var fact = Taxonomy.FactsIndex[facts.FirstOrDefault()];
+                            itemfacts.Add(fact);
+
+                            //set the cells
+                            var cells = new List<String>();
+                            if (Taxonomy.Facts.ContainsKey(fact))
+                            {
+                                cells.AddRange(Taxonomy.Facts[fact]);
+                            }
+                            //p.CurrentCells.AddRange(cells);
+
+                            if (!sp.CellsOfFacts.ContainsKey(fact))
+                            {
+                                sp.CellsOfFacts.Add(fact, new List<string>());
+
+                            }
+                            sp.CellsOfFacts[fact].AddRange(cells);
+                        }
+                    }
+
+                    sp.Facts.AddRange(itemfacts);
 
                 }
-              
-
             }
+
+            /*
+
+                    //foreach (var factgroupkey in factgroups.Keys)
+                    foreach (var factkeys in factgroups)
+                    {
+                        //var firstfact = factgroup.Facts.FirstOrDefault();
+                        var vruleresult = new ValidationRuleResult();
+                        results.Add(vruleresult);
+                        vruleresult.ID = this.ID;
+
+
+                        foreach (var p in Parameters)
+                        {
+
+
+                            if (p.IsGeneral)
+                            {
+                                continue;
+                            }
+                            p.Clear();
+                            //var parameterfactgroup = p.FactGroups.Count == 1 ? p.FactGroups.FirstOrDefault() : p.FactGroups.FirstOrDefault(i => i.GetFactString() == fg_factstring);
+
+
+
+                            p.CurrentCells.Clear();
+                            var itemfacts = new List<string>();
+
+                            var sp = new SimpleValidationParameter();
+                            sp.Name = p.Name;
+                            sp.BindAsSequence = p.BindAsSequence;
+                            vruleresult.Parameters.Add(sp);
+
+                            if (p.BindAsSequence)
+                            {
+                                //set the cells
+                                itemfacts.AddRange(factkeys.Select(i => Taxonomy.FactsIndex[i]));
+                                foreach (var tax_fact in itemfacts)
+                                {
+                                    var taxfactkey = tax_fact;
+                                    if (Taxonomy.Facts.ContainsKey(taxfactkey))
+                                    {
+
+                                        var cells = Taxonomy.Facts[taxfactkey];
+
+
+                                        //sp.Facts.Add(taxfactkey);
+                                        if (!sp.CellsOfFacts.ContainsKey(taxfactkey))
+                                        {
+                                            sp.CellsOfFacts.Add(taxfactkey, new List<string>());
+                                        }
+                                        sp.CellsOfFacts[taxfactkey].AddRange(cells);
+                                    }
+                                    else
+                                    {
+                                        //Cell is blocked maybe.
+                                    }
+                                }
+
+                                //p.CurrentCells.AddRange(cells);
+                                //
+
+                            }
+                            else
+                            {
+                                if (factkeys.Count > 1)
+                                {
+                                    Logger.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
+                                }
+                                else
+                                {
+                                    var fact = Taxonomy.FactsIndex[factkeys.FirstOrDefault()];
+                                    itemfacts.Add(fact);
+
+                                    //set the cells
+                                    var cells = new List<String>();
+                                    if (Taxonomy.Facts.ContainsKey(fact))
+                                    {
+                                        cells.AddRange(Taxonomy.Facts[fact]);
+                                    }
+                                    //p.CurrentCells.AddRange(cells);
+
+                                    if (!sp.CellsOfFacts.ContainsKey(fact))
+                                    {
+                                        sp.CellsOfFacts.Add(fact, new List<string>());
+
+                                    }
+                                    sp.CellsOfFacts[fact].AddRange(cells);
+                                }
+                            }
+
+                            sp.Facts.AddRange(itemfacts);
+
+                        }
+
+                    }
+            */
+
             return results;
         }
         
-        protected List<InstanceFact> GetFactsOfParameterGroup(FactGroup factgroup, ValidationParameter parameter, Instance instance) 
-        {
-            var facts = new List<InstanceFact>();
-            var typedfactkeys = factgroup.Dimensions.Where(i => i.IsTyped).Select(i => i.DomainMemberFullName);
-            if (parameter.FactGroups.Count!=1)
-            {
+        //protected List<InstanceFact> GetFactsOfParameterGroup(FactGroup factgroup, ValidationParameter parameter, Instance instance) 
+        //{
+        //    var facts = new List<InstanceFact>();
+        //    var typedfactkeys = factgroup.Dimensions.Where(i => i.IsTyped).Select(i => i.DomainMemberFullName);
+        //    if (parameter.FactGroups.Count!=1)
+        //    {
 
-            }
-            var parameterfacts = parameter.FactGroups.FirstOrDefault().Value.FullFacts;
-            var parameterinstancefacts = GetInstanceFacts(parameterfacts);
-            foreach (var fact in parameterinstancefacts)
-            {
-                var ok = true;
-                var fs = fact.FactString;
-                foreach (var typedfactkey in typedfactkeys) 
-                {
-                    if (!fs.Contains(typedfactkey)) 
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
-                if (ok) 
-                {
-                    facts.Add(fact);
-                }
-            }
-            return facts;
-        }
+        //    }
+        //    var parameterfacts = parameter.FactGroups.FirstOrDefault().Value.FullFacts;
+        //    var parameterinstancefacts = GetInstanceFacts(parameterfacts);
+        //    foreach (var fact in parameterinstancefacts)
+        //    {
+        //        var ok = true;
+        //        var fs = fact.FactString;
+        //        foreach (var typedfactkey in typedfactkeys) 
+        //        {
+        //            if (!fs.Contains(typedfactkey)) 
+        //            {
+        //                ok = false;
+        //                break;
+        //            }
+        //        }
+        //        if (ok) 
+        //        {
+        //            facts.Add(fact);
+        //        }
+        //    }
+        //    return facts;
+        //}
 
         protected InstanceFact GetFact(string factstring, Instance instance) 
         {
@@ -345,34 +418,91 @@ namespace LogicalModel.Validation
             }
             var allresults = GetAllResults();
             var allinstanceresults = new List<ValidationRuleResult>();
+            var resultstoremove = new List<ValidationRuleResult>();
+            var resultstoadd = new List<ValidationRuleResult>();
             foreach (var result in allresults)
             {
                 var ishandled = false;
-                var hastyped = result.FactGroup.FullFacts.Any(i => i.Dimensions.Any(j => j.IsTyped));
+                var facts = result.Parameters.SelectMany(i=>i.Facts).Select(i => FactBase.GetFactFrom(i));
+                var hastyped = facts.Any(i => i.Dimensions.Any(j => j.IsTyped));
                 if (hastyped)
                 {
-                    
+                    //var typeddimensionstrings = instance.
 
-
-                    //var mainparameter = Parameters.FirstOrDefault(i => !i.IsGeneral);
-                    //var parameterfactgroup = mainparameter.FactGroups[result.FactGroup.GetFactKey()];
                     var resultfactgroup = result.FactGroup;
-                    var fact = resultfactgroup.FullFacts.FirstOrDefault();
-                    var instancefacts = instance.GetFacts(fact.GetFactKey());
-                    foreach (var instancefact in instancefacts)
+
+                    var firstfact = facts.FirstOrDefault();
+                    var instancefacts = instance.GetFacts(firstfact.GetFactKey());
+                    var typestoreplace = new Dictionary<string, string>();
+                    if (instancefacts.Count > 0) 
                     {
+                        resultstoremove.Add(result);
+                        var typedfacts = instancefacts[0].Dimensions.Where(i=>i.IsTyped).Select(i=>i.ToStringForKey());
+                        foreach (var typedfact in typedfacts) 
+                        {
+                            var key = typedfact.Substring(typedfact.IndexOf(":"));
+                            typestoreplace.Add(key, "");
+                        }
+
+                    }
+                    for (int i = 0; i < instancefacts.Count;i++ )
+                    {
+                        var instancefact = instancefacts[i];
+                        var typedimensions = instancefact.Dimensions.Where(d=>d.IsTyped).ToList();
+                        foreach (var tdim in typedimensions) 
+                        {
+                            var key = tdim.ToStringForKey();
+                            key = key.Substring(key.IndexOf(":"));
+                            typestoreplace[key] = tdim.DomainMemberFullName.Substring(tdim.DomainMemberFullName.IndexOf(":"));
+                        }
+
+                        var dynamicresult = new ValidationRuleResult();
+                        resultstoadd.Add(dynamicresult);
+                        dynamicresult.FactGroup = new List<string>() { instancefact.GetFactString() };
+
+                        dynamicresult.ID = result.ID;
+                        dynamicresult.Parameters.AddRange(result.Parameters.Select(p => p.Copy()));
+                        dynamicresult.Message = result.Message;
+                        foreach (var p in dynamicresult.Parameters)
+                        {
+                            for (var f_ix = 0; f_ix < p.Facts.Count; f_ix++) 
+                            {
+                                var fact = p.Facts[f_ix];
+                                var newfactstring = fact.ToString();
+                                foreach (var key in typestoreplace.Keys) 
+                                {
+                                    newfactstring = newfactstring.Replace(key, typestoreplace[key]);
+                                }
+                                p.Facts[f_ix] = newfactstring;
+                                var newfact = FactBase.GetFactFrom(newfactstring);
+                                if (Taxonomy.Facts.ContainsKey(fact))
+                                {
+                                    p.CellsOfFacts.Add(newfactstring, new List<string>());
+                                    var cells = Taxonomy.Facts[fact];
+                                    p.CellsOfFacts[newfactstring].Clear();
+                                    foreach (var cell in cells)
+                                    {
+                                        p.CellsOfFacts[newfactstring].Add(instance.GetDynamicCellID(cell, newfact));
+                                    }
+                                }
+                                else
+                                {
+                                    // results.ad
+                                }
+                            }
+                        }
+
+                        /*
                         var fg = new FactGroup();
                         if (instancefact.Dimensions.Count == 0)
                         {
                             instancefact.SetFromString(instancefact.FactString);
                         }
                         fg.Dimensions.AddRange(instancefact.Dimensions);
-                        //fg.Dimensions.AddRange(instancefact.Dimensions.Where(
-                        //    i => result.FactGroup.Dimensions.Any(j => j.ToStringForKey() == i.ToStringForKey())));
-                        fg.Concept = result.FactGroup.Concept;
+                        fg.Concept = instancefact.Concept;
                         fg.AddFact(instancefact);
                         var dynamicresult = new ValidationRuleResult();
-                        dynamicresult.FactGroup = fg;
+                        dynamicresult.FactGroup = new List<string>() { instancefact.GetFactString() };
 
                         dynamicresult.ID = result.ID;
                         dynamicresult.Parameters.AddRange(result.Parameters.Select(i => i.Copy()));
@@ -380,35 +510,16 @@ namespace LogicalModel.Validation
                         foreach (var p in dynamicresult.Parameters)
                         {
                             var rp = this.Parameters.FirstOrDefault(i => i.Name == p.Name);
-                            var key=resultfactgroup.GetFactKey();
-                            FactGroup parameterfactgroup = null;
-                            if (rp.FactGroups.ContainsKey(key))
-                            {
-                                parameterfactgroup = rp.FactGroups[key];
-                            }
-                            else 
-                            {
-                                if (rp.FactGroups.Count == 1)
-                                {
-                                    parameterfactgroup = resultfactgroup;
-                                }
-                                else 
-                                {
-                                }
-                            }
+
 
                             p.Facts.Clear();
                             p.CellsOfFacts.Clear();
-                            //var rpfactgroup = rp.FactGroups[parameterfactgroup.GetFactKey()];
-                            if (rp.FactGroups.Count>1)
-                            {
-
-                            }
-                            var rpfactgroup = parameterfactgroup;
-                            foreach (var rpfact in rpfactgroup.FullFacts)
+                       
+                            var rpfactgroup = rp.TaxFacts;
+                            foreach (var rpfact in rp.TaxFacts.FirstOrDefault())
                             {
                                 var newfact = new FactBase();
-                                newfact.SetFromString(rpfact.GetFactString());
+                                newfact.SetFromString(instancefact.GetFactString());
                                 newfact.Dimensions = newfact.Dimensions.Where(i => !i.IsTyped).ToList();
                                 newfact.Dimensions.AddRange(instancefact.Dimensions.Where(i => i.IsTyped));
                                 newfact.SetFactString();
@@ -431,33 +542,14 @@ namespace LogicalModel.Validation
 
                             }
 
-                            //var instparamfacts = GetFactsOfParameterGroup(fg, rp, instance);
-                            //var instparamfactstrings = instparamfacts.Select(i => i.GetFactString());
-                            //p.Facts.AddRange(instparamfactstrings);
                         }
 
                         allinstanceresults.Add(dynamicresult);
                         ishandled = true;
-
+                       */
                     }
                     //ishandled = true;
                 }
-                //handling concept only 
-                var factgroup = this.Parameters.FirstOrDefault().FactGroups.Values.FirstOrDefault();
-                var firstfact = factgroup.FullFacts.FirstOrDefault();
-                if (factgroup.FullFacts.Count == 1 && firstfact.Dimensions.Count == 0)
-                {
-                    if (firstfact.Concept == null)
-                    {
-
-                    }
-                    else
-                    {
-                        ishandled = true;
-                    }
-                }
-
-
 
                 if (!ishandled)
                 {
