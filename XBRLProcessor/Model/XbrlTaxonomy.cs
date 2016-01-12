@@ -131,6 +131,7 @@ namespace XBRLProcessor.Models
             {
                 ix++;
                 FactsIndex.Add(ix, fact.Key);
+                FactKeyIndex.Add(fact.Key, ix);
                 //AddFactToDictionary(fact);
                 var keyparts = fact.Key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                 var conceptkey = keyparts[0];
@@ -165,6 +166,12 @@ namespace XBRLProcessor.Models
                     }
                     keylist2.Add(ix);
                 }
+                //var keys=FactsOfDimensions.Keys.ToList();
+                //foreach (var key in keys) 
+                //{
+                //    var sorted = FactsOfDimensions[key].OrderBy(i => i).ToList();
+                //    FactsOfDimensions[key] = sorted;
+                //}
             }
         }
         public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
@@ -609,10 +616,11 @@ namespace XBRLProcessor.Models
                             
                             if (valueassertion != null)
                             {
-                                var logicalrule = validation.GetLogicalRule(assertion, validdoc);
-                                var rawval = logicalrule.DisplayText+"\r\n"+logicalrule.OriginalExpression+"\r\n"+ assertion.ToHierarchyString(i => i.ToString()) + "\r\n";
-                                Utilities.FS.AppendAllText(TaxonomyValidationFolder + "Validations_XML.txt", rawval);
-                                //var logicalrule_tmp = validation.GetLogicalRule_Tmp(assertion, validdoc);
+                               // var logicalrule = validation.GetLogicalRule(assertion, validdoc);
+                                var xasssertion = assertion.Copy();
+                                var logicalrule_tmp = validation.GetLogicalRule_Tmp(assertion, validdoc);
+
+                                var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
 
                                 if (logicalrule.FunctionName.Contains("boiv78712w"))
                                 {

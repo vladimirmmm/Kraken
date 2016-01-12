@@ -81,7 +81,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             return f;
         }
 
-        public override List<FactBaseQuery> GetQueries()
+        public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level=0)
         {
             var queries = new List<FactBaseQuery>();
             foreach (var member in Members)
@@ -90,21 +90,16 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 queries.Add(query);
                 if (member.QName.Value != Literals.Literal.Defaultmember)
                 {
-                    
-
+                
                     if (!Complement)
                     {
-                        var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, member.QName.Content);
+                        var tag = String.Format(":{0}]{1}", this.Dimension.QName.Value, member.QName.Content);
 
-                        query.TrueFilters = query.TrueFilters + String.Format("{0} ", tag);
+                        query.DictFilters = query.DictFilters + String.Format("{0}, ", tag);
                         query.Filter = (s) =>
                         {
-                            var ok = s.Contains(tag);
-                            if (ok)
-                            {
-
-                            }
-                            return ok;
+                 
+                            return true;
                         };
 
                     }
@@ -126,18 +121,60 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 }
                 else 
                 {
-                    var tag = String.Format(":{0}]{1}:", this.Dimension.QName.Value, member.QName.Domain);
-                    query.FalseFilters = query.FalseFilters + String.Format("{0}, ", tag);
-                    query.Filter = (s) =>
+                    if (!Complement)
                     {
-
-                        var ok = !s.Contains(tag);
-                        if (ok)
+                        var tag = String.Format(":{0}]{1}:", this.Dimension.QName.Value, member.QName.Domain);
+                        query.FalseFilters = query.FalseFilters + String.Format("{0}, ", tag);
+                        query.Filter = (s) =>
                         {
 
+                            var ok = !s.Contains(tag);
+                            if (ok)
+                            {
+
+                            }
+                            return ok;
+                        };
+                    }
+                    else 
+                    {
+                        if (level == 0)
+                        {
+                            var tag = String.Format(":{0}]", this.Dimension.QName.Value);
+                            var domain = member.QName.Domain;
+                            var members = taxonomy.GetMembersOf(domain, this._Members.Select(i => i.QName.Content).ToList());
+                            var subqueries = new List<FactBaseQuery>();
+                            foreach (var memberitem in members)
+                            {
+                                var mfbq = new FactBaseQuery();
+                                var memberdictfilter = tag + memberitem;
+                                if (taxonomy.FactsOfDimensions.ContainsKey(memberdictfilter))
+                                {
+                                    mfbq.DictFilters = memberdictfilter + ", ";
+                                    subqueries.Add(mfbq);
+                                }
+                                else 
+                                {
+
+                                }
+                            }
+                            queries = subqueries;
                         }
-                        return ok;
-                    };
+                        else
+                        {
+                            var tag = String.Format(":{0}]{1}", this.Dimension.QName.Value, member.QName.Domain);
+                            query.TrueFilters = query.TrueFilters + String.Format("{0}, ", tag);
+                            query.Filter = (s) =>
+                            {
+                                var ok = s.Contains(tag);
+                                if (ok)
+                                {
+
+                                }
+                                return ok;
+                            };
+                        }
+                    }
                 }
             }
 
@@ -151,12 +188,51 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         private String _Test = "";
         public String Test { get { return _Test; } set { _Test = value; } }
 
-        //public override string ToString()
-        //{
-        //    var sb = new StringBuilder();
-        //    sb.Append(this.Dimension.QName.Content);
-        //    return sb.ToString();
-        //}
+        public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level = 0)
+        {
+            var queries = new List<FactBaseQuery>();
+            var query = new FactBaseQuery();
+            queries.Add(query);
+            var typeddomain = taxonomy.FindDimensionDomain(this.Dimension.QName.Content);
+     
+           // var td = taxonomy.TypedDimensions.FirstOrDefault(i => i.Key.EndsWith(":" + this.Dimension.QName.Value));
+            var domainpart = typeddomain.Namespace + ":" + typeddomain.Name;
+            var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, domainpart);
+            if (!Complement)
+            {
+                //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
+
+                query.TrueFilters = query.TrueFilters + String.Format("{0} ", tag);
+                query.Filter = (s) =>
+                {
+                    var ok = s.Contains(tag);
+                    if (ok)
+                    {
+
+                    }
+                    return ok;
+                };
+
+            }
+            else
+            {
+                //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
+
+                query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
+                query.Filter = (s) =>
+                {
+                    var ok = !s.Contains(tag);
+                    if (ok)
+                    {
+
+                    }
+                    return ok;
+                };
+            }
+
+
+            return queries;
+        }
     }
 
     public class DimensionQName 

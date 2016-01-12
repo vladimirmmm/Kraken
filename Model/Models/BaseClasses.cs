@@ -83,6 +83,7 @@ namespace LogicalModel.Base
     {
         public string FalseFilters = "";
         public string TrueFilters = "";
+        public string DictFilters = "";
         public Func<string, bool> Filter = (s) => true;
 
         public List<String> ToList(IQueryable<String> queryable) 
@@ -99,10 +100,11 @@ namespace LogicalModel.Base
 
         public List<string> GetDimensions()
         {
-            var filterparts = TrueFilters.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).Where(i => !String.IsNullOrEmpty(i)).ToList();
-            var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
-            var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
-            return conceptfilterparts.Concat(dimparts).ToList();
+            var filterparts = DictFilters.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            //var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
+            //var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
+            return filterparts.ToList();
         }
 
         public IQueryable<String> ToQueryable(IQueryable<String> queryable)

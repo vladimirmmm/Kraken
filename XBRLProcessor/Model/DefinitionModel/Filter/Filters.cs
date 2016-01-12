@@ -1,4 +1,5 @@
 ﻿using BaseModel;
+using LogicalModel;
 using LogicalModel.Base;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
 
         public abstract Func<string, bool> GetFunc(FactBaseQuery fbq);
-        public virtual List<FactBaseQuery> GetQueries() 
+        public virtual List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level) 
         {
             var queries = new List<FactBaseQuery>();
             return queries;

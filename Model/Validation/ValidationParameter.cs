@@ -27,8 +27,8 @@ namespace LogicalModel.Validation
         public string Name { get; set; }
         public string RuleID = null;
 
-        private List<List<String>> _TaxFacts = new List<List<String>>();
-        public List<List<String>> TaxFacts
+        private List<List<int>> _TaxFacts = new List<List<int>>();
+        public List<List<int>> TaxFacts
         {
             get { return _TaxFacts; }
             set

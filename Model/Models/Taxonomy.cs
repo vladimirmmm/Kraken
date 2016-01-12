@@ -61,6 +61,7 @@ namespace LogicalModel
         public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
         public Dictionary<string, List<int>> FactsOfDimensions = new Dictionary<string, List<int>>();
         public Dictionary<int, string> FactsIndex = new Dictionary<int, string>();
+        public Dictionary<string, int> FactKeyIndex = new Dictionary<string, int>();
    
         public Dictionary<string, List<String>> Cells = new Dictionary<string, List<String>>();
 
@@ -842,6 +843,13 @@ namespace LogicalModel
         public virtual Element FindDimensionDomain(string dimensionitem) 
         {
             return null;
+        }
+        public List<String> GetMembersOf(string domain, List<string> exceptmembers) 
+        {
+            var dimensiondomainitems = SchemaElements.Where(i => i.Namespace == domain && i.Type == "nonnum:domainItemType").Select(i => i.Namespace + ":" + i.Name).Distinct().ToList();
+
+            dimensiondomainitems = dimensiondomainitems.Except(exceptmembers).ToList();
+            return dimensiondomainitems;
         }
 
         public Element GetDomain(string item)

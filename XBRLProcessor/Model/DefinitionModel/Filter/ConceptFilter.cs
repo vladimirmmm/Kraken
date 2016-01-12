@@ -1,4 +1,5 @@
-﻿using LogicalModel.Base;
+﻿using LogicalModel;
+using LogicalModel.Base;
 using Model.DefinitionModel;
 using System;
 using System.Collections.Generic;
@@ -34,11 +35,12 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             if (!Complement)
             {
-                fbq.TrueFilters = fbq.TrueFilters + String.Format("{0}, ", Concept.QName.Content);
+                fbq.DictFilters = fbq.DictFilters + String.Format("{0}, ", Concept.QName.Content);
                 functions.Add((s) =>
                 {
-                    var sconceptpart = s.Substring(0, s.IndexOf(","));
-                    return sconceptpart.EndsWith(Concept.QName.Content);
+                    return true;
+                    //var sconceptpart = s.Substring(0, s.IndexOf(","));
+                    //return sconceptpart.EndsWith(Concept.QName.Content);
                 });
 
             }
@@ -59,7 +61,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             return f;
         }
 
-        public override List<FactBaseQuery> GetQueries()
+        public override List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level = 0)
         {
             var queries = new List<FactBaseQuery>();
             var query = new FactBaseQuery();

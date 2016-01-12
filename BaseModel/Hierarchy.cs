@@ -430,6 +430,18 @@ namespace BaseModel
         {
             this.Children.Clear();
         }
+
+        public Hierarchy<TClass> Copy()
+        {
+            var result = new Hierarchy<TClass>();
+            result.Item = this.Item;
+  
+            foreach (var child in this.Children)
+            {
+                result.Children.Add(child.Copy());
+            }
+            return result;
+        }
     }
 
     public class Hier<T> where T : class

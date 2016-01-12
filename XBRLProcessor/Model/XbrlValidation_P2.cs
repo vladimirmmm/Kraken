@@ -500,8 +500,33 @@ namespace XBRLProcessor.Model
                 }
             }
         }
+        public List<FactBaseQuery> GetRuleQuery(Hierarchy<XbrlIdentifiable> item)
+        {
+            //root level
+            var rootfilters = item.Children.Where(i => i.Item is Filter).ToList();
+            var rootquerypool = new List<List<FactBaseQuery>>();
 
-        public List<FactBaseQuery> GetFactQuery(Hierarchy<XbrlIdentifiable> item)
+            foreach (var rootfilter in rootfilters)
+            {
+                var rootfilterItem = rootfilter.Item as Filter;
+                var queries = rootfilterItem.GetQueries(this.Taxonomy, 0);
+                if (queries.Count == 1)
+                {
+                    rootquerypool.Add(queries);
+                }
+
+            }
+            if (rootquerypool.Count == 108)
+            {
+
+            }
+            var rootqueries = CombineQueries(rootquerypool.ToArray());
+
+            var allqueries = rootqueries;
+
+            return allqueries;
+        }
+        public List<FactBaseQuery> GetFactQuery(Hierarchy<XbrlIdentifiable> item,int level=0)
         {
             //or queries
             var orfilters = item.Where(i => i.Item is OrFilter).ToList();
@@ -522,7 +547,7 @@ namespace XBRLProcessor.Model
                     foreach (var filteritem in andfilter.Children)
                     {
                         var levelfilteritem = filteritem.Item as Filter;
-                        var levelqueries = levelfilteritem.GetQueries();
+                        var levelqueries = levelfilteritem.GetQueries(this.Taxonomy, level);
                         //queries.AddRange(levelqueries);
                         levelquerypool.Add(levelqueries);
                     }
@@ -546,10 +571,13 @@ namespace XBRLProcessor.Model
             foreach (var rootfilter in rootfilters)
             {
                 var rootfilterItem  = rootfilter.Item as Filter;
-                rootquerypool.Add(rootfilterItem.GetQueries());
+                rootquerypool.Add(rootfilterItem.GetQueries(this.Taxonomy, level));
 
             }
+            if (rootquerypool.Count == 108) 
+            { 
 
+            }
             var rootqueries = CombineQueries(rootquerypool.ToArray());
 
             var allqueries = CombineQueries(rootqueries, mergedqueries);
@@ -557,27 +585,89 @@ namespace XBRLProcessor.Model
             return allqueries;
         }
 
-        public List<string> GetFacts(FactBaseQuery fbq)
+        public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, List<int> factids)
         {
-            var factsofrule = new List<string>();
+
+            var rulefactquery = fbq;
+            //factids.AddRange(GetFactIDs(fbq, IdList));
+            var factsofrule = GetFactsByIds(GetFactIDs(fbq, IdList));
+            var facts = rulefactquery.ToQueryable(factsofrule.AsQueryable());
+         
+            foreach (var fact in facts) 
+            {
+                factids.Add(Taxonomy.FactKeyIndex[fact]);
+            }
+            return facts.ToList();
+        }
+        public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
+        {
+            List<int> ids = null;
+
 
             var rulefactquery = fbq;
             var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
+            var source = IdList == null ? Taxonomy.FactsIndex.Keys.ToList() : IdList.ToList();
+
             if (dimparts.Count > 0)
             {
-                var ids = new List<int>();
+                ids = source;
+
                 foreach (var dim in dimparts)
                 {
-                    ids = ids.Count == 0 ? Taxonomy.FactsOfDimensions[dim] : ids.Intersect(Taxonomy.FactsOfDimensions[dim]).ToList();
-                }
-                foreach (var id in ids)
-                {
-                    var key = Taxonomy.FactsIndex[id];
-                    factsofrule.Add(key);
+                    if (Taxonomy.FactsOfDimensions.ContainsKey(dim))
+                    {
+                        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfDimensions[dim], null).AsQueryable().ToList();
+                    }
                 }
             }
-            var facts = rulefactquery.ToQueryable(factsofrule.AsQueryable());
-            return facts.ToList();
+            else
+            {
+                return source;
+            }
+            return ids;
+        }
+        public List<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList)
+        {
+            List<int> ids = null;
+
+
+            var rulefactquery = fbq;
+            var source = IdList == null ? Taxonomy.FactsIndex.Keys.ToList() : IdList;
+
+            var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
+            if (dimparts.Count > 0)
+            {
+                ids = source;
+                //foreach (var dim in dimparts)
+                for (int i = 0; i < dimparts.Count; i++)
+                {
+                    var dim = dimparts[i];
+                    if (Taxonomy.FactsOfDimensions.ContainsKey(dim))
+                    {
+                        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfDimensions[dim], null).AsQueryable().ToList();
+                    }
+                    else 
+                    {
+                        ids.Clear();
+                    }
+
+                }
+            }
+            else 
+            {
+                return source;
+            }
+            return ids;
+        }
+
+        public List<String> GetFactsByIds(List<int> ids) 
+        {
+            var factlist = new List<String>();
+            foreach (var id in ids) 
+            {
+                factlist.Add(Taxonomy.FactsIndex[id]);
+            }
+            return factlist;
         }
 
         public void Merge(FactBaseQuery source, FactBaseQuery target)
@@ -587,7 +677,8 @@ namespace XBRLProcessor.Model
 
             }
             target.TrueFilters = target.TrueFilters + source.TrueFilters ;
-            target.FalseFilters = target.FalseFilters + source.FalseFilters ;
+            target.FalseFilters = target.FalseFilters + source.FalseFilters;
+            target.DictFilters = target.DictFilters + source.DictFilters;
             var originalfilter = target.Filter;
             target.Filter = null;
             target.Filter = (s) => originalfilter(s) && source.Filter(s);
@@ -613,10 +704,5 @@ namespace XBRLProcessor.Model
             return mergedqueries;
         }
 
-        public List<FactBaseQuery> GetQueries(Hierarchy<XbrlIdentifiable> filter)
-        {
-            var filterItem = filter.Item as Filter;
-            return filterItem.GetQueries();
-        }
     }
 }
