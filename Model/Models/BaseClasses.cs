@@ -85,32 +85,56 @@ namespace LogicalModel.Base
         public string TrueFilters = "";
         public string DictFilters = "";
         public Func<string, bool> Filter = (s) => true;
+        public List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
 
         public List<String> ToList(IQueryable<String> queryable) 
         {
             return queryable.Where(i => Filter(i)).ToList();
         }
 
-        public List<string> GetConcepts() 
-        {
-            var filterparts = TrueFilters.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim()).Where(i=>!String.IsNullOrEmpty(i)).ToList();
-            var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
-            return conceptfilterparts;
-        }
 
         public List<string> GetDimensions()
         {
-            var filterparts = DictFilters.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (ChildQueries.Count > 0)
+            {
+                var filters = new List<string>();
+                foreach (var childquery in ChildQueries)
+                {
+                    var dimensions = childquery.GetDimensions();
+                    if (filters.Count == 0)
+                    {
+                        filters.AddRange(dimensions);
+                    }
+                    else
+                    {
+                        filters = filters.Intersect(dimensions).ToList();
+                    }
+                }
+                return filters;
+            }
+            else
+            {
+                var filterparts = DictFilters.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            //var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
-            //var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
-            return filterparts.ToList();
+                //var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
+                //var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
+                return filterparts.ToList();
+            }
         }
 
         public IQueryable<String> ToQueryable(IQueryable<String> queryable)
         {
-          
-            return queryable.Where(i => Filter(i));
+            var result = queryable.Where(i => Filter(i));
+            if (ChildQueries.Count > 0)
+            {
+                var items = new List<string>();
+                foreach (var childquery in ChildQueries) 
+                {
+                    items.AddRange(childquery.ToQueryable(result));
+                }
+                return items.AsQueryable();
+            }
+            return result;
         }
         public override string ToString()
         {

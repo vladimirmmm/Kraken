@@ -38,26 +38,6 @@ namespace LogicalModel.Validation
             }
         }
 
-        //private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
-        //public Dictionary<string, FactGroup> FactGroups
-        //{
-        //    get { return _FactGroups; }
-        //    set
-        //    {
-        //        _FactGroups = value;
-
-        //    }
-        //}
-
-        //public void SetMyFactBase()
-        //{
-        //    foreach (var key in FactGroups.Keys) 
-        //    {
-        //        var fg = FactGroups[key];
-        //        fg.SetFromString(key);
-        //    }
-        //}
-
         private string _FallBackValue ="0";
         [DefaultValue("0")]
         public string FallBackValue { get { return _FallBackValue; } set { _FallBackValue = value; } }
@@ -67,10 +47,7 @@ namespace LogicalModel.Validation
 
         public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
-        //public InstanceFact[] Facts
-        //{
-        //    get { return CurrentFacts.ToArray();  }
-        //}
+
         public InstanceFact FirstFact 
         {
             get 
@@ -137,10 +114,6 @@ namespace LogicalModel.Validation
         public string[] StringValues = new string[] { };
         public decimal[] DecimalValues = new decimal[] { };
         
-        //public ValidationParameter()
-        //{
-         
-        //}
 
         public ValidationParameter(string name, string ruleID)
         {
@@ -199,14 +172,7 @@ namespace LogicalModel.Validation
 
         public void ClearObjects()
         {
-            //foreach (var fg in FactGroups.Values) 
-            //{
-            //    fg.ClearObjects();
-            //    foreach (var fact in fg.Facts) 
-            //    {
-            //        fact.ClearObjects();
-            //    }
-            //}
+
         }
         public override bool Equals(object obj)
         {

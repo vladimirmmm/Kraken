@@ -840,6 +840,11 @@ select.celleditor {
 
 
 }
+
+.mh500 {
+    max-height:500px;
+    overflow-y:auto;
+}
 .bordered {
     border:solid 1px #000000;
 

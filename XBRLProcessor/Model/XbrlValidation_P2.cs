@@ -14,347 +14,7 @@ namespace XBRLProcessor.Model
 {
     public partial class XbrlValidation
     {
-        public List<LogicalModel.Base.FactGroup> GetGroups(Hierarchy<XbrlIdentifiable> hrule, LogicalModel.Validation.ValidationRule rule)
-        {
-            if (hrule.Item.ID.Contains("v0784_m")) 
-            {
-
-            }
-            var rule_conceptfilters = hrule.Children.Where(i => i.Item is ConceptFilter).Select(s => s.Item as ConceptFilter).ToList();
-            var rule_dimensionfilters = hrule.Children.Where(i => i.Item is DimensionFilter).Select(s => s.Item as DimensionFilter).ToList();
-
-            var rule_orfilters = hrule.Children.Where(i => i.Item is OrFilter).ToList();
-            var rule_andfilters = hrule.Children.Where(i => i.Item is AndFilter).ToList();
-            //TODO
-            if (rule_orfilters.Count > 0)
-            {
-                var rule_orfilteritems = hrule.Children.Where(i => i.Item is OrFilter).ToList();
-
-                var mainorfilter = new Hierarchy<XbrlIdentifiable>();
-                mainorfilter.Children.AddRange(rule_orfilteritems);
-                var facts = GetFacts(mainorfilter);
-                if (facts.Count > 0)
-                {
-
-                }
-            }
-            if (rule_andfilters.Count > 0)
-            {
-
-            }
-            var rule_concepts = rule_conceptfilters.Select(i => Mapping.Mappings.ToLogical(i)).ToList();
-
-            //Load Typed domains
-            //var typeddimensionfilters = rule_dimensionfilters.Where(i => i is TypedDimensionFilter).Select(i=>i as TypedDimensionFilter).ToList();
-            //foreach (var typeddimensionfilter in typeddimensionfilters) 
-            //{
-                
-            //}
-            var NotFunctions = new List<Func<LogicalModel.Base.FactBase, bool>>();
-            //rule_dimensionfilters = rule_dimensionfilters.Where(i=>i.Dimension.QName)
-            var complementedrulefilters = rule_dimensionfilters.Where(i => i.Complement).ToList();
-            foreach (var complementedrulefilter in complementedrulefilters)
-            {
-                var explicitdimfilter = complementedrulefilter as ExplicitDimensionFilter;
-                var typeddimfilter = complementedrulefilter as TypedDimensionFilter;
-                if (explicitdimfilter != null)
-                {
-
-                    var dimensiondomain = explicitdimfilter.Members.FirstOrDefault().QName.Domain;
-
-                    dimensiondomain = dimensiondomain.IndexOf("_") > -1 ? dimensiondomain.Substring(dimensiondomain.LastIndexOf("_") + 1) : dimensiondomain;
-
-                    var dimensiondomainitems = this.Taxonomy.Hierarchies.Where(i => i.Item.Name == dimensiondomain).SelectMany(i => i.Children).Select(i=>i.Item.Content).Distinct().ToList();
-                    dimensiondomainitems = dimensiondomainitems.Except(explicitdimfilter.Members.Select(i => i.QName.Content)).ToList();
-                    explicitdimfilter.Members.Clear();
-                    foreach (var item in dimensiondomainitems) 
-                    {
-                        var member = new DimensionMember();
-                        member.QName = new QName();
-                        member.QName.Content = item;
-                        explicitdimfilter.Members.Add(member);
-                    }
-                    explicitdimfilter.Complement = false;
-
-                }
-
-                if (typeddimfilter != null)
-                {
-                    NotFunctions.Add((f) => f.Dimensions.Any(i => i.DimensionItem == typeddimfilter.Dimension.QName.Content));
-                }
-
-            }
-
-            rule_dimensionfilters = rule_dimensionfilters.Where(i => !i.Complement).ToList();
-         
-
-            var rule_dimensions = rule_dimensionfilters.Select(i => Mapping.Mappings.ToLogicalDimensions(i)).ToList();
-
-            //set typed dimension domains
-            foreach (var dimensionlist in rule_dimensions) 
-            {
-                foreach (var dim in dimensionlist) 
-                {
-                    if (dim.IsTyped) 
-                    {
-                        dim.Domain = Taxonomy.FindDimensionDomainString(dim.DimensionItem);
-                        if (string.IsNullOrEmpty(dim.Domain))
-                        {
-                            Logger.WriteLine(String.Format("Domain not found for dimension {0}", dim.DimensionItem));
-                        }
-                    }
-                }
-            }
-         
-
-            var simple_rule_dimensions = rule_dimensions.Where(i => i.Count() == 1).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
-            var complex_rule_dimension_groups = rule_dimensions.Where(i => i.Count() > 1).ToList();
-            List<IEnumerable<LogicalModel.Dimension>> complex_rule_dimensions = Utilities.MathX.CartesianProduct(complex_rule_dimension_groups).ToList();
-
-            if (complex_rule_dimensions.Count == 0)
-            {
-                complex_rule_dimensions.Add(new List<LogicalModel.Dimension>());
-            }
-
-            //getting the concept for the rule
-            var factgroups = new List<LogicalModel.Base.FactGroup>();
-            var conceptsfound = new List<LogicalModel.Concept>();
-            foreach (var conceptrule in rule_concepts) 
-            {
-                if (this.Taxonomy.Concepts.ContainsKey(conceptrule.Content))
-                {
-                    var existingconcept = this.Taxonomy.Concepts[conceptrule.Content];
-                    conceptsfound.Add(existingconcept);
-                }
-                else 
-                {
-                    var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(Document.XmlDocument);
-                    var ns = nsm.LookupNamespace(conceptrule.Namespace);
-                    var nsdocument = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i=>i.TargetNamespace==ns);
-                    if (nsdocument!=null)
-                    {
-                        var nsprefix  = nsdocument.TargetNamespacePrefix;
-                        var lookupconcept = new LogicalModel.Base.QualifiedName();
-                        lookupconcept.Namespace = nsprefix;
-                        lookupconcept.Name = conceptrule.Name;
-                        if (this.Taxonomy.Concepts.ContainsKey(lookupconcept.Content))
-                        {
-                            var existingconcept = this.Taxonomy.Concepts[lookupconcept.Content];
-                            conceptsfound.Add(existingconcept);
-                        }
-                    }
-            
-                }
-            }
-            LogicalModel.Concept concept = conceptsfound.SingleOrDefault();
-            //
-
-            foreach (var complex_fact_dimensions in complex_rule_dimensions)
-            {
-                var factgroup = new LogicalModel.Base.FactGroup();
-                factgroups.Add(factgroup);
-                factgroup.Dimensions.AddRange(complex_fact_dimensions.Where(i => !i.IsDefaultMemeber));
-                factgroup.Dimensions.AddRange(simple_rule_dimensions);
-                factgroup.Not = (f) => NotFunctions.Any(nf => nf(f));
-                FixDomains(factgroup.Dimensions);
-                factgroup.Concept = concept;
-
-            }
-
-            var rule_orfactgroups = new List<LogicalModel.Base.FactGroup>();
-
-            var ruleset =new List<List<LogicalModel.Base.FactBase>>();
-
-            foreach (var rule_orfilter in rule_orfilters) 
-            {
-                var rulefacts = new List<LogicalModel.Base.FactBase>();
-
-                foreach (var child in rule_orfilter.Children)
-                {
-                    var f_and = child.Item as AndFilter;
-                    if (f_and != null) 
-                    {
-                        var fact = new LogicalModel.Base.FactBase();
-                        var concepts = GetConcepts(child);
-               
-                        if (concepts.Count == 1)
-                        {
-                            fact.Concept = concepts.FirstOrDefault();
-                        }
-
-                        var dimensions = GetDimensions(child).SelectMany(i => i).ToList();
-                        dimensions = dimensions.Where(i => !i.IsDefaultMemeber).ToList();
-                        fact.Dimensions.AddRange(dimensions);
-                        rulefacts.Add(fact);
-                    }
-                }
-                ruleset.Add(rulefacts);
-            }
-
-            var allfactgroups = new List<LogicalModel.Base.FactGroup>();
-
-            var factcombinations = Utilities.MathX.CartesianProductList(ruleset);
-
-            foreach (var factcombination in factcombinations)
-            {
-                var x_fg = new LogicalModel.Base.FactGroup();
-
-                foreach (var rulefact in factcombination)
-                {
-                    foreach (var mainfactgroup in factgroups)
-                    {
-                        LogicalModel.Base.FactBase.MergeFact(x_fg, mainfactgroup);
-
-                    }
-                    LogicalModel.Base.FactBase.MergeFact(x_fg, rulefact);
-
-                }
-
-                allfactgroups.Add(x_fg);
-
-            }
-
-            var result = new List<LogicalModel.Base.FactGroup>();
-            if (allfactgroups.Count > 0)
-            {
-                result= allfactgroups;
-            }
-            else
-            {
-                foreach (var fg in factgroups)
-                {
-                    fg.Dimensions = fg.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-                }
-                result= factgroups;
-            }
-
-            return result;
-        }
-
-        public List<LogicalModel.Base.FactBase> GetFacts(Hierarchy<XbrlIdentifiable> fv ) 
-        {
-            var facts = new List<LogicalModel.Base.FactBase>();
-            var factvariable = fv.Item as FactVariable;
-            var or_filters = fv.Where(i => i.Item is OrFilter);
-            var and_filters = fv.Where(i => i.Item is AndFilter);
-            foreach (var f_or in or_filters)
-            {
-                foreach (var child in f_or.Children)
-                {
-                    var fact = new LogicalModel.Base.FactBase();
-
-                    var f_and = child.Item as AndFilter;
-                    if (f_and == null)
-                    {
-
-                    }
-                    else
-                    {
-                        var concepts = GetConcepts(child);
-                        if (concepts.Count > 1)
-                        {
-
-                        }
-                        if (concepts.Count == 1)
-                        {
-                            fact.Concept = concepts.FirstOrDefault();
-                        }
-
-                        var dimensions = GetDimensions(child).SelectMany(i => i).ToList();
-                        dimensions = dimensions.Where(i => !i.IsDefaultMemeber).ToList();
-                        fact.Dimensions.AddRange(dimensions);
-                    }
-                    facts.Add(fact);
-                }
-
-            }
-            if (or_filters.Count == 0)
-            {
-                facts.Add(new LogicalModel.Base.FactBase());
-            }
-            var paramfacts = GetRootParamLevelFacts(fv);
-            if (paramfacts.Count > 1) 
-            {
-
-            }
-            //var firstparamfact = paramfacts.FirstOrDefault();
-            var multipliedfacts = new List<LogicalModel.Base.FactBase>();
-            foreach (var fact in facts) 
-            {
-                foreach (var paramfact in paramfacts)
-                {
-                    var itemfact = new LogicalModel.Base.FactBase();
-                    itemfact.Dimensions.AddRange(fact.Dimensions);
-                    itemfact.Concept = fact.Concept;
-                    multipliedfacts.Add(itemfact);
-
-                    if (itemfact.Concept == null)
-                    {
-                        itemfact.Concept = paramfact.Concept;
-                    }
-                    LogicalModel.Dimension.MergeDimensions(itemfact.Dimensions, paramfact.Dimensions);
-                }
-
-            }
-            
-            foreach (var fact in multipliedfacts) 
-            {
-                FixDomains(fact.Dimensions);
-            }
-            return multipliedfacts;
-        }
-
-        protected List<LogicalModel.Base.FactBase> GetRootParamLevelFacts(Hierarchy<XbrlIdentifiable> fv) 
-        {
-            var facts = new List<LogicalModel.Base.FactBase>();
-            var orfilters = fv.Children.Where(i => i.Item is OrFilter).ToList();
-            for (int i = 0; i < orfilters.Count;i++ )
-            {
-                fv.Children.Remove(orfilters[i]);
-            }
-
-
-            var param_concepts = GetConcepts(fv);
-            var param_dimensions = GetDimensions(fv).SelectMany(i => i).Where(i => !i.IsDefaultMemeber).ToList();
-            var groups = param_dimensions.GroupBy(i => i.DimensionItemWithDomain);
-
-            var simpledimensions = groups.Where(i => i.Count() == 1).SelectMany(i => i).ToList();
-            var dimensionsets = new List<IEnumerable<LogicalModel.Dimension>>();
-
-            var multigroups = groups.Where(i => i.Count() > 1).ToList();
-
-            var multidimensions = new List<List<LogicalModel.Dimension>>();
-            foreach (var group in multigroups)
-            {
-                multidimensions.Add(group.ToList());
-
-            }
-
-            if (multidimensions.Count > 0)
-            {
-                dimensionsets.AddRange(Utilities.MathX.CartesianProduct(multidimensions));
-
-            }
-            else
-            {
-                dimensionsets.Add(new List<LogicalModel.Dimension>());
-
-            }
-            foreach (var dimensionset in dimensionsets)
-            {
-                var fact = new LogicalModel.Base.FactBase();
-                fact.Concept = param_concepts.Count == 1 ? param_concepts.FirstOrDefault() : null;
-                fact.Dimensions.AddRange(dimensionset);
-                fact.Dimensions.AddRange(simpledimensions);
-                facts.Add(fact);
-            }
-            foreach (var orfilter in orfilters)
-            {
-                fv.Children.Add(orfilter);
-            }
-            return facts;
-        }
-
+     
         public string CheckCells(LogicalModel.Validation.ValidationParameter parameter) 
         {
             var cellfound = false;
@@ -476,31 +136,6 @@ namespace XBRLProcessor.Model
             return sb.ToString();
         }
         
-        public void SetFacts(LogicalModel.Base.FactGroup factgroup) 
-        {
-            foreach (var fact in factgroup.FullFacts) 
-            {
-                LogicalModel.Dimension.MergeDimensions(fact.Dimensions, factgroup.Dimensions);
-                if (fact.Concept == null) 
-                {
-                    fact.Concept = factgroup.Concept;
-                }
-                fact.Dimensions = fact.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-            }
-   
-        }
-
-        private void FixDomains(List<LogicalModel.Dimension> dimensionlist) 
-        {
-            foreach (var dimension in dimensionlist) 
-            {
-                if (String.IsNullOrEmpty(dimension.Domain))
-                {
-                    //OGR issue
-                    dimension.Domain = Taxonomy.FindDimensionDomainString(dimension.DimensionItem);
-                }
-            }
-        }
         public List<FactBaseQuery> GetRuleQuery(Hierarchy<XbrlIdentifiable> item)
         {
             //root level
@@ -527,6 +162,7 @@ namespace XBRLProcessor.Model
 
             return allqueries;
         }
+        
         public List<FactBaseQuery> GetFactQuery(Hierarchy<XbrlIdentifiable> item,int level=0)
         {
             //or queries
@@ -589,10 +225,10 @@ namespace XBRLProcessor.Model
         public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, List<int> factids)
         {
 
-            var rulefactquery = fbq;
+    
             //factids.AddRange(GetFactIDs(fbq, IdList));
             var factsofrule = GetFactsByIds(GetFactIDs(fbq, IdList));
-            var facts = rulefactquery.ToQueryable(factsofrule.AsQueryable());
+            var facts = fbq.ToQueryable(factsofrule.AsQueryable());
          
             foreach (var fact in facts) 
             {
@@ -600,6 +236,7 @@ namespace XBRLProcessor.Model
             }
             return facts.ToList();
         }
+        
         public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
         {
             List<int> ids = null;
@@ -627,43 +264,84 @@ namespace XBRLProcessor.Model
             }
             return ids;
         }
-        public List<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList)
+        
+        public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList)
         {
-            List<int> ids = null;
+            IEnumerable<int> ids = new List<int>();
 
 
             var rulefactquery = fbq;
             var source = IdList == null ? Taxonomy.FactsIndex.Keys.ToList() : IdList;
 
             var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
+            ids = source;
+
             if (dimparts.Count > 0)
             {
-                ids = source;
-                //foreach (var dim in dimparts)
+                var dimboxes = new List<List<int>>();
+                var mincount = 1000000;
+                var minix = 0;
                 for (int i = 0; i < dimparts.Count; i++)
                 {
-                    var dim = dimparts[i];
-                    if (Taxonomy.FactsOfDimensions.ContainsKey(dim))
+                    if (Taxonomy.FactsOfDimensions.ContainsKey(dimparts[i]))
                     {
-                        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfDimensions[dim], null).AsQueryable().ToList();
+                        var dimbox = Taxonomy.FactsOfDimensions[dimparts[i]];
+                        if (dimbox.Count < mincount) 
+                        {
+                            mincount = dimbox.Count;
+                            minix = i;
+                        }
+                        dimboxes.Add(dimbox);
                     }
-                    else 
+                    else
                     {
-                        ids.Clear();
+                        dimboxes = new List<List<int>>();
+                        break;
+                    }
+                }
+                IEnumerable<int> dimidlist = dimboxes[minix];
+                dimboxes.RemoveAt(minix);
+                for (int i = 0; i < dimboxes.Count; i++)
+                {
+                    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimboxes[i], null);
+                }
+                //foreach (var dim in dimparts)
+
+                if (source.Count < mincount)
+                {
+                    ids = Utilities.Objects.IntersectSorted(ids, dimidlist, null);
+                }
+                else
+                {
+                    ids = Utilities.Objects.IntersectSorted(dimidlist, ids, null);
+                }
+
+
+            }
+            if (fbq.ChildQueries.Count > 0)
+            {
+                var idlist = ids.ToList();
+                if (idlist.Count > 100)
+                {
+                    var childids = new List<int>();
+                    foreach (var childquery in fbq.ChildQueries)
+                    {
+                        childids.AddRange(GetFactIDs(childquery, idlist));
                     }
 
+                    return childids;
                 }
-            }
-            else 
-            {
-                return source;
+                else 
+                {
+                    return idlist;
+                }
             }
             return ids;
         }
 
-        public List<String> GetFactsByIds(List<int> ids) 
+        public List<String> GetFactsByIds(IEnumerable<int> ids) 
         {
-            var factlist = new List<String>();
+            var factlist = new List<String>();//ids.Count());
             foreach (var id in ids) 
             {
                 factlist.Add(Taxonomy.FactsIndex[id]);
@@ -680,6 +358,7 @@ namespace XBRLProcessor.Model
             target.TrueFilters = target.TrueFilters + source.TrueFilters ;
             target.FalseFilters = target.FalseFilters + source.FalseFilters;
             target.DictFilters = target.DictFilters + source.DictFilters;
+            target.ChildQueries = source.ChildQueries;
             var originalfilter = target.Filter;
             target.Filter = null;
             target.Filter = (s) => originalfilter(s) && source.Filter(s);

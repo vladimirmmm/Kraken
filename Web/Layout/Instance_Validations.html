@@ -18,44 +18,45 @@
 
 <div class="detail bordered absolutetabcontent hidden">
     <a href="javascript:void(0)" onclick="Toggle(this, 'attr:class', ['detail bordered', 'detail bordered absolutetabcontent']);">&nbsp;Minimize/Maximize</a>
+    <div class="mh500">
+        <div class="parent bigtext" binding-type="template">
+            <span class="rule" rule-id="$bind:ID$"></span>
+            <p>
+                <span>$bind:DisplayText$</span>
+            </p>
+            <p>
+                Formula: <span>$bind:OriginalExpression$</span>
+            </p>
+        </div>
+        <ul class="sublist" binding-items="this">
+            <li binding-type="template">
+                <table binding-items="Parameters">
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Cells</th>
+                    </tr>
+                    <tr binding-type="template">
+                        <td>$bind:{Name}$</td>
+                        <td class="right">$bind:{Value}$</td>
+                        <td binding-items="CellsOfFacts">
+                            <ul binding-items="this" binding-type="template">
+                                <li>
+                                    <a binding-type="template" href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.NavigateTo('{this}');$">
+                                        $bind:this$
+                                    </a>
+                                </li>
+                            </ul>
 
-    <div class="parent" binding-type="template">
-        <span class="rule" rule-id="$bind:ID$"></span>
-        <p>
-            <span>$bind:DisplayText$</span>
-        </p>
-        <p>
-            Formula: <span>$bind:OriginalExpression$</span>
-        </p>
-    </div>
-    <ul class="sublist" binding-items="this">
-        <li binding-type="template">
-            <table binding-items="Parameters">
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                    <th>Cells</th>
-                </tr>
-                <tr binding-type="template">
-                    <td>$bind:{Name}$</td>
-                    <td class="right">$bind:{Value}$</td>
-                    <td binding-items="CellsOfFacts">
-                        <ul binding-items="this" binding-type="template">
-                            <li>
-                                <a binding-type="template" href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.NavigateTo('{this}');$">
-                                    $bind:this$
-                                </a>
-                            </li>
-                        </ul>
+                        </td>
 
-                    </td>
+                    </tr>
+                </table>
+            </li>
+        </ul>
 
-                </tr>
-            </table>
-        </li>
-    </ul>
+        <div class="sublistpager pagination">
 
-    <div class="sublistpager pagination">
-
+        </div>
     </div>
 </div>

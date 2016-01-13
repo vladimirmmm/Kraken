@@ -588,6 +588,12 @@ namespace XBRLProcessor.Models
                 var expressionfile = this.ModuleFolder + "expressions.txt";
                 Utilities.FS.WriteAllText(TaxonomyTestPath, "");
                 Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
+                var b1 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3724"));
+                var b2 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3727"));
+                validationdocuments.Remove(b1);
+                validationdocuments.Remove(b2);
+                validationdocuments.Insert(0, b1);
+                validationdocuments.Insert(0, b2);
 
                 foreach (var validdoc in validationdocuments)
                 {

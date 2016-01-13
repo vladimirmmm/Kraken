@@ -93,14 +93,19 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 
                     if (!Complement)
                     {
-                        var tag = String.Format(":{0}]{1}", this.Dimension.QName.Value, member.QName.Content);
+                        var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, member.QName.Content);
 
-                        query.DictFilters = query.DictFilters + String.Format("{0}, ", tag);
-                        query.Filter = (s) =>
-                        {
-                 
-                            return true;
-                        };
+                        query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
+                        //query.Filter = (s) =>
+                        //{
+
+                        //    var ok = s.Contains(tag);
+                        //    if (ok)
+                        //    {
+
+                        //    }
+                        //    return ok;
+                        //};
 
                     }
                     else
