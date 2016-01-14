@@ -68,20 +68,54 @@ namespace Utilities
         }
         public void test() 
         {
+            Random rnd = new Random();
             var li = new List<int>();
             var li2 = new List<int>() { 1215, 15748, 12, 14675, 98000, 123, 12105, 157408, 120, 146075, 980000, 1230 };
             for (int i = 0; i < 1000000; i++) 
             {
                 li.Add(i);
             }
+            for (int i = 0; i < 100000; i++)
+            {
+                var r = rnd.Next(0, 1000000 - 1);
+                while (li2.Contains(r)) 
+                {
+                    r = rnd.Next(0, 1000000 - 1);
+                }
+
+                li2.Add(r);
+            }
+            li2 = li2.OrderBy(i => i).ToList();
+            var dict = li.ToDictionary(i => i,e=>true);
+            var dict2 = li2.ToDictionary(i => i, e => true);
             var ref1 = DateTime.Now;
-            var result = IntersectSorted(li, li2, null);
+            for (int i = 0; i < 100; i++)
+            {
+                var result = IntersectSorted(li, li2, null);
+            }
             var ref2 = DateTime.Now;
-            var result2 = IntersectSorted(li2, li, null);
+            for (int i = 0; i < 100; i++)
+            {
+                var result2 = IntersectSorted(li2, li, null);
+            }
             var ref3 = DateTime.Now;
             var f1 = ref2.Subtract(ref1).TotalMilliseconds;
             var f2 = ref3.Subtract(ref2).TotalMilliseconds;
             var z = 0;
+            ref1 = DateTime.Now;
+            for (int i = 0; i < 100; i++)
+            {
+                var result = IntersectSorted(dict, dict2, null);
+            }
+            ref2 = DateTime.Now;
+            for (int i = 0; i < 100; i++)
+            {
+                var result2 = IntersectSorted(dict2, dict, null);
+            }
+            ref3 = DateTime.Now;
+            f1 = ref2.Subtract(ref1).TotalMilliseconds;
+            f2 = ref3.Subtract(ref2).TotalMilliseconds;
+            z = 1;
         }
 
         public static List<int> IntersectSortedI(List<int> source, List<int> target, Comparer<int> comparer)
@@ -121,6 +155,33 @@ namespace Utilities
             ints.TrimExcess();
 
             return ints;
+        }
+        
+        public static List<int> IntersectSorted(Dictionary<int,bool> sequence1, Dictionary<int,bool> sequence2, Comparer<int> comparer)
+        {
+            var results = new List<int>();
+            foreach (var item in sequence1) 
+            {
+                if (sequence2.ContainsKey(item.Key)) 
+                {
+                    results.Add(item.Key);
+                }
+
+            }
+            return results;
+        }
+        public static List<int> IntersectSorted(IEnumerable<int> sequence1, Dictionary<int, bool> sequence2, Comparer<int> comparer)
+        {
+            var results = new List<int>();
+            foreach (var item in sequence1)
+            {
+                if (sequence2.ContainsKey(item))
+                {
+                    results.Add(item);
+                }
+
+            }
+            return results;
         }
         public static List<T> IntersectSorted<T>( List<T> sequence1, List<T> sequence2, IComparer<T> comparer)
         {

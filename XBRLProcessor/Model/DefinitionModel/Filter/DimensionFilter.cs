@@ -84,28 +84,37 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level=0)
         {
             var queries = new List<FactBaseQuery>();
+            var _complement = Complement;
+            //if (Members.Count == 0 && _complement) 
+            //{
+            //    var domain = taxonomy.GetDomainOfDimension(this.Dimension.QName.Content);
+            //    var member = new DimensionMember();
+            //    member.QName.Content = String.Format("{0}:{1}", domain, Literals.Literal.Defaultmember);
+            //    Members.Add(member);
+            //    _complement = false;
+            //}
             foreach (var member in Members)
             {
                 var query = new FactBaseQuery();
                 queries.Add(query);
                 if (member.QName.Value != Literals.Literal.Defaultmember)
                 {
-                
-                    if (!Complement)
+
+                    if (!_complement)
                     {
                         var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, member.QName.Content);
 
                         query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
-                        //query.Filter = (s) =>
-                        //{
+                        query.Filter = (s) =>
+                        {
 
-                        //    var ok = s.Contains(tag);
-                        //    if (ok)
-                        //    {
+                            var ok = s.Contains(tag);
+                            if (ok)
+                            {
 
-                        //    }
-                        //    return ok;
-                        //};
+                            }
+                            return ok;
+                        };
 
                     }
                     else
@@ -126,7 +135,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 }
                 else 
                 {
-                    if (!Complement)
+                    if (!_complement)
                     {
                         var tag = String.Format(":{0}]{1}:", this.Dimension.QName.Value, member.QName.Domain);
                         query.FalseFilters = query.FalseFilters + String.Format("{0}, ", tag);

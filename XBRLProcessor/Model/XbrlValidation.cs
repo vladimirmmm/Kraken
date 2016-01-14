@@ -104,8 +104,9 @@ namespace XBRLProcessor.Model
         public LogicalModel.Validation.ValidationRule GetLogicalRule_Tmp(Hierarchy<XbrlIdentifiable> hrule, XbrlTaxonomyDocument document)
         {
             this.Document = document;
+          
             var tmp_rule = hrule.Copy();
-
+            FixRule(tmp_rule);
             var logicalrule = new LogicalModel.Validation.ValidationRule();
             var valueassertion = tmp_rule.Item as ValueAssertion;
             logicalrule.ID = valueassertion.ID;
@@ -142,7 +143,7 @@ namespace XBRLProcessor.Model
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
             //
-            if (valueassertion.ID.Contains("eba_v4134_m"))
+            if (valueassertion.ID.Contains("1067"))
             {
             }
 
@@ -187,6 +188,7 @@ namespace XBRLProcessor.Model
                 var bsize = 500;
                 var isnonsequenced = !parameter.BindAsSequence;
                 factids.Capacity = bsize + 10;
+                var parameterfactdict = parameterfacts.ToDictionary(k => k, e => true);
                 foreach (var fbq in mergedqueries)
                 {
 
@@ -196,7 +198,7 @@ namespace XBRLProcessor.Model
                     }
                     //var facts = fbq.ToList(factsofrule.AsQueryable());
                     var datafactids = new List<int>();
-                    var facts = GetFacts(fbq, parameterfacts, datafactids);
+                    var facts = GetFacts(fbq, parameterfacts,parameterfactdict, datafactids);
                     factids.AddRange(datafactids);
                     var ok = true;
 
@@ -221,7 +223,7 @@ namespace XBRLProcessor.Model
                             //factids = factids.OrderBy(i => i).ToList();
                             //parameterfacts = Utilities.Objects.SortedExcept(parameterfacts, factids);
                             //factids.Clear();
-                            Utilities.Logger.WriteLine(String.Format("Remaining: {0}",mergedqueries.Count- mergedqueries.IndexOf(fbq)));
+                            //Utilities.Logger.WriteLine(String.Format("Remaining: {0}",mergedqueries.Count- mergedqueries.IndexOf(fbq)));
                         }
                     }
 
@@ -300,7 +302,10 @@ namespace XBRLProcessor.Model
             {
                 foreach (var parameter in logicalrule.Parameters)
                 {
-                    parameter.TaxFacts.RemoveAt(taxfactid);
+                    if (parameter.TaxFacts.Count > taxfactid)
+                    {
+                        parameter.TaxFacts.RemoveAt(taxfactid);
+                    }
                 }
             }
 

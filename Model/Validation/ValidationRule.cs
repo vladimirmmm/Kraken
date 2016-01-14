@@ -222,22 +222,25 @@ namespace LogicalModel.Validation
                         }
                         else
                         {
-                            var fact = Taxonomy.FactsIndex[facts.FirstOrDefault()];
-                            itemfacts.Add(fact);
-
-                            //set the cells
-                            var cells = new List<String>();
-                            if (Taxonomy.Facts.ContainsKey(fact))
+                            if (facts.Count == 1)
                             {
-                                cells.AddRange(Taxonomy.Facts[fact]);
-                            }
+                                var fact = Taxonomy.FactsIndex[facts.FirstOrDefault()];
+                                itemfacts.Add(fact);
 
-                            if (!sp.CellsOfFacts.ContainsKey(fact))
-                            {
-                                sp.CellsOfFacts.Add(fact, new List<string>());
+                                //set the cells
+                                var cells = new List<String>();
+                                if (Taxonomy.Facts.ContainsKey(fact))
+                                {
+                                    cells.AddRange(Taxonomy.Facts[fact]);
+                                }
 
+                                if (!sp.CellsOfFacts.ContainsKey(fact))
+                                {
+                                    sp.CellsOfFacts.Add(fact, new List<string>());
+
+                                }
+                                sp.CellsOfFacts[fact].AddRange(cells);
                             }
-                            sp.CellsOfFacts[fact].AddRange(cells);
                         }
                     }
 
@@ -253,44 +256,67 @@ namespace LogicalModel.Validation
 
         protected InstanceFact GetFact(string factstring, Instance instance) 
         {
-            var factbase = new FactBase();
-            factbase.SetFromString(factstring);
-            var factkey= factbase.GetFactKey();
-            var facts=new List<InstanceFact>();
-            if(instance.FactDictionary.ContainsKey(factkey))
+            var facts = new List<InstanceFact>();
+            if (instance.FactDictionary.ContainsKey(factstring)) 
             {
-                facts = instance.FactDictionary[factkey].ToList();
-                foreach (var fact in facts) 
-                {
-                    if (fact.FactString == factstring)
-                    {
-                        return fact;
-                    }
+                facts = instance.FactDictionary[factstring];
+                if (facts.Count == 1) {
+                    return facts[0];
                 }
-                facts.Clear();
             }
-            if (facts.Count == 0) 
+            var shouldprocess=false;
+            foreach(var td in Taxonomy.TypedDimensions)
             {
+                if (factstring.Contains(td.Key))
+                {
+                    shouldprocess=true;
+                    break;
+                }
+            }
+            if (shouldprocess)
+            {
+                var factbase = new FactBase();
+                factbase.SetFromString(factstring);
+                var factkey = factbase.GetFactKey();
+                if (instance.FactDictionary.ContainsKey(factkey))
+                {
+                    facts = instance.FactDictionary[factkey].ToList();
+                    foreach (var fact in facts)
+                    {
+                        if (fact.FactString == factstring)
+                        {
+                            return fact;
+                        }
+                    }
+                    facts.Clear();
+                }
             }
             return facts.FirstOrDefault();
         }
 
         public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
-            if (this.ID.Contains("4023")) 
+            if (this.ID.Contains("1067")) 
             { 
             }
             var allresults = GetAllResults();
             var allinstanceresults = new List<ValidationRuleResult>();
             var resultstoremove = new List<ValidationRuleResult>();
             var resultstoadd = new List<ValidationRuleResult>();
+            var hastyped = false;
+            var waschecked = false;
             foreach (var result in allresults)
             {
-                var facts = result.Parameters.SelectMany(i=>i.Facts).Select(i => FactBase.GetFactFrom(i));
-                var hastyped = facts.Any(i => i.Dimensions.Any(j => j.IsTyped));
+                var facts = new List<FactBase>();
+                if (!waschecked)
+                {
+                    waschecked = true;
+                    facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
+                    hastyped = facts.Any(i => i.Dimensions.Any(j => j.IsTyped));
+                }
                 if (hastyped)
                 {
-                    //var typeddimensionstrings = instance.
+                    facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
 
                     var resultfactgroup = result.FactGroup;
 
@@ -370,7 +396,7 @@ namespace LogicalModel.Validation
         public void ValidateResult(ValidationRuleResult result, Instance instance)
         {
 
-            if (this.ID.Contains("0312")) 
+            if (this.ID.Contains("eba_v1662_m")) 
             { 
             }
             var HasAtLeastOneValue = false;

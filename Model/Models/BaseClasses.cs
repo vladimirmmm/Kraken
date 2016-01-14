@@ -95,31 +95,35 @@ namespace LogicalModel.Base
 
         public List<string> GetDimensions()
         {
+            var filterparts = new List<string>();
             if (ChildQueries.Count > 0)
             {
-                var filters = new List<string>();
+                var commonchildfilters = new List<string>();
+
+                var isfilteradded = false;
                 foreach (var childquery in ChildQueries)
                 {
                     var dimensions = childquery.GetDimensions();
-                    if (filters.Count == 0)
+                    if (!isfilteradded)
                     {
-                        filters.AddRange(dimensions);
+                        isfilteradded = true;
+                        commonchildfilters.AddRange(dimensions);
                     }
                     else
                     {
-                        filters = filters.Intersect(dimensions).ToList();
+                        commonchildfilters = commonchildfilters.Intersect(dimensions).ToList();
                     }
                 }
-                return filters;
+                filterparts.AddRange(commonchildfilters);
             }
-            else
-            {
-                var filterparts = DictFilters.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-                //var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
-                //var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
-                return filterparts.ToList();
-            }
+            filterparts.AddRange(DictFilters.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries));
+            
+
+            //var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
+            //var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
+            return filterparts.ToList();
+
         }
 
         public IQueryable<String> ToQueryable(IQueryable<String> queryable)

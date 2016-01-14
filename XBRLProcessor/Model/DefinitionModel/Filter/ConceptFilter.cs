@@ -38,9 +38,9 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 fbq.DictFilters = fbq.DictFilters + String.Format("{0}, ", Concept.QName.Content);
                 functions.Add((s) =>
                 {
-                    return true;
-                    //var sconceptpart = s.Substring(0, s.IndexOf(","));
-                    //return sconceptpart.EndsWith(Concept.QName.Content);
+            
+                    var sconceptpart = s.Substring(0, s.IndexOf(","));
+                    return sconceptpart.EndsWith(Concept.QName.Content);
                 });
 
             }

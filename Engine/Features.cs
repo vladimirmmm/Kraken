@@ -377,7 +377,10 @@ namespace Engine
         {
             if (parameters.Length > 0) 
             {
-                OpenTaxonomy(String.Format("{0}", parameters[0]));
+                var paths = String.Format("{0}", parameters[0]).Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var fixedpaths = paths.Where(i => !String.IsNullOrEmpty(i.Trim())).Select(i => i.Trim()).ToList();
+
+                OpenTaxonomy(fixedpaths.FirstOrDefault());
             }
         }
         public void OpenTaxonomy(string path) 

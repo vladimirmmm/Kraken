@@ -60,6 +60,7 @@ namespace LogicalModel
         }
         public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
         public Dictionary<string, List<int>> FactsOfDimensions = new Dictionary<string, List<int>>();
+        public Dictionary<string, Dictionary<int,bool>> FactsOfDimensionsD = new Dictionary<string, Dictionary<int,bool>>();
         public Dictionary<int, string> FactsIndex = new Dictionary<int, string>();
         public Dictionary<string, int> FactKeyIndex = new Dictionary<string, int>();
    
@@ -851,7 +852,20 @@ namespace LogicalModel
             dimensiondomainitems = dimensiondomainitems.Except(exceptmembers).ToList();
             return dimensiondomainitems;
         }
+        public string GetDomainOfDimension(string item)
+        {
+            if (item.Contains(":"))
+            {
+                   var parts = item.Split(":");
 
+                var ns = parts[0];
+                var name = parts[1];
+                var staff = this.FactsOfDimensions.Where(i => i.Key.StartsWith(":" + name)).Select(i=>i.Key).ToList();
+                var domain = Utilities.Strings.TextBetween(staff.FirstOrDefault(), "]", ":");
+                return domain;
+            }
+            return "";
+        }
         public Element GetDomain(string item)
         {
             Element element = null;

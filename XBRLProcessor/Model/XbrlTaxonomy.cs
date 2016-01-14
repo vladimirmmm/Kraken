@@ -126,6 +126,9 @@ namespace XBRLProcessor.Models
         {
             FactsOfConcepts.Clear();
             FactsOfDimensions.Clear();
+            FactsOfDimensionsD.Clear();
+            FactsIndex.Clear();
+            FactKeyIndex.Clear();
             var ix=-1;
             foreach (var fact in this.Facts)
             {
@@ -166,12 +169,11 @@ namespace XBRLProcessor.Models
                     }
                     keylist2.Add(ix);
                 }
-                //var keys=FactsOfDimensions.Keys.ToList();
-                //foreach (var key in keys) 
-                //{
-                //    var sorted = FactsOfDimensions[key].OrderBy(i => i).ToList();
-                //    FactsOfDimensions[key] = sorted;
-                //}
+             
+            }
+            foreach (var key in FactsOfDimensions.Keys)
+            {
+                FactsOfDimensionsD.Add(key, FactsOfDimensions[key].ToDictionary(k => k, e => true));
             }
         }
         public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
@@ -243,7 +245,13 @@ namespace XBRLProcessor.Models
                 EntryDocument.LoadReferences();
 
                 var taxpath = SourceTaxonomyFolder + "tax.xsd";
-                EntryDocument.LoadTaxonomyDocument(taxpath);
+                try
+                {
+                    EntryDocument.LoadTaxonomyDocument(taxpath);
+                }
+                catch (Exception ex) 
+                {
+                }
                 //EntryDocument.ReferencedFiles
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyDocuments);
                 Utilities.FS.WriteAllText(TaxonomyStructurePath, jsoncontent);
@@ -443,83 +451,91 @@ namespace XBRLProcessor.Models
             var tablegroups = this.SchemaElements.Where(i => i.Type == "model:tableGroupType");
 
             var predocpath = this.EntryDocument.LocalRelPath.Replace(".xsd","-pre.xml");
-            var predoc = this.TaxonomyDocumentDictionary[predocpath];
-            if (predoc != null) 
+            if (!this.TaxonomyDocumentDictionary.ContainsKey(predocpath))
             {
-                var genlinknode = Utilities.Xml.SelectSingleNode(predoc.XmlDocument.DocumentElement, "//gen:link");
-                if (genlinknode != null) 
+                Utilities.Logger.WriteLine("error: File " + predocpath + "was mot found!");
+            }
+            else
+            {
+                var predoc = this.TaxonomyDocumentDictionary[predocpath];
+                if (predoc != null)
                 {
-                    var hier = new XbrlHierarchy<LogicalModel.Base.IdentifiablewithLabel>();
-                    hier.LoadFromXml(genlinknode);
-                    foreach (var h in hier.Items) 
+                    var genlinknode = Utilities.Xml.SelectSingleNode(predoc.XmlDocument.DocumentElement, "//gen:link");
+                    if (genlinknode != null)
                     {
-                        var folder = Utilities.Strings.GetFolderName(predoc.LocalFolder);
-                        var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef, XbrlEngine.LocalFolder);
-                        folder = Utilities.Strings.GetFolderName(href);
-                        //folder = "tab";
-                        var labelid = h.LabelID;
-                        if (labelid.StartsWith("loc_"))
+                        var hier = new XbrlHierarchy<LogicalModel.Base.IdentifiablewithLabel>();
+                        hier.LoadFromXml(genlinknode);
+                        foreach (var h in hier.Items)
                         {
-                            labelid = labelid.Substring(4);
-                        }
-                        h.ID = labelid;
-                        var labelkey = LogicalModel.Label.GetKey(folder, labelid);
-                        var label = FindLabel(labelkey);
-                        if (label != null) 
-                        {
-                            h.Label = label;
-                        }
-                        if (label == null) 
-                        { 
-                        }
-                    }
-                    var root = hier.Items.FirstOrDefault();
-                    var hierarchy = hier.GetHierarchy();
-                    var leafs = hierarchy.GetLeafs();
-                    this.Module.TableGroups.Clear();
-
-                    var tgs = hierarchy.Cast<LogicalModel.TableGroup>(i => {
-                
-                        var tgitem = new LogicalModel.TableGroup();
-                        tgitem.ID = i.ID;
-                        tgitem.LabelID = i.LabelID;
-                        tgitem.Label = i.Label;
-
-                        return tgitem;
-                    });
-
-                    var items = tgs.All();
-                    foreach (var item in items) 
-                    {
-                        if (item.Parent != null)
-                        {
-
-                            var parent = item.Parent.Item;
-                            var parentLabelID = parent.LabelID.ToLower();
-                            var parentLabelCode = parent.LabelCode.ToLower();
-                          
-                            var find = filingindicators.FirstOrDefault(i => parentLabelID.Contains(i.ToLower()));
-                            if (find == null)
+                            var folder = Utilities.Strings.GetFolderName(predoc.LocalFolder);
+                            var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef, XbrlEngine.LocalFolder);
+                            folder = Utilities.Strings.GetFolderName(href);
+                            //folder = "tab";
+                            var labelid = h.LabelID;
+                            if (labelid.StartsWith("loc_"))
                             {
-                                find = filingindicators.FirstOrDefault(i => parentLabelCode.Contains(i.ToLower()));
-
+                                labelid = labelid.Substring(4);
                             }
-                            if (item.Children.Count == 0 && !tablegroups.Any(i => i.ID == item.Item.ID))
+                            h.ID = labelid;
+                            var labelkey = LogicalModel.Label.GetKey(folder, labelid);
+                            var label = FindLabel(labelkey);
+                            if (label != null)
                             {
-                                parent.TableIDs.Add(item.Item.ID);
-                                parent.FilingIndicator = find;
+                                h.Label = label;
                             }
-                            item.Item.FilingIndicator = find;
+                            if (label == null)
+                            {
+                            }
                         }
-                        if (item.Children.Count == 0) 
+                        var root = hier.Items.FirstOrDefault();
+                        var hierarchy = hier.GetHierarchy();
+                        var leafs = hierarchy.GetLeafs();
+                        this.Module.TableGroups.Clear();
+
+                        var tgs = hierarchy.Cast<LogicalModel.TableGroup>(i =>
                         {
-                            //item.Parent.Item.
+
+                            var tgitem = new LogicalModel.TableGroup();
+                            tgitem.ID = i.ID;
+                            tgitem.LabelID = i.LabelID;
+                            tgitem.Label = i.Label;
+
+                            return tgitem;
+                        });
+
+                        var items = tgs.All();
+                        foreach (var item in items)
+                        {
+                            if (item.Parent != null)
+                            {
+
+                                var parent = item.Parent.Item;
+                                var parentLabelID = parent.LabelID.ToLower();
+                                var parentLabelCode = parent.LabelCode.ToLower();
+
+                                var find = filingindicators.FirstOrDefault(i => parentLabelID.Contains(i.ToLower()));
+                                if (find == null)
+                                {
+                                    find = filingindicators.FirstOrDefault(i => parentLabelCode.Contains(i.ToLower()));
+
+                                }
+                                if (item.Children.Count == 0 && !tablegroups.Any(i => i.ID == item.Item.ID))
+                                {
+                                    parent.TableIDs.Add(item.Item.ID);
+                                    parent.FilingIndicator = find;
+                                }
+                                item.Item.FilingIndicator = find;
+                            }
+                            if (item.Children.Count == 0)
+                            {
+                                //item.Parent.Item.
+                            }
+
                         }
+                        this.Module.TableGroups = tgs;
+
 
                     }
-                    this.Module.TableGroups = tgs;
-                    
-
                 }
             }
         }
@@ -567,7 +583,15 @@ namespace XBRLProcessor.Models
                 }
             }
         }
-
+        private void MoveToFirst(string key, List<XbrlTaxonomyDocument> documents) 
+        {
+            var document = documents.FirstOrDefault(i => i.FileName.Contains(key));
+            if (document != null) 
+            {
+                documents.Remove(document);
+                Documents.Insert(0, document);
+            }
+        }
         public override void LoadValidationFunctions()
         {
 
@@ -588,12 +612,17 @@ namespace XBRLProcessor.Models
                 var expressionfile = this.ModuleFolder + "expressions.txt";
                 Utilities.FS.WriteAllText(TaxonomyTestPath, "");
                 Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
-                var b1 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3724"));
-                var b2 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3727"));
-                validationdocuments.Remove(b1);
-                validationdocuments.Remove(b2);
-                validationdocuments.Insert(0, b1);
-                validationdocuments.Insert(0, b2);
+                //var b1 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3724"));
+                //var b2 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3727"));
+                //var b3 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v0253"));
+                //validationdocuments.Remove(b1);
+                //validationdocuments.Remove(b2);
+                //validationdocuments.Remove(b3);
+                //validationdocuments.Insert(0, b1);
+                //validationdocuments.Insert(0, b2);
+                //validationdocuments.Insert(0, b3);
+                //v3153_m
+                MoveToFirst("v3153", validationdocuments);
 
                 foreach (var validdoc in validationdocuments)
                 {
@@ -979,6 +1008,10 @@ namespace XBRLProcessor.Models
             this.TaxonomyLabelDictionary.Clear();
             this.ValidationFunctionContainer = null;
             this.FactsOfConcepts.Clear();
+            this.FactsOfDimensions.Clear();
+            this.FactsOfDimensionsD.Clear();
+            this.FactsIndex.Clear();
+            this.FactKeyIndex.Clear();
             this.TaxonomyDocuments.Clear();
             this.Cells.Clear();
             this.Concepts.Clear();

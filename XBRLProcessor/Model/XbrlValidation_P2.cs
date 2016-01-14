@@ -146,6 +146,8 @@ namespace XBRLProcessor.Model
             {
                 var rootfilterItem = rootfilter.Item as Filter;
                 var queries = rootfilterItem.GetQueries(this.Taxonomy, 0);
+                //rootquerypool.Add(queries);
+
                 if (queries.Count == 1)
                 {
                     rootquerypool.Add(queries);
@@ -222,12 +224,12 @@ namespace XBRLProcessor.Model
             return allqueries;
         }
 
-        public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, List<int> factids)
+        public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, Dictionary<int,bool> IdDict, List<int> factids)
         {
 
     
             //factids.AddRange(GetFactIDs(fbq, IdList));
-            var factsofrule = GetFactsByIds(GetFactIDs(fbq, IdList));
+            var factsofrule = GetFactsByIds(GetFactIDs(fbq, IdList, IdDict));
             var facts = fbq.ToQueryable(factsofrule.AsQueryable());
          
             foreach (var fact in facts) 
@@ -265,7 +267,7 @@ namespace XBRLProcessor.Model
             return ids;
         }
         
-        public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList)
+        public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList, Dictionary<int,bool> IdDict)
         {
             IEnumerable<int> ids = new List<int>();
 
@@ -278,42 +280,60 @@ namespace XBRLProcessor.Model
 
             if (dimparts.Count > 0)
             {
-                var dimboxes = new List<List<int>>();
+                //var dimboxes = new List<List<int>>();
+                var dimboxes = new List<string>();
                 var mincount = 1000000;
                 var minix = 0;
                 for (int i = 0; i < dimparts.Count; i++)
                 {
-                    if (Taxonomy.FactsOfDimensions.ContainsKey(dimparts[i]))
+                    var dimkey = dimparts[i];
+                    if (Taxonomy.FactsOfDimensions.ContainsKey(dimkey))
                     {
-                        var dimbox = Taxonomy.FactsOfDimensions[dimparts[i]];
+                        var dimbox = Taxonomy.FactsOfDimensions[dimkey];
                         if (dimbox.Count < mincount) 
                         {
                             mincount = dimbox.Count;
                             minix = i;
                         }
-                        dimboxes.Add(dimbox);
+                        dimboxes.Add(dimkey);
                     }
                     else
                     {
-                        dimboxes = new List<List<int>>();
-                        break;
+                        dimboxes = new List<string>();
+                        return ids;
                     }
                 }
-                IEnumerable<int> dimidlist = dimboxes[minix];
+                IEnumerable<int> dimidlist = Taxonomy.FactsOfDimensions[dimboxes[minix]];
                 dimboxes.RemoveAt(minix);
                 for (int i = 0; i < dimboxes.Count; i++)
                 {
-                    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimboxes[i], null);
+                    var dimbox = Taxonomy.FactsOfDimensions[dimboxes[i]];
+                    if (dimidlist.Count() * 3 < dimbox.Count)
+                    {
+                        dimidlist = Utilities.Objects.IntersectSorted(dimidlist, Taxonomy.FactsOfDimensionsD[dimboxes[i]], null);
+                    }
+                    else
+                    {
+                        dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimbox, null);
+                    }
                 }
                 //foreach (var dim in dimparts)
 
                 if (source.Count < mincount)
-                {
+                {                
                     ids = Utilities.Objects.IntersectSorted(ids, dimidlist, null);
                 }
                 else
                 {
-                    ids = Utilities.Objects.IntersectSorted(dimidlist, ids, null);
+                    if (ids == IdList)
+                    {
+                        ids = Utilities.Objects.IntersectSorted(dimidlist, IdDict, null);
+
+                    }
+                    else
+                    {
+                        ids = Utilities.Objects.IntersectSorted(dimidlist, ids, null);
+                    }
                 }
 
 
@@ -326,7 +346,7 @@ namespace XBRLProcessor.Model
                     var childids = new List<int>();
                     foreach (var childquery in fbq.ChildQueries)
                     {
-                        childids.AddRange(GetFactIDs(childquery, idlist));
+                        childids.AddRange(GetFactIDs(childquery, idlist, IdDict));
                     }
 
                     return childids;
@@ -345,6 +365,54 @@ namespace XBRLProcessor.Model
             foreach (var id in ids) 
             {
                 factlist.Add(Taxonomy.FactsIndex[id]);
+            }
+            return factlist;
+        }
+
+        public void FixRule(Hierarchy<XbrlIdentifiable> rule) 
+        {
+            var conceptfilters = rule.Where(i => i.Item is ConceptNameFilter).Select(i => i.Item as ConceptNameFilter).ToList();
+            foreach (var conceptfilter in conceptfilters) 
+            {
+                var conceptval = conceptfilter.Concept.QName.Content;
+                var conceptns = conceptfilter.Concept.QName.Domain;
+                var conceptname = conceptfilter.Concept.QName.Value;
+                var conceptsfound = new List<LogicalModel.Concept>();
+
+                if (this.Taxonomy.Concepts.ContainsKey(conceptval))
+                {
+                    //var existingconcept = this.Taxonomy.Concepts[conceptval];
+                    //conceptsfound.Add(existingconcept);
+                }
+                else
+                {
+                    var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(Document.XmlDocument);
+                    var ns = nsm.LookupNamespace(conceptns);
+                    var nsdocument = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
+                    if (nsdocument != null)
+                    {
+                        var nsprefix = nsdocument.TargetNamespacePrefix;
+                        var lookupconcept = new LogicalModel.Base.QualifiedName();
+                        lookupconcept.Namespace = nsprefix;
+                        lookupconcept.Name = conceptname;
+                        if (this.Taxonomy.Concepts.ContainsKey(lookupconcept.Content))
+                        {
+                            var existingconcept = this.Taxonomy.Concepts[lookupconcept.Content];
+                            conceptfilter.Concept.QName.Content = existingconcept.Content;
+                            //conceptsfound.Add(existingconcept);
+                        }
+                    }
+
+                }
+            }
+        }
+        
+        public List<String> GetFactsByIdListCollection(IEnumerable<IEnumerable<int>> ids)
+        {
+            var factlist = new List<String>();//ids.Count());
+            foreach (var id in ids)
+            {
+                factlist.AddRange(GetFactsByIds(id));
             }
             return factlist;
         }
