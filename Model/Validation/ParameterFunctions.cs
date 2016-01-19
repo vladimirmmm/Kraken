@@ -67,6 +67,10 @@ namespace LogicalModel.Validation
         {
             return IAF_max(parameters.SelectMany(i => i.ValuesWithTresholds.ToArray()));
         }
+        public ValueWithTreshold IAF_min(params ValidationParameter[] parameters)
+        {
+            return IAF_min(parameters.SelectMany(i => i.ValuesWithTresholds.ToArray()));
+        }
         
 
 

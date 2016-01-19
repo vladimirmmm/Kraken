@@ -95,6 +95,7 @@ namespace XBRLProcessor.Model.Base
         public LogicalModel.Base.Element Element { get { return _Element; } }
 
         public static Func<string, LogicalModel.Base.Element> LocatorFunction = null;
+        public static Func<XBRLProcessor.Models.XbrlTaxonomyDocument,string, LogicalModel.Base.Element> LocatorFunction2 = null;
 
         public void Locate()
         {
@@ -104,6 +105,15 @@ namespace XBRLProcessor.Model.Base
                 _Element = LocatorFunction(key);
             }
  
+        }
+        public void Locate(XBRLProcessor.Models.XbrlTaxonomyDocument doc)
+        {
+            var key = String.Format("{0}:{1}", this.Namespace, this.ID);
+            if (LocatorFunction != null)
+            {
+                _Element = LocatorFunction2(doc,Href);
+            }
+
         }
     }
 

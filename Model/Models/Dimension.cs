@@ -91,12 +91,13 @@ namespace LogicalModel
         }
         public void SetTyped() 
         {
-            if (this.Domain.IndexOf(":") > -1)
+            var ix = this.Domain.IndexOf(":", StringComparison.Ordinal);
+            if (ix > -1)
             {
                 this.IsTyped = Taxonomy.IsTyped(this.Domain);
                 return;
             }
-            if (this.Domain.IndexOf(":") > -1 && !String.IsNullOrEmpty(this.DomainMember))
+            if (ix > -1 && !String.IsNullOrEmpty(this.DomainMember))
             {
                 this.IsTyped = true;
             }

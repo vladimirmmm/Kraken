@@ -39,16 +39,27 @@ namespace LogicalModel.Expressions
             this.Syntax.Operators.AddItem(OperatorEnum.And, " & ");
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " && ");
             this.Syntax.Operators.AddItem(OperatorEnum.Division, " / ");
+
             this.Syntax.Operators.AddItem(OperatorEnum.Equals, " == ");
             this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, " >= ");
             this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, " <= ");
             this.Syntax.Operators.AddItem(OperatorEnum.Greater, " > ");
-            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, " / ");
             this.Syntax.Operators.AddItem(OperatorEnum.Less, " < ");
+            this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
+
+
+            this.Syntax.Operators.AddItem(OperatorEnum.VEquals, " == ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VGreaterOrEqual, " >= ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VLessOrEqual, " <= ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VGreater, " > ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VLess, " < ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VNotEquals, "!=");
+
+
+            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, " / ");
             this.Syntax.Operators.AddItem(OperatorEnum.Modulo, " \\ ");
             this.Syntax.Operators.AddItem(OperatorEnum.Multiplication, " * ");
             this.Syntax.Operators.AddItem(OperatorEnum.Not, "!");
-            this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
             this.Syntax.Operators.AddItem(OperatorEnum.Or, " | ");
             this.Syntax.Operators.AddItem(OperatorEnum.OrAlso, " || ");
             this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
@@ -72,6 +83,7 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("iaf:abs", (Functions i) => i.IAF_abs(0));
             this.Syntax.AddFunction("iaf:sum", (Functions i) => i.IAF_sum(0));
             this.Syntax.AddFunction("iaf:max", (Functions i) => i.IAF_max(0));
+            this.Syntax.AddFunction("iaf:min", (Functions i) => i.IAF_min(0));
             this.Syntax.AddFunction("xs:qname", (Functions i) => i.XS_QName(""));
             this.Syntax.AddFunction("xs:string", (Functions i) => i.XS_String(""));
             this.Syntax.AddFunction("xs:boolean", (Functions i) => i.XS_Boolean(""));

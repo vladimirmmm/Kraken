@@ -39,9 +39,12 @@ namespace LogicalModel.Validation
                       .FirstOrDefault(i => i.Item.Content == conceptelement.Domain.Content);
                     if (hierarchy != null)
                     {
-                        var possibilities = hierarchy.Children.Select(i => String.Format("{0} [{1}]", i.Item.Content, i.Item.LabelContent)).ToArray();
+                        if (conceptelement.Content.Contains("218")) 
+                        {
+                        }
+                        var possibilities = hierarchy.Where(i=>i!=hierarchy).Select(i => String.Format("{0} [{1}]", i.Item.Content, i.Item.LabelContent)).ToArray();
                         var possibilitystr = Utilities.Strings.ArrayToString(possibilities, ", ");
-                        conceptrule.DisplayText = "Fact value for concept " + conceptelement.Content + "  should be " + possibilitystr;
+                        conceptrule.DisplayText = "Fact value for concept " + conceptelement.Content + " based on " + conceptelement.HierarchyRole + " should be " + possibilitystr;
                         conceptrule.IsOk = (fact) => hierarchy.FirstOrDefault(i => i.Item.Content == fact.Value) != null;
                     }
                     else 

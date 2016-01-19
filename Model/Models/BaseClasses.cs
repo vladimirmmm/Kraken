@@ -126,7 +126,7 @@ namespace LogicalModel.Base
 
         }
 
-        public IQueryable<String> ToQueryable(IQueryable<String> queryable)
+        public IEnumerable<String> ToQueryable(IEnumerable<String> queryable)
         {
             var result = queryable.Where(i => Filter(i));
             if (ChildQueries.Count > 0)
@@ -136,7 +136,7 @@ namespace LogicalModel.Base
                 {
                     items.AddRange(childquery.ToQueryable(result));
                 }
-                return items.AsQueryable();
+                return items;
             }
             return result;
         }
@@ -265,7 +265,7 @@ namespace LogicalModel.Base
             }
             else
             {
-                item = item.Replace(dimns, "*");
+                //item = item.Replace(dimns, "*");
 
             }
             return item;
@@ -311,29 +311,50 @@ namespace LogicalModel.Base
                 if (domainpart.Contains(":"))
                 {
                     var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (domainparts.Length == 2)
-                    {
-                        if (Taxonomy.IsTyped(domainpart))
-                        {
-                            domain = domainpart;
+                    switch (domainparts.Length){
+                        case 2:
+                            dim.IsTyped = Taxonomy.IsTyped(domain);
+                            if (dim.IsTyped)
+                            {
+                                domain = domainpart;
+                            }
+                            else 
+                            {
+                                domain = domainparts[0];
+                                member = domainparts[1];
+                            }
+                            break;
+                        case 3:
+                            domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                            member = domainparts[2];
+                            dim.IsTyped = true;
+                            break;
+                        default:
+                            break;
+                    }
+                    //if (domainparts.Length == 2)
+                    //{
+                    //    if (Taxonomy.IsTyped(domainpart))
+                    //    {
+                    //        domain = domainpart;
 
-                        }
-                        else
-                        {
-                            domain = domainparts[0];
-                            member = domainparts[1];
+                    //    }
+                    //    else
+                    //    {
+                    //        domain = domainparts[0];
+                    //        member = domainparts[1];
 
-                        }
-                        dim.IsTyped = Taxonomy.IsTyped(domain);
+                    //    }
+                    //    dim.IsTyped = Taxonomy.IsTyped(domain);
 
                    
-                    }
-                    if (domainparts.Length == 3)
-                    {
-                        domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
-                        member = domainparts[2];
-                        dim.IsTyped = true;
-                    }
+                    //}
+                    //if (domainparts.Length == 3)
+                    //{
+                    //    domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                    //    member = domainparts[2];
+                    //    dim.IsTyped = true;
+                    //}
                 }
                 dim.DimensionItem = dimitem;
                 dim.Domain = domain;

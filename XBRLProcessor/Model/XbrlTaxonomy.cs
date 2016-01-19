@@ -51,13 +51,16 @@ namespace XBRLProcessor.Models
            
             this.AddTaxonomyDocument(EntryDocument);
 
+            Locator.LocatorFunction = Locate;
+            Locator.LocatorFunction2 = LocateIn;
+
             LabelHandler = new XmlNodeHandler(Tags.Labels, HandleLabel);
 
             TableHandler = new XmlNodeHandler(Tags.TableContainers, HandleTables);
 
             ElementHandler = new XmlNodeHandler(Tags.SchemaElements, HandleElements);
 
-            Locator.LocatorFunction = Locate;
+       
             LogicalModel.Label.SetLabelPrefix(Literal.LabelPrefix);
         }
         
@@ -124,11 +127,12 @@ namespace XBRLProcessor.Models
 
         public override void LoadFactDictionary()
         {
+            Utilities.Logger.WriteLine("Load LoadFactDictionary");
             FactsOfConcepts.Clear();
             FactsOfDimensions.Clear();
-            FactsOfDimensionsD.Clear();
-            FactsIndex.Clear();
-            FactKeyIndex.Clear();
+            //FactsOfDimensionsD.Clear();
+            FactsIndex = new Dictionary<int,int[]>(2000000);
+            FactKeyIndex = new Dictionary<int[], int>(2000000,new IntArrayEqualityComparer());
             var ix=-1;
             foreach (var fact in this.Facts)
             {
@@ -136,12 +140,14 @@ namespace XBRLProcessor.Models
                 FactsIndex.Add(ix, fact.Key);
                 FactKeyIndex.Add(fact.Key, ix);
                 //AddFactToDictionary(fact);
-                var keyparts = fact.Key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = fact.Key;
+                //var stringkey = GetFactStringKeyFromIntKey(fact.Key);
+                var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                 var conceptkey = keyparts[0];
-                List<string> keylist = null;
+                List<int[]> keylist = null;
                 if (!FactsOfConcepts.ContainsKey(conceptkey))
                 {
-                    keylist = new List<string>();
+                    keylist = new List<int[]>();
                     FactsOfConcepts.Add(conceptkey, keylist);
                 }
                 else
@@ -150,17 +156,18 @@ namespace XBRLProcessor.Models
                 }
                 keylist.Add(fact.Key);
 
-                for (int i = 0; i < keyparts.Length; i++)
+                for (int i = 0; i < keyparts.Count; i++)
                 {
                     var id = keyparts[i];
-                    if (i > 0) {
-                        id = id.Substring(id.IndexOf(":"));
-                    }
+                    //if (i > 0) {
+                    //    id = id.Substring(id.IndexOf(":", StringComparison.Ordinal));
+                    //}
 
-                    List<int> keylist2 = null;
+                    HashSet<int> keylist2 = null;
                     if (!FactsOfDimensions.ContainsKey(id))
                     {
-                        keylist2 = new List<int>();
+                        //keylist2 = new List<int>();
+                        keylist2 = new HashSet<int>();
                         FactsOfDimensions.Add(id, keylist2);
                     }
                     else
@@ -173,7 +180,8 @@ namespace XBRLProcessor.Models
             }
             foreach (var key in FactsOfDimensions.Keys)
             {
-                FactsOfDimensionsD.Add(key, FactsOfDimensions[key].ToDictionary(k => k, e => true));
+                //FactsOfDimensions[key].TrimExcess();
+                //FactsOfDimensionsD.Add(key, FactsOfDimensions[key].ToDictionary(k => k, e => true));
             }
         }
         public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
@@ -363,6 +371,178 @@ namespace XBRLProcessor.Models
 
             }
         }
+
+        public override void LoadDimensions()
+        {
+            var dimensionelements = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
+            var defdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("link:definitionLink")).ToList();
+            var domtodim_docs = new List<XbrlTaxonomyDocument>();
+            var memtodom_docs = new List<XbrlTaxonomyDocument>();
+           
+            foreach (var defdoc in defdocs) 
+            {
+                var defarcs = Utilities.Xml.SelectNodes(defdoc.XmlDocument.DocumentElement, "//link:arcroleRef");
+                var defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/dimension-domain");
+                if (defarc != null)
+                {
+                    domtodim_docs.Add(defdoc);
+                }
+                else 
+                {
+                    defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/domain-member");
+                    if (defarc != null) 
+                    {
+                        memtodom_docs.Add(defdoc);
+                    }
+                }
+            }
+            var domtodim = new Hierarchy<Locator>();
+            var mapping = Mappings.CurrentMapping.GetMapping(typeof(DefinitionLink));
+            var domtodimdefinitions = new List<DefinitionLink>();
+            var dimdict = new Dictionary<string, List<string>>();
+            var domdict = new Dictionary<string, List<string>>();
+
+            foreach (var doc in domtodim_docs)
+            {
+                
+                var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
+                foreach (var deflink in deflinks) 
+                {
+                    if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                    {
+                        var dlink = mapping.Map<DefinitionLink>(deflink);
+                       // dlink.DefinitionArcs = dlink.DefinitionArcs.Where(i => i.RoleType == "dimension_domain").ToList();
+                        dlink.LoadHierarchy();
+                        var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
+                        if (roots.Count > 1) 
+                        {
+                            var hroot = new Hierarchy<Locator>(new Locator());
+                            foreach (var root in roots) 
+                            {
+                                hroot.Children.Add(root);
+                            }
+                            dlink.DefinitionRoot = hroot;
+
+                        }
+                        foreach (var item in dlink.DefinitionRoot.Children)
+                        {
+                            var dimelement = dimensionelements.FirstOrDefault(i => i.ID == item.Item.ID);
+                            var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                            var children = item.Children.Where(i =>
+                            {
+                                //i.Item.Locate();
+                                return i.Item.RoleType == "dimension_domain";
+                            }).ToList();
+                            if (!dimdict.ContainsKey(key)) 
+                            {
+
+                                dimdict.Add(key, new List<string>());
+                            }
+                            dimdict[key].AddRange(children.Select(i => i.Item.ID));
+               
+                        }
+                        domtodimdefinitions.Add(dlink);
+                    }
+
+                }
+            }
+            foreach (var dimelement in dimensionelements) 
+            {
+                if (!String.IsNullOrEmpty(dimelement.TypedDomainRef))
+                {
+                    var doc = TaxonomyDocumentDictionary[dimelement.FileName];
+                    var domainelement = LocateIn(doc, dimelement.TypedDomainRef);
+                    var eldoc = TaxonomyDocumentDictionary[domainelement.FileName];
+                    var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                    if (!dimdict.ContainsKey(key))
+                    {
+                        dimdict.Add(key, new List<string>());
+                    }
+                    var typeddomain = String.Format("{0}:{1}", eldoc.TargetNamespacePrefix, domainelement.Name);
+                    dimdict[key].Add(typeddomain);
+                }
+            }
+
+            var memtodomdefinitions = new List<DefinitionLink>();
+            foreach (var doc in memtodom_docs)
+            {
+
+                var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
+                foreach (var deflink in deflinks)
+                {
+                    if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                    {
+                        var dlink = mapping.Map<DefinitionLink>(deflink);
+                        dlink.LoadHierarchy();
+                        var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
+                        if (roots.Count > 1)
+                        {
+                            var hroot = new Hierarchy<Locator>(new Locator());
+                            foreach (var root in roots)
+                            {
+                                hroot.Children.Add(root);
+                            }
+                            dlink.DefinitionRoot = hroot;
+
+                        }
+                        var domkey = dlink.DefinitionRoot.Item.ID;
+                        foreach (var item in dlink.DefinitionRoot.Children)
+                        {
+                            item.Item.Locate(doc);
+
+                            if (item.Item.Element != null)
+                            {
+                                var key = item.Item.Element.Name;
+                                if (!domdict.ContainsKey(domkey))
+                                {
+                                    domdict.Add(domkey, new List<string>());
+                                }
+                                domdict[domkey].Add(key);
+                            }
+
+                        }
+
+                        memtodomdefinitions.Add(dlink);
+                    }
+
+                }
+            }
+            var dimlist = new List<string>();
+            foreach (var dim in dimdict)
+            {
+                foreach (var dom in dim.Value)
+                {
+                    if (domdict.ContainsKey(dom))
+                    {
+                        var dommembers = domdict[dom];
+                        foreach (var member in dommembers)
+                        {
+                            dimlist.Add(String.Format("[{0}]{1}:{2}", dim.Key, dom, member));
+                        }
+                    }
+                    else
+                    {
+                        dimlist.Add(String.Format("[{0}]{1}", dim.Key, dom));
+                    }
+                }
+
+            }
+            dimlist.AddRange(Concepts.Select(i => i.Key));
+
+            dimlist = dimlist.OrderBy(i => i).ToList();
+
+            var sb = new StringBuilder();
+            var ix = 0;
+            foreach (var dim in dimlist) 
+            {
+                //sb.AppendLine(dim);
+                FactParts.Add(dim, ix);
+                CounterFactParts.Add(ix, dim);
+                ix++;
+            }
+            var z = 0;
+        }
+
         public override void LoadHierarchy()
         {
             Logger.WriteLine("Load Hierarchies");
@@ -589,7 +769,7 @@ namespace XBRLProcessor.Models
             if (document != null) 
             {
                 documents.Remove(document);
-                Documents.Insert(0, document);
+                documents.Insert(0, document);
             }
         }
         public override void LoadValidationFunctions()
@@ -622,7 +802,13 @@ namespace XBRLProcessor.Models
                 //validationdocuments.Insert(0, b2);
                 //validationdocuments.Insert(0, b3);
                 //v3153_m
+                MoveToFirst("4025", validationdocuments);
                 MoveToFirst("v3153", validationdocuments);
+                MoveToFirst("3727", validationdocuments);
+                MoveToFirst("3724", validationdocuments);
+                MoveToFirst("1671", validationdocuments);
+
+                
 
                 foreach (var validdoc in validationdocuments)
                 {
@@ -860,6 +1046,7 @@ namespace XBRLProcessor.Models
                 table.DefinitionPath = definitiondocument.LocalPath;
 
                 MapDefinition(definitiondocument.XmlDocument.ChildNodes[0], table);
+                var definitionreferences = new Dictionary<string, XbrlTaxonomyDocument>();
 
                 foreach (var definitionlink in table.DefinitionLinks) 
                 {
@@ -874,7 +1061,17 @@ namespace XBRLProcessor.Models
                                 localhref = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, locator.Href);
                             }
                             var path = Utilities.Strings.ResolveRelativePath(definitiondocument.LocalFolder, localhref);
-                            var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
+                            XbrlTaxonomyDocument defdoc = null;
+                            if (!definitionreferences.ContainsKey(path))
+                            {
+                                defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
+                                definitionreferences.Add(path, defdoc);
+                            }
+                            else 
+                            {
+                                defdoc = definitionreferences[path];
+                            }
+                            //var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
                             locator.Namespace = defdoc.TargetNamespacePrefix; 
      
                         }
@@ -920,6 +1117,39 @@ namespace XBRLProcessor.Models
             }
             return element;
         }
+        private LogicalModel.Base.Element LocateIn(XbrlTaxonomyDocument doc, string href)
+        {
+            LogicalModel.Base.Element element = null;
+            var hashix = href.IndexOf("#");
+            var id = href.Substring(hashix + 1);
+            href = href.Remove(hashix);
+            var localrelpath = doc.LocalRelPath;
+       
+            if (!Utilities.Strings.IsRelativePath(href))
+            {
+                href = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, href);
+            }
+            var path = Utilities.Strings.ResolveRelativePath(doc.LocalFolder, href);
+            path = path.Replace(XbrlEngine.LocalFolder, "").ToLower();
+            if (TaxonomyDocumentDictionary.ContainsKey(path)) 
+            {
+                doc = TaxonomyDocumentDictionary[path];
+                var node = doc.XmlDocument.SelectSingleNode("//*[@id = '" + id + "']");
+                if (node != null) 
+                {
+                    var xbrlelement = Mappings.CurrentMapping.Map<Element>(node);
+                    if (xbrlelement != null)
+                    {
+                        element = Mappings.ToLogical(xbrlelement);
+                        element.FileName = doc.LocalRelPath;
+                    }
+                }
+            }
+
+
+            
+            return element;
+        }
         
         public void SetTargetNamespace(XbrlTaxonomyDocument xbrltaxdoc) 
         {
@@ -953,7 +1183,12 @@ namespace XBRLProcessor.Models
                 element.Namespace = taxonomydocument.TargetNamespacePrefix; // SetTargetNamespace(node.OwnerDocument);
 
                 var logicalelement = Mappings.ToLogical(element);
-                logicalelement.FileName = taxonomydocument.FileName;
+
+                logicalelement.FileName = taxonomydocument.LocalRelPath;
+                if (String.IsNullOrEmpty(logicalelement.FileName))
+                { 
+
+                }
                 this.SchemaElements.Add(logicalelement);
                 if (logicalelement.Key.Contains("541")) 
                 {
@@ -1009,7 +1244,7 @@ namespace XBRLProcessor.Models
             this.ValidationFunctionContainer = null;
             this.FactsOfConcepts.Clear();
             this.FactsOfDimensions.Clear();
-            this.FactsOfDimensionsD.Clear();
+            //this.FactsOfDimensionsD.Clear();
             this.FactsIndex.Clear();
             this.FactKeyIndex.Clear();
             this.TaxonomyDocuments.Clear();

@@ -314,14 +314,14 @@
 
         public static Format(item: string, lastdimns: Refrence<string>) {
 
-            var dimns = TextBetween(item, "[", ":");
-            if (lastdimns.Value != dimns) {
-                lastdimns.Value = dimns;
-            }
-            else {
-                item = Replace(item, dimns, "*");
+            //var dimns = TextBetween(item, "[", ":");
+            //if (lastdimns.Value != dimns) {
+            //    lastdimns.Value = dimns;
+            //}
+            //else {
+            //    item = Replace(item, dimns, "*");
 
-            }
+            //}
             return item;
 
         }

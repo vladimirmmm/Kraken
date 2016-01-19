@@ -206,6 +206,16 @@ namespace LogicalModel.Expressions
 
         public virtual BaseModel.Hier<String> GetTreeString(string expression)
         {
+            var thenelses = Utilities.Strings.TextsBetween(expression, Syntax.Then, Syntax.Else);
+            foreach (var thenelse in thenelses) 
+            {
+                var part = thenelse.Trim();
+                if (!part.StartsWith(Syntax.ExpressionContainer_Left)) 
+                {
+                    part = Syntax.ExpressionContainer_Left + part + Syntax.ExpressionContainer_Right;
+                    expression = expression.Replace(Syntax.Then + thenelse + Syntax.Else, Syntax.Then + part + Syntax.Else);
+                }
+            }
             var item = new BaseModel.Hier<String>();
             var leftexprcontainercount = 0;
             var rightexprcontainercount = 0;
@@ -317,6 +327,13 @@ namespace LogicalModel.Expressions
         Less,
         GreaterOrEqual,
         LessOrEqual,
+
+        VEquals,
+        VNotEquals,
+        VGreater,
+        VLess,
+        VGreaterOrEqual,
+        VLessOrEqual,
 
         Not,
         And,

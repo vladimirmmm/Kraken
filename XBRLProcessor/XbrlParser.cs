@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Utilities;
 
@@ -39,13 +40,22 @@ namespace XBRLProcessor
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " and ");
             //this.Syntax.Operators.AddItem(OperatorEnum.Division, "/");
             this.Syntax.Operators.AddItem(OperatorEnum.Division, " div ");
+
             this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, ">=");
             this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, "<=");
             this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
             this.Syntax.Operators.AddItem(OperatorEnum.Equals, "=");
             this.Syntax.Operators.AddItem(OperatorEnum.Greater, ">");
-            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, "/");
             this.Syntax.Operators.AddItem(OperatorEnum.Less, "<");
+
+            this.Syntax.Operators.AddItem(OperatorEnum.VGreaterOrEqual, " ge ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VLessOrEqual, " le ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VNotEquals, " ne ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VEquals, " eq ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VGreater, " gt ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VLess, " lt ");
+
+            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, "/");
             this.Syntax.Operators.AddItem(OperatorEnum.Modulo, "\\");
             this.Syntax.Operators.AddItem(OperatorEnum.Multiplication, "*");
             this.Syntax.Operators.AddItem(OperatorEnum.Not, "");
@@ -59,6 +69,24 @@ namespace XBRLProcessor
             var expression = new Expression();
 
             var fixedstring = expressionstring;
+
+            Regex regExpr = new Regex("\"[^\"]*\"", RegexOptions.IgnoreCase);
+            var strings = new List<string>();
+            var matchlist = new List<Match>();
+            foreach (Match  m in regExpr.Matches(fixedstring))
+            { 
+                matchlist.Insert(0,m);
+             
+            }
+            var mix = 0;
+            foreach (var m in matchlist) 
+            {
+                strings.Add(m.Value);
+                fixedstring = fixedstring.Remove(m.Index, m.Value.Length);
+                fixedstring = fixedstring.Insert(m.Index, "\"#!"+mix+"\"");
+                mix++;
+            }
+
             var operators = Syntax.Operators.Values.Where(i => !String.IsNullOrEmpty(i)).Distinct().ToList();
             var ix = 0;
             foreach (var op in operators)
@@ -76,6 +104,12 @@ namespace XBRLProcessor
             fixedstring = fixedstring.Replace("@ ", "@-").Replace(" @", "-@");
             fixedstring = fixedstring.Replace(" ", "");
             fixedstring = fixedstring.Replace("@-", "@ ").Replace("-@", " @");
+
+            for (int i = 0; i < strings.Count; i++) 
+            {
+                fixedstring = fixedstring.Replace("\"#!" + i + "\"", strings[i]);
+            }
+
 
             var items = fixedstring.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
             if (items.Length == 1)
@@ -148,6 +182,10 @@ namespace XBRLProcessor
                     var iffunction = new IfExpression();
                     var p_condition = Utilities.Strings.TextBetween(item, Syntax.If + Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
                     var p_true = Utilities.Strings.TextBetween(item, Syntax.Then + Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
+                    if (String.IsNullOrEmpty(p_true)) 
+                    {
+                        p_true = Utilities.Strings.TextBetween(item, Syntax.Then, Syntax.Else);
+                    }
                     var p_false = Utilities.Strings.TextBetween(item, Syntax.Else + Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
                     iffunction.condition = GetSimpleExpression(p_condition);
                     iffunction.truepath = GetSimpleExpression(p_true);
@@ -317,6 +355,10 @@ namespace XBRLProcessor
                 + Syntax.BlockContainer_Left + "#2" + Syntax.BlockContainer_Right;
             format = format.Replace("{", "{{").Replace("}", "}}");
             format = format.Replace("#0", "{0}").Replace("#1", "{1}").Replace("#2", "{2}");
+            //if (expression.truepath.SubExpressions.Count == 0) 
+            //{
+            //    expression.truepath.SubExpressions.Add(expression.SubExpressions[1]);
+            //}
             sb.Append(String.Format(format, Translate(expression.condition), Translate(expression.truepath), Translate(expression.falsepath)));
             return sb.ToString();
         }
@@ -341,7 +383,13 @@ namespace XBRLProcessor
             var expr2 = this.ParseExpression("if ($ReportingLevel = 'con') then ($a = xs:QName('eba_SC:x7')) else (true())");
             var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum((iaf:max((iaf:sum((iaf:numeric-multiply($b, 0.18), iaf:numeric-multiply($c, 0.18), iaf:numeric-multiply($d, 0.12), iaf:numeric-multiply((iaf:sum(($e, $f, iaf:numeric-multiply($g, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($h, $i, iaf:numeric-multiply($j, 0.035)))), 0.12), iaf:numeric-multiply($k, 0.18), iaf:numeric-multiply($l, 0.15), iaf:numeric-multiply($m, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($n, 0.18), iaf:numeric-multiply($o, 0.18), iaf:numeric-multiply($p, 0.12), iaf:numeric-multiply((iaf:sum(($q, $r, iaf:numeric-multiply($s, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($t, $u, iaf:numeric-multiply($v, 0.035)))), 0.12), iaf:numeric-multiply($w, 0.18), iaf:numeric-multiply($x, 0.15), iaf:numeric-multiply($y, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($z, 0.18), iaf:numeric-multiply($aa, 0.18), iaf:numeric-multiply($bb, 0.12), iaf:numeric-multiply((iaf:sum(($cc, $dd, iaf:numeric-multiply($ee, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($ff, $gg, iaf:numeric-multiply($hh, 0.035)))), 0.12), iaf:numeric-multiply($ii, 0.18), iaf:numeric-multiply($jj, 0.15), iaf:numeric-multiply($kk, 0.12))), 0))))), 3))");
 
-  
+
+            var expr4 = this.ParseExpression("if ($a = xs:QName('s2c_CN:x1')) then iaf:numeric-equal($b,$c) else (true())");
+            var v4 = new LogicalModel.Validation.ValidationRule();
+            v4.RootExpression = expr3;
+            v4.ID = "v3";
+            var item4_xbrl = xbrlparser.Translate(expr4);
+            var item4_cs = csparser.GetFunction(v4);
 
             var prs1 = GetParameters(expr1);
             var prs2 = GetParameters(expr2);

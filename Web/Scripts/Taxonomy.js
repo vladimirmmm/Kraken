@@ -248,6 +248,9 @@ var Control;
                 if (template != null) {
                     var html = template.Bind(data, 0, 2);
                     var elements = $.parseHTML(html);
+                    var ulelement = _Select("ul", target);
+                    _Remove(ulelement);
+                    //_Html(target, "");
                     elements.forEach(function (e) {
                         _Append(target, e);
                     });

@@ -305,13 +305,13 @@ var Model;
             return fb;
         };
         FactBase.Format = function (item, lastdimns) {
-            var dimns = TextBetween(item, "[", ":");
-            if (lastdimns.Value != dimns) {
-                lastdimns.Value = dimns;
-            }
-            else {
-                item = Replace(item, dimns, "*");
-            }
+            //var dimns = TextBetween(item, "[", ":");
+            //if (lastdimns.Value != dimns) {
+            //    lastdimns.Value = dimns;
+            //}
+            //else {
+            //    item = Replace(item, dimns, "*");
+            //}
             return item;
         };
         FactBase.GetFullFactString = function (fact) {

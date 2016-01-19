@@ -293,6 +293,14 @@ namespace LogicalModel.Validation
             return result;
         }
 
+        public ValueWithTreshold IAF_min(params Object[] parameters)
+        {
+            var items = parameters.Select(i => SplitValueThreshold(i)).ToList();
+            var min = items.Min(i => i.DecimalValue);
+            var result = items.FirstOrDefault(i => i.DecimalValue == min);
+            return result;
+        }
+
 
 
     }

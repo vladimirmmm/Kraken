@@ -582,8 +582,11 @@ namespace Engine
         {
             if (searchpattern.Length > 1)
             {
+                //TODO
+                /*
                 var labels = Engine.CurrentTaxonomy.Facts.Where(i => i.Key.Contains(searchpattern));
                 var items = labels.SelectMany(i=>i.Value);
+                 */
                 //LoadToLV(items, UI.LV_Facts);
             }
         }
@@ -591,7 +594,7 @@ namespace Engine
         {
             if (searchpattern.Length > 1)
             {
-                var labels = Engine.CurrentTaxonomy.Cells.Where(i => i.Key.Contains(searchpattern)).SelectMany(i => i.Value);
+               // var labels = Engine.CurrentTaxonomy.Cells.Where(i => i.Key.Contains(searchpattern)).SelectMany(i => i.Value);
                 //LoadToLV(labels, UI.LV_Cells);
             }
         }

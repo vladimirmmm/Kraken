@@ -170,17 +170,18 @@ namespace Utilities
             }
             return results;
         }
-        public static List<int> IntersectSorted(IEnumerable<int> sequence1, Dictionary<int, bool> sequence2, Comparer<int> comparer)
+        public static List<int> IntersectSorted(IEnumerable<int> sequence1, HashSet<int> sequence2, Comparer<int> comparer)
         {
-            var results = new List<int>();
+            var results = new List<int>();//sequence1.Count());
             foreach (var item in sequence1)
             {
-                if (sequence2.ContainsKey(item))
+                if (sequence2.Contains(item))
                 {
                     results.Add(item);
                 }
 
             }
+            //results.TrimExcess();
             return results;
         }
         public static List<T> IntersectSorted<T>( List<T> sequence1, List<T> sequence2, IComparer<T> comparer)
@@ -263,6 +264,38 @@ namespace Utilities
                     //}
                 }
             }
+        }
+    }
+
+    public class IntArrayEqualityComparer : IEqualityComparer<int[]>
+    {
+        public bool Equals(int[] x, int[] y)
+        {
+            if (x.Length != y.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < x.Length; i++)
+            {
+                if (x[i] != y[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public int GetHashCode(int[] obj)
+        {
+            int result = 17;
+            for (int i = 0; i < obj.Length; i++)
+            {
+                unchecked
+                {
+                    result = result * 23 + obj[i];
+                }
+            }
+            return result;
         }
     }
 }

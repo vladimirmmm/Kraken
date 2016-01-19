@@ -169,6 +169,7 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadLabels();
                 CurrentTaxonomy.LoadSchemaElements();
                 CurrentTaxonomy.LoadConcepts();
+                CurrentTaxonomy.LoadDimensions();
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadTables();
                 CurrentTaxonomy.LoadFacts();

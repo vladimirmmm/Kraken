@@ -40,7 +40,17 @@ namespace LogicalModel.Validation
 
         private string _FallBackValue ="0";
         [DefaultValue("0")]
-        public string FallBackValue { get { return _FallBackValue; } set { _FallBackValue = value; } }
+        public string FallBackValue
+        {
+            get { return _FallBackValue; }
+            set
+            {
+                if (value != "non")
+                {
+                    _FallBackValue = value;
+                }
+            }
+        }
         private TypeEnum _Type = TypeEnum.String;
         public TypeEnum Type { get { return _Type; } set { _Type = value; } }
         public bool BindAsSequence { get; set; }
@@ -109,6 +119,10 @@ namespace LogicalModel.Validation
         public decimal DecimalValue
         {
             get { return decimal.Parse(this.StringValue); }
+        }
+        public DateTime DateValue
+        {
+            get { return Utilities.Converters.StringToDateTime(this.StringValue,Utilities.Converters.DateTimeFormat); }
         }
 
         public string[] StringValues = new string[] { };
@@ -371,7 +385,8 @@ namespace LogicalModel.Validation
             //return !Equals(lhs.DecimalValue, rhs.DecimalValue) || !Equals(lhs.Treshold, rhs.Treshold);
             if (lhs.Type == rhs.Type) 
             {
-                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue >= rhs.DecimalValue; }      
+                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue >= rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue >= rhs.DateValue; }      
             }
             return false;
         }
@@ -380,6 +395,7 @@ namespace LogicalModel.Validation
             if (lhs.Type == rhs.Type)
             {
                 if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue <= rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue <= rhs.DateValue; }
             }
             return false;
         }
@@ -388,6 +404,7 @@ namespace LogicalModel.Validation
             if (lhs.Type == rhs.Type)
             {
                 if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue > rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue > rhs.DateValue; }
             }
             return false;
         }
@@ -396,6 +413,7 @@ namespace LogicalModel.Validation
             if (lhs.Type == rhs.Type)
             {
                 if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue < rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue < rhs.DateValue; }
             }
             return false;
         }

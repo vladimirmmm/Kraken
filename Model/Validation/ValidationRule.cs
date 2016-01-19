@@ -193,14 +193,14 @@ namespace LogicalModel.Validation
                     if (p.BindAsSequence)
                     {
                         //set the cells
-                        itemfacts.AddRange(facts.Select(f => Taxonomy.FactsIndex[f]));
+                        itemfacts.AddRange(facts.Select(f => Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[f])));
                         foreach (var tax_fact in itemfacts)
                         {
                             var taxfactkey = tax_fact;
-                            if (Taxonomy.Facts.ContainsKey(taxfactkey))
+                            if (Taxonomy.HasFact(taxfactkey))
                             {
 
-                                var cells = Taxonomy.Facts[taxfactkey];
+                                var cells = Taxonomy.GetCellsOfFact(taxfactkey);
 
 
                                 //sp.Facts.Add(taxfactkey);
@@ -224,14 +224,14 @@ namespace LogicalModel.Validation
                         {
                             if (facts.Count == 1)
                             {
-                                var fact = Taxonomy.FactsIndex[facts.FirstOrDefault()];
+                                var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[facts.FirstOrDefault()]);
                                 itemfacts.Add(fact);
 
                                 //set the cells
                                 var cells = new List<String>();
-                                if (Taxonomy.Facts.ContainsKey(fact))
+                                if (Taxonomy.HasFact(fact))
                                 {
-                                    cells.AddRange(Taxonomy.Facts[fact]);
+                                    cells.AddRange(Taxonomy.GetCellsOfFact(fact));
                                 }
 
                                 if (!sp.CellsOfFacts.ContainsKey(fact))
@@ -365,10 +365,10 @@ namespace LogicalModel.Validation
                                 }
                                 p.Facts[f_ix] = newfactstring;
                                 var newfact = FactBase.GetFactFrom(newfactstring);
-                                if (Taxonomy.Facts.ContainsKey(fact))
+                                if (Taxonomy.HasFact(fact))
                                 {
                                     p.CellsOfFacts.Add(newfactstring, new List<string>());
-                                    var cells = Taxonomy.Facts[fact];
+                                    var cells = Taxonomy.GetCellsOfFact(fact);
                                     p.CellsOfFacts[newfactstring].Clear();
                                     foreach (var cell in cells)
                                     {

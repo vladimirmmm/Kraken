@@ -85,14 +85,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         {
             var queries = new List<FactBaseQuery>();
             var _complement = Complement;
-            //if (Members.Count == 0 && _complement) 
-            //{
-            //    var domain = taxonomy.GetDomainOfDimension(this.Dimension.QName.Content);
-            //    var member = new DimensionMember();
-            //    member.QName.Content = String.Format("{0}:{1}", domain, Literals.Literal.Defaultmember);
-            //    Members.Add(member);
-            //    _complement = false;
-            //}
+   
             foreach (var member in Members)
             {
                 var query = new FactBaseQuery();
@@ -102,7 +95,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
                     if (!_complement)
                     {
-                        var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, member.QName.Content);
+                        var tag = String.Format("[{0}:{1}]{2},", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
 
                         query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
                         query.Filter = (s) =>
@@ -119,7 +112,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                     }
                     else
                     {
-                        var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, member.QName.Content);
+                        var tag = String.Format("[{0}:{1}]{2},", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
 
                         query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
                         query.Filter = (s) =>
@@ -137,7 +130,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 {
                     if (!_complement)
                     {
-                        var tag = String.Format(":{0}]{1}:", this.Dimension.QName.Value, member.QName.Domain);
+                        var tag = String.Format("[{0}:{1}]{2}:", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
                         query.FalseFilters = query.FalseFilters + String.Format("{0}, ", tag);
                         query.Filter = (s) =>
                         {
@@ -154,7 +147,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                     {
                         if (level == 0)
                         {
-                            var tag = String.Format(":{0}]", this.Dimension.QName.Value);
+                            var tag = String.Format("[{0}:{1}]", this.Dimension.QName.Domain, this.Dimension.QName.Value);
                             var domain = member.QName.Domain;
                             var members = taxonomy.GetMembersOf(domain, this._Members.Select(i => i.QName.Content).ToList());
                             var subqueries = new List<FactBaseQuery>();
@@ -176,7 +169,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         }
                         else
                         {
-                            var tag = String.Format(":{0}]{1}", this.Dimension.QName.Value, member.QName.Domain);
+                            var tag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
                             query.TrueFilters = query.TrueFilters + String.Format("{0}, ", tag);
                             query.Filter = (s) =>
                             {
@@ -211,7 +204,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
      
            // var td = taxonomy.TypedDimensions.FirstOrDefault(i => i.Key.EndsWith(":" + this.Dimension.QName.Value));
             var domainpart = typeddomain.Namespace + ":" + typeddomain.Name;
-            var tag = String.Format(":{0}]{1},", this.Dimension.QName.Value, domainpart);
+            var tag = String.Format("[{0}:{1}]{2},", this.Dimension.QName.Domain, this.Dimension.QName.Value, domainpart);
             if (!Complement)
             {
                 //var tag = String.Format(":{0}]", this.Dimension.QName.Value);

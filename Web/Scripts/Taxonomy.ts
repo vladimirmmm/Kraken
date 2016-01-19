@@ -285,7 +285,10 @@
                 var template = GetBindingTemplateX(_SelectFirst("#tabletreeview"));
                 if (template != null) {
                     var html = template.Bind(data, 0, 2);
-                    var elements = $.parseHTML(html)
+                    var elements = $.parseHTML(html);
+                    var ulelement = _Select("ul", target);
+                    _Remove(ulelement);
+                    //_Html(target, "");
                     elements.forEach((e) => {
                         _Append(target, e);
 

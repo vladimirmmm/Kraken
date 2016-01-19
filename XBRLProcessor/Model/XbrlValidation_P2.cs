@@ -29,10 +29,10 @@ namespace XBRLProcessor.Model
                 {
                     var cellslist = new List<List<String>>();
                     var factkey = Taxonomy.FactsIndex[factid];
-                    var fact = FactBase.GetFactFrom(factkey);
-                    if (Taxonomy.Facts.ContainsKey(factkey))
+                    var fact = FactBase.GetFactFrom(Taxonomy.GetFactStringKey(factkey));
+                    if (Taxonomy.HasFact(factkey))
                     {
-                        var cells = Taxonomy.Facts[factkey];
+                        var cells = Taxonomy.GetCellsOfFact(factkey);
                         if (parameter.RuleID.Contains("0602"))
                         {
                             cellslist.Add(cells.Select(i => i + " {" + factkey + "} ").ToList());
@@ -62,12 +62,12 @@ namespace XBRLProcessor.Model
                             }
                             else
                             {
-                                s_facts = new List<string>();
+                                s_facts = new List<int[]>();
                             }
                         }
                         foreach (var dimension in fact.Dimensions)
                         {
-                            s_facts = s_facts.Where(i => i.Contains(dimension.DomainMemberFullName));
+                            s_facts = s_facts.Where(i => Taxonomy.GetFactStringKey(i).Contains(dimension.DomainMemberFullName));
                         }
                        // var s_factlist = s_facts.ToList();
                         var hasanyfact = false;
@@ -75,7 +75,7 @@ namespace XBRLProcessor.Model
                         foreach (var s_fact in s_facts)
                         {
                             hasanyfact = true;
-                            var cells = Taxonomy.Facts[s_fact];
+                            var cells = Taxonomy.GetCellsOfFact(s_fact);
                             if (cells.Count == 0)
                             {
                                 if (log)
@@ -224,17 +224,18 @@ namespace XBRLProcessor.Model
             return allqueries;
         }
 
-        public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, Dictionary<int,bool> IdDict, List<int> factids)
+        public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict, List<int> factids)
         {
 
     
             //factids.AddRange(GetFactIDs(fbq, IdList));
             var factsofrule = GetFactsByIds(GetFactIDs(fbq, IdList, IdDict));
-            var facts = fbq.ToQueryable(factsofrule.AsQueryable());
+            var facts = fbq.ToQueryable(factsofrule);
          
             foreach (var fact in facts) 
             {
-                factids.Add(Taxonomy.FactKeyIndex[fact]);
+                var key = Taxonomy.GetFactIntKey(fact).ToArray();
+                factids.Add(Taxonomy.FactKeyIndex[key]);
             }
             return facts.ToList();
         }
@@ -267,7 +268,7 @@ namespace XBRLProcessor.Model
             return ids;
         }
         
-        public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList, Dictionary<int,bool> IdDict)
+        public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
         {
             IEnumerable<int> ids = new List<int>();
 
@@ -303,19 +304,36 @@ namespace XBRLProcessor.Model
                         return ids;
                     }
                 }
-                IEnumerable<int> dimidlist = Taxonomy.FactsOfDimensions[dimboxes[minix]];
+                //IEnumerable<int> dimidlist = Taxonomy.FactsOfDimensions[dimboxes[minix]];
+                IEnumerable<int> dimidlist = null;
+                var mindimset = Taxonomy.FactsOfDimensions[dimboxes[minix]];
+                if (IdList.Count < mindimset.Count)
+                {
+                    dimidlist = Utilities.Objects.IntersectSorted(IdList, mindimset, null);
+                }
+                else 
+                {
+                    dimidlist = Utilities.Objects.IntersectSorted(mindimset, IdList, null);
+
+                }
+
                 dimboxes.RemoveAt(minix);
                 for (int i = 0; i < dimboxes.Count; i++)
                 {
                     var dimbox = Taxonomy.FactsOfDimensions[dimboxes[i]];
-                    if (dimidlist.Count() * 3 < dimbox.Count)
-                    {
-                        dimidlist = Utilities.Objects.IntersectSorted(dimidlist, Taxonomy.FactsOfDimensionsD[dimboxes[i]], null);
-                    }
-                    else
-                    {
-                        dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimbox, null);
-                    }
+                    //var dimidlistcount = i == 0 ? mincount : dimidlist.Count();
+                    //if (dimidlistcount * 3 < dimbox.Count)
+                    //{
+                    //    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, Taxonomy.FactsOfDimensions[dimboxes[i]], null);
+                    //}
+                    //else
+                    //{
+                    //    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimbox, null);
+                    //}
+              
+                    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimbox, null);
+                    //dimidlist = dimidlist.Intersect(dimbox);
+
                 }
                 //foreach (var dim in dimparts)
 
@@ -327,8 +345,14 @@ namespace XBRLProcessor.Model
                 {
                     if (ids == IdList)
                     {
-                        ids = Utilities.Objects.IntersectSorted(dimidlist, IdDict, null);
-
+                        if (dimidlist.Count() <100 )
+                        {
+                            ids = dimidlist;
+                        }
+                        else
+                        {
+                            ids = Utilities.Objects.IntersectSorted(dimidlist, IdDict, null);
+                        }
                     }
                     else
                     {
@@ -364,7 +388,8 @@ namespace XBRLProcessor.Model
             var factlist = new List<String>();//ids.Count());
             foreach (var id in ids) 
             {
-                factlist.Add(Taxonomy.FactsIndex[id]);
+                var key = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[id]);
+                factlist.Add(key);
             }
             return factlist;
         }

@@ -112,7 +112,7 @@ namespace XBRLProcessor.Model
             logicalrule.ID = valueassertion.ID;
             Utilities.Logger.WriteLine("Getting rule for " + logicalrule.ID);
             logicalrule.LabelID = valueassertion.LabelID;
-            logicalrule.OriginalExpression = valueassertion.Test;
+            logicalrule.OriginalExpression = valueassertion.Test.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
             logicalrule.SetTaxonomy(this.Taxonomy);
             var factvariables = tmp_rule.Where(i => i.Item is FactVariable);
             foreach (var fv in factvariables)
@@ -176,7 +176,7 @@ namespace XBRLProcessor.Model
                 {
                     if (parameterfactqueries.Count > 1) 
                     {
-                        Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has multiple queries, but it is not sequenced.", logicalrule.ID, parameter.Name));
+                        //Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has multiple queries, but it is not sequenced.", logicalrule.ID, parameter.Name));
                     }
                     mergedqueries = CombineQueries(rulefactqueries, parameterfactqueries);
                 }
@@ -188,7 +188,7 @@ namespace XBRLProcessor.Model
                 var bsize = 500;
                 var isnonsequenced = !parameter.BindAsSequence;
                 factids.Capacity = bsize + 10;
-                var parameterfactdict = parameterfacts.ToDictionary(k => k, e => true);
+                var parameterfactdict = new HashSet<int>(parameterfacts);
                 foreach (var fbq in mergedqueries)
                 {
 
@@ -206,6 +206,14 @@ namespace XBRLProcessor.Model
                     {
                         multiplefactsfornonseqparameter++;
                         ok = false;
+                        if (parameterfactqueries.Count == 0) 
+                        {
+                            multiplefactsfornonseqparameter = 0;
+                            foreach (var factid in datafactids) 
+                            {
+                                parameter.TaxFacts.Add(new List<int>() { factid });
+                            }
+                        }
 
                     }
                     if (ok)
@@ -226,6 +234,7 @@ namespace XBRLProcessor.Model
                             //Utilities.Logger.WriteLine(String.Format("Remaining: {0}",mergedqueries.Count- mergedqueries.IndexOf(fbq)));
                         }
                     }
+            
 
                     qix++;
                 }
@@ -251,13 +260,18 @@ namespace XBRLProcessor.Model
                 else
                 {
                     var firstfactid = firsttaxfact.FirstOrDefault();
-                    var firstfactstring = Taxonomy.FactsIndex[firstfactid];
+                    var firstfactstring = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[firstfactid]);
                     var firstfact = LogicalModel.Base.FactBase.GetFactFrom(firstfactstring);
 
                     if (firstfact.Concept != null
                         && (firstfact.Concept.Name.StartsWith("ei") || firstfact.Concept.Name.StartsWith("si")))
                     {
                         type = LogicalModel.TypeEnum.String;
+                    }
+                    if (firstfact.Concept != null
+                        && (firstfact.Concept.Name.StartsWith("di")))
+                    {
+                        type = LogicalModel.TypeEnum.Date;
                     }
                     parameter.Type = type;
                 }

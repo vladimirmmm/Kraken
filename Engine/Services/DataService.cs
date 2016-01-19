@@ -213,9 +213,11 @@ namespace Engine.Services
                                     var factstring = request.GetParameter("factstring").ToLower();
                                     var cellid = request.GetParameter("cellid").ToLower();
                                     var rs = new DataResult<KeyValuePair<string, List<String>>>();
-                                    var query = Engine.CurrentTaxonomy.Facts.Where(i => i.Key == i.Key);
+                                    var query = Engine.CurrentTaxonomy.Facts.AsQueryable();
 
                                     var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                                    //TODO
+                                    /*
                                     foreach (var fs in factstrings)
                                     {
                                         query = query.Where(i => i.Key.ToLower().Contains(fs));
@@ -227,7 +229,7 @@ namespace Engine.Services
                                     rs.Items = query.Skip(pagesize * page).Take(pagesize).ToList();
                                     rs.Total = query.Count();
                                     json = Utilities.Converters.ToJson(rs);
-
+                                    */
                                 }
                                 if (part1 == "table")
                                 {

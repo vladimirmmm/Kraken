@@ -43,6 +43,8 @@ namespace LogicalModel
         public List<Label> TaxonomyLabels = new List<Label>();
         public Dictionary<string, Concept> Concepts = new Dictionary<string,Concept>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
+        public Dictionary<string, int> FactParts = new Dictionary<string, int>();
+        public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
 
         public List<Element> SchemaElements = new List<Element>();
 
@@ -52,17 +54,18 @@ namespace LogicalModel
 
         public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
 
-        private Dictionary<string, List<String>> _Facts = new Dictionary<string, List<String>>();
-        public Dictionary<string, List<String>> Facts 
+        private Dictionary<int[], List<String>> _Facts = new Dictionary<int[], List<String>>(new Utilities.IntArrayEqualityComparer());
+        public Dictionary<int[], List<String>> Facts 
         {
             get { return _Facts; }
             set { _Facts = value; }
         }
-        public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
-        public Dictionary<string, List<int>> FactsOfDimensions = new Dictionary<string, List<int>>();
-        public Dictionary<string, Dictionary<int,bool>> FactsOfDimensionsD = new Dictionary<string, Dictionary<int,bool>>();
-        public Dictionary<int, string> FactsIndex = new Dictionary<int, string>();
-        public Dictionary<string, int> FactKeyIndex = new Dictionary<string, int>();
+        public Dictionary<string, List<int[]>> FactsOfConcepts = new Dictionary<string, List<int[]>>();
+        //public Dictionary<string, List<int>> FactsOfDimensions = new Dictionary<string, List<int>>();
+        //public Dictionary<string, Dictionary<int, bool>> FactsOfDimensions = new Dictionary<string, Dictionary<int, bool>>();
+        public Dictionary<string, HashSet<int>> FactsOfDimensions = new Dictionary<string, HashSet<int>>();
+        public Dictionary<int, int[]> FactsIndex = new Dictionary<int, int[]>();
+        public Dictionary<int[], int> FactKeyIndex = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
    
         public Dictionary<string, List<String>> Cells = new Dictionary<string, List<String>>();
 
@@ -180,6 +183,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Validations\\Validations_{0}.json"; }
         }
+        public string TaxonomyFactsPathFormat
+        {
+            get { return ModuleFolder + "Facts\\Facts_{0}.json"; }
+        }
         public string TaxonomySimpleValidationPath
         {
             get { return ModuleFolder + "Validations\\SimpleValidations.json"; }
@@ -281,7 +288,8 @@ namespace LogicalModel
         public static bool IsTyped(string domain)
         {
             var result = false;
-            var ns = domain.Contains(":") ? new QualifiedName(domain).Namespace : domain;
+            var ix = domain.IndexOf(":");
+            var ns = ix > -1 ? domain.Remove(ix) : domain;
             if (TaxonomyEngine.CurrentEngine != null &&
                 TaxonomyEngine.CurrentEngine.CurrentTaxonomy != null &&
                 TaxonomyEngine.CurrentEngine.CurrentTaxonomy.TypedDimensions.ContainsKey(ns))
@@ -290,10 +298,162 @@ namespace LogicalModel
             }
             else 
             {
-                return Utilities.Strings.ContainsCount(":", domain) > 1;
+                return false;
+                //return Utilities.Strings.ContainsCount(":", domain) > 1;
             }
             return result;
         }
+
+        public void AddFactKey(List<int> key) 
+        {
+            Facts.Add(key.ToArray(), new List<String>(1));
+
+        }
+        public bool HasFact(string factkey) 
+        {
+            if (factkey.Contains(":"))
+            {
+                factkey = GetFactStringKeyFromStringKey(factkey);
+            }
+            var ids = GetFactIntKey(factkey).ToArray();
+
+            return this.Facts.ContainsKey(ids);
+        }
+        public bool HasFact(IEnumerable<int> factkey)
+        {
+            return this.Facts.ContainsKey(factkey.ToArray());
+        }
+        public List<string> GetCellsOfFact(string factkey)
+        {
+            if (factkey.Contains(":"))
+            {
+                factkey = GetFactStringKeyFromStringKey(factkey);
+            }
+            var ids = GetFactIntKey(factkey).ToArray();
+            return this.Facts[ids];
+        }
+        public List<string> GetCellsOfFact(IEnumerable<int> factkey)
+        {
+  
+            return this.Facts[factkey.ToArray()];
+        }
+
+        public string GetFactIntStringKey(string key) 
+        {
+            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            foreach (var part in parts) 
+            {
+                sb.Append(this.FactParts[part] + ",");
+            }
+            return sb.ToString();
+        }
+        //public string GetFactIntStringKey(string key)
+        //{
+        //    var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+        //    var sb = new StringBuilder();
+        //    foreach (var part in parts)
+        //    {
+        //        sb.Append(this.FactParts[part] + ",");
+        //    }
+        //    return sb.ToString();
+        //}
+        public List<int> GetFactIntKey(string key)
+        {
+            var intlist = new List<int>();
+            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            if (key.Contains(":"))
+            {
+                foreach (var part in parts)
+                {
+                    intlist.Add(this.FactParts[part]);
+
+                }
+            }
+            else 
+            {
+                foreach (var part in parts)
+                {
+                    intlist.Add(int.Parse(part));
+
+                }
+            }
+            return intlist;
+        }
+
+        public List<string> GetFactKeyStringParts(IEnumerable<int> key) 
+        {
+            var parts =new List<string>();
+            foreach (var part in key)
+            {
+               parts.Add( this.CounterFactParts[part]);
+            }
+            return parts;
+        }
+        public string GetFactStringKeyFromIntKey(IEnumerable<int> key)
+        {
+            var sb = new StringBuilder();
+            foreach (var part in key)
+            {
+                sb.Append(this.CounterFactParts[part] + ",");
+            }
+            return sb.ToString();
+        }
+
+        public string GetFactStringKeyFromIntKey(string key)
+        {
+            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var intpart = int.Parse(part);
+                sb.Append(this.CounterFactParts[intpart] + ",");
+            }
+            return sb.ToString();
+        }
+        public string GetFactStringKeyFromStringKey(string key)
+        {
+            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            foreach (var part in parts)
+            {
+                sb.Append(this.FactParts[part] + ",");
+            }
+            return sb.ToString();
+        }
+
+        public List<int> GetIDsFromStrings(List<string> parts) 
+        {
+            var idlist = new List<int>();
+            foreach (var part in parts) 
+            {
+                idlist.Add(FactParts[part]);
+            }
+            return idlist;
+        }
+
+        //public List<int> GetIDsFromStrings(string factkey)
+        //{
+        //    var idkey = GetFactIntKey(factkey);
+        //    var idlist = new List<int>();
+        //    foreach (var part in parts)
+        //    {
+        //        idlist.Add(FactParts[part]);
+        //    }
+        //    return idlist;
+        //}
+
+        public string GetFactStringKey(IEnumerable<int> idlist) 
+        {
+            var sb = new StringBuilder();
+
+            foreach (var id in idlist) 
+            {
+                sb.Append(CounterFactParts[id] + ",");
+            }
+            return sb.ToString();
+        }
+
 
         public virtual void LoadLabels()
         {
@@ -333,25 +493,37 @@ namespace LogicalModel
             ManageUIFiles();
             //
 
-            if (!System.IO.File.Exists(TaxonomyFactsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            if (!Utilities.FS.FileExists(TaxonomyFactsPathFormat) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
-                foreach (var table in Tables)
+                if (this.Facts.Count == 0)
                 {
-                    table.LoadDefinitions();
+                    foreach (var table in Tables)
+                    {
+                        table.LoadDefinitions();
+                    }
                 }
                 LoadCells();
 
                 this.LoadFactDictionary();
 
-                var jsoncontent = Utilities.Converters.ToJson(Facts);
-                Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
+                //var jsoncontent = Utilities.Converters.ToJson(Facts);
+                //Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
+                
+                LogicalModel.Helpers.FileManager.SaveToJson(this.Facts, this.TaxonomyFactsPathFormat, 50000);
+
             }
             else
             {
 
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
-                this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
-
+                //var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
+                //this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
+                this.Facts = new Dictionary<int[], List<string>>(2000000, new Utilities.IntArrayEqualityComparer());
+                LogicalModel.Helpers.FileManager.SetFromJson(this.Facts, this.TaxonomyFactsPathFormat, (i) => {
+                    //i.Value.Clear();
+                    i.Value.TrimExcess();
+                });
+                
+               
                 this.LoadFactDictionary();
 
                 LoadCells();
@@ -363,17 +535,17 @@ namespace LogicalModel
         {
             Logger.WriteLine("Load Cells started");
             Cells.Clear();
-            foreach (var fact in Facts) 
-            {
-                var cells = fact.Value;
-                foreach (var cell in cells) 
-                {
-                    if (!Cells.ContainsKey(cell))
-                    {
-                        Cells.Add(cell, new List<string>() { fact.Key });
-                    }
-                }
-            }
+            //foreach (var fact in Facts) 
+            //{
+            //    var cells = fact.Value;
+            //    foreach (var cell in cells) 
+            //    {
+            //        if (!Cells.ContainsKey(cell))
+            //        {
+            //            Cells.Add(cell, new List<string>() { GetFactStringKeyFromIntKey(fact.Key) });
+            //        }
+            //    }
+            //}
             Logger.WriteLine("Load Cells completed");
 
         }
@@ -720,7 +892,7 @@ namespace LogicalModel
             if (!System.IO.File.Exists(TaxonomyConceptPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
 
-                var conceptelements = SchemaElements.Where(i => i.FileName == "met.xsd").ToList();
+                var conceptelements = SchemaElements.Where(i => i.FileName.EndsWith("met.xsd")).ToList();
                 foreach (var conceptelement in conceptelements) 
                 {
                     var concept = new Concept();
@@ -804,7 +976,8 @@ namespace LogicalModel
             foreach (var factkey in factkeys) 
             {
                 var fact = new FactBase();
-                fact.SetFromString(factkey);
+                var str_factkey = GetFactStringKey(factkey);
+                fact.SetFromString(str_factkey);
                 foreach (var dimension in fact.Dimensions) 
                 {
                     if (!dimensions.ContainsKey(dimension.DimensionItem)) 
@@ -931,7 +1104,13 @@ namespace LogicalModel
         
         public void Clear_Facts()
         {
-            Utilities.FS.DeleteFile(TaxonomyFactsPath);
+            //Utilities.FS.DeleteFile(TaxonomyFactsPath);
+            var folder = Utilities.Strings.GetFolder(TaxonomyFactsPathFormat);
+            var files = System.IO.Directory.GetFiles(folder);
+            foreach (var file in files)
+            {
+                Utilities.FS.DeleteFile(file);
+            }
         }
        
         public void Clear_Structure() 

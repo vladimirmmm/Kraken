@@ -130,9 +130,9 @@ namespace LogicalModel
             var invalidtypevalues = new StringBuilder();
             foreach (var fact in Facts) 
             {
-                if (this.Taxonomy.Facts.ContainsKey(fact.FactKey))
+                if (this.Taxonomy.HasFact(fact.FactKey))
                 {
-                    var cellvalues = this.Taxonomy.Facts[fact.FactKey];
+                    var cellvalues = this.Taxonomy.GetCellsOfFact(fact.FactKey);
                     var cells ="";
                     foreach(var cellvalue in cellvalues)
                     {
@@ -294,9 +294,9 @@ namespace LogicalModel
             var reportdict = new Dictionary<string, int>();
             foreach (var fact in this.Facts)
             {
-                if (this.Taxonomy.Facts.ContainsKey(fact.FactKey))
+                if (this.Taxonomy.HasFact(fact.FactKey))
                 {
-                    fact.Cells = this.Taxonomy.Facts[fact.FactKey];
+                    fact.Cells = this.Taxonomy.GetCellsOfFact(fact.FactKey);
                     foreach (var cell in fact.Cells)
                     {
                 
@@ -348,9 +348,9 @@ namespace LogicalModel
             var reportdict = new Dictionary<string, int>();
             foreach (var fact in this.Facts)
             {
-                if (this.Taxonomy.Facts.ContainsKey(fact.FactKey))
+                if (this.Taxonomy.HasFact(fact.FactKey))
                 {
-                    fact.Cells = this.Taxonomy.Facts[fact.FactKey];
+                    fact.Cells = this.Taxonomy.GetCellsOfFact(fact.FactKey);
                     foreach (var cell in fact.Cells)
                     {
                         var cellobj = new Cell();

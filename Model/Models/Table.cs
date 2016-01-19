@@ -108,20 +108,27 @@ namespace LogicalModel
         private Hierarchy<LayoutItem> columnsnode = null;
         private Hierarchy<LayoutItem> extensionnode = null;
 
-        private List<String> _FactList = new List<string>();
-        public List<String> FactList 
+        //private List<String> _FactList = new List<string>();
+        //public List<String> FactList 
+        //{
+        //    get { return _FactList;  }
+        //    set { _FactList = value; }
+        //}
+
+        //private List<Cell> _LayoutCells = new List<Cell>();
+        //public List<Cell> LayoutCells
+        //{
+        //    get { return _LayoutCells; }
+        //    set { _LayoutCells = value; }
+        //}
+        private Dictionary<string, Cell> _LayoutCellDictionary = new Dictionary<string, Cell>();
+        public Dictionary<string, Cell> LayoutCellDictionary
         {
-            get { return _FactList;  }
-            set { _FactList = value; }
+            get { return _LayoutCellDictionary; }
+            set { _LayoutCellDictionary = value; }
         }
 
-        private List<Cell> _LayoutCells = new List<Cell>();
-        public List<Cell> LayoutCells
-        {
-            get { return _LayoutCells; }
-            set { _LayoutCells = value; }
-        }
-        protected List<String> FactKeys = new List<string>();
+        //protected List<String> FactKeys = new List<string>();
         public int InstanceFactsCount
         {
             get;
@@ -338,7 +345,7 @@ namespace LogicalModel
 
             var slices = new List<IEnumerable<QualifiedName>>();
             var sb_fact = new StringBuilder();
-            FactKeys.Clear();
+            //FactKeys.Clear();
     
             foreach(var hypercube in HyperCubes){
                 var cubeslices = GetCubeSlices(hypercube);
@@ -392,16 +399,16 @@ namespace LogicalModel
                     var tempfact = new FactBase();
                     tempfact.SetFromString(key);
                     key = tempfact.GetFactKey();
-                    FactKeys.Add(key);
+                    //FactKeys.Add(key);
                     sb_fact.AppendLine(key);
-
-                    if (!this.Taxonomy.Facts.ContainsKey(key)) 
+                    var newkey = Taxonomy.GetFactIntKey(key);
+                    if (!this.Taxonomy.HasFact(newkey)) 
                     {
-                        if (key == "de_sprv_met:si6,[de_sprv_dim:COL]de_sprv_CL:x010,[*:GRA]de_sprv_typ:GR,[*:ROW]de_sprv_RO:x010,[*:TEM]de_sprv_TE:GRP,") 
-                        { 
+                        //if (key == "de_sprv_met:si6,[de_sprv_dim:COL]de_sprv_CL:x010,[*:GRA]de_sprv_typ:GR,[*:ROW]de_sprv_RO:x010,[*:TEM]de_sprv_TE:GRP,") 
+                        //{ 
 
-                        }
-                        this.Taxonomy.Facts.Add(key, new List<String>());
+                        //}
+                        this.Taxonomy.AddFactKey(newkey);
                
                     }
                     //sb_fact.AppendLine();
@@ -572,7 +579,7 @@ namespace LogicalModel
             var factdeflist = new List<String>();
             var blocked = new Dictionary<string, bool>();
   
-            if (LayoutCells.Count == 0)
+            if (LayoutCellDictionary.Count == 0)
             {
 
                 var exts = Extensions.Children.Select(i => i.Item).ToList();
@@ -582,18 +589,21 @@ namespace LogicalModel
                 }
 
 
-                var factmap = new Dictionary<string, Dictionary<string,string>>();
+                //var factmap = new Dictionary<string, Dictionary<string,string>>();
                 foreach (var ext in exts)
                 {
-                    var factextdict = new Dictionary<string, string>();
+                    //var factextdict = new Dictionary<string, string>();
                     //factmap.Add(ext.FactString, factextdict);
 
                     foreach (var row in Rows)
                     {
                         foreach (var col in Columns)
                         {
-                            var cell = this.LayoutCells.FirstOrDefault(i => i.Row == row.Item.LabelCode && i.Column == col.Item.LabelCode);
-                            if (cell == null)
+                            var tempcell = new Cell();
+                            tempcell.Row = row.Item.LabelCode;
+                            tempcell.Column = col.Item.LabelCode;
+                            Cell cell = null;
+                            if (!this.LayoutCellDictionary.ContainsKey(tempcell.LayoutID))
                             {
                                 cell = new Cell();
                                 cell.Report = this.ID;
@@ -615,8 +625,12 @@ namespace LogicalModel
                                 cell.IsKey = isrowkey || iscolkey;
                                 SetDimensions(cell);
 
-                                LayoutCells.Add(cell);
-
+                                //LayoutCells.Add(cell);
+                                LayoutCellDictionary.Add(cell.LayoutID, cell);
+                            }
+                            else 
+                            {
+                                cell = this.LayoutCellDictionary[tempcell.LayoutID];
                             }
                             var xcell = new Cell();
                             xcell.Report = cell.Report;
@@ -674,20 +688,20 @@ namespace LogicalModel
                            
                             foreach (var factkey in factkeys)
                             {
-                                if (this.Taxonomy.Facts.ContainsKey(factkey))
+                                if (this.Taxonomy.HasFact(factkey))
                                 {
 
 
-                                    var item = this.Taxonomy.Facts[factkey];
+                                    var item = this.Taxonomy.GetCellsOfFact(factkey);
                                     item.Add(xcell.CellID);
-                                    if (!factextdict.ContainsKey(xcell.LayoutID))
-                                    {
-                                        factextdict.Add(xcell.LayoutID, factkey);// xcell.FactKey);
-                                    }
-                                    else
-                                    {
+                                    //if (!factextdict.ContainsKey(xcell.LayoutID))
+                                    //{
+                                    //    factextdict.Add(xcell.LayoutID, factkey);// xcell.FactKey);
+                                    //}
+                                    //else
+                                    //{
 
-                                    }
+                                    //}
 
 
                                 }
@@ -895,10 +909,15 @@ namespace LogicalModel
                 //adding the data cells
                 foreach (var column in Columns) 
                 {
-                    var cell = LayoutCells.FirstOrDefault(i => i.Row == row.Item.LabelCode && i.Column == column.Item.LabelCode);
-                    if (!String.IsNullOrEmpty(cell.FactKey) && String.IsNullOrEmpty(row.Item.LabelCode)) 
-                    {
-                    }
+                    var tempcell = new Cell();
+                    tempcell.Row = row.Item.LabelCode;
+                    tempcell.Column = column.Item.LabelCode;
+                    Cell cell = null;
+
+                    cell = LayoutCellDictionary[tempcell.LayoutID];
+                    //if (!String.IsNullOrEmpty(cell.FactKey) && String.IsNullOrEmpty(row.Item.LabelCode)) 
+                    //{
+                    //}
 
                     var alt = String.Format("{0}|{1}", row.Item.LabelCode, column.Item.LabelCode);
                     var cssclass = "data";

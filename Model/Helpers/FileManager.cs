@@ -88,7 +88,7 @@ namespace LogicalModel.Helpers
                 var json = Utilities.Converters.ToJson(rules);
                 var filepath = String.Format(pathformat, i);
                 Utilities.FS.WriteAllText(filepath, json);
-      
+                json = null;
             }
         }
 
@@ -107,6 +107,34 @@ namespace LogicalModel.Helpers
                 items = Utilities.Converters.JsonTo<List<T>>(json);
                 foreach (var item in items) 
                 {
+                    if (item is KeyValuePair<int,List<string>>)
+                    {
+                        var kvp = (KeyValuePair<int, List<string>>)((Object)item) ;
+                        kvp.Value.Capacity = kvp.Value.Count;
+                    }
+                    target.Add(item);
+                }
+            }
+        }
+
+        public static void SetFromJson<T>(ICollection<T> target, string pathformat, Action<T> BeforeAdd)
+        {
+            var folder = Utilities.Strings.GetFolder(pathformat);
+            var filename = Utilities.Strings.GetFileName(pathformat);
+            var searchpattern = filename.Replace("{0}", "*");
+            var files = System.IO.Directory.GetFiles(folder, searchpattern);
+            //target.Clear();
+            foreach (var file in files)
+            {
+
+                var items = new List<T>();
+                var json = System.IO.File.ReadAllText(file);
+                items = Utilities.Converters.JsonTo<List<T>>(json);
+                json = null;
+                foreach (var item in items)
+                {
+
+                    BeforeAdd(item);
                     target.Add(item);
                 }
             }

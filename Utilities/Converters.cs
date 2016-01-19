@@ -121,7 +121,7 @@ namespace Utilities
             CultureInfo ci = new CultureInfo("en-US");
             return String.Format(ci, format, dt);
         }
-        public static string DateTimeFormat = "yyyy-MM-dd hh:mm:ss";
+        public static string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
         public static DateTime StringToDateTime(String dt, string format)
         {
             DateTime result = DateTime.Now.AddYears(-200);
