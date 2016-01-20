@@ -49,12 +49,28 @@ namespace LogicalModel.Validation
                     }
                     else 
                     {
-                        var domainstr = conceptelement.Domain.Name.ToLower();
-                        var domainmembers = taxonomy.SchemaElements.Where(i => i.Domain == domainstr && i.Type == "nonnum:domainItemType").ToList();
-                        var possibilities = domainmembers.Select(i => String.Format("{0} [{1}]", i.ID, i.Name)).ToArray();
+                        var domainstr = taxonomy.GetDomainID(conceptelement.Domain);
+                        //var domkey = conceptelement.Domain.Content;
+                        //if (!taxonomy.domdict.ContainsKey(domkey)) 
+                        //{
+                        //    var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.LocalRelPath == conceptelement.file));
+
+                        //    var ns = nsmanager.LookupNamespace(conceptelement.Domain.Namespace);
+                        //}
+                        //if (!d_con.ContainsKey(nsprefix))
+                        //{
+                        //    var ns = nsmanager.LookupNamespace(nsprefix);
+                        //    var nsdoc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
+                        //    if (nsdoc != null)
+                        //    {
+                        //        d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
+                        //    }
+                        //}
+                        var domainmembers = taxonomy.SchemaElements.Where(i => i.Namespace == domainstr && i.Type == "nonnum:domainItemType").Select(i=>new LogicalModel.Base.QualifiedName( i.Namespace+":"+i.Name)).ToList();
+                        var possibilities = domainmembers.Select(i => String.Format("{0} [{1}]",i.Content, i.Name)).ToArray();
                         var possibilitystr = Utilities.Strings.ArrayToString(possibilities, ", ");
                         conceptrule.DisplayText = "Fact value for concept " + conceptelement.Content + "  should be " + possibilitystr;
-                        conceptrule.IsOk = (fact) => domainmembers.FirstOrDefault(i => i.ID == fact.Value) != null;
+                        conceptrule.IsOk = (fact) => domainmembers.FirstOrDefault(i => i.Content == fact.Value) != null;
                
                     }
                     rules.Add(conceptrule);

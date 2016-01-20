@@ -59,15 +59,15 @@ namespace XBRLProcessor.Models
                     //var textReader = System.IO.File.OpenText(this.LocalPath);
                     //XmlTextReader xmlReader = new XmlTextReader(textReader);
                  
-                    var xmlreadersettings = new XmlReaderSettings();
-                    xmlreadersettings.ValidationType = ValidationType.None;
-                    xmlreadersettings.DtdProcessing = DtdProcessing.Parse;
-                    xmlreadersettings.XmlResolver = null;
-                    XmlReader xmlReader = XmlReader.Create(this.LocalPath, xmlreadersettings);
-                    //extract and flatten data from the xml doc
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.XmlResolver = null;
-                    xmlDoc.Load(xmlReader);
+                    //var xmlreadersettings = new XmlReaderSettings();
+                    //xmlreadersettings.ValidationType = ValidationType.None;
+                    //xmlreadersettings.DtdProcessing = DtdProcessing.Parse;
+                    //xmlreadersettings.XmlResolver = null;
+                    //XmlReader xmlReader = XmlReader.Create(this.LocalPath, xmlreadersettings);
+                    ////extract and flatten data from the xml doc
+                    //XmlDocument xmlDoc = new XmlDocument();
+                    //xmlDoc.XmlResolver = null;
+                    //xmlDoc.Load(xmlReader);
 
 
                     _XmlDocument.Load(this.LocalPath);

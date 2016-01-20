@@ -104,7 +104,8 @@ var Control;
                 me.TableStructure = data;
                 ForAll(me.TableStructure, "Children", function (item, parent) {
                     if (!IsNull(item) && !IsNull(item.Item)) {
-                        item.Item.CssClass = item.Item.Type == "table" ? "hidden" : "";
+                        item.Item.CssClass = ""; // item.Item.Type == "table" ? "hidden" : "";
+                        item.Item.CssClass += item.Item.HasData > 0 ? " hasdata" : " empty";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
                         item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
                     }

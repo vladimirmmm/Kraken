@@ -597,6 +597,7 @@ var Model;
             this.Description = "";
             this.Type = "";
             this.CssClass = "";
+            this.HasData = 0;
             this.ExtensionText = "";
         }
         return TableInfo;

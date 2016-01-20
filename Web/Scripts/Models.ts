@@ -602,6 +602,7 @@
         public Description: string = "";
         public Type: string = "";
         public CssClass: string = "";
+        public HasData: number = 0;
         public ExtensionText: string = "";
     }
 }

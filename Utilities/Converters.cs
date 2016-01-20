@@ -29,11 +29,20 @@ namespace Utilities
 
         }
     }
+    
     public class Converters
     {
         private static CultureInfo dci = new CultureInfo("en-US");
-    
 
+        public static int FastParse(string str) 
+        {
+            int value = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                value = value * 10 + (str[i] - '0');
+            }
+            return value;
+        }
 
         public static String ToJson(object obj) 
         {

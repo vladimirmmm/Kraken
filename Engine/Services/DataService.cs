@@ -212,24 +212,25 @@ namespace Engine.Services
                                     var pagesize = int.Parse(request.GetParameter("pagesize"));
                                     var factstring = request.GetParameter("factstring").ToLower();
                                     var cellid = request.GetParameter("cellid").ToLower();
-                                    var rs = new DataResult<KeyValuePair<string, List<String>>>();
+                                    var rs = new DataResult<KeyValue>();
                                     var query = Engine.CurrentTaxonomy.Facts.AsQueryable();
 
                                     var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO
-                                    /*
+                                    var taxonomy = AppEngine.Features.Engine.CurrentTaxonomy;
                                     foreach (var fs in factstrings)
                                     {
-                                        query = query.Where(i => i.Key.ToLower().Contains(fs));
+                                        query = query.Where(i => taxonomy.KeyContains(i.Key, fs));
                                     }
                                     if (!String.IsNullOrEmpty(cellid))
                                     {
                                         query = query.Where(i => i.Value.Any(j => j.Contains(cellid)));
                                     }
-                                    rs.Items = query.Skip(pagesize * page).Take(pagesize).ToList();
+
+                                    rs.Items = query.Skip(pagesize * page).Take(pagesize).Select(i=>new KeyValue(taxonomy.GetFactStringKey(i.Key),i.Value)).ToList();
                                     rs.Total = query.Count();
                                     json = Utilities.Converters.ToJson(rs);
-                                    */
+                                    
                                 }
                                 if (part1 == "table")
                                 {
@@ -313,6 +314,7 @@ namespace Engine.Services
                                             }
 
                                             ht.Item.ID = String.Format("{0}<>", tbl.ID);
+                                            ht.Item.HasData = tbl.InstanceFactsCount;
                                             // var name = tbl.Extensions.Count > 1 ? String.Format("{0}({1})", tbl.Name, tbl.Extensions.Count) : tbl.Name;
                                             var name = tbl.Name;
                                             ht.Item.Name = Utilities.Strings.TrimTo(name, 40);
@@ -320,21 +322,21 @@ namespace Engine.Services
                                             ht.Item.Type = "table";
                                             //TODO EXT
                                             //var tbextensions = tbl.Extensions.Children;
-                                            var tbextensions = Engine.CurrentInstance.GetTableExtensions(tbl).Children;
+                                            var tbextensions = Engine.CurrentInstance.GetTableExtensions(tbl);
 
 
-                                            var extensions = tbextensions.Select(i =>
-                                            {
-                                                var ti = new TableInfo();
-                                                ti.ID = String.Format("{0}<{1}>", tbl.ID, i.Item.LabelCode);
-                                                ti.Name = i.Item.LabelContent;
-                                                ti.Description = i.Item.LabelContent;
-                                                ti.Type = "extension";
-                                                return ti;
-                                            });
+                                            //var extensions = tbextensions.Select(i =>
+                                            //{
+                                            //    var ti = new TableInfo();
+                                            //    ti.ID = String.Format("{0}<{1}>", tbl.ID, i.Item.LabelCode);
+                                            //    ti.Name = i.Item.LabelContent;
+                                            //    ti.Description = i.Item.LabelContent;
+                                            //    ti.Type = "extension";
+                                            //    return ti;
+                                            //});
                                             //extensions.Item.Type = "extension";
                                             //foreach(var ext in extensions.ch)
-                                            ht.Children.AddRange(extensions.Select(i => new BaseModel.Hierarchy<TableInfo>(i)));
+                                            ht.Children.AddRange(tbextensions.Select(i => new BaseModel.Hierarchy<TableInfo>(i)));
 
 
                                         }

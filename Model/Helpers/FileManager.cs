@@ -117,7 +117,7 @@ namespace LogicalModel.Helpers
             }
         }
 
-        public static void SetFromJson<T>(ICollection<T> target, string pathformat, Action<T> BeforeAdd)
+        public static void SetFromJson<T>(ICollection<T> target, string pathformat, Func<String, ICollection<T>> Deserialize)
         {
             var folder = Utilities.Strings.GetFolder(pathformat);
             var filename = Utilities.Strings.GetFileName(pathformat);
@@ -127,16 +127,17 @@ namespace LogicalModel.Helpers
             foreach (var file in files)
             {
 
-                var items = new List<T>();
+                ICollection<T> items = null;
                 var json = System.IO.File.ReadAllText(file);
-                items = Utilities.Converters.JsonTo<List<T>>(json);
+                items = Deserialize(json);
+                //items = Utilities.Converters.JsonTo<List<T>>(json);
                 json = null;
-                foreach (var item in items)
-                {
+                //foreach (var item in items)
+                //{
 
-                    BeforeAdd(item);
-                    target.Add(item);
-                }
+                //    //BeforeAdd(item);
+                //    target.Add(item);
+                //}
             }
         }
 

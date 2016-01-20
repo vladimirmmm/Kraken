@@ -121,7 +121,11 @@ table.report tbody td.data {
     }
     table.report tbody tr:nth-child(2n-1) td.editing {
         background:#ffffff;
-    }  
+    }
+table.report .selected {
+    color:black;
+}
+  
 
 body {
     font-family: 'Segoe UI',Verdana;
@@ -266,6 +270,14 @@ table.report tbody tr:nth-child(2n-1).selected {
 
 .haschild {
     border-bottom-width: 0px;
+}
+.hasdata 
+{
+    font-weight:bold;
+}
+.empty {
+    font-weight:normal;
+
 }
 
 .pagination {

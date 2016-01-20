@@ -65,14 +65,6 @@ namespace LogicalModel
         [JsonProperty]
         public InstanceUnit ReportingMonetaryUnit { get; set; }
 
-        private Dictionary<string, Dictionary<string, string>> _DynamicCellDictionary = new Dictionary<string, Dictionary<string, string>>();
-        [JsonProperty]
-        public Dictionary<string, Dictionary<string, string>> DynamicCellDictionary_Old
-        {
-            get { return _DynamicCellDictionary; }
-            set { _DynamicCellDictionary = value; }
-        }
-
         private Dictionary<string, DynamicCellDictionary> _DynamicReportCells = new Dictionary<string, DynamicCellDictionary>();
         [JsonProperty]
         public Dictionary<string, DynamicCellDictionary> DynamicReportCells
@@ -277,7 +269,6 @@ namespace LogicalModel
         public virtual void Clear() 
         {
             this.Facts.Clear();
-            this.DynamicCellDictionary_Old.Clear();
             this.DynamicReportCells.Clear();
             this.FactDictionary.Clear();
         }
@@ -288,6 +279,7 @@ namespace LogicalModel
 
 
         }
+        private Dictionary<string, int> reportdatadict = new Dictionary<string, int>();
 
         public void SetCells()
         {
@@ -323,12 +315,16 @@ namespace LogicalModel
                         {
                             reportdict.Add(reportid, 0);
                         }
-
                         reportdict[reportid] = reportdict[reportid] + 1;
 
+                        var rdatakey = cellobj.Report + "___" + cellobj.Extension;
+                        if (!reportdatadict.ContainsKey(rdatakey))
+                        {
+                            reportdatadict.Add(rdatakey, 1);
+                        }
+                        reportdatadict[rdatakey] = reportdatadict[rdatakey] + 1;
+
                     }
-
-
                 }
                 else
                 {
@@ -343,73 +339,7 @@ namespace LogicalModel
         }
 
        
-        public void SetCells_Old() 
-        {
-            var reportdict = new Dictionary<string, int>();
-            foreach (var fact in this.Facts)
-            {
-                if (this.Taxonomy.HasFact(fact.FactKey))
-                {
-                    fact.Cells = this.Taxonomy.GetCellsOfFact(fact.FactKey);
-                    foreach (var cell in fact.Cells)
-                    {
-                        var cellobj = new Cell();
-                        cellobj.SetFromCellID(cell);
-                        if (cellobj.Extension=="_")
-                        {
-
-                        }
-                        if (string.IsNullOrEmpty(cellobj.Row))
-                        {
-                            var typedfact = new FactBase();
-                            typedfact.Dimensions = fact.Dimensions.Where(i => i.IsTyped).ToList();
-                            var typedfactkey = typedfact.FactString.Trim();
-                            var reportkey = String.Format("{0}|{1}", cellobj.Report, cellobj.Extension);
-                            if (!DynamicCellDictionary_Old.ContainsKey(reportkey))
-                            {
-                                DynamicCellDictionary_Old.Add(reportkey, new Dictionary<string, string>());
-                            }
-                            var cellsofreportdict = DynamicCellDictionary_Old[reportkey];
-                            if (!cellsofreportdict.ContainsKey(typedfactkey))
-                            {
-
-                                cellsofreportdict.Add(typedfactkey, cellobj.Row);
-                            }
-
-                        }
-                        var reportid = cellobj.Report;
-                        if (!reportdict.ContainsKey(reportid))
-                        {
-                            reportdict.Add(reportid, 0);
-                        }
-
-                        reportdict[reportid] = reportdict[reportid] + 1;
-
-                    }
-
-
-                }
-                else 
-                {
-                }
-            }
-            foreach (var cellsofreport in DynamicCellDictionary_Old)
-            {
-                var rowix = 0;
-                for (var i = 0; i < cellsofreport.Value.Count; i++)
-                {
-                    var itemkey = cellsofreport.Value.Keys.ElementAt(i);
-                    rowix++;
-                    cellsofreport.Value[itemkey] = String.Format("{0}", rowix);
-                }
-            }
-            foreach (var key in reportdict.Keys)
-            {
-                var table = Taxonomy.Tables.FirstOrDefault(i => i.ID == key);
-                table.InstanceFactsCount = reportdict[key];
-            }
-        }
-
+   
         public string GetDynamicCellID(string cellID, FactBase fact) 
         {
             var dynamiccellID = cellID;
@@ -452,46 +382,32 @@ namespace LogicalModel
             return cellobj.CellID;
         }
 
-        public string GetDynamicCellID_Old(string cellID, FactBase fact)
+        public List<TableInfo> GetTableExtensions(Table table) 
         {
-            var dynamiccellID = cellID;
-
-            var cellobj = new Cell();
-            cellobj.SetFromCellID(cellID);
-
-            var typedfact = new FactBase();
-            typedfact.Dimensions = fact.Dimensions.Where(i => i.IsTyped).ToList();
-            if (typedfact.Dimensions.Count == 0)
-            {
-                return cellID;
-            }
-            var typedfactkey = typedfact.FactString;
-            var reportkey = String.Format("{0}|{1}", cellobj.Report, cellobj.Extension);
-
-            if (DynamicCellDictionary_Old.ContainsKey(reportkey))
-            {
-                var cellsofreportdict = DynamicCellDictionary_Old[reportkey];
-                if (cellsofreportdict.ContainsKey(typedfactkey))
-                {
-                    var rowid = cellsofreportdict[typedfactkey];
-                    cellobj.Row = rowid;
-                }
-            }
-
-            return cellobj.CellID;
-        }
-
-        public Hierarchy<LayoutItem> GetTableExtensions(Table table) 
-        {
+            var result = new List<TableInfo>();
+            var extensions = new Hierarchy<LayoutItem>();
             if (this.DynamicReportCells.ContainsKey(table.ID))
             {
-                return this.DynamicReportCells[table.ID].GetInstanceExtensions(table);
+                extensions= this.DynamicReportCells[table.ID].GetInstanceExtensions(table);
             }
             else 
             {
-                return table.Extensions;
+                extensions= table.Extensions;
 
             }
+            foreach (var ext in extensions.Children) 
+            {
+                var ti = new TableInfo();
+                ti.ID = String.Format("{0}<{1}>", table.ID, ext.Item.LabelCode);
+                ti.Name = ext.Item.LabelContent;
+                ti.Description = ext.Item.LabelContent;
+                ti.Type = "extension";
+                var extkey = table.ID + "___" + ext.Item.LabelCode;
+                ti.HasData = reportdatadict.ContainsKey(extkey) ? reportdatadict[extkey] : 0;
+                result.Add(ti);
+            }
+            result = result.OrderByDescending(i => i.HasData > 0).ToList();
+            return result;
         }
     
     }

@@ -25,6 +25,7 @@ namespace LogicalModel
     {
         public string RowSpan = "";
         public string ColSpan = "";
+        public string CssClass = "";
         private Table _Table = null;
         public int Order = 0;   
 

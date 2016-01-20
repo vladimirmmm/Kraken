@@ -235,6 +235,7 @@ namespace XBRLProcessor.Model
             foreach (var fact in facts) 
             {
                 var key = Taxonomy.GetFactIntKey(fact).ToArray();
+                //Taxonomy.Facts[key]
                 factids.Add(Taxonomy.FactKeyIndex[key]);
             }
             return facts.ToList();

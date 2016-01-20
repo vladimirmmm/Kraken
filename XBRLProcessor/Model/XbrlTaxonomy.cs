@@ -180,7 +180,7 @@ namespace XBRLProcessor.Models
             }
             foreach (var key in FactsOfDimensions.Keys)
             {
-                //FactsOfDimensions[key].TrimExcess();
+                FactsOfDimensions[key].TrimExcess();
                 //FactsOfDimensionsD.Add(key, FactsOfDimensions[key].ToDictionary(k => k, e => true));
             }
         }
@@ -371,7 +371,6 @@ namespace XBRLProcessor.Models
 
             }
         }
-
         public override void LoadDimensions()
         {
             var dimensionelements = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
@@ -400,7 +399,7 @@ namespace XBRLProcessor.Models
             var mapping = Mappings.CurrentMapping.GetMapping(typeof(DefinitionLink));
             var domtodimdefinitions = new List<DefinitionLink>();
             var dimdict = new Dictionary<string, List<string>>();
-            var domdict = new Dictionary<string, List<string>>();
+            domdict.Clear();
 
             foreach (var doc in domtodim_docs)
             {
@@ -1104,6 +1103,19 @@ namespace XBRLProcessor.Models
 
         }
 
+        public override string GetDomainID(LogicalModel.Base.QualifiedName domain)
+        {
+            var domainID = "";
+            var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == domain.Namespace);
+            if (nsdoc != null)
+            {
+                var domainelement = this.SchemaElements.FirstOrDefault(i => i.FileName == nsdoc.LocalRelPath && i.Name == domain.Name);
+                domainID = domainelement.ID;
+            }
+
+            return domainID;
+        }
+
         private LogicalModel.Base.Element Locate(string key) 
         {
             LogicalModel.Base.Element element = null;
@@ -1185,15 +1197,9 @@ namespace XBRLProcessor.Models
                 var logicalelement = Mappings.ToLogical(element);
 
                 logicalelement.FileName = taxonomydocument.LocalRelPath;
-                if (String.IsNullOrEmpty(logicalelement.FileName))
-                { 
-
-                }
+          
                 this.SchemaElements.Add(logicalelement);
-                if (logicalelement.Key.Contains("541")) 
-                {
-
-                }
+           
                 this.SchemaElementDictionary.Add(logicalelement.Key, logicalelement);
             }
             else 

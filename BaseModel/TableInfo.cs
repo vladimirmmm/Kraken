@@ -11,6 +11,8 @@ namespace BaseModel
         public string Name { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
+        public string CssClass { get; set; }
+        public int HasData { get; set; }
         public List<string> Tables = new List<string>();
 
         public TableInfo()

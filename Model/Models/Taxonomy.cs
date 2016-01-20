@@ -91,12 +91,15 @@ namespace LogicalModel
         }
 
         //public static Action<string> Console = null;
+        public Dictionary<string, List<string>> domdict = new Dictionary<string, List<string>>();
+
 
         public ValidationFunctionContainer ValidationFunctionContainer = null;
 
         public TaxHandler TableHandler = new TaxHandler();
         public TaxHandler LabelHandler = new TaxHandler();
         public TaxHandler ElementHandler = new TaxHandler();
+
 
         public string ModuleFolder { get; set; }
 
@@ -509,19 +512,17 @@ namespace LogicalModel
                 //var jsoncontent = Utilities.Converters.ToJson(Facts);
                 //Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
                 
-                LogicalModel.Helpers.FileManager.SaveToJson(this.Facts, this.TaxonomyFactsPathFormat, 50000);
-
+                //LogicalModel.Helpers.FileManager.SaveToJson(this.Facts, this.TaxonomyFactsPathFormat, 50000);
+                SerializeFacts(50000);
             }
             else
             {
 
                 //var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
                 //this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
-                this.Facts = new Dictionary<int[], List<string>>(2000000, new Utilities.IntArrayEqualityComparer());
-                LogicalModel.Helpers.FileManager.SetFromJson(this.Facts, this.TaxonomyFactsPathFormat, (i) => {
-                    //i.Value.Clear();
-                    i.Value.TrimExcess();
-                });
+                DeSerializeFacts();
+                //this.Facts = new Dictionary<int[], List<string>>(2000000, new Utilities.IntArrayEqualityComparer());
+                //LogicalModel.Helpers.FileManager.SetFromJson(this.Facts, this.TaxonomyFactsPathFormat, DeserialzieFacts);
                 
                
                 this.LoadFactDictionary();
@@ -529,6 +530,135 @@ namespace LogicalModel
                 LoadCells();
             }
             Logger.WriteLine("Load Facts completed");
+        }
+
+        private Dictionary<int[], List<string>> DeserialzieFacts(string json) 
+        {
+            //var elements = json.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Split(new string[] { "{", "}" }, StringSplitOptions.RemoveEmptyEntries);
+            var elements = json.Split(new string[] { "{\n","},\n","}\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var element in elements) 
+            {
+                var parts = element.Trim().Split(new string[] { "[\n", "],\n", "]\n" }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 4) 
+                {
+                    var keys = parts[1].Split(new string[] { ",\n","\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    var values = parts[3].Split(new string[] { ",\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    var intkeys = new int[keys.Length];
+                    var cells = new List<string>();
+                    var ix=0;
+                    foreach (var key in keys) 
+                    {
+                        intkeys[ix] = int.Parse(key);
+                        ix++;
+                    }
+                    foreach (var val in values)
+                    {
+                        cells.Add(val.Trim('"'));
+                    }
+                    Facts.Add(intkeys, cells);
+
+                }
+            }
+            return null;
+        }
+        
+        public void DeSerializeFacts()
+        {
+            var pathformat = TaxonomyFactsPathFormat;
+            var folder = Utilities.Strings.GetFolder(pathformat);
+            var filename = Utilities.Strings.GetFileName(pathformat);
+            var searchpattern = filename.Replace("{0}", "*");
+            var files = System.IO.Directory.GetFiles(folder, searchpattern).ToList();
+            var sp_pipe = new string[] { " | " };
+            var sp_coma = new string[] { "," };
+            Facts.Clear();
+            Facts = new Dictionary<int[], List<string>>(50000 * files.Count, new Utilities.IntArrayEqualityComparer());
+            foreach (var file in files)
+            {
+                var content = Utilities.FS.ReadAllText(file);
+                var items = content.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                content = null;
+                foreach (var item in items) 
+                {
+                    var parts = item.Split(sp_pipe, StringSplitOptions.RemoveEmptyEntries);
+                    var keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+                    var values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+                    var intkeys = new int[keys.Length];
+                    var cells = new List<string>(values);
+                    var i = 0;
+                    foreach (var key in keys)
+                    {
+                        intkeys[i] = Utilities.Converters.FastParse(key);
+                        i++;
+                    }
+                    //foreach (var val in values)
+                    //{
+                    //    cells.Add(val);
+                    //}
+                    Facts.Add(intkeys, cells);
+                }
+            }
+        }
+        
+        public void SerializeFacts(int pagesize) 
+        {
+            var ix = 1;
+            var sb = new StringBuilder();
+            int page = 0;
+            Action<StringBuilder,int> a = (StringBuilder i,int p) => {
+                Utilities.FS.WriteAllText(string.Format(TaxonomyFactsPathFormat, p), i.ToString());
+                sb.Clear();
+            };
+            foreach (var x in this.Facts) 
+            {
+                foreach(var id in x.Key)
+                {
+                    sb.Append(id + ",");
+                }
+                sb.Append(" | ");
+                foreach (var id in x.Value)
+                {
+                    sb.Append(id + ",");
+                }
+                sb.Append("\n");
+                ix++;
+                if (ix % pagesize == 0) 
+                {
+                    a(sb, page);
+                    page++;
+                }
+
+            }
+            a(sb, page);
+        }
+
+        private Dictionary<int[], List<string>> DeserialzieFactsX(string json)
+        {
+            //var elements = json.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Split(new string[] { "{", "}" }, StringSplitOptions.RemoveEmptyEntries);
+            var elementskeys = Utilities.Strings.TextsBetween(json, "\"Key\": [", "]");
+            var elementsvals= Utilities.Strings.TextsBetween(json, "\"Value\": [", "]");
+
+            for (int i = 0; i < elementskeys.Count;i++ )
+            {
+
+                var keys = elementskeys[i].Split(new string[] { ",\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                var values = elementsvals[i].Split(new string[] { ",\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    var intkeys = new int[keys.Length];
+                    var cells = new List<string>();
+                    var ix = 0;
+                    foreach (var key in keys)
+                    {
+                        intkeys[ix] = int.Parse(key);
+                        ix++;
+                    }
+                    foreach (var val in values)
+                    {
+                        cells.Add(val.Trim('"'));
+                    }
+                    Facts.Add(intkeys, cells);
+
+            }
+            return null;
         }
 
         private void LoadCells()
@@ -790,7 +920,11 @@ namespace LogicalModel
 
             }
         }
-        
+
+        public virtual string GetDomainID(QualifiedName domain) 
+        {
+            return "";
+        }
 
         public virtual void LoadHierarchy() 
         {
@@ -899,6 +1033,8 @@ namespace LogicalModel
                     if (!String.IsNullOrEmpty(conceptelement.Domain))
                     {
                         concept.Domain = new QualifiedName();
+                        //GetDomainID(conceptelement);
+                        //if (conceptelement.Hierarchy)
                         concept.Domain.Content = conceptelement.Domain;
                         concept.HierarchyRole = String.IsNullOrEmpty(conceptelement.Hierarchy) ? conceptelement.LinkRole : conceptelement.Hierarchy;
                     }
@@ -1163,5 +1299,11 @@ namespace LogicalModel
         }
         
         #endregion
+
+        public bool KeyContains(int[] p, string fs)
+        {
+            var factstring = GetFactStringKey(p);
+            return factstring.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>=0;
+        }
     }
 }

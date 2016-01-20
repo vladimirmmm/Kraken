@@ -140,6 +140,30 @@ namespace LogicalModel.Base
             }
             return result;
         }
+        public IEnumerable<String> ToQueryable(IEnumerable<String> queryable, IEnumerable<int> idqueryable)
+        {
+            var queryablecount = queryable.Count();
+            for (int i = 0; i < queryablecount; i++) 
+            {
+                var str = queryable.ElementAt(i);
+                var id = idqueryable.ElementAt(i);
+                if (Filter(str)) 
+                { 
+
+                }
+            }
+            var result = queryable.Where(i => Filter(i));
+            if (ChildQueries.Count > 0)
+            {
+                var items = new List<string>();
+                foreach (var childquery in ChildQueries)
+                {
+                    items.AddRange(childquery.ToQueryable(result));
+                }
+                return items;
+            }
+            return result;
+        }
         public override string ToString()
         {
             return String.Format("{0} NOT: {1}", TrueFilters, FalseFilters);
