@@ -56,9 +56,9 @@ namespace XBRLProcessor.Model
                         if (fact.Concept != null)
                         {
                             //s_facts = s_facts.Where(i => i.StartsWith(fact.Concept.Content));
-                            if (Taxonomy.FactsOfConcepts.ContainsKey(fact.Concept.Content))
+                            if (Taxonomy.FactsOfDimensions.ContainsKey(fact.Concept.Content))
                             {
-                                s_facts = Taxonomy.FactsOfConcepts[fact.Concept.Content];
+                                s_facts = Taxonomy.FactsOfDimensions[fact.Concept.Content].Select(i=> Taxonomy.FactsIndex[i]);
                             }
                             else
                             {
@@ -240,6 +240,23 @@ namespace XBRLProcessor.Model
             }
             return facts.ToList();
         }
+
+        public List<KeyValue<string,int>> GetFactsKV(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
+        {
+
+
+            //factids.AddRange(GetFactIDs(fbq, IdList));
+            var factsofrule = GetFactsKVByIds(GetFactIDs(fbq, IdList, IdDict));
+            var facts = fbq.ToList(factsofrule);
+
+            //foreach (var fact in facts)
+            //{
+            //    var key = Taxonomy.GetFactIntKey(fact).ToArray();
+            //    //Taxonomy.Facts[key]
+            //    factids.Add(Taxonomy.FactKeyIndex[key]);
+            //}
+            return facts.ToList();
+        }
         
         public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
         {
@@ -314,7 +331,9 @@ namespace XBRLProcessor.Model
                 }
                 else 
                 {
-                    dimidlist = Utilities.Objects.IntersectSorted(mindimset, IdList, null);
+                    //dimidlist = Utilities.Objects.IntersectSorted(mindimset, IdList, null);
+                    dimidlist = Utilities.Objects.IntersectSorted(mindimset, IdDict, null);
+                    //dimidlist = mindimset;
 
                 }
 
@@ -391,6 +410,17 @@ namespace XBRLProcessor.Model
             {
                 var key = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[id]);
                 factlist.Add(key);
+            }
+            return factlist;
+        }
+
+        public List<KeyValue<string,int>> GetFactsKVByIds(IEnumerable<int> ids)
+        {
+            var factlist = new List<KeyValue<string, int>>();//ids.Count());
+            foreach (var id in ids)
+            {
+                var key = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[id]);
+                factlist.Add(new KeyValue<string, int>(key, id));
             }
             return factlist;
         }

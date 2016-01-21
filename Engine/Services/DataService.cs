@@ -218,9 +218,35 @@ namespace Engine.Services
                                     var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO
                                     var taxonomy = AppEngine.Features.Engine.CurrentTaxonomy;
+                                    var idlist = new List<int>();
                                     foreach (var fs in factstrings)
                                     {
-                                        query = query.Where(i => taxonomy.KeyContains(i.Key, fs));
+                                        var fsidlist = new List<int>();
+                                        var dimparts = taxonomy.FactsOfDimensions.Where(i => i.Key.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>-1);
+                                        foreach (var dimpart in dimparts) 
+                                        {
+                                            fsidlist.AddRange(dimpart.Value);
+                                        }
+                                        fsidlist = fsidlist.Distinct().ToList();
+                                        if (idlist.Count == 0)
+                                        {
+                                            idlist = fsidlist;
+                                        }
+                                        else 
+                                        {
+                                            idlist = Utilities.Objects.IntersectSorted(idlist, fsidlist, null);
+                                        }
+                                      
+                                        //query = query.Where(i => keys.Contains(i.Key, comparer));
+
+                                        //oldone
+                                        //query = query.Where(i => taxonomy.KeyContains(i.Key, fs));
+                                    }
+                                    if (factstrings.Length > 0)
+                                    {
+                                        var keys = idlist.Select(i => taxonomy.FactsIndex[i]).ToDictionary(k => k, v => true);
+                                        var comparer = new Utilities.IntArrayEqualityComparer();
+                                        query = query.Where(i => keys.ContainsKey(i.Key));
                                     }
                                     if (!String.IsNullOrEmpty(cellid))
                                     {

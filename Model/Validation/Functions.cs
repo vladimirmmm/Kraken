@@ -199,7 +199,7 @@ namespace LogicalModel.Validation
         public Boolean RegexpMatches(string a, string pattern)
         {
             var regexp = new Regex(pattern);
-            return regexp.Matches(a).Count > 1;
+            return regexp.Matches("^" + a + "$").Count > 0;
         }
     
         //public bool Exists(string v)

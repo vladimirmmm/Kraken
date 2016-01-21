@@ -578,18 +578,21 @@ namespace LogicalModel
                 var content = Utilities.FS.ReadAllText(file);
                 var items = content.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 content = null;
+                string[] parts = null;
+                string[] keys = null;
+                string[] values = null;
+                int[] intkeys = null;
+                List<string> cells = null;
                 foreach (var item in items) 
                 {
-                    var parts = item.Split(sp_pipe, StringSplitOptions.RemoveEmptyEntries);
-                    var keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
-                    var values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
-                    var intkeys = new int[keys.Length];
-                    var cells = new List<string>(values);
-                    var i = 0;
-                    foreach (var key in keys)
+                    parts = item.Split(sp_pipe, StringSplitOptions.RemoveEmptyEntries);
+                    keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+                    values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+                    intkeys = new int[keys.Length];
+                    cells = new List<string>(values);
+                    for (int i = 0; i < keys.Length;i++ )
                     {
-                        intkeys[i] = Utilities.Converters.FastParse(key);
-                        i++;
+                        intkeys[i] = Utilities.Converters.FastParse(keys[i]);
                     }
                     //foreach (var val in values)
                     //{
@@ -597,6 +600,7 @@ namespace LogicalModel
                     //}
                     Facts.Add(intkeys, cells);
                 }
+                items = null;
             }
         }
         

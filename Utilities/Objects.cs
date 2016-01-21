@@ -170,6 +170,22 @@ namespace Utilities
             }
             return results;
         }
+        public static List<int> IntersectSorted(List<int> sequence1, HashSet<int> sequence2, Comparer<int> comparer)
+        {
+            var results = new List<int>();//sequence1.Count());
+            int item;
+            for (int i = 0; i < sequence1.Count; i++)
+            {
+                item = sequence1[i];
+                if (sequence2.Contains(item))
+                {
+                    results.Add(item);
+                }
+
+            }
+            //results.TrimExcess();
+            return results;
+        }
         public static List<int> IntersectSorted(IEnumerable<int> sequence1, HashSet<int> sequence2, Comparer<int> comparer)
         {
             var results = new List<int>();//sequence1.Count());
@@ -266,7 +282,21 @@ namespace Utilities
             }
         }
     }
-
+    public class IntArrayComparer : IComparer<int[]>
+    { 
+    
+        int IComparer<int[]>.Compare(int[] x, int[] y)
+        {
+            var minlength = Math.Min(x.Length, y.Length);
+            var val=0;
+            for (int i = 0; i < minlength; i++) 
+            {
+                val = x[i] - y[i];
+                if (val != 0) { return val; }
+            }
+            return x.Length - y.Length;
+        }
+    }
     public class IntArrayEqualityComparer : IEqualityComparer<int[]>
     {
         public bool Equals(int[] x, int[] y)
@@ -298,4 +328,33 @@ namespace Utilities
             return result;
         }
     }
+
+    public class Testr 
+    {
+        public void emoryest()
+        {
+            var cnt = 1500000;
+            //var stringlist = new List< List<string>>(cnt);
+            var dict = new Dictionary<int[], bool>(cnt);
+            var dict2 = new Dictionary<int[], List<String>>(cnt, new IntArrayEqualityComparer());
+            var dict3 = new SortedList<int[], List<String>>(cnt, new IntArrayComparer());
+            var idarray = new int[] { 12, 23542, 2353, 235, 7543, 54572, 234, 46577,123,2545,24566,3464667 };
+            for (int i = 0; i < cnt; i++)
+            {
+                idarray[0] = idarray[0] + 1;
+                idarray[1] = idarray[1] + 1;
+                idarray[2] = idarray[2] + 1;
+                idarray[3] = idarray[3] + 1;
+                idarray[4] = idarray[4] + 1;
+                idarray[5] = idarray[5] + 1;
+                var cellist = new List<string>(){"eba_tC_66.00.w<"+i.ToString()+"|"+(390+i).ToString()+"|160>"};
+                dict2.Add(idarray.ToList().ToArray(), cellist);
+                //dict3.Add(idarray.ToList().ToArray(), cellist);
+            }
+        }
+   
+    }
+
+
+
 }

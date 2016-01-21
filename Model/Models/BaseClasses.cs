@@ -140,29 +140,31 @@ namespace LogicalModel.Base
             }
             return result;
         }
-        public IEnumerable<String> ToQueryable(IEnumerable<String> queryable, IEnumerable<int> idqueryable)
+        public List<KeyValue<string, int>> ToList(List<KeyValue<string, int>> queryable)
         {
+            //var mainitems = new List<KeyValue<string, int>>();
+            var items = new List<KeyValue<string, int>>();
+
             var queryablecount = queryable.Count();
             for (int i = 0; i < queryablecount; i++) 
             {
-                var str = queryable.ElementAt(i);
-                var id = idqueryable.ElementAt(i);
-                if (Filter(str)) 
-                { 
+                var str = queryable[i].Key;
 
+                if (Filter(str)) 
+                {
+                    items.Add(queryable[i]);
                 }
             }
-            var result = queryable.Where(i => Filter(i));
             if (ChildQueries.Count > 0)
             {
-                var items = new List<string>();
+                var results = new List<KeyValue<string, int>>(); 
                 foreach (var childquery in ChildQueries)
                 {
-                    items.AddRange(childquery.ToQueryable(result));
+                    results.AddRange(childquery.ToList(items));
                 }
-                return items;
+                return results;
             }
-            return result;
+            return items;
         }
         public override string ToString()
         {

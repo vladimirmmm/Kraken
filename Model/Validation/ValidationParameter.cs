@@ -93,7 +93,6 @@ namespace LogicalModel.Validation
                 return typestring;
             }
         }
-        
         private string _StringValue = "";
         [JsonIgnore]
         public string StringValue
@@ -105,13 +104,14 @@ namespace LogicalModel.Validation
             set { _StringValue = value; }
 
         }
+        public string OriginalStringValue { get { return _StringValue; } }
 
         [JsonIgnore]
         public bool BooleanValue
         {
             get
             {
-                return StringValue=="true";
+                return Utilities.ObjectExtensions.In(StringValue,"true","1");
             }
 
         }

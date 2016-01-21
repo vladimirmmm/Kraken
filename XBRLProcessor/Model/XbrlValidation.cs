@@ -143,7 +143,7 @@ namespace XBRLProcessor.Model
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
             //
-            if (valueassertion.ID.Contains("1067"))
+            if (valueassertion.ID.Contains("0647"))
             {
             }
 
@@ -183,11 +183,9 @@ namespace XBRLProcessor.Model
                 //TODO
                 var multiplefactsfornonseqparameter = 0;
                 var qix = 0;
-                var factids = new List<int>(); //GetFactIDs(fbq, parameterfacts);
                 parameter.TaxFacts.Capacity = mergedqueries.Count;
                 var bsize = 500;
                 var isnonsequenced = !parameter.BindAsSequence;
-                factids.Capacity = bsize + 10;
                 var parameterfactdict = new HashSet<int>(parameterfacts);
                 foreach (var fbq in mergedqueries)
                 {
@@ -196,22 +194,33 @@ namespace XBRLProcessor.Model
                     {
                         fbq.DictFilters = fbq.DictFilters.Replace(rbs, "");
                     }
-                    //var facts = fbq.ToList(factsofrule.AsQueryable());
-                    var datafactids = new List<int>();
-                    var facts = GetFacts(fbq, parameterfacts,parameterfactdict, datafactids);
-                    factids.AddRange(datafactids);
+
+                    //var datafactids = new List<int>();
+                    //var facts = GetFacts(fbq, parameterfacts, parameterfactdict, datafactids);
+                    
+                    var facts = GetFactsKV(fbq, parameterfacts, parameterfactdict);
+
                     var ok = true;
 
                     if (isnonsequenced && facts.Count > 1 )
                     {
                         multiplefactsfornonseqparameter++;
                         ok = false;
-                        if (parameterfactqueries.Count == 0) 
+                        //like concepts for exampl
+                        if (parameterfactqueries.Count == 0)
                         {
                             multiplefactsfornonseqparameter = 0;
-                            foreach (var factid in datafactids) 
+                            foreach (var fact in facts)
                             {
-                                parameter.TaxFacts.Add(new List<int>() { factid });
+                                parameter.TaxFacts.Add(new List<int>() { fact.Value });
+                            }
+                        }
+                        else 
+                        {
+                            multiplefactsfornonseqparameter = 0;
+                            foreach (var fact in facts)
+                            {
+                                parameter.TaxFacts.Add(new List<int>() { fact.Value });
                             }
                         }
 
@@ -219,7 +228,7 @@ namespace XBRLProcessor.Model
                     if (ok)
                     {
 
-                        parameter.TaxFacts.Add(datafactids);
+                        parameter.TaxFacts.Add(facts.Select(i=>i.Value).ToList());
                         if (qix > 1 && qix % bsize == 0)
                         {
                             //if (!issorted)

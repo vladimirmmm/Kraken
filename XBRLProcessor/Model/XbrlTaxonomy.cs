@@ -130,43 +130,23 @@ namespace XBRLProcessor.Models
             Utilities.Logger.WriteLine("Load LoadFactDictionary");
             FactsOfConcepts.Clear();
             FactsOfDimensions.Clear();
-            //FactsOfDimensionsD.Clear();
-            FactsIndex = new Dictionary<int,int[]>(2000000);
-            FactKeyIndex = new Dictionary<int[], int>(2000000,new IntArrayEqualityComparer());
+            FactsIndex = new Dictionary<int, int[]>(this.Facts.Count);
+            FactKeyIndex = new Dictionary<int[], int>(10,new IntArrayEqualityComparer());
             var ix=-1;
             foreach (var fact in this.Facts)
             {
                 ix++;
                 FactsIndex.Add(ix, fact.Key);
-                FactKeyIndex.Add(fact.Key, ix);
-                //AddFactToDictionary(fact);
                 var parts = fact.Key;
-                //var stringkey = GetFactStringKeyFromIntKey(fact.Key);
                 var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                var conceptkey = keyparts[0];
-                List<int[]> keylist = null;
-                if (!FactsOfConcepts.ContainsKey(conceptkey))
-                {
-                    keylist = new List<int[]>();
-                    FactsOfConcepts.Add(conceptkey, keylist);
-                }
-                else
-                {
-                    keylist = FactsOfConcepts[conceptkey];
-                }
-                keylist.Add(fact.Key);
 
                 for (int i = 0; i < keyparts.Count; i++)
                 {
                     var id = keyparts[i];
-                    //if (i > 0) {
-                    //    id = id.Substring(id.IndexOf(":", StringComparison.Ordinal));
-                    //}
 
                     HashSet<int> keylist2 = null;
                     if (!FactsOfDimensions.ContainsKey(id))
                     {
-                        //keylist2 = new List<int>();
                         keylist2 = new HashSet<int>();
                         FactsOfDimensions.Add(id, keylist2);
                     }
@@ -181,9 +161,9 @@ namespace XBRLProcessor.Models
             foreach (var key in FactsOfDimensions.Keys)
             {
                 FactsOfDimensions[key].TrimExcess();
-                //FactsOfDimensionsD.Add(key, FactsOfDimensions[key].ToDictionary(k => k, e => true));
             }
         }
+
         public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
         {
             LogicalModel.Base.Element domain = null;
@@ -220,6 +200,7 @@ namespace XBRLProcessor.Models
             }
             return domain;
         }
+        
         public string FindDimensionDomainString(string dimensionitem) 
         {
             var domain = FindDimensionDomain(dimensionitem);

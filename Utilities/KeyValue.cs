@@ -21,6 +21,11 @@ namespace Utilities
             this.Key = key;
             this.Value = value;
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0} >> {1}", this.Key, this.Value);
+        }
     }
     public class KeyValue
     {

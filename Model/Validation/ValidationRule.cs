@@ -555,7 +555,7 @@ namespace LogicalModel.Validation
             var allinstanceresults = GetAllInstanceResults(instance);
             foreach (var r in allinstanceresults) 
             {
-                if (this.ID.Contains("1045"))
+                if (this.ID.Contains("0170"))
                 {
                 }
                 ValidateResult(r, instance);

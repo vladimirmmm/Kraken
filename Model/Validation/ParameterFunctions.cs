@@ -168,7 +168,7 @@ namespace LogicalModel.Validation
 
         public bool empty(ValidationParameter a)
         {
-            return String.IsNullOrEmpty(a.StringValue);
+            return a.CurrentFacts.Count==0;
         }
         public decimal abs(ValidationParameter a)
         {
