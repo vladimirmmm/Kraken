@@ -29,6 +29,8 @@
         private ui_factdetail: Element = null;
         private ui_vruledetail: Element = null;
 
+        private ValidationResultsServiceFunction: General.FunctionWithCallback = null;
+
         constructor() {
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_validation_selector = "#" + this.s_validation_id;
@@ -64,7 +66,17 @@
 
             me.LoadValidationResults(null);
 
-          
+            me.ValidationResultsServiceFunction = new General.FunctionWithCallback(
+                (fwc: General.FunctionWithCallback, args: any) => {
+                    var p = <Model.Dictionary<any>>args[0];
+                    AjaxRequest("Instance/Validation", "get", "json", p,
+                        function (data: DataResult) {
+                            if (!IsNull(data.Items)) {
+                                me.ValidationResults = <Model.ValidationRuleResult[]>data.Items;
+                                fwc.Callback(data);
+                            }
+                        }, null);
+                });
         }
 
         public HandleAction(msg: General.Message)

@@ -25,6 +25,11 @@ namespace LogicalModel
         [JsonProperty]
         public String Value { get { return _Value; } set { _Value = value; } }
 
+        private int _IX = -1;
+        [JsonProperty]
+        public int IX { get { return _IX; } set { _IX = value; } }
+
+
         private List<String> _Cells = new List<string>();
         [JsonProperty]
         public List<String> Cells { get { return _Cells; } set { _Cells = value; } }

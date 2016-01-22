@@ -33,7 +33,7 @@ namespace LogicalModel.Validation
             foreach (var p in Parameters)
             {
                 sb.AppendFormat("{0}[", p.Name);
-                foreach (var item in p.Facts)
+                foreach (var item in p.FactIDs)
                 {
                     sb.Append(item + ", ");
                 }

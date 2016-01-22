@@ -23,6 +23,7 @@ var Control;
             this.s_general_selector = "";
             this.ui_factdetail = null;
             this.ui_vruledetail = null;
+            this.ValidationResultsServiceFunction = null;
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_validation_selector = "#" + this.s_validation_id;
             this.s_unit_selector = "#" + this.s_units_id;
@@ -50,6 +51,15 @@ var Control;
             me.Taxonomy = app.taxonomycontainer.Taxonomy;
             me.LoadInstance(null);
             me.LoadValidationResults(null);
+            me.ValidationResultsServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
+                var p = args[0];
+                AjaxRequest("Instance/Validation", "get", "json", p, function (data) {
+                    if (!IsNull(data.Items)) {
+                        me.ValidationResults = data.Items;
+                        fwc.Callback(data);
+                    }
+                }, null);
+            });
         };
         InstanceContainer.prototype.HandleAction = function (msg) {
             var me = this;

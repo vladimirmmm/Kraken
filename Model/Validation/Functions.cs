@@ -188,6 +188,16 @@ namespace LogicalModel.Validation
         {
             return a;
         }
+        public string QName(String ns,String n)
+        {
+            var nsitem = Utilities.Xml.Namespaces.FirstOrDefault(i => i.Value == ns);
+            if ((object)nsitem == null) { return ""; }
+            return string.Format("{0}:{1}", nsitem.Key, n);
+        }
+        public string String(String a)
+        {
+            return a;
+        }
         public string XS_String(String a)
         {
             return a;
@@ -199,7 +209,8 @@ namespace LogicalModel.Validation
         public Boolean RegexpMatches(string a, string pattern)
         {
             var regexp = new Regex(pattern);
-            return regexp.Matches("^" + a + "$").Count > 0;
+            //return regexp.Matches("^" + a + "$").Count > 0;
+            return regexp.Matches(a).Count > 0;
         }
     
         //public bool Exists(string v)

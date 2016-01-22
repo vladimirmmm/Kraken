@@ -354,7 +354,7 @@ namespace XBRLProcessor.Models
         }
         public override void LoadDimensions()
         {
-            var dimensionelements = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
+            this.DimensionItems = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
             var defdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("link:definitionLink")).ToList();
             var domtodim_docs = new List<XbrlTaxonomyDocument>();
             var memtodom_docs = new List<XbrlTaxonomyDocument>();
@@ -406,7 +406,7 @@ namespace XBRLProcessor.Models
                         }
                         foreach (var item in dlink.DefinitionRoot.Children)
                         {
-                            var dimelement = dimensionelements.FirstOrDefault(i => i.ID == item.Item.ID);
+                            var dimelement = this.DimensionItems.FirstOrDefault(i => i.ID == item.Item.ID);
                             var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
                             var children = item.Children.Where(i =>
                             {
@@ -426,7 +426,7 @@ namespace XBRLProcessor.Models
 
                 }
             }
-            foreach (var dimelement in dimensionelements) 
+            foreach (var dimelement in this.DimensionItems) 
             {
                 if (!String.IsNullOrEmpty(dimelement.TypedDomainRef))
                 {

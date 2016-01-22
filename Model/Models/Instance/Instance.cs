@@ -95,6 +95,82 @@ namespace LogicalModel
             return facts;
         }
 
+        public int GetFactIndex(string factstring) 
+        {
+            var fact = this.Facts.FirstOrDefault(i => i.FactString == factstring);
+            if (fact != null) 
+            {
+                return fact.IX;
+            }
+            return -1;
+        }
+
+        public InstanceFact GetFactByIDString(string factstring)
+        {
+            if (factstring.StartsWith("I:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (id > -1 && id < this.Facts.Count)
+                {
+                    return this.Facts[id];
+                }
+            }
+            if (factstring.StartsWith("T:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                var key = Taxonomy.FactsIndex[id];
+                var stringkey = Taxonomy.GetFactStringKey(key);
+                if (FactDictionary.ContainsKey(stringkey))
+                {
+                    var facts = FactDictionary[stringkey];
+                    if (facts.Count == 1)
+                    {
+                        return facts.FirstOrDefault();
+                    }
+                }
+
+            }
+            return null;
+        }
+
+        public FactBase GetFactBaseByIndexString(string factstring)
+        {
+            if (factstring.StartsWith("I:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (id > -1 && id < this.Facts.Count)
+                {
+                    return this.Facts[id];
+                }
+            }
+            if (factstring.StartsWith("T:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (Taxonomy.FactsIndex.ContainsKey(id))
+                {
+                    var fact = new FactBase();
+                    var key = Taxonomy.FactsIndex[id];
+                    var stringkey = Taxonomy.GetFactStringKey(key);
+                    fact.SetFromString(stringkey);
+                    return fact;
+                }
+
+            }
+            return null;
+        }
+
+
+        public List<string> GetFactStringsByFactIdStrings(List<string> factindexes)
+        {
+            var result = new List<string>();
+            foreach (var factindex in factindexes)
+            {
+                var fact = GetFactBaseByIndexString(factindex);
+                result.Add(fact.FactString);
+
+            }
+            return result;
+        }
         public virtual List<ValidationRuleResult> Validate(List<String> messages) 
         {
             var results = new List<ValidationRuleResult>();

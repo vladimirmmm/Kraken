@@ -363,6 +363,7 @@
         public ContextID: string;
         public FactKey: string;
         public FactString: string;
+        public FactID: number;
         public Cells: string[] = [];
 
         public static Convert(obj:Object): InstanceFact
@@ -500,6 +501,7 @@
         public TaxonomyModuleReference: string;
         public FullPath: string;
         public FactDictionary: Dictionary<InstanceFact[]> = null;
+        public FactIDDictionary: Dictionary<InstanceFact> = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
         public DynamicReportCells: Dictionary<DynamicCellDictionary> = {};
 
@@ -528,16 +530,24 @@
         public FileName: string;
 
     }
+    export class FactItem {
+        public FactString: string = "";
+        public Value: string = "";
+        public Cells: string[] = [];
+    }
 
     export class SimlpeValidationParameter
     {
         public Name: string;
-        public Facts: string[] = [];
+        public FactIDs: string[] = [];
         public Value: string;
-        public CellsOfFacts: Dictionary<string[]> = {};
+        public Cells: string[][] = [];
+       // public CellsOfFacts: Dictionary<string[]> = {};
         public BindAsSequence: boolean;
-
+        public FactItems: FactItem[] = [];
     }
+
+
 
     export class ValidationParameter {
         public Name: string;

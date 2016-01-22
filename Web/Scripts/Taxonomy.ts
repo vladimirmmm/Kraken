@@ -498,32 +498,26 @@
         }
 
         public static SetValues(ruleresult: Model.ValidationRuleResult) {
-            ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {
-                var strvalue = "";
-                var numericval = 0;
+            ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {    
+
+                parameter.FactItems = IsNull(parameter.FactItems) ? [] : parameter.FactItems;
+                parameter.FactIDs.forEach(function (factstring: string, ix:number) {
+                    var fi = new Model.FactItem();
+                    var strval = TaxonomyContainer.GetFactValue(factstring);
+                    fi.FactString = factstring;
+                    fi.Value = strval;
+                    fi.Cells = parameter.Cells[ix];
+                    var strval = TaxonomyContainer.GetFactValue(factstring);                 
+                    parameter.FactItems.push(fi);           
+                });
+                parameter.FactItems = parameter.FactItems.AsLinq<Model.FactItem>().OrderByDescending(i=> i.Value).ToArray();
                 if (parameter.BindAsSequence) {
-                    var factsnr = parameter.Facts.length;
-                    var ix = 0;
-                    strvalue += "(";
-                    parameter.Facts.forEach(function (factstring: string) {
-                        var strval = TaxonomyContainer.GetFactValue(factstring);
-                        numericval += Number(strval);
-                        strvalue += strval;
-                        strvalue += ix < factsnr - 1 ? ", " : ")";
-                        ix++;
+                    var total = 0;
+                    parameter.FactItems.forEach(function (fi: Model.FactItem) {
+                        total += Number(fi.Value);
                     });
-                    strvalue = numericval.toFixed(2).toString() + "  " + strvalue;
-                } else {
-                    if (parameter.Facts.length == 1) {
-                        //strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
-                        strvalue = parameter.Value;
-                        if (IsNull(strvalue))
-                        {
-                            strvalue = TaxonomyContainer.GetFactValue(parameter.Facts[0]);
-                        }
-                    }
+                    parameter.Value = total.toFixed(2).toString();
                 }
-                parameter.Value = strvalue;
             });
         }
 
@@ -539,7 +533,6 @@
             var facts: Model.InstanceFact[] = app.instancecontainer.Instance.FactDictionary[factkey];
             if (!IsNull(facts) && facts.length > 0) {
                 var fact: Model.InstanceFact = facts.AsLinq<Model.InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
-                //var fact: Model.InstanceFact = facts[0];
                 if (IsNull(fact)) {
                     //Notify(Format("FactString {1} was not found in the instance", factstring));
                     return "";
@@ -547,11 +540,19 @@
                     return fact.Value;
                 }
             } else {
-
                 //Notify(Format("FactKey {0} was not found in the instance", factkey));
             }
             return "";
-            //return "";
+        }
+
+        public static GetFactValueByID(factid: number): string {
+            var fact: Model.InstanceFact = app.instancecontainer.Instance.Facts[factid];
+            if (fact != null)
+            {
+                return fact.Value;
+
+            }
+            return "";
         }
 
         public NavigateTo(cell: string) {

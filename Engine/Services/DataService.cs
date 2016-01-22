@@ -112,6 +112,14 @@ namespace Engine.Services
                                     result.Data = json;
 
                                 }
+                                if (part1 == "factindexes")
+                                {
+                                    var indexes_str = request.GetParameter("indexes").ToLower();
+                                    var indexes = indexes_str.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                                    var items = Engine.CurrentInstance.GetFactStringsByFactIdStrings(indexes);
+                                    var json = Utilities.Converters.ToJson(items);
+                                    result.Data = json;
+                                }
                             }
                         }
                         if (part0 == "layout")

@@ -136,7 +136,8 @@ namespace LogicalModel.Validation
                         result.ID = rule.ID;
                         var p = new SimpleValidationParameter();
                         p.Name = String.Format("{0}, context {1}", typeddimension.Domain, fact.ContextID);
-                        p.Facts.Add(fact.FactString);
+                        //p.Facts.Add(fact.FactString);
+                        p.FactIDs.Add(String.Format("I:{0}", fact.IX));
                         p.Value = member;
                  
                         result.Parameters.Add(p);
@@ -167,7 +168,8 @@ namespace LogicalModel.Validation
                     var p = new SimpleValidationParameter();
                     p.Name = "a";
                     p.Value = fact.Value;
-                    p.Facts.Add(fact.FactString);
+                    //p.Facts.Add(fact.FactString);
+                    p.FactIDs.Add(String.Format("I:{0}", fact.IX));
 
                     
                     var cellidlist = new List<String>();
@@ -175,10 +177,7 @@ namespace LogicalModel.Validation
                     {
                         cellidlist.Add(TaxonomyEngine.CurrentEngine.CurrentInstance.GetDynamicCellID(cell, fact));
                     }
-                    p.CellsOfFacts.Add(fact.FactString,
-                        cellidlist
-                        //new List<string>() { TaxonomyEngine.CurrentEngine.CurrentInstance.GetDynamicCellID(cellid, fact) }
-                        );
+                    p.Cells.Add(cellidlist);
                     result.Parameters.Add(p);
                     results.Add(result);
                 }

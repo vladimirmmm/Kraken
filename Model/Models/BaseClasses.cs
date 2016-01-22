@@ -86,7 +86,21 @@ namespace LogicalModel.Base
         public string DictFilters = "";
         public Func<string, bool> Filter = (s) => true;
         public List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
-
+        public bool HasDictFilter(string dictfilter) 
+        {
+            if (DictFilters.Contains(dictfilter)) 
+            {
+                return true;
+            }
+            foreach (var q in ChildQueries) 
+            {
+                if (q.HasDictFilter(dictfilter)) 
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public List<String> ToList(IQueryable<String> queryable) 
         {
             return queryable.Where(i => Filter(i)).ToList();

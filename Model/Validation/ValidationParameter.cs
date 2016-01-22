@@ -94,7 +94,7 @@ namespace LogicalModel.Validation
             }
         }
         private string _StringValue = "";
-        [JsonIgnore]
+        //[JsonIgnore]
         public string StringValue
         {
             get

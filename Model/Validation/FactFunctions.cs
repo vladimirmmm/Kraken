@@ -254,6 +254,19 @@ namespace LogicalModel.Validation
         //{
         //    return a == null;
         //}
+
+        public string XFI_Fact_Typed_Dimension_Value(ValidationParameter a, string qname) 
+        {
+            var result = "";
+            var fact = a.CurrentFacts.FirstOrDefault();
+            var dim = fact.Dimensions.FirstOrDefault(i => i.DimensionItem == qname);
+            if (dim != null) 
+            {
+                result = dim.DomainMember;
+            }
+            return result;
+        }
+
         public ValueWithTreshold IAF_abs(Object a)
         {
             var result = SplitValueThreshold(a);

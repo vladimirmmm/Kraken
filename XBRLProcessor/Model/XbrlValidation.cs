@@ -138,7 +138,7 @@ namespace XBRLProcessor.Model
             var sb = new StringBuilder();
             sb.AppendLine(logicalrule.DisplayText);
             sb.AppendLine(valueassertion.Test);
-            var rawval = logicalrule.DisplayText + "\r\n" + logicalrule.OriginalExpression + "\r\n" + hrule.ToHierarchyString(i => i.ToString()) + "\r\n";
+            var rawval = document.FileName + "\r\n" + document.LocalPath + "\r\n" + logicalrule.DisplayText + "\r\n" + logicalrule.OriginalExpression + "\r\n" + hrule.ToHierarchyString(i => i.ToString()) + "\r\n";
 
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
@@ -187,6 +187,7 @@ namespace XBRLProcessor.Model
                 var bsize = 500;
                 var isnonsequenced = !parameter.BindAsSequence;
                 var parameterfactdict = new HashSet<int>(parameterfacts);
+               
                 foreach (var fbq in mergedqueries)
                 {
 
@@ -194,7 +195,11 @@ namespace XBRLProcessor.Model
                     {
                         fbq.DictFilters = fbq.DictFilters.Replace(rbs, "");
                     }
-
+                    if (fbq.HasDictFilter("find:filingIndicator")) 
+                    {
+                        parameter.IsGeneral = true;
+                        parameter.StringValue = "filingindicators";
+                    }
                     //var datafactids = new List<int>();
                     //var facts = GetFacts(fbq, parameterfacts, parameterfactdict, datafactids);
                     
@@ -248,13 +253,13 @@ namespace XBRLProcessor.Model
                     qix++;
                 }
 
-
+            
                 if (multiplefactsfornonseqparameter > 0)
                 {
                     Utilities.Logger.WriteLine(String.Format("Rule {0} non-sequenced parameter {1} has multiple facts", logicalrule.ID, parameter.Name));
 
                 }
-                if (parameter.TaxFacts.Count == 0)
+                if (parameter.TaxFacts.Count == 0 && !parameter.IsGeneral)
                 {
                     Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has no facts", logicalrule.ID, parameter.Name));
 
@@ -262,27 +267,34 @@ namespace XBRLProcessor.Model
 
                 var type = LogicalModel.TypeEnum.Numeric;
                 var firsttaxfact = parameter.TaxFacts.FirstOrDefault(i => i.Count > 0);
-                if (firsttaxfact == null)
+                if (!parameter.IsGeneral)
                 {
-                    Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has no valid facts", logicalrule.ID, parameter.Name));
-                }
-                else
-                {
-                    var firstfactid = firsttaxfact.FirstOrDefault();
-                    var firstfactstring = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[firstfactid]);
-                    var firstfact = LogicalModel.Base.FactBase.GetFactFrom(firstfactstring);
+                    if (firsttaxfact == null)
+                    {
+                        Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has no valid facts", logicalrule.ID, parameter.Name));
+                    }
+                    else
+                    {
+                        var firstfactid = firsttaxfact.FirstOrDefault();
+                        var firstfactstring = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[firstfactid]);
+                        var firstfact = LogicalModel.Base.FactBase.GetFactFrom(firstfactstring);
 
-                    if (firstfact.Concept != null
-                        && (firstfact.Concept.Name.StartsWith("ei") || firstfact.Concept.Name.StartsWith("si")))
-                    {
-                        type = LogicalModel.TypeEnum.String;
+                        if (firstfact.Concept != null
+                            && (firstfact.Concept.Name.StartsWith("ei") || firstfact.Concept.Name.StartsWith("si")))
+                        {
+                            type = LogicalModel.TypeEnum.String;
+                        }
+                        if (firstfact.Concept != null
+                            && (firstfact.Concept.Name.StartsWith("di")))
+                        {
+                            type = LogicalModel.TypeEnum.Date;
+                        }
+                        parameter.Type = type;
                     }
-                    if (firstfact.Concept != null
-                        && (firstfact.Concept.Name.StartsWith("di")))
-                    {
-                        type = LogicalModel.TypeEnum.Date;
-                    }
-                    parameter.Type = type;
+                }
+                else 
+                {
+                    parameter.Type = LogicalModel.TypeEnum.String;
                 }
                 var sequence = parameter.BindAsSequence ? "Sequence" : "";
                 sb.AppendLine("parameter: " + name + " " + sequence);

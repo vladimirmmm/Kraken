@@ -121,10 +121,13 @@ namespace Model.InstanceModel
      
             this.TaxonomyModuleReference = this.SchemaRef.Href;
             this.FilingIndicators = this.XbrlFilingIndicators.Select(i=>i.Value).ToList();
+            var ix = 0;
             foreach (var xbrlfact in XbrlFacts) 
             {
                 var xbrlcontext = this.Contexts.FirstOrDefault(i => i.ID == xbrlfact.ContextRef);
                 var logicalfact = new InstanceFact();
+                logicalfact.IX = ix;
+                ix++;
                 logicalfact.UnitID = xbrlfact.UnitRef;
                 logicalfact.ContextID = xbrlfact.ContextRef;
                 logicalfact.Decimals = xbrlfact.Decimals;

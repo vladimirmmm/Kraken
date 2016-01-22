@@ -84,8 +84,14 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("iaf:sum", (Functions i) => i.IAF_sum(0));
             this.Syntax.AddFunction("iaf:max", (Functions i) => i.IAF_max(0));
             this.Syntax.AddFunction("iaf:min", (Functions i) => i.IAF_min(0));
+
+            this.Syntax.AddFunction("xfi:fact-typed-dimension-value", (Functions i) => i.XFI_Fact_Typed_Dimension_Value(null, ""));
+
+
             this.Syntax.AddFunction("xs:qname", (Functions i) => i.XS_QName(""));
             this.Syntax.AddFunction("xs:string", (Functions i) => i.XS_String(""));
+            this.Syntax.AddFunction("qname", (Functions i) => i.QName("",""));
+            this.Syntax.AddFunction("string", (Functions i) => i.String(""));
             this.Syntax.AddFunction("xs:boolean", (Functions i) => i.XS_Boolean(""));
             this.Syntax.AddFunction("matches", (Functions i) => i.RegexpMatches("",""));
             this.Syntax.AddFunction("not", (Functions i) => i.not(true));

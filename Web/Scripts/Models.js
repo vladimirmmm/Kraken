@@ -507,6 +507,7 @@ var Model;
             this.Facts = [];
             this.FilingIndicators = [];
             this.FactDictionary = null;
+            this.FactIDDictionary = null;
             this.DynamicCellDictionary = {};
             this.DynamicReportCells = {};
         }
@@ -532,10 +533,20 @@ var Model;
         return Label;
     })();
     Model.Label = Label;
+    var FactItem = (function () {
+        function FactItem() {
+            this.FactString = "";
+            this.Value = "";
+            this.Cells = [];
+        }
+        return FactItem;
+    })();
+    Model.FactItem = FactItem;
     var SimlpeValidationParameter = (function () {
         function SimlpeValidationParameter() {
-            this.Facts = [];
-            this.CellsOfFacts = {};
+            this.FactIDs = [];
+            this.Cells = [];
+            this.FactItems = [];
         }
         return SimlpeValidationParameter;
     })();

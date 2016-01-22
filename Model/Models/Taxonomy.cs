@@ -41,7 +41,8 @@ namespace LogicalModel
         public TaxonomyModule Module = new TaxonomyModule();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
-        public Dictionary<string, Concept> Concepts = new Dictionary<string,Concept>();
+        public Dictionary<string, Concept> Concepts = new Dictionary<string, Concept>();
+        public List<Element> DimensionItems = new List<Element>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
         public Dictionary<string, int> FactParts = new Dictionary<string, int>();
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
@@ -435,16 +436,7 @@ namespace LogicalModel
             return idlist;
         }
 
-        //public List<int> GetIDsFromStrings(string factkey)
-        //{
-        //    var idkey = GetFactIntKey(factkey);
-        //    var idlist = new List<int>();
-        //    foreach (var part in parts)
-        //    {
-        //        idlist.Add(FactParts[part]);
-        //    }
-        //    return idlist;
-        //}
+    
 
         public string GetFactStringKey(IEnumerable<int> idlist) 
         {

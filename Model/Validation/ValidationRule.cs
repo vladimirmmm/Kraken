@@ -181,6 +181,7 @@ namespace LogicalModel.Validation
                     p.Clear();
                     p.CurrentCells.Clear();
                     var itemfacts = new List<string>();
+                    var itemfactids = new List<int>();
                   
 
                     var sp = new SimpleValidationParameter();
@@ -193,22 +194,19 @@ namespace LogicalModel.Validation
                     if (p.BindAsSequence)
                     {
                         //set the cells
-                        itemfacts.AddRange(facts.Select(f => Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[f])));
-                        foreach (var tax_fact in itemfacts)
+                        itemfactids.AddRange(facts);
+                        //itemfacts.AddRange(facts.Select(f => Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[f])));
+                        foreach (var tax_fact in itemfactids)
                         {
-                            var taxfactkey = tax_fact;
+                            var cellist = new List<string>();
+                            sp.Cells.Add(cellist);
+                            var taxfactkey = Taxonomy.FactsIndex[tax_fact];
                             if (Taxonomy.HasFact(taxfactkey))
                             {
 
                                 var cells = Taxonomy.GetCellsOfFact(taxfactkey);
 
-
-                                //sp.Facts.Add(taxfactkey);
-                                if (!sp.CellsOfFacts.ContainsKey(taxfactkey))
-                                {
-                                    sp.CellsOfFacts.Add(taxfactkey, new List<string>());
-                                }
-                                sp.CellsOfFacts[taxfactkey].AddRange(cells);
+                                cellist.AddRange(cells);
                             }
                       
                         }
@@ -224,27 +222,27 @@ namespace LogicalModel.Validation
                         {
                             if (facts.Count == 1)
                             {
-                                var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[facts.FirstOrDefault()]);
-                                itemfacts.Add(fact);
-
+                                //var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[facts.FirstOrDefault()]);
+                                //itemfacts.Add(fact);
+                                var fact = facts.FirstOrDefault();
+                                var factkey = Taxonomy.FactsIndex[fact];
+                                itemfactids.Add(fact);
                                 //set the cells
                                 var cells = new List<String>();
-                                if (Taxonomy.HasFact(fact))
+                                sp.Cells.Add(cells); ;
+                                if (Taxonomy.HasFact(factkey))
                                 {
-                                    cells.AddRange(Taxonomy.GetCellsOfFact(fact));
+                                    cells.AddRange(Taxonomy.GetCellsOfFact(factkey));
                                 }
-
-                                if (!sp.CellsOfFacts.ContainsKey(fact))
-                                {
-                                    sp.CellsOfFacts.Add(fact, new List<string>());
-
-                                }
-                                sp.CellsOfFacts[fact].AddRange(cells);
+                                
                             }
                         }
                     }
 
-                    sp.Facts.AddRange(itemfacts);
+                    //sp.Facts.AddRange(itemfacts);
+                    sp.FactIDs.AddRange(itemfactids.Select(f => String.Format("T:{0}", f)));
+                    //p.FactIDs.Add(String.Format("I:{0}", fact.IX));
+                    //
 
                 }
             }
@@ -305,19 +303,64 @@ namespace LogicalModel.Validation
             var resultstoadd = new List<ValidationRuleResult>();
             var hastyped = false;
             var waschecked = false;
+            if (this.Parameters.Count == 1 && this.Parameters.FirstOrDefault().IsGeneral)//.StringValue == "filingindicators") 
+            {
+                if (allresults.Count == 1)
+                {
+                    var theresult = allresults.FirstOrDefault();
+                    resultstoremove.Add(theresult);
+                    foreach (var find in instance.FilingIndicators)
+                    {
+                        var findresult = new ValidationRuleResult();
+                        resultstoadd.Add(findresult);
+
+                        findresult.ID = theresult.ID;
+                        findresult.Parameters.AddRange(theresult.Parameters.Select(p => p.Copy()));
+                        findresult.Parameters.FirstOrDefault().Value = find;
+                    }
+                }
+                if (allresults.Count == 0) 
+                {
+                    foreach (var find in instance.FilingIndicators)
+                    {
+                        var findresult = new ValidationRuleResult();
+                        resultstoadd.Add(findresult);
+
+                        findresult.ID = this.ID;
+                        foreach (var p in Parameters)
+                        {
+                            var sp = new SimpleValidationParameter();
+                            sp.Name = p.Name;
+                            sp.BindAsSequence = p.BindAsSequence;
+                            sp.Value = p.StringValue;
+                            findresult.Parameters.Add(sp);
+                            if (p.IsGeneral && p.StringValue == "filingindicators") 
+                            {
+                                sp.Value = find;
+                            }
+                        }
+                    }
+                }
+            }
+
             foreach (var result in allresults)
             {
                 var facts = new List<FactBase>();
                 if (!waschecked)
                 {
                     waschecked = true;
-                    facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
+                    //facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
+                    facts = result.Parameters.SelectMany(i => i.FactIDs).Select(i => FactBase.GetFactFrom(
+                        Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[Utilities.Converters.FastParse(i.Substring(2))]
+                         ))).ToList();
                     hastyped = facts.Any(i => i.Dimensions.Any(j => j.IsTyped));
                 }
                 if (hastyped)
                 {
-                    facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
-
+                    //facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
+                    facts = result.Parameters.SelectMany(i => i.FactIDs).Select(i => FactBase.GetFactFrom(
+                          Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[Utilities.Converters.FastParse(i.Substring(2))]
+                           ))).ToList();
                     var resultfactgroup = result.FactGroup;
 
                     var firstfact = facts.FirstOrDefault();
@@ -354,25 +397,33 @@ namespace LogicalModel.Validation
                         dynamicresult.Message = result.Message;
                         foreach (var p in dynamicresult.Parameters)
                         {
-                            p.CellsOfFacts.Clear();
-                            for (var f_ix = 0; f_ix < p.Facts.Count; f_ix++) 
+                            p.Cells.Clear();
+                            //for (var f_ix = 0; f_ix < p.Facts.Count; f_ix++)
+                            for (var f_ix = 0; f_ix < p.FactIDs.Count; f_ix++) 
                             {
-                                var fact = p.Facts[f_ix];
+                         
+                                var factid = Utilities.Converters.FastParse( p.FactIDs[f_ix].Substring(2));
+                                var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[factid]);
+                                //var fact = p.Facts[f_ix];
                                 var newfactstring = fact.ToString();
                                 foreach (var key in typestoreplace.Keys) 
                                 {
                                     newfactstring = newfactstring.Replace(key, typestoreplace[key]);
                                 }
-                                p.Facts[f_ix] = newfactstring;
+                                //p.Facts[f_ix] = newfactstring;
+                                var instfact = GetFact(newfactstring, instance);
+                                var inst_ix = instfact == null ? -1 : instfact.IX;
+                                p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
                                 var newfact = FactBase.GetFactFrom(newfactstring);
                                 if (Taxonomy.HasFact(fact))
                                 {
-                                    p.CellsOfFacts.Add(newfactstring, new List<string>());
+                                    var cellist = new List<string>();
+                                    p.Cells.Add(cellist);
                                     var cells = Taxonomy.GetCellsOfFact(fact);
-                                    p.CellsOfFacts[newfactstring].Clear();
+                                    cellist.Clear();
                                     foreach (var cell in cells)
                                     {
-                                        p.CellsOfFacts[newfactstring].Add(instance.GetDynamicCellID(cell, newfact));
+                                        cellist.Add(instance.GetDynamicCellID(cell, newfact));
                                     }
                                 }
                              
@@ -396,7 +447,7 @@ namespace LogicalModel.Validation
         public void ValidateResult(ValidationRuleResult result, Instance instance)
         {
 
-            if (this.ID.Contains("eba_v1662_m")) 
+            if (this.ID.Contains("0008")) 
             { 
             }
             var HasAtLeastOneValue = false;
@@ -406,6 +457,12 @@ namespace LogicalModel.Validation
                 var rp = Parameters.FirstOrDefault(i => i.Name == p.Name);
                 if (rp.IsGeneral)
                 {
+                    if (rp.StringValue == "filingindicators" && rp.BindAsSequence) 
+                    {
+                       rp.StringValues = instance.FilingIndicators.ToArray();
+                       rp.StringValue = Utilities.Strings.ArrayToString(rp.StringValues);
+
+                    }
                     continue;
                 }
 
@@ -416,18 +473,31 @@ namespace LogicalModel.Validation
 
                     var facts = new List<InstanceFact>();
 
-                    foreach (var factstring in p.Facts)
+                    //foreach (var factstring in p.Facts)
+                    //{
+                    //    var factininstance = GetFact(factstring, instance);
+                    //    if (factininstance != null)
+                    //    {
+                    //        facts.Add(factininstance);
+                    //    }
+                    //}
+                    foreach (var factstring in p.FactIDs)
                     {
-                        var factininstance = GetFact(factstring, instance);
+                        var factininstance = instance.GetFactByIDString(factstring);
                         if (factininstance != null)
                         {
                             facts.Add(factininstance);
                         }
+                        else 
+                        {
+                        }
+
                     }
                     if (facts.Count > 0)
                     {
                         HasAtLeastOneValue = true;
                     }
+           
                     //facts = Getf p.Facts;
                     var instancefacts = facts; // GetInstanceFacts(facts);
                     //set the cells
@@ -450,16 +520,14 @@ namespace LogicalModel.Validation
                 }
                 else
                 {
-                    if (p.Facts.Count > 0)
+                    if (p.FactIDs.Count > 0)
                     {
-                        var fact = GetFact(p.Facts.FirstOrDefault(), instance);
+                        var fact = instance.GetFactByIDString(p.FactIDs.FirstOrDefault());
                         if (fact != null)
                         {
                             var instancefacts = new List<InstanceFact>() { fact };
                             var factkey = fact.GetFactKey();
-                            if (rp.Name == "a" && fact.Value == "325235044.81" && this.ID.Contains("0647")) 
-                            {
-                            }
+                     
                       
                             HasAtLeastOneValue = true;
                             InstanceFact realfact = instancefacts.FirstOrDefault();
@@ -484,7 +552,13 @@ namespace LogicalModel.Validation
 
 
                 }
-                if (String.IsNullOrEmpty(rp.StringValue.Trim())) { HasMissingValue = true; }
+                if (String.IsNullOrEmpty(rp.StringValue.Trim())) { 
+                    HasMissingValue = true;
+                }
+                if (!HasAtLeastOneValue) 
+                {
+ 
+                }
                 p.Value = rp.StringValue;
             }
 
@@ -587,11 +661,19 @@ namespace LogicalModel.Validation
     public class SimpleValidationParameter 
     {
         public string Name { get; set; }
+
         private List<String> _Facts = new List<String>();
         public List<String> Facts { get { return _Facts; } set { _Facts = value; } }
 
-        private Dictionary<string, List<String>> _CellsOfFacts = new Dictionary<string, List<string>>();
-        public Dictionary<string, List<String>> CellsOfFacts { get { return _CellsOfFacts; } set { _CellsOfFacts = value; } }
+        private List<String> _FactIDs = new List<String>();
+        public List<String> FactIDs { get { return _FactIDs; } set { _FactIDs = value; } }
+
+        //private Dictionary<string, List<String>> _CellsOfFacts = new Dictionary<string, List<string>>();
+        //public Dictionary<string, List<String>> CellsOfFacts { get { return _CellsOfFacts; } set { _CellsOfFacts = value; } }
+
+        private List<List<String>> _Cells = new List<List<string>>();
+        public List<List<String>> Cells { get { return _Cells; } set { _Cells = value; } }
+       
         public bool BindAsSequence { get; set; }
 
         public string Value { get; set; }
@@ -600,19 +682,21 @@ namespace LogicalModel.Validation
         internal void Clear()
         {
             this.Facts.Clear();
-            this.CellsOfFacts.Clear();
+            this.FactIDs.Clear();
+            this.Cells.Clear();
         }
 
 
         internal SimpleValidationParameter Copy()
         {
             var sp = new SimpleValidationParameter();
-            foreach (var item in _CellsOfFacts)
+            foreach (var item in _Cells)
             {
-                sp.CellsOfFacts.Add(item.Key, item.Value.ToArray().ToList());
+                sp.Cells.Add(item.ToArray().ToList());
 
             }
             sp.Facts.AddRange(_Facts);
+            sp.FactIDs.AddRange(_FactIDs);
             sp.Name = this.Name;
             sp.Value = this.Value;
             sp.BindAsSequence = this.BindAsSequence;
