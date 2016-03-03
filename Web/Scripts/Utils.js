@@ -1061,17 +1061,7 @@ function OuterHtml(item) {
     //return item.wrapAll('<div>').parent().html(); 
 }
 function Replace(text, texttoreplace, textwithreplace) {
-    //if (IsNull(texttoreplace)) { return text; }
-    //var regexp = new RegExp(texttoreplace, 'g');
-    //return text.replace(regexp, textwithreplace);
-    //return text.replace(Format("{0}", texttoreplace), textwithreplace);
     return text.split(texttoreplace).join(textwithreplace);
-    //var index = 0;
-    //do {
-    //    text = text.replace(texttoreplace, textwithreplace);
-    //}
-    //while ((index = text.indexOf(texttoreplace, index + 1)) > -1);
-    //return text;
 }
 function Bind_Replace(text, texttoreplace, textwithreplace) {
     //return text.replace(Format("{0}", texttoreplace), textwithreplace);

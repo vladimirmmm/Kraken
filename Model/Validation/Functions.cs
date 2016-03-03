@@ -224,6 +224,19 @@ namespace LogicalModel.Validation
             return !a;
         }
 
+        public int Day(DateTime dt) 
+        {
+            return dt.Day;
+        }
+        public int Month(DateTime dt)
+        {
+            return dt.Month;
+        }
+        public int Year(DateTime dt)
+        {
+            return dt.Year;
+        }
+
         public bool empty(object a)
         {
             return a==null;
@@ -245,6 +258,7 @@ namespace LogicalModel.Validation
             return -a;
         }
 
+        //public string Concat(params )
       
 
     }

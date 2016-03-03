@@ -285,7 +285,7 @@
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);
-                        TaxonomyContainer.SetValues(v);
+                        //TaxonomyContainer.SetValues(v);
 
                     }
 
@@ -370,8 +370,9 @@
                 BindX(parent, rule);
                 var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
                 var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
-                LoadPage(list, listpager, rule.Results, 0, 1);
+                //LoadPage(list, listpager, rule.Results, 0, 1);
 
+                LoadPageAsync(list, listpager, app.taxonomycontainer.ValidationResultServiceFunction, 0, 1, { ruleid: ruleid });
                 
 
                 $(".trimmed").click(function () {

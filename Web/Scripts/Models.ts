@@ -539,6 +539,7 @@
     export class SimlpeValidationParameter
     {
         public Name: string;
+        public Facts: string[] = [];
         public FactIDs: string[] = [];
         public Value: string;
         public Cells: string[][] = [];

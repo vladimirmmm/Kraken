@@ -90,24 +90,33 @@ namespace LogicalModel.Expressions
         public string TranslateComplex(Parser parser)
         {
             var sb = new StringBuilder();
-
-            for (int i = 0; i < SubExpressions.Count; i++)
+            if (Operators[0] == OperatorEnum.Cast && SubExpressions.Count==2)
             {
-                if (i == 0)
+                if (SubExpressions[1].Value == "xs:string") 
                 {
-                    //sb.Append(parser.Syntax.ExpressionContainer_Left);
+                    return "String.Format(\"{0}\"," + SubExpressions[1].Value + ")";
                 }
-                var subexpr = SubExpressions[i];
-                sb.Append(parser.Translate(subexpr));
-                if (i < SubExpressions.Count - 1)
+            }
+            else
+            {
+                for (int i = 0; i < SubExpressions.Count; i++)
                 {
-                    var opstring = parser.Syntax.CodeItemSeparator + parser.Syntax.Operators[Operators[i]] + parser.Syntax.CodeItemSeparator;
-                    sb.Append(opstring);
-                }
-                else
-                {
+                    if (i == 0)
+                    {
+                        //sb.Append(parser.Syntax.ExpressionContainer_Left);
+                    }
+                    var subexpr = SubExpressions[i];
+                    sb.Append(parser.Translate(subexpr));
+                    if (i < SubExpressions.Count - 1)
+                    {
+                        var opstring = parser.Syntax.CodeItemSeparator + parser.Syntax.Operators[Operators[i]] + parser.Syntax.CodeItemSeparator;
+                        sb.Append(opstring);
+                    }
+                    else
+                    {
 
-                    //sb.Append(parser.Syntax.ExpressionContainer_Right);
+                        //sb.Append(parser.Syntax.ExpressionContainer_Right);
+                    }
                 }
             }
             return sb.ToString();

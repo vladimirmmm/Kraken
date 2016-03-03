@@ -8,6 +8,7 @@ var Control;
             this.ConceptValues = [];
             this.TableStructure = null;
             this.CurrentFacts = [];
+            this.CurrentValidationResults = [];
             this.LPageSize = 10;
             this.PageSize = 10;
             this.s_fact_id = "T_Facts";
@@ -31,6 +32,7 @@ var Control;
             this.ui_factdetail = null;
             this.ui_vruledetail = null;
             this.FactServiceFunction = null;
+            this.ValidationResultServiceFunction = null;
             this.s_concept_selector = "#" + this.s_concept_id;
             this.s_hierarchy_selector = "#" + this.s_hierarchy_id;
             this.s_fact_selector = "#" + this.s_fact_id;
@@ -142,6 +144,18 @@ var Control;
                 AjaxRequest("Taxonomy/Facts", "get", "json", p, function (data) {
                     if (!IsNull(data.Items)) {
                         me.CurrentFacts = data.Items;
+                        fwc.Callback(data);
+                    }
+                }, null);
+            });
+            me.ValidationResultServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
+                var p = args[0];
+                AjaxRequest("Instance/ValidationResults", "get", "json", p, function (data) {
+                    if (!IsNull(data.Items)) {
+                        me.CurrentValidationResults = data.Items;
+                        me.CurrentValidationResults.forEach(function (v) {
+                            TaxonomyContainer.SetValues(v);
+                        });
                         fwc.Callback(data);
                     }
                 }, null);
@@ -370,21 +384,28 @@ var Control;
                 var rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
                 var parent = $(s_parent_selector, me.ui_vruledetail);
                 BindX(parent, rule);
+                /*
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
-                    var results = data;
+                    var results = <Model.ValidationRuleResult[]>data;
+
                     var eventhandlers = {
-                        onloading: function (data) {
-                            data.forEach(function (ruleresult) {
+                        onloading: (data: Model.ValidationRuleResult[]) => {
+                            data.forEach(function (ruleresult: Model.ValidationRuleResult) {
                                 TaxonomyContainer.SetValues(ruleresult);
                             });
                         }
                     };
+
                     var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
                     var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
                     LoadPage(list, listpager, results, 0, 1, eventhandlers);
-                }, function (error) {
-                    console.log(error);
-                });
+
+
+                }, function (error) { console.log(error); });
+                */
+                var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
+                var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
+                LoadPageAsync(list, listpager, app.taxonomycontainer.ValidationResultServiceFunction, 0, 1, { ruleid: ruleid, full: 1 });
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
                         $(this).removeClass("hmax30");
@@ -422,8 +443,9 @@ var Control;
         TaxonomyContainer.SetValues = function (ruleresult) {
             ruleresult.Parameters.forEach(function (parameter) {
                 parameter.FactItems = IsNull(parameter.FactItems) ? [] : parameter.FactItems;
-                parameter.FactIDs.forEach(function (factstring, ix) {
+                parameter.FactIDs.forEach(function (factrefrence, ix) {
                     var fi = new Model.FactItem();
+                    var factstring = parameter.Facts[ix];
                     var strval = TaxonomyContainer.GetFactValue(factstring);
                     fi.FactString = factstring;
                     fi.Value = strval;

@@ -544,6 +544,7 @@ var Model;
     Model.FactItem = FactItem;
     var SimlpeValidationParameter = (function () {
         function SimlpeValidationParameter() {
+            this.Facts = [];
             this.FactIDs = [];
             this.Cells = [];
             this.FactItems = [];

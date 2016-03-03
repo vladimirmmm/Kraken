@@ -421,7 +421,14 @@ namespace LogicalModel
             var sb = new StringBuilder();
             foreach (var part in parts)
             {
-                sb.Append(this.FactParts[part] + ",");
+                if (this.FactParts.ContainsKey(part))
+                {
+                    sb.Append(this.FactParts[part] + ",");
+                }
+                else 
+                {
+                    Logger.WriteLine(String.Format("FactPart {0} was not found! Key: {1}", part, key));
+                }
             }
             return sb.ToString();
         }

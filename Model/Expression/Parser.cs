@@ -314,6 +314,8 @@ namespace LogicalModel.Expressions
     {
         Unknown,
 
+        Cast,
+
         Addition,
         Subtraction,
         Multiplication,

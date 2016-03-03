@@ -35,6 +35,8 @@ namespace LogicalModel.Expressions
 
 
             this.Syntax.Operators.AddItem(OperatorEnum.Unknown, " !!unknown!! ");
+
+            this.Syntax.Operators.AddItem(OperatorEnum.Cast, " as ");
             this.Syntax.Operators.AddItem(OperatorEnum.Addition, " + ");
             this.Syntax.Operators.AddItem(OperatorEnum.And, " & ");
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " && ");
@@ -101,6 +103,11 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("abs", (Functions i) => i.abs(0));
             this.Syntax.AddFunction("sum", (Functions i) => i.sum(0));
             this.Syntax.AddFunction("max", (Functions i) => i.max(0));
+
+            this.Syntax.AddFunction("concat", (Functions i) => string.Concat(new string[] { }));
+            this.Syntax.AddFunction("day-from-date", (Functions i) => i.Day(DateTime.Now));
+            this.Syntax.AddFunction("month-from-date", (Functions i) => i.Day(DateTime.Now));
+            this.Syntax.AddFunction("year-from-date", (Functions i) => i.Day(DateTime.Now));
         }
 
         public override String Translate(Expression expr) 

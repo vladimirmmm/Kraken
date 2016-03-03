@@ -229,7 +229,6 @@ var Control;
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);
-                        Control.TaxonomyContainer.SetValues(v);
                     }
                 });
                 var eventhandlers = {
@@ -294,7 +293,8 @@ var Control;
                 BindX(parent, rule);
                 var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
                 var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
-                LoadPage(list, listpager, rule.Results, 0, 1);
+                //LoadPage(list, listpager, rule.Results, 0, 1);
+                LoadPageAsync(list, listpager, app.taxonomycontainer.ValidationResultServiceFunction, 0, 1, { ruleid: ruleid });
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
                         $(this).removeClass("hmax30");

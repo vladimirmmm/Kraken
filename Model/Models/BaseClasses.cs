@@ -626,7 +626,10 @@ namespace LogicalModel.Base
         private string _FileName = "";
         public string FileName { get { return _FileName; } set { _FileName = value; } }
 
-
+        public override string ToString()
+        {
+            return String.Format("{0} - {1}", this.GetType().Name, this.ID);
+        }
     }
     [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
     public class QualifiedName:Identifiable

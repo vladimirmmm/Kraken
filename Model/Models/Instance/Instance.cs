@@ -46,6 +46,8 @@ namespace LogicalModel
         private List<InstanceFact> _Facts = new List<InstanceFact>();
         public List<InstanceFact> Facts { get { return _Facts; } set { _Facts = value; } }
 
+        public List<ValidationRuleResult> ValidationRuleResults = new List<ValidationRuleResult>();
+
         private Dictionary<string, List<InstanceFact>> _FactDictionary = new Dictionary<string, List<InstanceFact>>();
         [JsonProperty]
         public Dictionary<string, List<InstanceFact>> FactDictionary { get { return _FactDictionary; } set { _FactDictionary = value; } }
@@ -173,7 +175,7 @@ namespace LogicalModel
         }
         public virtual List<ValidationRuleResult> Validate(List<String> messages) 
         {
-            var results = new List<ValidationRuleResult>();
+            ValidationRuleResults.Clear();
             var sb_invalidfacts = new StringBuilder();
             var factwithoutcells = new List<String>();
             var invalidfacts = new List<String>();
@@ -225,8 +227,8 @@ namespace LogicalModel
                     invalidfacts.Add(fact.FactKey);
                     sb_invalidfacts.Append(String.Format("<{0}|{1}|{2}>, ", fact.Concept.FullName, fact.ContextID, fact.Value));
                 }
-                TaxValidation.ValidateByTypedDimension(fact, results, invalidtypevalues);
-                TaxValidation.ValidateByConcept(fact, results, invalidtypevalues);
+                TaxValidation.ValidateByTypedDimension(fact, ValidationRuleResults, invalidtypevalues);
+                TaxValidation.ValidateByConcept(fact, ValidationRuleResults, invalidtypevalues);
             }
           
             var reports = reportsdictionary.Keys.OrderBy(i=>i).ToList();
@@ -278,9 +280,9 @@ namespace LogicalModel
                             failedrules++;
                         }
                     }
-                    results.AddRange(ruleresults);
+                    ValidationRuleResults.AddRange(ruleresults);
                 }
-                results = results.OrderBy(i => i.HasAllFind).ThenBy(i => i.ID).ToList();
+                ValidationRuleResults = ValidationRuleResults.OrderBy(i => i.HasAllFind).ThenBy(i => i.ID).ToList();
                 AddMessage(messages, String.Format("Nr of validation rules not passed: {0}", failedrules));
                 
                 var val_console = String.Format("Validation rules not passed: \r\n{0}", rsb.ToString());
@@ -301,7 +303,7 @@ namespace LogicalModel
             AddMessage(messages, String.Format("Nr of missing Filing Indicators: {0}\r\n", MissingFilingindicators.Count));
             AddMessage(messages, String.Format("Missing Filing Indicators: {0}\r\n", sb_missingfind.ToString()));
 
-            return results;
+            return ValidationRuleResults;
         }
 
         public virtual void Save(string filepath) 

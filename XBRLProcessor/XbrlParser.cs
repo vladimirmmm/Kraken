@@ -33,6 +33,8 @@ namespace XBRLProcessor
             this.Syntax.CaseSensitive = false;
 
 
+            this.Syntax.Operators.AddItem(OperatorEnum.Cast, " cast as ");
+
             this.Syntax.Operators.AddItem(OperatorEnum.Unknown, " !!unknown!! ");
             this.Syntax.Operators.AddItem(OperatorEnum.Addition, " + ");
             this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
@@ -102,7 +104,7 @@ namespace XBRLProcessor
                 ix++;
             }
             fixedstring = fixedstring.Replace("@ ", "@-").Replace(" @", "-@");
-            fixedstring = fixedstring.Replace(" ", "");
+            //fixedstring = fixedstring.Replace(" ", "");
             fixedstring = fixedstring.Replace("@-", "@ ").Replace("-@", " @");
 
             for (int i = 0; i < strings.Count; i++) 
@@ -369,17 +371,21 @@ namespace XBRLProcessor
         {
             var xbrlparser = new XbrlFormulaParser();
             var csparser = new CSharpParser();
-            var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum((iaf:max((iaf:sum((iaf:numeric-multiply($b, 0.18), iaf:numeric-multiply($c, 0.18), iaf:numeric-multiply($d, 0.12), iaf:numeric-multiply((iaf:sum(($e, $f, iaf:numeric-multiply($g, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($h, $i, iaf:numeric-multiply($j, 0.035)))), 0.12), iaf:numeric-multiply($k, 0.18), iaf:numeric-multiply($l, 0.15), iaf:numeric-multiply($m, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($n, 0.18), iaf:numeric-multiply($o, 0.18), iaf:numeric-multiply($p, 0.12), iaf:numeric-multiply((iaf:sum(($q, $r, iaf:numeric-multiply($s, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($t, $u, iaf:numeric-multiply($v, 0.035)))), 0.12), iaf:numeric-multiply($w, 0.18), iaf:numeric-multiply($x, 0.15), iaf:numeric-multiply($y, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($z, 0.18), iaf:numeric-multiply($aa, 0.18), iaf:numeric-multiply($bb, 0.12), iaf:numeric-multiply((iaf:sum(($cc, $dd, iaf:numeric-multiply($ee, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($ff, $gg, iaf:numeric-multiply($hh, 0.035)))), 0.12), iaf:numeric-multiply($ii, 0.18), iaf:numeric-multiply($jj, 0.15), iaf:numeric-multiply($kk, 0.12))), 0))))), 3))");
+            var expr3 = this.ParseExpression("concat(month-from-date($a), \"-\", day-from-date($a)) = (\"3-31\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"6-30\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"9-30\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"12-31\" cast as xs:string)");
 
             var item3_xbrl = xbrlparser.Translate(expr3);
-
+            var v4 = new LogicalModel.Validation.ValidationRule();
+            v4.RootExpression = expr3;
+            v4.ID = "v3";
+            var item4_xbrl = xbrlparser.Translate(expr3);
+            var item4_cs = csparser.GetFunction(v4);
         }
         
         public void Test()
         {
             var xbrlparser = new XbrlFormulaParser();
             var csparser = new CSharpParser();
-            var expr1 = this.ParseExpression("if ($AccountingStandard = 'IFRS') then ($a = xs:QName('eba_AS:x2')) else (true())");
+            var expr1 = this.ParseExpression(" $a = (xs:QName('eba_NC:A'), xs:QName('eba_NC:B'))");
             var expr2 = this.ParseExpression("if ($ReportingLevel = 'con') then ($a = xs:QName('eba_SC:x7')) else (true())");
             var expr3 = this.ParseExpression("iaf:numeric-equal($a, iaf:numeric-divide((iaf:sum((iaf:max((iaf:sum((iaf:numeric-multiply($b, 0.18), iaf:numeric-multiply($c, 0.18), iaf:numeric-multiply($d, 0.12), iaf:numeric-multiply((iaf:sum(($e, $f, iaf:numeric-multiply($g, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($h, $i, iaf:numeric-multiply($j, 0.035)))), 0.12), iaf:numeric-multiply($k, 0.18), iaf:numeric-multiply($l, 0.15), iaf:numeric-multiply($m, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($n, 0.18), iaf:numeric-multiply($o, 0.18), iaf:numeric-multiply($p, 0.12), iaf:numeric-multiply((iaf:sum(($q, $r, iaf:numeric-multiply($s, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($t, $u, iaf:numeric-multiply($v, 0.035)))), 0.12), iaf:numeric-multiply($w, 0.18), iaf:numeric-multiply($x, 0.15), iaf:numeric-multiply($y, 0.12))), 0)), iaf:max((iaf:sum((iaf:numeric-multiply($z, 0.18), iaf:numeric-multiply($aa, 0.18), iaf:numeric-multiply($bb, 0.12), iaf:numeric-multiply((iaf:sum(($cc, $dd, iaf:numeric-multiply($ee, 0.035)))), 0.15), iaf:numeric-multiply((iaf:sum(($ff, $gg, iaf:numeric-multiply($hh, 0.035)))), 0.12), iaf:numeric-multiply($ii, 0.18), iaf:numeric-multiply($jj, 0.15), iaf:numeric-multiply($kk, 0.12))), 0))))), 3))");
 

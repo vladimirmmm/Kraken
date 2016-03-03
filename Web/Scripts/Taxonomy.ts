@@ -8,6 +8,7 @@
 
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
         public CurrentFacts: Model.KeyValuePair<string, string[]>[] = [];
+        public CurrentValidationResults: Model.ValidationRuleResult[] = [];
         public LPageSize: number = 10;
         public PageSize: number = 10;
 
@@ -38,6 +39,7 @@
         private ui_vruledetail: Element = null;
 
         private FactServiceFunction: General.FunctionWithCallback = null;
+        public ValidationResultServiceFunction: General.FunctionWithCallback = null;
 
         constructor() {
             this.s_concept_selector = "#" + this.s_concept_id;
@@ -162,6 +164,21 @@
                         function (data: DataResult) {
                             if (!IsNull(data.Items)) {
                                 me.CurrentFacts = <Model.KeyValuePair<string, string[]>[]>data.Items;
+                                fwc.Callback(data);
+                            }
+                        }, null);
+                });
+            me.ValidationResultServiceFunction = new General.FunctionWithCallback(
+                (fwc: General.FunctionWithCallback, args: any) => {
+                    var p = <Model.Dictionary<any>>args[0];
+                    AjaxRequest("Instance/ValidationResults", "get", "json", p,
+                        function (data: DataResult) {
+                            if (!IsNull(data.Items)) {
+                                me.CurrentValidationResults = <Model.ValidationRuleResult[]>data.Items;
+                                me.CurrentValidationResults.forEach((v) => {
+                                    TaxonomyContainer.SetValues(v);
+                                });
+
                                 fwc.Callback(data);
                             }
                         }, null);
@@ -438,7 +455,7 @@
                 var parent = $(s_parent_selector, me.ui_vruledetail);
 
                 BindX(parent, rule);
-
+                /*
                 AjaxRequest("Taxonomy/Validationrule", "get", "json", { id: ruleid }, function (data) {
                     var results = <Model.ValidationRuleResult[]>data;
 
@@ -454,7 +471,12 @@
                     var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
                     LoadPage(list, listpager, results, 0, 1, eventhandlers);
 
+
                 }, function (error) { console.log(error); });
+                */
+                var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
+                var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
+                LoadPageAsync(list, listpager, app.taxonomycontainer.ValidationResultServiceFunction, 0, 1, { ruleid: ruleid, full:1 });
 
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
@@ -501,8 +523,9 @@
             ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {    
 
                 parameter.FactItems = IsNull(parameter.FactItems) ? [] : parameter.FactItems;
-                parameter.FactIDs.forEach(function (factstring: string, ix:number) {
+                parameter.FactIDs.forEach(function (factrefrence: string, ix:number) {
                     var fi = new Model.FactItem();
+                    var factstring = parameter.Facts[ix];
                     var strval = TaxonomyContainer.GetFactValue(factstring);
                     fi.FactString = factstring;
                     fi.Value = strval;

@@ -120,6 +120,52 @@ namespace Engine.Services
                                     var json = Utilities.Converters.ToJson(items);
                                     result.Data = json;
                                 }
+                                if (part1 == "validationresults") 
+                                {
+                                    var page = int.Parse(request.GetParameter("page"));
+                                    var pagesize = int.Parse(request.GetParameter("pagesize"));
+                                    var ruleid = request.GetParameter("ruleid").ToLower();
+                                    var full = request.GetParameter("full").ToLower();
+
+                                    var taxonomy = AppEngine.Features.Engine.CurrentTaxonomy;
+                                    var instance = AppEngine.Features.Engine.CurrentInstance;
+
+                                    var rs = new DataResult<LogicalModel.Validation.ValidationRuleResult>();
+                                    var query = Engine.CurrentInstance.ValidationRuleResults.AsQueryable();
+                                    if (full == "1")
+                                    { 
+                                        var rule= taxonomy.ValidationRules.FirstOrDefault(i=>i.ID.Equals(ruleid,StringComparison.OrdinalIgnoreCase));
+                                        query = rule.GetAllInstanceResults(instance).AsQueryable();
+                                    }
+                                    query = query.Where(i => i.ID.Equals(ruleid, StringComparison.OrdinalIgnoreCase));
+                                    //TODO
+                              
+                                    var idlist = new List<int>();
+
+
+                                    rs.Items = query.Skip(pagesize * page).Take(pagesize).ToList();
+                                    foreach (var item in rs.Items) 
+                                    {
+                                        foreach (var p in item.Parameters) 
+                                        {
+                                            foreach (var fid in p.FactIDs)
+                                            {
+                                                var fact = instance.GetFactBaseByIndexString(fid);
+                                                p.Facts.Add(fact.FactString);
+                                            }
+                                        }
+                                    }
+                                    rs.Total = query.Count();
+                                    var json = Utilities.Converters.ToJson(rs);
+                                    foreach (var item in rs.Items)
+                                    {
+                                        foreach (var p in item.Parameters)
+                                        {
+                                            p.Facts.Clear();
+                                        }
+                                    }
+                                    result.Data = json;
+                                }
                             }
                         }
                         if (part0 == "layout")
