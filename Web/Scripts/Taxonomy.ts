@@ -627,6 +627,7 @@
                             
                             var subhier = Model.Hierarchy.FirstOrDefault(hier, (i:Model.Hierarchy<Model.QualifiedItem>) =>i.Item.Content == concept.Domain.Content)
                             var items = Model.Hierarchy.ToArray(IsNull(subhier) ? hier : subhier);
+                            if (subhier == hier) { removeFromArray(items, hier.Item);}
 
                             items.forEach(function (item, index) {
                                 Model.QualifiedItem.Set(item);
@@ -654,6 +655,59 @@
                 return clkp.OptionsHTML;
             }
             return "";
+        }
+
+        public GetMembersOfHierarchy(layoutrole: string): string
+        {
+            Log("layoutrole: " + layoutrole);
+            var role = TextBetween(layoutrole, "Role:", ";");
+            var axis = TextBetween(layoutrole, "Axis:", ";");
+            var h = this.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>().FirstOrDefault(i=> i.Item.Role == role);
+            
+            if (!IsNull(h)) {
+                Log("hierarchy found for DDL!");
+                var items = Model.Hierarchy.GetAxis(h, axis);
+                var clkp = new Model.ConceptLookUp();
+
+                items.forEach(function (h, index) {
+                    var item = h;
+                    Model.QualifiedItem.Set(item);
+                    if (item.Name != "x0") {
+                        var v = {};
+                        var id = Format("{0}:{1}", item.Namespace, item.Name);
+                        clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                    }
+                });
+                clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                return clkp.OptionsHTML;
+            }
+            return null;
+        }
+
+        public GetMembersOfDomainOptions(dom: string): string
+        {
+            Log("dom: " + dom);
+            var h = this.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>().FirstOrDefault(i=> i.Item.Label.LocalID == dom);
+            if (!IsNull(h))
+            {
+                Log("hierarchy found for DDL!");
+                var items = h.Children.length > 0 ? h.Children[0].Children:h.Children;
+                var clkp = new Model.ConceptLookUp();
+
+                items.forEach(function (h, index) {
+                    var item = h.Item;
+                    Model.QualifiedItem.Set(item);
+                    if (item.Name != "x0") {
+                        var v = {};
+                        var id = Format("{0}:{1}", item.Namespace, item.Name);
+                        clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                    }
+                });
+                clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                return clkp.OptionsHTML;
+            }
+            return null;
+
         }
     }
 }

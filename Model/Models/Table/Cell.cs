@@ -35,6 +35,12 @@ namespace LogicalModel
         [DefaultValue(false)]
         public bool IsKey { get { return _IsKey; } set { _IsKey = value; } }
 
+        private string _Role = "";
+        [JsonProperty]
+        [DefaultValue("")]
+        public string Role { get { return _Role; } set { _Role = value; } }
+
+
         public Hierarchy<LayoutItem> LayoutRow = null;
         public Hierarchy<LayoutItem> LayoutColumn = null;
      

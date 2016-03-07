@@ -194,6 +194,7 @@ namespace XBRLProcessor.Model
                         if (member != null)
                         {
                             li.Role = member.LinkRole;
+                            li.RoleAxis = member.Axis;
 
                         }
                     }

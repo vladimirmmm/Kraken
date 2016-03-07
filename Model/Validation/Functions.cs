@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -194,13 +195,29 @@ namespace LogicalModel.Validation
             if ((object)nsitem == null) { return ""; }
             return string.Format("{0}:{1}", nsitem.Key, n);
         }
-        public string String(String a)
+        public string String(Object a)
         {
-            return a;
+            return string.Format("{0}", a);
+        }
+        public string String(ValidationParameter a)
+        {
+            return a.StringValue;
         }
         public string XS_String(String a)
         {
             return a;
+        }
+        public DateTime XS_Date(object a)
+        {
+            return (DateTime)a;
+        }
+        public DateTime XS_Date(String a)
+        {
+            return Utilities.Converters.StringToDateTime(a, "yyyy-MM-dd");
+        }
+        public DateTime XS_Date(ValidationParameter a)
+        {
+            return a.DateValue;
         }
         public bool XS_Boolean(String a)
         {
@@ -223,7 +240,18 @@ namespace LogicalModel.Validation
         {
             return !a;
         }
-
+        public int Day(ValidationParameter dt)
+        {
+            return dt.DateValue.Day;
+        }
+        public int Month(ValidationParameter dt)
+        {
+            return dt.DateValue.Month;
+        }
+        public int Year(ValidationParameter dt)
+        {
+            return dt.DateValue.Year;
+        }
         public int Day(DateTime dt) 
         {
             return dt.Day;
@@ -236,7 +264,39 @@ namespace LogicalModel.Validation
         {
             return dt.Year;
         }
+        public int Day(DateTime? dt)
+        {
+            return dt.HasValue ? dt.Value.Day : 0;
+        }
+        public int Month(DateTime? dt)
+        {
+            return dt.HasValue ? dt.Value.Month : 0;
+        }
+        public int Year(DateTime? dt)
+        {
+            return dt.HasValue ? dt.Value.Year : 0;
+        }
+        public int StringLength(string s) 
+        {
+            return s.Length;
+        }
+        public string Substring(ValidationParameter s, decimal startix, decimal count) 
+        {
+            return s.StringValue.Substring((int)startix, (int)count);
+        }
+        public int StringLength(ValidationParameter s)
+        {
+            return s.StringValue.Length;
+        }
+        public string Substring(string s, decimal startix, decimal count)
+        {
+            return s.Substring((int)startix, (int)count);
+        }
 
+        public string Concat(params object[] args) 
+        {
+            return string.Concat(args);
+        }
         public bool empty(object a)
         {
             return a==null;
@@ -244,6 +304,14 @@ namespace LogicalModel.Validation
         public decimal abs(decimal a)
         {
             return a < 0 ? -a : a;
+        }
+        public decimal floor(decimal a)
+        {
+            return Math.Floor(a);
+        }
+        public decimal floor(ValidationParameter a)
+        {
+            return Math.Floor(a.DecimalValue);
         }
         public decimal sum(params decimal[] parameters) 
         {
@@ -257,7 +325,28 @@ namespace LogicalModel.Validation
         {
             return -a;
         }
-
+        public decimal Number(object p) 
+        {
+            var n = string.Format("{0}", p);
+            if (Utilities.Strings.IsDigitsOnly(n, '.', '-')) 
+            {
+                return decimal.Parse(n, new NumberFormatInfo() { NumberDecimalSeparator = "." });
+            }
+            return 0;
+        }
+        public string Translate(string text, string characterstosearch, string charactersreplacement) 
+        {
+            if (charactersreplacement.Length == characterstosearch.Length) 
+            {
+                for (int i = 0; i < characterstosearch.Length; i++) 
+                {
+                    var a = characterstosearch[i];
+                    var b = charactersreplacement[i];
+                    text = text.Replace(a, b);
+                }
+            }
+            return text;
+        }
         //public string Concat(params )
       
 

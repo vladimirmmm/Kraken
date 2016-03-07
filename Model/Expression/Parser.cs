@@ -31,7 +31,7 @@ namespace LogicalModel.Expressions
 
         public void AddFunction<TFunctionContainer>(String Name, System.Linq.Expressions.Expression<Func<TFunctionContainer, Object>> expr) where TFunctionContainer : class
         {
-            this.FunctionMap.Add(Name, "functions." + Utilities.Linq.GetMemberName<TFunctionContainer>(expr));
+            this.FunctionMap.Add(Name.ToLower(), "functions." + Utilities.Linq.GetMemberName<TFunctionContainer>(expr));
         }
 
         //public void AddFunction(String Name, System.Linq.Expressions.LambdaExpression expr)
@@ -87,8 +87,11 @@ namespace LogicalModel.Expressions
                     if (expression.SubExpressions.Count > 1)
                     {
                     }
-                    paramv = Translate(expression.SubExpressions.FirstOrDefault());
-                    sb.Append(paramv + delimiter);
+                    if (expression.SubExpressions.Count > 0)
+                    {
+                        paramv = Translate(expression.SubExpressions.FirstOrDefault());
+                        sb.Append(paramv + delimiter);
+                    }
                     handled = true;
                 }
 

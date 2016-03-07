@@ -35,6 +35,9 @@ namespace LogicalModel
         private string _Role = "";
         public string Role { get { return _Role; } set { _Role = value; } }
 
+        private string _RoleAxis = "";
+        public string RoleAxis { get { return _RoleAxis; } set { _RoleAxis = value; } }
+
         private string _ID = "";
         public string ID { get { return _ID; } set { _ID = value; } }
     
@@ -148,6 +151,7 @@ namespace LogicalModel
             this.Label = item.Label;
             this.Order = item.Order;
             this.Role = item.Role;
+            this.RoleAxis = item.RoleAxis;
         }
 
 

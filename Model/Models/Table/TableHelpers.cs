@@ -244,6 +244,7 @@ namespace LogicalModel
                     if (rolenode != null)
                     {
                         aspect.Item.Role = rolenode.Item.Role;
+                        aspect.Item.RoleAxis = rolenode.Item.RoleAxis;
 
                     }
                     targetAxisnode.Children.Insert(ix, aspect);

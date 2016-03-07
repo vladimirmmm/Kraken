@@ -36,12 +36,13 @@ var requests: General.KeyValue[] = [];
 
 function GetXbrlCellEditor(target: Element) {
     var typeclass = "";
-
-    var factitems = _Attribute(target, "factstring").split(",");
+    var factstring = _Attribute(target, "factstring");
+    var factitems = factstring.split(",");
     var concept = "";
     if (factitems[0].indexOf("[") == -1) {
         concept = factitems[0];
     }
+
     if (concept.indexOf(":ei") > -1) {
         typeclass = "ei";
     }
@@ -64,6 +65,21 @@ function GetXbrlCellEditor(target: Element) {
             (i: JQuery, val: any) => { i.val(val); });
 
     }
+
+    if (IsNull(concept))
+    {
+        var fact = Model.FactBase.GetFactFromString(factstring);
+        Log("NullConcept")
+        if (fact.Dimensions.length == 1 && !fact.Dimensions[0].IsTyped)
+        {
+            Log("NullConcept >>")
+
+            var role = _Attribute(target, "role");
+            editor = new Editor(Format('<select class="celleditor">{0}</select>', app.taxonomycontainer.GetMembersOfHierarchy(role)),
+                (i: JQuery) => i.val(),
+                (i: JQuery, val: any) => { i.val(val); });
+        }
+    }
     if (typeclass == "di") {
         editor = new Editor('<input type="text" class="celleditor datepicker" value="" />',
             (i: JQuery) => {
@@ -81,7 +97,7 @@ function GetXbrlCellEditor(target: Element) {
         editor.CustomTrigger = () => { };
 
     }
-    if (typeclass == "") {
+    if (typeclass == "" && !IsNull(concept)) {
         editor = new Editor('<input type="text" class="celleditor " value="" />',
             (i: JQuery) => i.val(),
             (i: JQuery, val: any) => i.val(val));

@@ -254,7 +254,29 @@ namespace LogicalModel.Validation
         //{
         //    return a == null;
         //}
+        public int Count(ValidationParameter a) 
+        {
+            return a.CurrentFacts.Count;
+        }
+        public Period XFI_Period(ValidationParameter a)
+        {
+            var fact = a.CurrentFacts.FirstOrDefault();
+            return fact.Period;
+        }
+        public DateTime? XFI_Period_Instant(Period p) 
+        {
+            return p.Instant;
+        }
+        public Entity XFI_Entity(ValidationParameter a) 
+        {
+            var fact = a.CurrentFacts.FirstOrDefault();
 
+            return fact.Entity;
+        }
+        public string XFI_Entity_Identifier(Entity e) 
+        {
+            return e.ID;
+        }
         public string XFI_Fact_Typed_Dimension_Value(ValidationParameter a, string qname) 
         {
             var result = "";
@@ -263,6 +285,17 @@ namespace LogicalModel.Validation
             if (dim != null) 
             {
                 result = dim.DomainMember;
+            }
+            return result;
+        }
+        public string XFI_Fact_Explicit_Dimension_Value(ValidationParameter a, string qname)
+        {
+            var result = "";
+            var fact = a.CurrentFacts.FirstOrDefault();
+            var dim = fact.Dimensions.FirstOrDefault(i => i.DimensionItem == qname);
+            if (dim != null)
+            {
+                result = dim.DomainAndMember;
             }
             return result;
         }

@@ -532,6 +532,9 @@ var Control;
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
                             var subhier = Model.Hierarchy.FirstOrDefault(hier, function (i) { return i.Item.Content == concept.Domain.Content; });
                             var items = Model.Hierarchy.ToArray(IsNull(subhier) ? hier : subhier);
+                            if (subhier == hier) {
+                                removeFromArray(items, hier.Item);
+                            }
                             items.forEach(function (item, index) {
                                 Model.QualifiedItem.Set(item);
                                 if (item.Name != "x0") {
@@ -556,6 +559,50 @@ var Control;
                 return clkp.OptionsHTML;
             }
             return "";
+        };
+        TaxonomyContainer.prototype.GetMembersOfHierarchy = function (layoutrole) {
+            Log("layoutrole: " + layoutrole);
+            var role = TextBetween(layoutrole, "Role:", ";");
+            var axis = TextBetween(layoutrole, "Axis:", ";");
+            var h = this.Taxonomy.Hierarchies.Children.AsLinq().FirstOrDefault(function (i) { return i.Item.Role == role; });
+            if (!IsNull(h)) {
+                Log("hierarchy found for DDL!");
+                var items = Model.Hierarchy.GetAxis(h, axis);
+                var clkp = new Model.ConceptLookUp();
+                items.forEach(function (h, index) {
+                    var item = h;
+                    Model.QualifiedItem.Set(item);
+                    if (item.Name != "x0") {
+                        var v = {};
+                        var id = Format("{0}:{1}", item.Namespace, item.Name);
+                        clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                    }
+                });
+                clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                return clkp.OptionsHTML;
+            }
+            return null;
+        };
+        TaxonomyContainer.prototype.GetMembersOfDomainOptions = function (dom) {
+            Log("dom: " + dom);
+            var h = this.Taxonomy.Hierarchies.Children.AsLinq().FirstOrDefault(function (i) { return i.Item.Label.LocalID == dom; });
+            if (!IsNull(h)) {
+                Log("hierarchy found for DDL!");
+                var items = h.Children.length > 0 ? h.Children[0].Children : h.Children;
+                var clkp = new Model.ConceptLookUp();
+                items.forEach(function (h, index) {
+                    var item = h.Item;
+                    Model.QualifiedItem.Set(item);
+                    if (item.Name != "x0") {
+                        var v = {};
+                        var id = Format("{0}:{1}", item.Namespace, item.Name);
+                        clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
+                    }
+                });
+                clkp.OptionsHTML = ToOptionList(clkp.Values, true);
+                return clkp.OptionsHTML;
+            }
+            return null;
         };
         return TaxonomyContainer;
     })();

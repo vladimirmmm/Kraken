@@ -622,7 +622,14 @@ namespace LogicalModel
                                 {
                                     cell.Dimensions.AddRange(col.Item.Dimensions);
                                 }
+                                var rowRole = String.IsNullOrEmpty(row.Item.Role) ? "" : String.Format("Role:{0};Axis:{1};", row.Item.Role, row.Item.RoleAxis);
+                                var colRole = String.IsNullOrEmpty(col.Item.Role) ? "" : String.Format("Role:{0};Axis:{1};", col.Item.Role, col.Item.RoleAxis);
+                                cell.Role = iscolkey ? rowRole : isrowkey ? colRole : "";
                                 cell.IsKey = isrowkey || iscolkey;
+                                if (cell.IsKey) 
+                                {
+
+                                }
                                 SetDimensions(cell);
 
                                 //LayoutCells.Add(cell);
@@ -684,25 +691,15 @@ namespace LogicalModel
                             {
                                 factkeys.Add(xcell.FactKey);
                             }
-                           
-                           
+
+                            cell.IsBlocked = cell.IsKey ? false : true;
                             foreach (var factkey in factkeys)
                             {
                                 if (this.Taxonomy.HasFact(factkey))
                                 {
-
-
                                     var item = this.Taxonomy.GetCellsOfFact(factkey);
                                     item.Add(xcell.CellID);
-                                    //if (!factextdict.ContainsKey(xcell.LayoutID))
-                                    //{
-                                    //    factextdict.Add(xcell.LayoutID, factkey);// xcell.FactKey);
-                                    //}
-                                    //else
-                                    //{
-
-                                    //}
-
+                                    cell.IsBlocked = false;
 
                                 }
                                 else
@@ -726,13 +723,14 @@ namespace LogicalModel
                                     }
                                     else
                                     {
-                                        cell.IsBlocked = true;
-                                        if (!blocked.ContainsKey(cell.ToString()))
-                                        {
-                                            blocked.Add(cell.ToString(), true);
-                                        }
+                                        //cell.IsBlocked = true;
+                                       
                                     }
                                 }
+                            }
+                            if (cell.IsBlocked && !blocked.ContainsKey(cell.ToString()))
+                            {
+                                blocked.Add(cell.ToString(), true);
                             }
                         }
                     }
@@ -929,7 +927,11 @@ namespace LogicalModel
                     {
                         cssclass += " key";
                     }
-                    sb.AppendLine(String.Format("<td id=\"{0}\" factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>", alt, cssclass, cell.FactKey));
+                    var rl = String.IsNullOrEmpty(cell.Role) ? "" : String.Format("role=\"{0}\"", cell.Role);
+                    sb.AppendLine(String.Format(
+                        "<td id=\"{0}\" {3} factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>",
+                        alt, cssclass, cell.FactKey, rl
+                        ));
                 }
 
                 sb.AppendLine("</tr>");

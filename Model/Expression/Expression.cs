@@ -15,6 +15,7 @@ namespace LogicalModel.Expressions
         public List<OperatorEnum> Operators = new List<OperatorEnum>();
         public bool IsString = false;
         public bool IsParameter = false;
+        public string OriginalSource = "";
 
         public string StringValue
         {
@@ -92,9 +93,9 @@ namespace LogicalModel.Expressions
             var sb = new StringBuilder();
             if (Operators[0] == OperatorEnum.Cast && SubExpressions.Count==2)
             {
-                if (SubExpressions[1].Value == "xs:string") 
+                if (SubExpressions[1].Value.Equals("xs:string")) 
                 {
-                    return "String.Format(\"{0}\"," + SubExpressions[1].Value + ")";
+                    return "String.Format(\"{0}\"," + SubExpressions[0].Value + ")";
                 }
             }
             else
@@ -106,16 +107,27 @@ namespace LogicalModel.Expressions
                         //sb.Append(parser.Syntax.ExpressionContainer_Left);
                     }
                     var subexpr = SubExpressions[i];
-                    sb.Append(parser.Translate(subexpr));
-                    if (i < SubExpressions.Count - 1)
+                    if (i<Operators.Count && Operators[i] == OperatorEnum.Cast)
                     {
-                        var opstring = parser.Syntax.CodeItemSeparator + parser.Syntax.Operators[Operators[i]] + parser.Syntax.CodeItemSeparator;
-                        sb.Append(opstring);
+                        if (SubExpressions[i+1].Value.Equals("xs:string"))
+                        {
+                            sb.Append( "String.Format(\"{0}\"," + SubExpressions[i].Value + ")");
+                            i++;
+                        }
                     }
                     else
                     {
+                        sb.Append(parser.Translate(subexpr));
+                        if (i < SubExpressions.Count - 1)
+                        {
+                            var opstring = parser.Syntax.CodeItemSeparator + parser.Syntax.Operators[Operators[i]] + parser.Syntax.CodeItemSeparator;
+                            sb.Append(opstring);
+                        }
+                        else
+                        {
 
-                        //sb.Append(parser.Syntax.ExpressionContainer_Right);
+                            //sb.Append(parser.Syntax.ExpressionContainer_Right);
+                        }
                     }
                 }
             }

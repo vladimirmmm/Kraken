@@ -55,6 +55,8 @@ namespace LogicalModel
         [JsonProperty]
         public String ContextID { get; set; }
 
+        [JsonProperty]
+        public Period Period { get; set; }
 
         [JsonProperty]
         public Entity Entity { get; set; }

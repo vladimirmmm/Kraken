@@ -24,6 +24,56 @@ var Model;
             });
             return items;
         };
+        Hierarchy.GetAxis = function (item, axis) {
+            var laxis = axis.toLowerCase();
+            var result = [];
+            var f_ancestors = function () {
+                var litem = item.Parent;
+                while (litem != null) {
+                    result.push(litem.Item);
+                    litem = litem.Parent;
+                }
+                return result;
+            };
+            if (laxis == "self") {
+                result.push(item.Item);
+            }
+            if (laxis == "parent") {
+                if (item.Parent != null) {
+                    result.push(item.Parent.Item);
+                }
+            }
+            if (laxis == "ancestor") {
+                result = f_ancestors();
+            }
+            if (laxis == "ancestor-or-self") {
+                result = f_ancestors();
+                result.push(item.Item);
+            }
+            if (laxis == "child") {
+                result = item.Children.AsLinq().Select(function (i) { return i.Item; }).ToArray();
+            }
+            if (laxis == "descendant") {
+                result = Hierarchy.ToArray(item);
+                removeFromArray(result, item.Item);
+            }
+            if (laxis == "descendant-or-self") {
+                result = Hierarchy.ToArray(item);
+            }
+            if (laxis == "preceding") {
+            }
+            if (laxis == "preceding-sibling") {
+            }
+            if (laxis == "namespace") {
+            }
+            if (laxis == "following") {
+            }
+            if (laxis == "following-sibling") {
+            }
+            if (laxis == "attribute") {
+            }
+            return result;
+        };
         Hierarchy.FirstOrDefault = function (item, func) {
             var result = null;
             if (func(item)) {

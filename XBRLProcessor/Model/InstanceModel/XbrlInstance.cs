@@ -132,7 +132,10 @@ namespace Model.InstanceModel
                 logicalfact.ContextID = xbrlfact.ContextRef;
                 logicalfact.Decimals = xbrlfact.Decimals;
                 logicalfact.Unit = this.Units.FirstOrDefault(i => i.ID == xbrlfact.UnitRef);
-                
+                if (xbrlcontext!=null){
+                    logicalfact.Entity = xbrlcontext.Entity;
+                    logicalfact.Period = xbrlcontext.Period;
+                }
                 var factstring = "";
                 factstring = String.Format("{0},",xbrlfact.Concept);
                 var factkey = factstring;

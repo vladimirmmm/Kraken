@@ -235,7 +235,7 @@
 //        public bool boiv10f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 300m;
 //        }
 
 //        //$a <= $b
@@ -551,21 +551,21 @@
 //        public bool boiv16f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) == 9m;
 //        }
 
 //        //((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1, 1) = "8")  and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 2, 2) != "88"))  or ((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1, 4) = "9999") and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 5, 5) = xfi:entity-identifier(xfi:entity($a))))  or ((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1, 3) = "888") and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 4, 5)= xfi:entity-identifier(xfi:entity($a))))  or (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1, 9) = "111111111")
 //        public bool boiv17f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 1m) == "8" | functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 9m) == "111111111";
 //        }
 
 //        //if ((string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDV")))) = 9) and (string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))) != "111111111"))  then ( if ((number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),1,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),2,1))),"NaN","000"))  +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),3,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),2,1))),"NaN","000")) +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),5,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),2,1))),"NaN","000")) + number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),7,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),2,1))),"NaN","000"))) mod 10 = 0)  then (number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),9,1)) = 0)  else((10 - ((number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),1,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),2,1))),"NaN","000"))  +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),3,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),2,1))),"NaN","000")) +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),5,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),2,1))),"NaN","000")) + number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),7,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),2,1))),"NaN","000"))) mod 10)) = number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),9,1))))  else (true())
 //        public bool boiv18f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) == 9m & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))) != "111111111" ? functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 3m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 5m, 1m)) == 0m ? functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 9m, 1m)) == 0m : 10m - functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 3m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 5m, 1m)) == functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 9m, 1m)) : true;
 //        }
 
 //        //$a != 0
@@ -588,56 +588,56 @@
 //        public bool boiv200f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 300m;
 //        }
 
 //        //string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) = 9
 //        public bool boiv201f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) == 9m;
 //        }
 
 //        //((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1, 1) = "8")  and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 2, 2) != "88"))  or ((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1, 3) = "888") and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 4, 5)= xfi:entity-identifier(xfi:entity($a))))
 //        public bool boiv202f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 1m) == "8";
 //        }
 
 //        //if ((number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),1,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),2,1))),"NaN","000"))  +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),3,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),2,1))),"NaN","000")) +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),5,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),2,1))),"NaN","000")) + number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),7,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),2,1))),"NaN","000"))) mod 10 = 0)  then (number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),9,1)) = 0)  else((10 - ((number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),1,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),2,1)) * 2),2,1))),"NaN","000"))  +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),3,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),4,1)) * 2),2,1))),"NaN","000")) +  number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),5,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),6,1)) * 2),2,1))),"NaN","000")) + number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),7,1)) + number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),1,1)) + number(translate(string(number(substring(string(xs:integer(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),8,1)) * 2),2,1))),"NaN","000"))) mod 10)) = number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))),9,1)))
 //        public bool boiv203f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 3m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 5m, 1m)) == 0m ? functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 9m, 1m)) == 0m : 10m - functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 1m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 3m, 1m)) + functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 5m, 1m)) == functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV"))), 9m, 1m));
 //        }
 
 //        //string-length($a) <= 150
 //        public bool boiv204f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 150m;
 //        }
 
 //        //string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) > 4
 //        public bool boiv205f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) > 4m;
 //        }
 
 //        //if (string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) = 9)  then ((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),1,1) != "8")  and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),1,3) != "999")  and (string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) != "111111111")) else (true()) 
 //        public bool boiv206f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 9m ? functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) != "8" : true;
 //        }
 
 //        //if((number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 8,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 6,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),2,1))),"NaN","000")) +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 4,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 2,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),2,1))),"NaN","000"))) mod 10 = 0) then (number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))),1)) = 0) else(((10 - ((number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 8,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 6,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),2,1))),"NaN","000")) +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 4,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 2,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),2,1))),"NaN","000"))) mod 10)) = number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))),1))))
 //        public bool boiv207f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Number(functions.Translate(functions.String(functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.Number(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))))) - 8m, 1m))), "NaN", "000")) == 0m ? functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))), 1m)) == 0m : 10m - functions.Number(functions.Translate(functions.String(functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.Number(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))))) - 8m, 1m))), "NaN", "000")) == functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))), 1m));
 //        }
 
 //        //false()
@@ -651,7 +651,7 @@
 //        public bool boiv209f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.not(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 9m & functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) == "5");
 //        }
 
 //        //if (((string-length(string(xfi:fact-typed-dimension-value($b,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) = 0) and (string-length(string(xfi:fact-typed-dimension-value($b,QName("http://www.boi.org.il/xbrl/dict/dim","TDV")))) != 0)) or ((string-length(string(xfi:fact-typed-dimension-value($b,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) != 0) and (string-length(string(xfi:fact-typed-dimension-value($b,QName("http://www.boi.org.il/xbrl/dict/dim","TDV")))) = 0))) then (empty($a)) else (true()) 
@@ -659,21 +659,21 @@
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
 //            var p_b = parameters.FirstOrDefault(i => i.Name == "b");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 0m & functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) != 0m | functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) != 0m & functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) == 0m ? functions.empty(p_a) : true;
 //        }
 
 //        //not((string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) < 9) or (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1, 1) != "5"))
 //        public bool boiv210f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.not(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) < 9m | functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) != "5");
 //        }
 
 //        //not(string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) < 9)
 //        public bool boiv211f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.not(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) < 9m);
 //        }
 
 //        //not(empty($a))
@@ -687,7 +687,7 @@
 //        public bool boiv213f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 0m | functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) == 0m ? false : true;
 //        }
 
 //        //not(empty($a))
@@ -722,7 +722,7 @@
 //        public bool boiv23f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) == 3m | functions.StringLength(functions.String(p_a)) == 4m;
 //        }
 
 //        //false()
@@ -751,21 +751,21 @@
 //        public bool boiv27f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 50m;
 //        }
 
 //        //string-length($a) <= 50
 //        public bool boiv28f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 50m;
 //        }
 
 //        //string-length($a) <= 50
 //        public bool boiv29f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 50m;
 //        }
 
 //        //false()
@@ -808,28 +808,28 @@
 //        public bool boiv305f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) <= 9m;
 //        }
 
 //        //string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) > 4
 //        public bool boiv307f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) > 4m;
 //        }
 
 //        //if (string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) = 9)  then ((substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),1,1) != "8")  and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),1,3) != "999")  and (string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) != "111111111")) else (true()) 
 //        public bool boiv308f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 9m ? functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) != "8" : true;
 //        }
 
 //        //if((number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 8,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 6,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),2,1))),"NaN","000")) +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 4,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 2,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),2,1))),"NaN","000"))) mod 10 = 0) then (number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))),1)) = 0) else(((10 - ((number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 8,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 7,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 6,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 5,1))),"NaN","000")) * 2),2,1))),"NaN","000")) +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 4,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 3,1))),"NaN","000")) * 2),2,1))),"NaN","000"))  +number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 2,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),1,1))),"NaN","000")) +number(translate(string(number(substring(string(number(translate(string(number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),number(string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD"))))) - 1,1))),"NaN","000")) * 2),2,1))),"NaN","000"))) mod 10)) = number(substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))),string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))),1))))
 //        public bool boiv309f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Number(functions.Translate(functions.String(functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.Number(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))))) - 8m, 1m))), "NaN", "000")) == 0m ? functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))), 1m)) == 0m : 10m - functions.Number(functions.Translate(functions.String(functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.Number(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))))) - 8m, 1m))), "NaN", "000")) == functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))), 1m));
 //        }
 
 //        //not(empty($a))
@@ -843,7 +843,7 @@
 //        public bool boiv310f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 300m;
 //        }
 
 //        //$a != 0
@@ -878,7 +878,7 @@
 //        public bool boiv32f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x7" | functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x14" | functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x13" ? true : false;
 //        }
 
 //        //if ($a = 0) then (false()) else (true())
@@ -894,7 +894,7 @@
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
 //            var p_b = parameters.FirstOrDefault(i => i.Name == "b");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 0m & functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) != 0m | functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) != 0m & functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) == 0m ? functions.empty(p_a) : true;
 //        }
 
 //        //empty($a)
@@ -908,7 +908,7 @@
 //        public bool boiv323f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) == 3m | functions.StringLength(functions.String(p_a)) == 4m;
 //        }
 
 //        //false()
@@ -937,28 +937,28 @@
 //        public bool boiv327f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 50m;
 //        }
 
 //        //string-length($a) <= 50
 //        public bool boiv328f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 50m;
 //        }
 
 //        //string-length($a) <= 50
 //        public bool boiv329f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 50m;
 //        }
 
 //        //if (((string(xfi:fact-explicit-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) = "boi_BI:x9")  and (string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) = 9) and (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1, 1) = "5")) or ((string(xfi:fact-explicit-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) = "boi_BI:x10")  and ((string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) != 9) or (substring(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1, 1) != "5"))) or ((string(xfi:fact-explicit-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) = "boi_BI:x11")  and (string-length(string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) != 9))) then (false()) else (true())
 //        public bool boiv33f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x9" & functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) == "5" | functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x10" | functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x11" ? false : true;
 //        }
 
 //        //not(empty($a))
@@ -979,7 +979,7 @@
 //        public bool boiv333f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x9" & functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) == "5" | functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x10" | functions.String(functions.XFI_Fact_Explicit_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "BIC"))) == "boi_BI:x11" ? false : true;
 //        }
 
 //        //empty($a)
@@ -1008,7 +1008,7 @@
 //        public bool boiv338f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 15m;
 //        }
 
 //        //empty($a)
@@ -1036,28 +1036,28 @@
 //        public bool boiv353f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) == 3m;
 //        }
 
 //        //((floor($a div 100) = 1 or floor($a div 100) = 4 or floor($a div 100) = 7 or floor($a div 100) = 9)) and  ((floor(($a - floor($a div 100) * 100) div 10) = 0) or (floor(($a - floor($a div 100) * 100) div 10) = 1) or (floor(($a - floor($a div 100) * 100) div 10) = 2))
 //        public bool boiv354f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.floor(p_a / 100m) == 1m | functions.floor(p_a / 100m) == 4m | functions.floor(p_a / 100m) == 7m | functions.floor(p_a / 100m) == 9m & functions.floor(p_a - functions.floor(p_a / 100m) * 100m / 10m) == 0m | functions.floor(p_a - functions.floor(p_a / 100m) * 100m / 10m) == 1m | functions.floor(p_a - functions.floor(p_a / 100m) * 100m / 10m) == 2m;
 //        }
 
 //        //if (string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) = 0) then (floor($a div 100) = 7) else (true())
 //        public bool boiv355f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 0m ? functions.floor(p_a / 100m) == 7m : true;
 //        }
 
 //        //floor($a div 100) != 4
 //        public bool boiv356f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.floor(p_a / 100m) != 4m;
 //        }
 
 //        //empty($a)
@@ -1086,7 +1086,7 @@
 //        public bool boiv373f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return p_a == functions.floor(p_a);
 //        }
 
 //        //$a >= 0
@@ -1100,7 +1100,7 @@
 //        public bool boiv375f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) <= 15m;
 //        }
 
 //        //$a = sum($b)
@@ -1140,7 +1140,7 @@
 //        public bool boiv38f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(p_a) <= 15m;
 //        }
 
 //        //$a <= $b
@@ -1260,7 +1260,7 @@
 //        public bool boiv40f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) <= 15m;
 //        }
 
 //        //$a = $b + $c
@@ -1330,7 +1330,7 @@
 //        public bool boiv43f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) <= 15m;
 //        }
 
 //        //$a + $b + $c <= $d
@@ -1390,21 +1390,21 @@
 //        public bool boiv5f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) <= 9m;
 //        }
 
 //        //xs:date($a) <= xs:date(xfi:period-instant(xfi:period($a)))
 //        public bool boiv50f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.XS_Date(p_a) <= functions.XS_Date(functions.XFI_Period_Instant(functions.XFI_Period(p_a)));
 //        }
 
 //        //concat(month-from-date($a), "-", day-from-date($a)) = ("3-31" cast as xs:string) or concat(month-from-date($a), "-", day-from-date($a)) = ("6-30" cast as xs:string) or concat(month-from-date($a), "-", day-from-date($a)) = ("9-30" cast as xs:string) or concat(month-from-date($a), "-", day-from-date($a)) = ("12-31" cast as xs:string)
 //        public bool boiv51f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Concat(functions.Month(p_a), "-", functions.Day(p_a)) == String.Format("{0}", 3 - 31) | functions.Concat(functions.Month(p_a), "-", functions.Day(p_a)) == String.Format("{0}", 6 - 30) | functions.Concat(functions.Month(p_a), "-", functions.Day(p_a)) == String.Format("{0}", 9 - 30) | functions.Concat(functions.Month(p_a), "-", functions.Day(p_a)) == String.Format("{0}", 12 - 31);
 //        }
 
 //        //empty($a)
@@ -1418,28 +1418,28 @@
 //        public bool boiv53f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) == 3m;
 //        }
 
 //        //((floor($a div 100) = 1 or floor($a div 100) = 4 or floor($a div 100) = 7 or floor($a div 100) = 9)) and  ((floor(($a - floor($a div 100) * 100) div 10) = 0) or (floor(($a - floor($a div 100) * 100) div 10) = 1) or (floor(($a - floor($a div 100) * 100) div 10) = 2))
 //        public bool boiv54f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.floor(p_a / 100m) == 1m | functions.floor(p_a / 100m) == 4m | functions.floor(p_a / 100m) == 7m | functions.floor(p_a / 100m) == 9m & functions.floor(p_a - functions.floor(p_a / 100m) * 100m / 10m) == 0m | functions.floor(p_a - functions.floor(p_a / 100m) * 100m / 10m) == 1m | functions.floor(p_a - functions.floor(p_a / 100m) * 100m / 10m) == 2m;
 //        }
 
 //        //if (string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) = 0) then (floor($a div 100) = 7) else (true())
 //        public bool boiv55f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 0m ? functions.floor(p_a / 100m) == 7m : true;
 //        }
 
 //        //floor($a div 100) != 4
 //        public bool boiv56f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.floor(p_a / 100m) != 4m;
 //        }
 
 //        //empty($a)
@@ -1453,7 +1453,7 @@
 //        public bool boiv58f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.not(functions.Count(p_a) >= 2m);
 //        }
 
 //        //$b != 0
@@ -1476,7 +1476,7 @@
 //        public bool boiv61f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) != 0m & functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDV")))) != 0m;
 //        }
 
 //        //b != 0
@@ -1484,7 +1484,7 @@
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
 //            var p_b = parameters.FirstOrDefault(i => i.Name == "b");
-//            return bm != 0m;
+//            return b != 0m;
 //        }
 
 //        //count($b) >= 2
@@ -1492,7 +1492,7 @@
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
 //            var p_b = parameters.FirstOrDefault(i => i.Name == "b");
-//            return true;
+//            return functions.Count(p_b) >= 2m;
 //        }
 
 //        //$a = $b
@@ -1537,17 +1537,17 @@
 
 //        //not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700009848 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520041690 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700003825 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520031931 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700010085 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 513890368 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700013329 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520036658 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 644035024 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520000472 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700000862 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520013954 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700003817 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520014143 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700003957 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 510216054 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700003809 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 511076572 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700011612 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520022732 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700011620 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 570000745 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016082 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520044322 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016090 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520028283 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016108 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520005067 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016116 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520004078 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016124 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520027830 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016132 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520017070 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016140 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520024647 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016181 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 33260971 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016157 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520033093 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016165 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 513767079 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016173 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520003781 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016470 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 510313778 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700016934 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520037565 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700017080 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520032285 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700017122 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 511984213 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700017130 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 511780793 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700017833 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 511325870 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700017957 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520033234 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700018096 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 513326439 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700007891 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 512480971 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700018955 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 511888356 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700019151 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 550212021 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700019714 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 550225510 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700020183 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 520004896 cast as xs:string)) and  not((string(xfi:fact-typed-dimension-value($a, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 700020357 cast as xs:string) and (string(xfi:fact-typed-dimension-value($b, QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) = 510947153 cast as xs:string))
 //        public bool boiv69f(List<ValidationParameter> parameters)
-//      {
-//         var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//         var p_b = parameters.FirstOrDefault(i => i.Name == "b");
-//         return functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700009848 as string  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520041690castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700003825castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520031931castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700010085castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  513890368castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700013329castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520036658castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  644035024castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520000472castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700000862castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520013954castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700003817castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520014143castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700003957castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  510216054castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700003809castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  511076572castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700011612castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520022732castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700011620castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  570000745castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016082castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520044322castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016090castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520028283castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016108castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520005067castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016116castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520004078castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016124castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520027830castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016132castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520017070castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016140castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520024647castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016181castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  33260971castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016157castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520033093castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016165castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  513767079castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016173castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520003781castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016470castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  510313778castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700016934castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520037565castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700017080castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520032285castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700017122castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  511984213castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700017130castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  511780793castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700017833castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  511325870castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700017957castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520033234castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700018096castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  513326439castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700007891castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  512480971castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700018955castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  511888356castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700019151castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  550212021castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700019714castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  550225510castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700020183castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  520004896castasxs:stringm)  &  functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  700020357castasxs:stringm  &  functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))  ==  510947153castasxs:stringm);
-//      }
+//        {
+//            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
+//            var p_b = parameters.FirstOrDefault(i => i.Name == "b");
+//            return functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700009848) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520041690)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700003825) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520031931)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700010085) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 513890368)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700013329) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520036658)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 644035024) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520000472)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700000862) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520013954)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700003817) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520014143)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700003957) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 510216054)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700003809) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 511076572)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700011612) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520022732)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700011620) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 570000745)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016082) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520044322)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016090) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520028283)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016108) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520005067)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016116) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520004078)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016124) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520027830)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016132) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520017070)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016140) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520024647)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016181) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 33260971)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016157) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520033093)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016165) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 513767079)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016173) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520003781)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016470) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 510313778)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700016934) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520037565)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700017080) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520032285)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700017122) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 511984213)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700017130) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 511780793)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700017833) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 511325870)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700017957) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520033234)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700018096) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 513326439)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700007891) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 512480971)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700018955) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 511888356)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700019151) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 550212021)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700019714) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 550225510)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700020183) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 520004896)) & functions.not(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 700020357) & functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_b, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))) == String.Format("{0}", 510947153));
+//        }
 
 //        //string-length(string(xfi:fact-typed-dimension-value($a,QName("http://www.boi.org.il/xbrl/dict/dim","TDD")))) > 4
 //        public bool boiv7f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) > 4m;
 //        }
 
 //        //($a = $b - $c) and ($d + $e + $f < $a)
@@ -1566,21 +1566,21 @@
 //        public bool boiv71f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "10001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "11001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "12001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "13001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "14001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "17001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "20001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "26001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "31001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "34001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "04001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "46001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "52001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "54001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "68001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "27001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "22001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "23001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "39001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "65001" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "10023" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "10033" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "11012" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "12002" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "12011" | functions.XFI_Entity_Identifier(functions.XFI_Entity(p_a)) == "12020";
 //        }
 
 //        //(month-from-dateTime(xfi:period-instant(xfi:period($a))) = 4 and day-from-dateTime(xfi:period-instant(xfi:period($a))) = 1) or (month-from-dateTime(xfi:period-instant(xfi:period($a))) = 7 and day-from-dateTime(xfi:period-instant(xfi:period($a))) = 1) or (month-from-dateTime(xfi:period-instant(xfi:period($a))) = 10 and day-from-dateTime(xfi:period-instant(xfi:period($a))) = 1) or (month-from-dateTime(xfi:period-instant(xfi:period($a))) = 1 and day-from-dateTime(xfi:period-instant(xfi:period($a))) = 1)
 //        public bool boiv72f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Month(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 4m & functions.Day(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 1m | functions.Month(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 7m & functions.Day(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 1m | functions.Month(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 10m & functions.Day(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 1m | functions.Month(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 1m & functions.Day(functions.XFI_Period_Instant(functions.XFI_Period(p_a))) == 1m;
 //        }
 
 //        //$a = floor($a)
 //        public bool boiv73f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return p_a == functions.floor(p_a);
 //        }
 
 //        //$a >= 0
@@ -1594,7 +1594,7 @@
 //        public bool boiv75f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(p_a)) <= 15m;
 //        }
 
 //        //$a = sum($b)
@@ -1634,7 +1634,7 @@
 //        public bool boiv8f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))) == 9m ? functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), 1m, 1m) != "8" : true;
 //        }
 
 //        //$a <= $b
@@ -1722,7 +1722,7 @@
 //        public bool boiv9f(List<ValidationParameter> parameters)
 //        {
 //            var p_a = parameters.FirstOrDefault(i => i.Name == "a");
-//            return true;
+//            return functions.Number(functions.Translate(functions.String(functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.Number(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))))) - 8m, 1m))), "NaN", "000")) == 0m ? functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))), 1m)) == 0m : 10m - functions.Number(functions.Translate(functions.String(functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.Number(functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))))) - 8m, 1m))), "NaN", "000")) == functions.Number(functions.Substring(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD"))), functions.StringLength(functions.String(functions.XFI_Fact_Typed_Dimension_Value(p_a, functions.QName("http://www.boi.org.il/xbrl/dict/dim", "TDD")))), 1m));
 //        }
 
 //        //$a = $b - $c

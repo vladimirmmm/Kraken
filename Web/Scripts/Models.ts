@@ -30,6 +30,55 @@
             return items; 
         }
 
+        public static GetAxis<TClass>(item: Hierarchy<TClass>, axis: string): TClass[]
+        {
+            var laxis = axis.toLowerCase();
+            var result: TClass[] = [];
+            var f_ancestors = ()=> {
+                var litem = item.Parent;
+                while (litem != null) {
+                    result.push(litem.Item);
+                    litem = litem.Parent;
+                }
+                return result;
+            };
+            if (laxis == "self") {
+                result.push(item.Item);
+            }
+            if (laxis == "parent") {
+                if (item.Parent != null) {
+                    result.push(item.Parent.Item);
+                }
+            }
+            if (laxis == "ancestor")
+            {
+                result = f_ancestors();
+            }
+            if (laxis == "ancestor-or-self") {
+                result = f_ancestors();
+                result.push(item.Item);
+            }
+            if (laxis == "child") {
+                result = item.Children.AsLinq<Hierarchy<TClass>>().Select(i=>i.Item).ToArray();
+            }
+            if (laxis == "descendant") {
+                result = Hierarchy.ToArray(item);
+                removeFromArray(result, item.Item);
+            }
+            if (laxis == "descendant-or-self") {
+                result = Hierarchy.ToArray(item);
+
+            }
+            if (laxis == "preceding") { }
+            if (laxis == "preceding-sibling") { }
+            if (laxis == "namespace") { }
+            if (laxis == "following") { }
+            if (laxis == "following-sibling") { }
+            if (laxis == "attribute") { }
+            
+            return result;
+        }
+
         public static FirstOrDefault<TClass>(item: Hierarchy<TClass>, func :Function): Hierarchy<TClass> {
             var result: Hierarchy<TClass>= null;
             if (func(item)) {
@@ -523,6 +572,7 @@
     }   
 
     export class Label {
+        public LocalID: string;
         public LabelID: string;
         public Lang: string;
         public Code: string;
