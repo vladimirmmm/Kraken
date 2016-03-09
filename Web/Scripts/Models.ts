@@ -399,7 +399,14 @@
     export class Unit extends Identifiable {
         public Measure: QualifiedName;
     }
-
+    export class InstanceUnit extends Unit
+    {
+        public UnitRef: string = "";
+    }
+    export class FilingIndicator extends Identifiable
+    {
+        public Filed: boolean = true;
+    }
     export class Entity extends Identifiable {
         public Scheme: string;
     }
@@ -543,7 +550,8 @@
     export class Instance
     {
         public Facts: InstanceFact[] = [];
-        public FilingIndicators: string[] = [];
+        public Units: Unit[] = [];
+        public FilingIndicators: FilingIndicator[] = [];
         public ReportingDate: Date;
         public ReportingCurrency: string;
         public Entity: Entity;
@@ -640,6 +648,7 @@
 
         public Concepts: Model.Concept[] = [];
         public Hierarchies: Model.Hierarchy<Model.QualifiedItem> = null;
+        public TaxonomyDocuments: Model.TaxonomyDocument[] = [];
         public ConceptValues: Model.ConceptLookUp[] = [];
 
     }
@@ -655,6 +664,14 @@
     }
     export class TaxonomyProperties {
 
+    }
+
+    export class TaxonomyDocument
+    {
+        public FileName: string = "";
+        public ReferencedFiles: string[] = [];
+        public LocalRelPath: string = "";
+        public SourcePath: string = "";
     }
 
     export class TableInfo extends Identifiable

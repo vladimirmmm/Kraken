@@ -13,6 +13,7 @@ var Control;
             this.PageSize = 10;
             this.s_fact_id = "T_Facts";
             this.s_label_id = "T_Labels";
+            this.s_xml_id = "Xml";
             this.s_concept_id = "T_Concepts";
             this.s_hierarchy_id = "T_Hierarchies";
             this.s_dimension_id = "T_Dimensions";
@@ -29,6 +30,7 @@ var Control;
             this.s_units_selector = "";
             this.s_find_selector = "";
             this.s_general_selector = "";
+            this.s_xml_selector = "";
             this.ui_factdetail = null;
             this.ui_vruledetail = null;
             this.FactServiceFunction = null;
@@ -41,6 +43,7 @@ var Control;
             this.s_units_selector = "#" + this.s_units_id;
             this.s_find_selector = "#" + this.s_find_id;
             this.s_general_selector = "#" + this.s_general_id;
+            this.s_xml_selector = "#" + this.s_xml_id;
             var me = this;
             $(window).resize(function () {
                 waitForFinalEvent(function () {
@@ -49,12 +52,28 @@ var Control;
             });
             me.SetHeight();
             $(window).on('hashchange', function () {
-                me.HashChanged();
+                var hash = window.location.hash;
+                var doc = TextBetween(hash, "doc=", ";");
+                if (!IsNull(doc)) {
+                    me.LoadDoc(doc);
+                }
+                else {
+                    me.HashChanged();
+                }
             });
         }
         TaxonomyContainer.prototype.HashChanged = function () {
             var me = this;
             me.Table.HashChanged();
+        };
+        TaxonomyContainer.prototype.LoadDoc = function (doc) {
+            AjaxRequest(doc, "get", "text/html", null, function (data) {
+                var xml = data;
+                var encoded = '<textarea>' + xml + "</textarea>";
+                _Html(_SelectFirst("#ReportContainer"), encoded);
+            }, function (error) {
+                console.log(error);
+            });
         };
         TaxonomyContainer.prototype.SetHeight = function () {
             var bodyheight = $("td.th2").height();
@@ -118,6 +137,11 @@ var Control;
             });
             AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Taxonomy.Concepts = data;
+            }, function (error) {
+                console.log(error);
+            });
+            AjaxRequest("Taxonomy/Documents", "get", "json", null, function (data) {
+                me.Taxonomy.TaxonomyDocuments = data;
             }, function (error) {
                 console.log(error);
             });
@@ -217,6 +241,9 @@ var Control;
             if (contentid == me.s_label_id) {
                 LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
             }
+            if (contentid == me.s_xml_id) {
+                LoadPage(_SelectFirst(s_list_selector, me.s_xml_selector), _SelectFirst(s_listpager_selector, me.s_xml_selector), me.Taxonomy.TaxonomyDocuments, 0, me.LPageSize);
+            }
             if (contentid == me.s_validation_id) {
                 me.ShowValidationResults();
             }
@@ -293,6 +320,20 @@ var Control;
                 query = query.Where(function (i) { return i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length; });
             }
             LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+        };
+        TaxonomyContainer.prototype.ClearFilterDocuments = function () {
+            $("input[type=text]", "#LabelFilter ").val("");
+            $("textarea", "#LabelFilter ").val("");
+            this.FilterLabels();
+        };
+        TaxonomyContainer.prototype.FilterDocuments = function () {
+            var me = this;
+            var f_filename = _Value(_SelectFirst("#F_FileName", me.s_xml_selector)).toLowerCase().trim();
+            var query = me.Taxonomy.TaxonomyDocuments.AsLinq();
+            if (!IsNull(f_filename)) {
+                query = query.Where(function (i) { return i.SourcePath.toLowerCase().indexOf(f_filename) > -1; });
+            }
+            LoadPage(_SelectFirst(s_list_selector, me.s_xml_selector), _SelectFirst(s_listpager_selector, me.s_xml_selector), query.ToArray(), 0, me.LPageSize);
         };
         TaxonomyContainer.prototype.ClearFilterValidations = function () {
             var me = this;

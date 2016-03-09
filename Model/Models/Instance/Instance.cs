@@ -1,5 +1,6 @@
 ﻿using BaseModel;
 using LogicalModel.Base;
+using LogicalModel;
 using LogicalModel.Models;
 using LogicalModel.Validation;
 using Newtonsoft.Json;
@@ -52,8 +53,9 @@ namespace LogicalModel
         [JsonProperty]
         public Dictionary<string, List<InstanceFact>> FactDictionary { get { return _FactDictionary; } set { _FactDictionary = value; } }
 
+        private List<FilingIndicator> _FilingIndicators = new List<FilingIndicator>();
         [JsonProperty]
-        public List<String> FilingIndicators = new List<string>();
+        public List<FilingIndicator> FilingIndicators { get { return _FilingIndicators; } set { _FilingIndicators = value; } }
 
         [JsonProperty]
         public Entity Entity { get; set; }
@@ -237,7 +239,7 @@ namespace LogicalModel
             foreach (var report in reports) 
             {
                 var table = this.Taxonomy.Tables.FirstOrDefault(i => i.ID == report);
-                var find = this.FilingIndicators.FirstOrDefault(i => i == table.FilingIndicator);
+                var find = this.FilingIndicators.FirstOrDefault(i => i.ID == table.FilingIndicator);
                 if (find == null)
                 {
                     if (!MissingFilingindicators.Contains(table.FilingIndicator))

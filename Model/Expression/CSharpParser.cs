@@ -109,7 +109,7 @@ namespace LogicalModel.Expressions
 
             this.Syntax.AddFunction("abs", (Functions i) => i.abs(0));
             this.Syntax.AddFunction("floor", (Functions i) => i.floor(0));
-            this.Syntax.AddFunction("number", (Functions i) => i.Number(""));
+            this.Syntax.AddFunction("number", (Functions i) => LogicalModel.Validation.Functions.Number(""));
             this.Syntax.AddFunction("sum", (Functions i) => i.sum(0));
             this.Syntax.AddFunction("max", (Functions i) => i.max(0));
 

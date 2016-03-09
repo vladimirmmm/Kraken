@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Models\HyperCube.cs" />
     <Compile Include="Models\Instance\Instance.cs" />
+    <Compile Include="Models\Instance\InstanceClasses.cs" />
     <Compile Include="Models\TableGroup.cs" />
     <Compile Include="Models\Table\Cell.cs" />
     <Compile Include="Models\Table\TableHelpers.cs" />

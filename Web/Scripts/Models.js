@@ -398,6 +398,24 @@ var Model;
         return Unit;
     })(Identifiable);
     Model.Unit = Unit;
+    var InstanceUnit = (function (_super) {
+        __extends(InstanceUnit, _super);
+        function InstanceUnit() {
+            _super.apply(this, arguments);
+            this.UnitRef = "";
+        }
+        return InstanceUnit;
+    })(Unit);
+    Model.InstanceUnit = InstanceUnit;
+    var FilingIndicator = (function (_super) {
+        __extends(FilingIndicator, _super);
+        function FilingIndicator() {
+            _super.apply(this, arguments);
+            this.Filed = true;
+        }
+        return FilingIndicator;
+    })(Identifiable);
+    Model.FilingIndicator = FilingIndicator;
     var Entity = (function (_super) {
         __extends(Entity, _super);
         function Entity() {
@@ -555,6 +573,7 @@ var Model;
     var Instance = (function () {
         function Instance() {
             this.Facts = [];
+            this.Units = [];
             this.FilingIndicators = [];
             this.FactDictionary = null;
             this.FactIDDictionary = null;
@@ -634,6 +653,7 @@ var Model;
             this.Module = null;
             this.Concepts = [];
             this.Hierarchies = null;
+            this.TaxonomyDocuments = [];
             this.ConceptValues = [];
         }
         return Taxonomy;
@@ -651,6 +671,16 @@ var Model;
         return TaxonomyProperties;
     })();
     Model.TaxonomyProperties = TaxonomyProperties;
+    var TaxonomyDocument = (function () {
+        function TaxonomyDocument() {
+            this.FileName = "";
+            this.ReferencedFiles = [];
+            this.LocalRelPath = "";
+            this.SourcePath = "";
+        }
+        return TaxonomyDocument;
+    })();
+    Model.TaxonomyDocument = TaxonomyDocument;
     var TableInfo = (function (_super) {
         __extends(TableInfo, _super);
         function TableInfo() {

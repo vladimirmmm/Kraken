@@ -104,6 +104,7 @@ namespace LogicalModel.Validation
             return String.Format("{0}", ObjectValue);
         }
     }
+    
     public partial class Functions
     {
 
@@ -325,7 +326,7 @@ namespace LogicalModel.Validation
         {
             return -a;
         }
-        public decimal Number(object p) 
+        public static decimal Number(object p) 
         {
             var n = string.Format("{0}", p);
             if (Utilities.Strings.IsDigitsOnly(n, '.', '-')) 

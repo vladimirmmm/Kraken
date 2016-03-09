@@ -55,17 +55,28 @@ namespace Engine.Services
                 }
                 else
                 {
-                    if (request.Url.EndsWith(".html"))
+                    var filextension="";
+                    var extix = request.Url.LastIndexOf(".");
+                    if (extix > -1)
                     {
-
+                        filextension = request.Url.Substring(extix + 1);
+                    }
+                    if (filextension.In("html"))
+                    {
                         var table = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.HtmlPath == request.Url);
                         if (table != null)
                         {
                             result.Data = Utilities.FS.ReadAllText(table.FullHtmlPath);
-
                         }
+                    }
 
-
+                    if (filextension.In("xml", "xsd"))
+                    {
+                        var doc = Engine.CurrentTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.LocalRelPath == request.Url);
+                        if (doc != null)
+                        {
+                            result.Data = Utilities.FS.ReadAllText(doc.LocalPath);
+                        }
                     }
                     var urlparts = request.Url.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
                     if (urlparts.Length == 2)
@@ -233,6 +244,11 @@ namespace Engine.Services
                                 if (part1 == "concepts")
                                 {
                                     json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyConceptPath);
+
+                                }
+                                if (part1 == "documents")
+                                {
+                                    json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyStructurePath);
 
                                 }
                                 if (part1 == "validationrules")

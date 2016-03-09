@@ -309,14 +309,15 @@ namespace LogicalModel.Validation
                 {
                     var theresult = allresults.FirstOrDefault();
                     resultstoremove.Add(theresult);
-                    foreach (var find in instance.FilingIndicators)
+                    var finds = instance.FilingIndicators.Where(i => i.Filed).ToList();
+                    foreach (var find in finds)
                     {
                         var findresult = new ValidationRuleResult();
                         resultstoadd.Add(findresult);
 
                         findresult.ID = theresult.ID;
                         findresult.Parameters.AddRange(theresult.Parameters.Select(p => p.Copy()));
-                        findresult.Parameters.FirstOrDefault().Value = find;
+                        findresult.Parameters.FirstOrDefault().Value = find.ID;
                     }
                 }
                 if (allresults.Count == 0) 
@@ -336,7 +337,7 @@ namespace LogicalModel.Validation
                             findresult.Parameters.Add(sp);
                             if (p.IsGeneral && p.StringValue == "filingindicators") 
                             {
-                                sp.Value = find;
+                                sp.Value = find.ID;
                             }
                         }
                     }
@@ -459,7 +460,7 @@ namespace LogicalModel.Validation
                 {
                     if (rp.StringValue == "filingindicators" && rp.BindAsSequence) 
                     {
-                       rp.StringValues = instance.FilingIndicators.ToArray();
+                       rp.StringValues = instance.FilingIndicators.Select(i=>i.ID).ToArray();
                        rp.StringValue = Utilities.Strings.ArrayToString(rp.StringValues);
 
                     }
@@ -513,7 +514,7 @@ namespace LogicalModel.Validation
                     }
                     if (rp.Type == TypeEnum.Numeric)
                     {
-                        rp.DecimalValues = stringvalues.Select(i => decimal.Parse(i)).ToArray();// GetValues(parameterfactgroup.Facts).Select(i => double.Parse(i)).ToArray();
+                        rp.DecimalValues = stringvalues.Select(i => LogicalModel.Validation.Functions.Number(i)).ToArray();// GetValues(parameterfactgroup.Facts).Select(i => double.Parse(i)).ToArray();
                         rp.StringValue = Utilities.Strings.ArrayToString(rp.DecimalValues);
                         rp.Decimals = decimals;
                     }

@@ -189,6 +189,7 @@
     <Content Include="Layout\Taxonomy_Concepts.html" />
     <Content Include="Layout\Taxonomy_Facts.html" />
     <Content Include="Layout\Taxonomy_General.html" />
+    <Content Include="Layout\Taxonomy_Xml.html" />
     <Content Include="Layout\Taxonomy_Hierarchy.html" />
     <Content Include="Layout\Taxonomy_Labels.html" />
     <Content Include="Layout\Taxonomy_Settings.html" />
@@ -331,9 +332,9 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)Desktop\bin\Debug\Scripts\"
-xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)Desktop\bin\Debug\Layout\"
-xcopy /E /Y /I "$(ProjectDir)Content" "$(SolutionDir)Desktop\bin\Debug\Content\"
+    <PostBuildEvent>xcopy /E /Y /I /D "$(ProjectDir)Scripts" "$(SolutionDir)Desktop\bin\Debug\Scripts\"
+xcopy /E /Y /I /D "$(ProjectDir)Layout" "$(SolutionDir)Desktop\bin\Debug\Layout\"
+xcopy /E /Y /I /D "$(ProjectDir)Content" "$(SolutionDir)Desktop\bin\Debug\Content\"
 xcopy /E /Y /I "$(ProjectDir)UI.html" "$(SolutionDir)Desktop\bin\Debug\"
 xcopy /E /Y /I "$(ProjectDir)Scripts" "$(SolutionDir)Desktop\bin\Release\Scripts\"
 xcopy /E /Y /I "$(ProjectDir)Layout" "$(SolutionDir)Desktop\bin\Release\Layout\"

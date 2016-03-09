@@ -15,6 +15,7 @@
 
         private s_fact_id: string = "T_Facts";
         private s_label_id: string = "T_Labels";
+        private s_xml_id: string = "Xml";
         private s_concept_id: string = "T_Concepts";
         private s_hierarchy_id: string = "T_Hierarchies";
         private s_dimension_id: string = "T_Dimensions";
@@ -34,6 +35,7 @@
         private s_units_selector: string = "";
         private s_find_selector: string = "";
         private s_general_selector: string = "";
+        private s_xml_selector: string = "";
 
         private ui_factdetail: Element = null;
         private ui_vruledetail: Element = null;
@@ -50,6 +52,7 @@
             this.s_units_selector = "#" + this.s_units_id;
             this.s_find_selector = "#" + this.s_find_id;
             this.s_general_selector = "#" + this.s_general_id;
+            this.s_xml_selector = "#" + this.s_xml_id;
             var me = this;
 
             $(window).resize(function () {
@@ -60,7 +63,14 @@
             me.SetHeight();
 
             $(window).on('hashchange', function () {
-                me.HashChanged();
+                var hash = window.location.hash;
+                var doc = TextBetween(hash, "doc=", ";");
+
+                if (!IsNull(doc)) {
+                    me.LoadDoc(doc);
+                } else {
+                    me.HashChanged();
+                }
             });
         }
 
@@ -69,7 +79,19 @@
             me.Table.HashChanged();
 
         }
+        public LoadDoc(doc:string)
+        {
 
+            AjaxRequest(doc, "get", "text/html", null, function (data) {
+                var xml = data;
+                var encoded = '<textarea>' + xml + "</textarea>";
+                _Html( _SelectFirst("#ReportContainer"), encoded);
+                },
+                function (error) {
+                    console.log(error);
+                }
+            );
+        }
 
         private SetHeight() {
             var bodyheight = $("td.th2").height();
@@ -136,6 +158,10 @@
 
             AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Taxonomy.Concepts = data;
+            }, function (error) { console.log(error); });
+
+            AjaxRequest("Taxonomy/Documents", "get", "json", null, function (data) {
+                me.Taxonomy.TaxonomyDocuments = data;
             }, function (error) { console.log(error); });
 
             me.LoadValidationResults(null);
@@ -253,6 +279,11 @@
                 LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
 
             }
+            if (contentid == me.s_xml_id) {
+                LoadPage(_SelectFirst(s_list_selector, me.s_xml_selector), _SelectFirst(s_listpager_selector, me.s_xml_selector),
+                    me.Taxonomy.TaxonomyDocuments, 0, me.LPageSize);
+
+            }
             if (contentid == me.s_validation_id) {
                 me.ShowValidationResults();
             }
@@ -291,6 +322,7 @@
                 }
             }
         }
+
         public LoadTableInfo() {
             var me = this;
             var target = <Element>event.target;
@@ -339,6 +371,25 @@
             }
 
             LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+
+        }
+
+        public ClearFilterDocuments() {
+            $("input[type=text]", "#LabelFilter ").val("");
+            $("textarea", "#LabelFilter ").val("");
+            this.FilterLabels();
+        }
+
+        public FilterDocuments() {
+            var me = this;
+            var f_filename: string = _Value(_SelectFirst("#F_FileName", me.s_xml_selector)).toLowerCase().trim();
+            var query = me.Taxonomy.TaxonomyDocuments.AsLinq<Model.TaxonomyDocument>();
+            if (!IsNull(f_filename)) {
+                query = query.Where(i=> i.SourcePath.toLowerCase().indexOf(f_filename) > -1);
+            }
+
+            LoadPage(_SelectFirst(s_list_selector, me.s_xml_selector), _SelectFirst(s_listpager_selector, me.s_xml_selector),
+                query.ToArray(), 0, me.LPageSize);
 
         }
 

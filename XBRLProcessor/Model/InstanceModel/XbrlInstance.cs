@@ -1,5 +1,4 @@
-﻿using LogicalModel;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Xml.Schema;
 using Utilities;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
+using XBRLProcessor.Model.InstanceModel;
 
 namespace Model.InstanceModel
 {
@@ -120,12 +120,17 @@ namespace Model.InstanceModel
         {
      
             this.TaxonomyModuleReference = this.SchemaRef.Href;
-            this.FilingIndicators = this.XbrlFilingIndicators.Select(i=>i.Value).ToList();
+            this.FilingIndicators = this.XbrlFilingIndicators.Select(i=> {
+                var find = new LogicalModel.FilingIndicator();
+                find.ID = i.Value;
+                find.Filed = i.Filed;
+                return find;
+            }).ToList();
             var ix = 0;
             foreach (var xbrlfact in XbrlFacts) 
             {
                 var xbrlcontext = this.Contexts.FirstOrDefault(i => i.ID == xbrlfact.ContextRef);
-                var logicalfact = new InstanceFact();
+                var logicalfact = new LogicalModel.InstanceFact();
                 logicalfact.IX = ix;
                 ix++;
                 logicalfact.UnitID = xbrlfact.UnitRef;
@@ -140,7 +145,7 @@ namespace Model.InstanceModel
                 factstring = String.Format("{0},",xbrlfact.Concept);
                 var factkey = factstring;
   
-                logicalfact.Concept = new Concept();
+                logicalfact.Concept = new LogicalModel.Concept();
                 logicalfact.Concept.Content = xbrlfact.Concept;
                 if (xbrlcontext.Scenario != null)
                 {
@@ -166,7 +171,7 @@ namespace Model.InstanceModel
                 this.Facts.Add(logicalfact);
                 if (!this.FactDictionary.ContainsKey(logicalfact.FactKey))
                 {
-                    this.FactDictionary.Add(logicalfact.FactKey, new List<InstanceFact>() { logicalfact });
+                    this.FactDictionary.Add(logicalfact.FactKey, new List<LogicalModel.InstanceFact>() { logicalfact });
                 }
                 else 
                 {
@@ -264,7 +269,7 @@ namespace Model.InstanceModel
 
         }
 
-        public override void SetTaxonomy(Taxonomy xbrlTaxonomy)
+        public override void SetTaxonomy(LogicalModel.Taxonomy xbrlTaxonomy)
         {
             base.SetTaxonomy(xbrlTaxonomy);
         }
@@ -384,7 +389,7 @@ namespace Model.InstanceModel
                 
                 if (!dict.ContainsKey(taxconcept.ItemType))
                 {
-                    InstanceUnit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
+                    LogicalModel.InstanceUnit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
                   
                     if (taxconcept.ItemType == "monetaryItemType") 
                     {
@@ -392,7 +397,7 @@ namespace Model.InstanceModel
                     }
                     if (unit != null)
                     {
-                        var xbrlunit = new InstanceUnit();
+                        var xbrlunit = new LogicalModel.InstanceUnit();
                         xbrlunit.ID = GetNewID(this.Units, "U_{0}");
                         xbrlunit.Measure = unit.Measure;
                         this.Units.Add(xbrlunit);
@@ -404,7 +409,7 @@ namespace Model.InstanceModel
                 {
                     fact.UnitID = dict[taxconcept.ItemType];
                 }
-                if (itemtypesetting.Type == TypeEnum.Numeric) 
+                if (itemtypesetting.Type == LogicalModel.TypeEnum.Numeric) 
                 {
                     fact.Decimals = String.Format("{0}", itemtypesetting.Decimals);
                 }
@@ -429,7 +434,7 @@ namespace Model.InstanceModel
                 fact.ContextID = dict[dimfact.FactString];
              
             }
-            var filingcontext = GetContext(new InstanceFact());
+            var filingcontext = GetContext(new LogicalModel.InstanceFact());
             filingcontext.ID = FilingIndicator.DefaultContextID;
             this.Contexts.Add(filingcontext);
         }
@@ -457,8 +462,9 @@ namespace Model.InstanceModel
                         
                         filingndicator.Value = find;
                         this.XbrlFilingIndicators.Add(filingndicator);
-                        
-                        this.FilingIndicators.Add(find);
+                        var logicalFind = new LogicalModel.FilingIndicator();
+                        logicalFind.ID = find;
+                        this.FilingIndicators.Add(logicalFind);
                        
                     }
                 }
@@ -483,7 +489,7 @@ namespace Model.InstanceModel
             return newid;
         }
 
-        private Context GetContext(InstanceFact fact) 
+        private Context GetContext(LogicalModel.InstanceFact fact) 
         {
             var contextcount = this.Contexts.Count;
             var contextid = String.Format("CT_{0}", contextcount + 1);

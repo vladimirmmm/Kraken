@@ -1,7 +1,7 @@
 
 
-var _Select = (CssSelector: string, from?: Element): Element[]=> null;
-var _SelectFirst = (CssSelector: string, from?: Element): Element=> null;
+var _Select = (CssSelector: string, from?: any): Element[]=> null;
+var _SelectFirst = (CssSelector: string, from?: any): Element=> null;
 var _Find = (element : Element, CssSelector: string): Element[]=> null;
 var _FindFirst = (element: Element, CssSelector: string): Element=> null;
 var _Parent = (element: Element, selector?: string): Element => null;

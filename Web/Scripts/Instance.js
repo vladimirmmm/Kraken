@@ -206,8 +206,6 @@ var Control;
         InstanceContainer.prototype.CloseFactDetails = function () {
             var me = this;
             _Hide(me.ui_factdetail);
-            //var $factdetail = me.SelFromFact(s_detail_selector);
-            //$factdetail.hide();
         };
         InstanceContainer.prototype.ShowValidationResults = function () {
             var me = this;
@@ -251,18 +249,19 @@ var Control;
         };
         InstanceContainer.prototype.LoadContentToUIX = function (contentid, sender) {
             var me = this;
+            var eventhandlers = {};
             var text = $(sender).text();
             if (contentid == "Instance") {
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") == -1) {
-                var eventhandlers = { onpaging: function () {
+                eventhandlers = { onpaging: function () {
                     me.CloseFactDetails();
                 } };
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") > -1) {
                 var invalidfacts = me.Instance.Facts.AsLinq().Where(function (i) { return i.Cells.length == 0; }).ToArray();
-                var eventhandlers = { onpaging: function () {
+                eventhandlers = { onpaging: function () {
                     me.CloseFactDetails();
                 } };
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), invalidfacts, 0, me.PageSize, eventhandlers);
@@ -271,8 +270,10 @@ var Control;
                 me.ShowValidationResults();
             }
             if (contentid == me.s_units_id) {
+                LoadPage(_SelectFirst(s_list_selector, me.s_unit_selector), _SelectFirst(s_listpager_selector, me.s_unit_selector), me.Instance.Units, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_find_id) {
+                LoadPage(_SelectFirst(s_list_selector, me.s_find_selector), _SelectFirst(s_listpager_selector, me.s_find_selector), me.Instance.FilingIndicators, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_general_id) {
                 BindX(me.Sel(me.s_general_selector), me.Instance);

@@ -717,7 +717,7 @@ function ConvertFormDataToObj(formdata: any[]): Object
     return result;
 }
 function _SetFunctions() {
-    _Select = function (CssSelector: string, from?: HTMLElement) {
+    _Select = function (CssSelector: string, from?: any) {
         if (IsNull(from)) {
             return ToElements($(CssSelector));
 
@@ -728,7 +728,7 @@ function _SetFunctions() {
         }
     };
 
-    _SelectFirst = function (CssSelector: string, from?: HTMLElement) {
+    _SelectFirst = function (CssSelector: string, from?: any) {
         var elements = _Select(CssSelector, from);
         if (elements.length > 0)
         {

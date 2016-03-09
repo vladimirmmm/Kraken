@@ -118,7 +118,7 @@ namespace LogicalModel.Validation
 
         public decimal DecimalValue
         {
-            get { return decimal.Parse(this.StringValue); }
+            get { return LogicalModel.Validation.Functions.Number(this.StringValue); }
         }
         public DateTime DateValue
         {

@@ -92,6 +92,9 @@
                             <div id="MainContainer" class="contentcontainer">
                                 <ul id="MainCommands" class="commands">
                                     <li>
+                                        <a href="#Xml" onclick="app.taxonomycontainer.LoadContentToUI(this)">XML</a>
+                                    </li>
+                                    <li>
                                         <a href="#Tables" onclick="">Reports</a>
                                     </li>
                                     <li>
@@ -102,111 +105,113 @@
                                     </li>
 
                                 </ul>
+                                <div id="Xml" class="pivotitem" container-for="Taxonomy_Xml">
+
+                                </div>
                                 <div id="Tables" class="pivotitem vresizable" container-for="Taxonomy_Tables">
 
                                 </div>
-                                    <div id="TaxonomyContainer" class="contentcontainer subcontent">
+                                <div id="TaxonomyContainer" class="contentcontainer subcontent">
 
-                                        <ul id="TaxCommands" class="commands">
-                                            <li>
-                                                <a href="#T_Facts" onclick="app.taxonomycontainer.LoadContentToUI(this)">Facts</a>
-                                            </li>
-                                            <li>
-                                                <a href="#T_Labels" onclick="app.taxonomycontainer.LoadContentToUI(this)">Labels</a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="#T_Concepts" onclick="app.taxonomycontainer.LoadContentToUI(this);">Concepts</a>
-                                            </li>
-                                            <li>
-                                                <a href="#T_Hierarchies" onclick="app.taxonomycontainer.LoadContentToUI(this);">Hierarchies</a>
-                                            </li>
-                                            <li>
-                                                <a href="#T_Validations" onclick="app.taxonomycontainer.LoadContentToUI(this);">Validations</a>
-                                            </li>
-                                            <li>
-                                                <a href="#T_General" onclick="app.taxonomycontainer.LoadContentToUI(this);">General</a>
-                                            </li>
-                                            <li>
-                                                <a href="#T_Settings" onclick="app.taxonomycontainer.LoadContentToUI(this);">Settings</a>
-                                            </li>
-                                        </ul>
-                                        <div id="T_Labels" class="subcontent pivotitem" container-for="Taxonomy_Labels">
+                                    <ul id="TaxCommands" class="commands">
+                                        <li>
+                                            <a href="#T_Facts" onclick="app.taxonomycontainer.LoadContentToUI(this)">Facts</a>
+                                        </li>
+                                        <li>
+                                            <a href="#T_Labels" onclick="app.taxonomycontainer.LoadContentToUI(this)">Labels</a>
+                                        </li>
 
+                                        <li>
+                                            <a href="#T_Concepts" onclick="app.taxonomycontainer.LoadContentToUI(this);">Concepts</a>
+                                        </li>
+                                        <li>
+                                            <a href="#T_Hierarchies" onclick="app.taxonomycontainer.LoadContentToUI(this);">Hierarchies</a>
+                                        </li>
+                                        <li>
+                                            <a href="#T_Validations" onclick="app.taxonomycontainer.LoadContentToUI(this);">Validations</a>
+                                        </li>
+                                        <li>
+                                            <a href="#T_General" onclick="app.taxonomycontainer.LoadContentToUI(this);">General</a>
+                                        </li>
+                                        <li>
+                                            <a href="#T_Settings" onclick="app.taxonomycontainer.LoadContentToUI(this);">Settings</a>
+                                        </li>
+                                    </ul>
+                                    <div id="T_Labels" class="subcontent pivotitem" container-for="Taxonomy_Labels">
 
-                                        </div>
-
-                                        <div id="T_Validations" class="subcontent pivotitem" container-for="Taxonomy_Validations">
-
-                                        </div>
-
-                                        <div id="T_Facts" class="subcontent pivotitem" container-for="Taxonomy_Facts">
-
-                                        </div>
-                                        <div id="T_General" class="subcontent pivotitem" container-for="Taxonomy_General">
-
-                                        </div>
-                                        <div id="T_Hierarchies" class="subcontent pivotitem" container-for="Taxonomy_Hierarchy">
-
-                                        </div>
-                                        <div id="T_Concepts" class="subcontent pivotitem" container-for="Taxonomy_Concepts">
-
-                                        </div>
-                                    </div>
-                                    <div id="InstanceContainer" class="contentcontainer subcontent">
-                                        <ul id="InstCommands" class="commands">
-                                            <li>
-                                                <a href="#I_Facts" onclick="app.instancecontainer.LoadContentToUI(this)">Facts</a>
-                                            </li>
-                                            <li>
-                                                <a href="#I_Facts" onclick="app.instancecontainer.LoadContentToUI(this)">Invalid Facts</a>
-                                            </li>
-                                            <li>
-                                                <a href="#I_Validations" onclick="app.instancecontainer.LoadContentToUI(this);">Validations</a>
-                                            </li>
-                                            <li>
-                                                <a href="#I_Units" onclick="app.instancecontainer.LoadContentToUI(this);">Units</a>
-                                            </li>
-                                            <li>
-                                                <a href="#I_Finds" onclick="app.instancecontainer.LoadContentToUI(this);">Filing Indicators</a>
-                                            </li>
-                                            <li>
-                                                <a href="#I_General" onclick="app.instancecontainer.LoadContentToUI(this);">General</a>
-                                            </li>
-                                            <li>
-                                                <a href="#I_Settings" onclick="app.instancecontainer.LoadContentToUI(this);">Settings</a>
-                                            </li>
-                                        </ul>
-                                        <div id="I_Facts" class="subcontent pivotitem" container-for="Instance_Facts">
-
-                                        </div>
-
-
-                                        <div id="I_Validations" class="subcontent pivotitem" container-for="Instance_Validations">
-
-                                        </div>
-
-                                        <div id="I_Units" class="subcontent pivotitem" container-for="Instance_Units">
-
-                                        </div>
-
-                                        <div id="I_General" class="general subcontent pivotitem" container-for="Instance_General">
-
-
-                                        </div>
-
-                                        <div id="I_Finds" class="subcontent pivotitem" container-for="Instance_Finds">
-
-                                        </div>
-
-                                        <div id="I_Settings" class="subcontent pivotitem" container-for="Instance_Finds">
-
-                                        </div>
 
                                     </div>
 
+                                    <div id="T_Validations" class="subcontent pivotitem" container-for="Taxonomy_Validations">
+
+                                    </div>
+
+                                    <div id="T_Facts" class="subcontent pivotitem" container-for="Taxonomy_Facts">
+
+                                    </div>
+                                    <div id="T_General" class="subcontent pivotitem" container-for="Taxonomy_General">
+
+                                    </div>
+                                    <div id="T_Hierarchies" class="subcontent pivotitem" container-for="Taxonomy_Hierarchy">
+
+                                    </div>
+                                    <div id="T_Concepts" class="subcontent pivotitem" container-for="Taxonomy_Concepts">
+
+                                    </div>
+                                </div>
+                                <div id="InstanceContainer" class="contentcontainer subcontent">
+                                    <ul id="InstCommands" class="commands">
+                                        <li>
+                                            <a href="#I_Facts" onclick="app.instancecontainer.LoadContentToUI(this)">Facts</a>
+                                        </li>
+                                        <li>
+                                            <a href="#I_Facts" onclick="app.instancecontainer.LoadContentToUI(this)">Invalid Facts</a>
+                                        </li>
+                                        <li>
+                                            <a href="#I_Validations" onclick="app.instancecontainer.LoadContentToUI(this);">Validations</a>
+                                        </li>
+                                        <li>
+                                            <a href="#I_Units" onclick="app.instancecontainer.LoadContentToUI(this);">Units</a>
+                                        </li>
+                                        <li>
+                                            <a href="#I_Filing" onclick="app.instancecontainer.LoadContentToUI(this);">Filing Indicators</a>
+                                        </li>
+                                        <li>
+                                            <a href="#I_General" onclick="app.instancecontainer.LoadContentToUI(this);">General</a>
+                                        </li>
+                                        <li>
+                                            <a href="#I_Settings" onclick="app.instancecontainer.LoadContentToUI(this);">Settings</a>
+                                        </li>
+                                    </ul>
+                                    <div id="I_Facts" class="subcontent pivotitem" container-for="Instance_Facts">
+
+                                    </div>
+
+
+                                    <div id="I_Validations" class="subcontent pivotitem" container-for="Instance_Validations">
+
+                                    </div>
+
+                                    <div id="I_Units" class="subcontent pivotitem" container-for="Instance_Units">
+
+                                    </div>
+
+                                    <div id="I_General" class="general subcontent pivotitem" container-for="Instance_General">
+
+                                    </div>
+
+                                    <div id="I_Filing" class="subcontent pivotitem" container-for="Instance_Finds">
+
+                                    </div>
+
+                                    <div id="I_Settings" class="subcontent pivotitem" container-for="Instance_Finds">
+
+                                    </div>
 
                                 </div>
+
+
+                            </div>
                         </div>
                     </td>
                     <td>

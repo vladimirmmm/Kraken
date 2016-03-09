@@ -34,7 +34,14 @@ namespace XBRLProcessor.Models
                 _TaxonomyDocuments=value;
             }
         }
-
+        public void SetDocuments(List<LogicalModel.TaxonomyDocument> docs) 
+        {
+            docs.Clear();
+            foreach (var doc in _TaxonomyDocuments) 
+            {
+                docs.Add(doc);
+            }
+        }
         protected Dictionary<string, XbrlTaxonomyDocument> TaxonomyDocumentDictionary = new Dictionary<string, XbrlTaxonomyDocument>();
 
         public new XbrlTaxonomyDocument EntryDocument
@@ -272,6 +279,7 @@ namespace XBRLProcessor.Models
                 }
 
             }
+            SetDocuments(base.TaxonomyDocuments);
             Logger.WriteLine("Load References Completed");
 
         }
