@@ -871,3 +871,9 @@ select.celleditor {
 .error {
     color:#ff0000;
 }
+.window 
+{
+    float:left;
+    width:calc(50% - 10px);
+    height:200px; 
+}

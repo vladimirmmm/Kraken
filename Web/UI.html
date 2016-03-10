@@ -243,38 +243,45 @@
     </div>
     <div id="tempcontainer" class="hidden"></div>
     <div id="LogWindow">
+        <div id="ConsoleWindow" class="half window">
+            <ul>
+                <li><a href="#tab_logs">Logs</a></li>
+                <li>
+                    <progress id="progressbar" class="hidden"></progress>
+                </li>
+            </ul>
+            <div id="tab_logs" class="tabdiv">
+                <div id="contentlog" tabindex="0">
+
+                </div>
+            </div>
+        </div>
         <!--<span id="resizable-helper">Log Window</span>-->
-        <ul>
-            <li><a href="#tab_logs">Logs</a></li>
-            <li><a href="#tab_cell">Cell Info</a></li>
-            <li><a href="#tab_fact">Fact</a></li>
-            <li><a href="#tab_vrule">Validation</a></li>
-            <li>
-                <progress id="progressbar" class="hidden"></progress>
-            </li>
-        </ul>
-        <div id="tab_logs" class="tabdiv">
-            <div id="contentlog" tabindex="0">
+        <div id="DetailWindow" class="half window">
+            <!--<span id="resizable-helper">Log Window</span>-->
+            <ul>
+                <li><a href="#tab_cell">Cell Info</a></li>
+                <li><a href="#tab_fact">Fact</a></li>
+                <li><a href="#tab_vrule">Validation</a></li>
+            </ul>
+            <div id="tab_cell" class="tabdiv">
+                <div id="CellInfo" class="hidden">
+                    <span>$bind:CellID: {CellID}$</span><br />
+                    <span>$bind:Report: {Report}$</span><br />
+                    <span>$bind:Extension: {Extension}$</span><br />
+                    <span>$bind:Row: {Row}$</span><br />
+                    <span>$bind:Column: {Column}$</span><br />
+                    <span>$bind:Fact: {FactString}$</span><br />
+                </div>
+            </div>
+            <div id="tab_fact" class="tabdiv">
 
             </div>
-        </div>
-        <div id="tab_cell" class="tabdiv">
-            <div id="CellInfo" class="hidden">
-                <span>$bind:CellID: {CellID}$</span><br />
-                <span>$bind:Report: {Report}$</span><br />
-                <span>$bind:Extension: {Extension}$</span><br />
-                <span>$bind:Row: {Row}$</span><br />
-                <span>$bind:Column: {Column}$</span><br />
-                <span>$bind:Fact: {FactString}$</span><br />
+            <div id="tab_vrule" class="tabdiv">
+
             </div>
-        </div>
-        <div id="tab_fact" class="tabdiv">
-
-        </div>
-        <div id="tab_vrule" class="tabdiv">
-
         </div>
     </div>
-
+ 
 </body>
 </html>

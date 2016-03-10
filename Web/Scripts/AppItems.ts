@@ -169,7 +169,7 @@ function SetPivots() {
         }
     });
 
-    $("#LogWindow").tabs({
+    $("#ConsoleWindow").tabs({
        /* show: { effect: "slide", direction: "right", duration: 200 }*/
         activate: function (event, ui) {
             if (ui.newPanel[0] == $("#tab_logs")[0]) {
@@ -177,7 +177,14 @@ function SetPivots() {
             }
         }
     });
-
+    $("#DetailWindow").tabs({
+        /* show: { effect: "slide", direction: "right", duration: 200 }*/
+        activate: function (event, ui) {
+            //if (ui.newPanel[0] == $("#tab_cell")[0]) {
+            //    ActivateLogUI();
+            //}
+        }
+    });
     app.Tabs_Main = $("#MainContainer").tabs({
         show: { effect: "slide", direction: "right", duration: 200 },
         beforeActivate: function (event, ui) {

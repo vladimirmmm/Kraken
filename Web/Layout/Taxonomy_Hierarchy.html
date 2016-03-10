@@ -1,4 +1,4 @@
-﻿<div id="hierarchytreeview" onclick="app.taxonomycontainer.LoadHierarchy(this)">
+﻿<div id="hierarchytreeview" onclick="app.taxonomycontainer.LoadHierarchyToUI('#hierarchytreeview', app.taxonomycontainer.Taxonomy.Hierarchies)">
     <ul class="treeview" binding-items="Children" binding-mode="recursive">
         <li binding-type="template" uid="$bind:{uid}$">
             <a href="javascript:void(0)" onclick="">

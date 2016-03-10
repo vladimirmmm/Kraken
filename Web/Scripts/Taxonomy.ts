@@ -148,7 +148,8 @@
                         item.Item.CssClass = "";// item.Item.Type == "table" ? "hidden" : "";
                         item.Item.CssClass += item.Item.HasData > 0 ? " hasdata" : " empty";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
-                        item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
+                        //item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
+                        item["uid"] = Guid();
 
                     }
                 });
@@ -267,7 +268,11 @@
                 ForAll(me.Taxonomy.Hierarchies, "Children", function (item: Model.Hierarchy<Model.QualifiedItem>, parent: Model.Hierarchy<Model.QualifiedItem>, level:number) {
                     if (!IsNull(item) && !IsNull(item.Item)) {
                         item.Item["CssClass"] = level > 2 ? "hidden" : "";
-                        item["uid"] = IsNull(parent)? item.Item.Content: parent["uid"] + ">" + item.Item.Content;
+                    }
+                    if (!("uid" in item))
+                    {
+                        item["uid"] = Guid();
+
                     }
                 });
                 StartProgress("hierarhcy");
@@ -300,45 +305,23 @@
 
             }
         }
-        public LoadHierarchy()
+        public LoadHierarchyToUI<TClass>(selector:any,data:Model.Hierarchy<TClass>)
         {
-            var me = this;
-            var target = <Element>event.target;
-            if (_TagName(target).toLowerCase() != "li")
-            {
-                target = _Parents(target).AsLinq<Element>().FirstOrDefault(i=> _TagName(i).toLowerCase() == "li");
-            }
-            var uid = _Attribute(target, "uid");
-            var data = Model.Hierarchy.FirstOrDefault(me.Taxonomy.Hierarchies,(i: Model.Hierarchy<Model.QualifiedItem>) => i["uid"] == uid);
-            if (data.Children.length > 0) {
-                var template = GetBindingTemplateX(me.SelFromHierarchy("#hierarchytreeview"));
-                if (template != null) {
-                    var html = template.Bind(data, 0, 2);
-                    var elements = $.parseHTML(html)
-                    elements.forEach((e) => {
-                        _Append(target, e);
-
-                    });
-                }
-            }
-        }
-
-        public LoadTableInfo() {
             var me = this;
             var target = <Element>event.target;
             if (_TagName(target).toLowerCase() != "li") {
                 target = _Parents(target).AsLinq<Element>().FirstOrDefault(i=> _TagName(i).toLowerCase() == "li");
             }
             var uid = _Attribute(target, "uid");
-            var data = Model.Hierarchy.FirstOrDefault(me.TableStructure, (i: Model.Hierarchy<Model.TableInfo>) => i["uid"] == uid);
-            if (!IsNull(data) && data.Children.length > 0) {
-                var template = GetBindingTemplateX(_SelectFirst("#tabletreeview"));
+            var data = Model.Hierarchy.FirstOrDefault(data,(i: Model.Hierarchy<Model.QualifiedItem>) => i["uid"] == uid);
+            if (data.Children.length > 0) {
+                var template = GetBindingTemplateX(_SelectFirst(selector));
                 if (template != null) {
                     var html = template.Bind(data, 0, 2);
                     var elements = $.parseHTML(html);
                     var ulelement = _Select("ul", target);
                     _Remove(ulelement);
-                    //_Html(target, "");
+
                     elements.forEach((e) => {
                         _Append(target, e);
 
@@ -346,6 +329,57 @@
                 }
             }
         }
+
+        //public LoadHierarchy()
+        //{
+        //    var me = this;
+        //    var target = <Element>event.target;
+        //    if (_TagName(target).toLowerCase() != "li")
+        //    {
+        //        target = _Parents(target).AsLinq<Element>().FirstOrDefault(i=> _TagName(i).toLowerCase() == "li");
+        //    }
+        //    var uid = _Attribute(target, "uid");
+        //    var data = Model.Hierarchy.FirstOrDefault(me.Taxonomy.Hierarchies,(i: Model.Hierarchy<Model.QualifiedItem>) => i["uid"] == uid);
+        //    if (data.Children.length > 0) {
+        //        var template = GetBindingTemplateX(me.SelFromHierarchy("#hierarchytreeview"));
+        //        if (template != null) {
+        //            var html = template.Bind(data, 0, 2);
+        //            var elements = $.parseHTML(html);
+        //            var ulelement = _Select("ul", target);
+        //            _Remove(ulelement);
+
+        //            elements.forEach((e) => {
+        //                _Append(target, e);
+
+        //            });
+        //        }
+        //    }
+        //}
+
+        //public LoadTableInfo() {
+        //    var me = this;
+        //    var target = <Element>event.target;
+        //    if (_TagName(target).toLowerCase() != "li") {
+        //        target = _Parents(target).AsLinq<Element>().FirstOrDefault(i=> _TagName(i).toLowerCase() == "li");
+        //    }
+        //    var uid = _Attribute(target, "uid");
+        //    var data = Model.Hierarchy.FirstOrDefault(me.TableStructure, (i: Model.Hierarchy<Model.TableInfo>) => i["uid"] == uid);
+        //    if (!IsNull(data) && data.Children.length > 0) {
+        //        var template = GetBindingTemplateX(_SelectFirst("#tabletreeview"));
+        //        if (template != null) {
+        //            var html = template.Bind(data, 0, 2);
+        //            var elements = $.parseHTML(html);
+        //            var ulelement = _Select("ul", target);
+        //            _Remove(ulelement);
+        //            //_Html(target, "");
+        //            elements.forEach((e) => {
+        //                _Append(target, e);
+
+        //            });
+        //        }
+        //    }
+        //}
+
         public ClearFilterLabels() {
             $("input[type=text]", "#LabelFilter ").val("");
             $("textarea", "#LabelFilter ").val("");

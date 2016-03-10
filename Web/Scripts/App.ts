@@ -225,7 +225,8 @@ module Applications
                 _Append(tmpcontainer, child);
             });
             _Append(tab, element);
-            LoadTab("#LogWindow", tabselector);
+            //LoadTab("#ConsoleWindow", tabselector);
+            LoadTab("#DetailWindow", tabselector);
            
         }
 

@@ -362,175 +362,200 @@ namespace XBRLProcessor.Models
         }
         public override void LoadDimensions()
         {
-            this.DimensionItems = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
-            var defdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("link:definitionLink")).ToList();
-            var domtodim_docs = new List<XbrlTaxonomyDocument>();
-            var memtodom_docs = new List<XbrlTaxonomyDocument>();
-           
-            foreach (var defdoc in defdocs) 
+            Logger.WriteLine("Load Dimensions");
+
+            if (!System.IO.File.Exists(TaxonomyDimensionPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
-                var defarcs = Utilities.Xml.SelectNodes(defdoc.XmlDocument.DocumentElement, "//link:arcroleRef");
-                var defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/dimension-domain");
-                if (defarc != null)
+                this.DimensionItems = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
+                var defdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("link:definitionLink")).ToList();
+                var domtodim_docs = new List<XbrlTaxonomyDocument>();
+                var memtodom_docs = new List<XbrlTaxonomyDocument>();
+
+                foreach (var defdoc in defdocs)
                 {
-                    domtodim_docs.Add(defdoc);
-                }
-                else 
-                {
-                    defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/domain-member");
-                    if (defarc != null) 
+                    var defarcs = Utilities.Xml.SelectNodes(defdoc.XmlDocument.DocumentElement, "//link:arcroleRef");
+                    var defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/dimension-domain");
+                    if (defarc != null)
                     {
-                        memtodom_docs.Add(defdoc);
-                    }
-                }
-            }
-            var domtodim = new Hierarchy<Locator>();
-            var mapping = Mappings.CurrentMapping.GetMapping(typeof(DefinitionLink));
-            var domtodimdefinitions = new List<DefinitionLink>();
-            var dimdict = new Dictionary<string, List<string>>();
-            domdict.Clear();
-
-            foreach (var doc in domtodim_docs)
-            {
-                
-                var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
-                foreach (var deflink in deflinks) 
-                {
-                    if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
-                    {
-                        var dlink = mapping.Map<DefinitionLink>(deflink);
-                       // dlink.DefinitionArcs = dlink.DefinitionArcs.Where(i => i.RoleType == "dimension_domain").ToList();
-                        dlink.LoadHierarchy();
-                        var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
-                        if (roots.Count > 1) 
-                        {
-                            var hroot = new Hierarchy<Locator>(new Locator());
-                            foreach (var root in roots) 
-                            {
-                                hroot.Children.Add(root);
-                            }
-                            dlink.DefinitionRoot = hroot;
-
-                        }
-                        foreach (var item in dlink.DefinitionRoot.Children)
-                        {
-                            var dimelement = this.DimensionItems.FirstOrDefault(i => i.ID == item.Item.ID);
-                            var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
-                            var children = item.Children.Where(i =>
-                            {
-                                //i.Item.Locate();
-                                return i.Item.RoleType == "dimension_domain";
-                            }).ToList();
-                            if (!dimdict.ContainsKey(key)) 
-                            {
-
-                                dimdict.Add(key, new List<string>());
-                            }
-                            dimdict[key].AddRange(children.Select(i => i.Item.ID));
-               
-                        }
-                        domtodimdefinitions.Add(dlink);
-                    }
-
-                }
-            }
-            foreach (var dimelement in this.DimensionItems) 
-            {
-                if (!String.IsNullOrEmpty(dimelement.TypedDomainRef))
-                {
-                    var doc = TaxonomyDocumentDictionary[dimelement.FileName];
-                    var domainelement = LocateIn(doc, dimelement.TypedDomainRef);
-                    var eldoc = TaxonomyDocumentDictionary[domainelement.FileName];
-                    var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
-                    if (!dimdict.ContainsKey(key))
-                    {
-                        dimdict.Add(key, new List<string>());
-                    }
-                    var typeddomain = String.Format("{0}:{1}", eldoc.TargetNamespacePrefix, domainelement.Name);
-                    dimdict[key].Add(typeddomain);
-                }
-            }
-
-            var memtodomdefinitions = new List<DefinitionLink>();
-            foreach (var doc in memtodom_docs)
-            {
-
-                var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
-                foreach (var deflink in deflinks)
-                {
-                    if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
-                    {
-                        var dlink = mapping.Map<DefinitionLink>(deflink);
-                        dlink.LoadHierarchy();
-                        var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
-                        if (roots.Count > 1)
-                        {
-                            var hroot = new Hierarchy<Locator>(new Locator());
-                            foreach (var root in roots)
-                            {
-                                hroot.Children.Add(root);
-                            }
-                            dlink.DefinitionRoot = hroot;
-
-                        }
-                        var domkey = dlink.DefinitionRoot.Item.ID;
-                        foreach (var item in dlink.DefinitionRoot.Children)
-                        {
-                            item.Item.Locate(doc);
-
-                            if (item.Item.Element != null)
-                            {
-                                var key = item.Item.Element.Name;
-                                if (!domdict.ContainsKey(domkey))
-                                {
-                                    domdict.Add(domkey, new List<string>());
-                                }
-                                domdict[domkey].Add(key);
-                            }
-
-                        }
-
-                        memtodomdefinitions.Add(dlink);
-                    }
-
-                }
-            }
-            var dimlist = new List<string>();
-            foreach (var dim in dimdict)
-            {
-                foreach (var dom in dim.Value)
-                {
-                    if (domdict.ContainsKey(dom))
-                    {
-                        var dommembers = domdict[dom];
-                        foreach (var member in dommembers)
-                        {
-                            dimlist.Add(String.Format("[{0}]{1}:{2}", dim.Key, dom, member));
-                        }
+                        domtodim_docs.Add(defdoc);
                     }
                     else
                     {
-                        dimlist.Add(String.Format("[{0}]{1}", dim.Key, dom));
+                        defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/domain-member");
+                        if (defarc != null)
+                        {
+                            memtodom_docs.Add(defdoc);
+                        }
+                    }
+                }
+                var domtodim = new Hierarchy<Locator>();
+                var mapping = Mappings.CurrentMapping.GetMapping(typeof(DefinitionLink));
+                var domtodimdefinitions = new List<DefinitionLink>();
+                var dimdict = new Dictionary<string, List<string>>();
+                domdict.Clear();
+
+                foreach (var doc in domtodim_docs)
+                {
+
+                    var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
+                    foreach (var deflink in deflinks)
+                    {
+                        if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                        {
+                            var dlink = mapping.Map<DefinitionLink>(deflink);
+                            // dlink.DefinitionArcs = dlink.DefinitionArcs.Where(i => i.RoleType == "dimension_domain").ToList();
+                            dlink.LoadHierarchy();
+                            var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
+                            if (roots.Count > 1)
+                            {
+                                var hroot = new Hierarchy<Locator>(new Locator());
+                                foreach (var root in roots)
+                                {
+                                    hroot.Children.Add(root);
+                                }
+                                dlink.DefinitionRoot = hroot;
+
+                            }
+                            foreach (var item in dlink.DefinitionRoot.Children)
+                            {
+                                var dimelement = this.DimensionItems.FirstOrDefault(i => i.ID == item.Item.ID);
+                                var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                                var children = item.Children.Where(i =>
+                                {
+                                    //i.Item.Locate();
+                                    return i.Item.RoleType == "dimension_domain";
+                                }).ToList();
+                                if (!dimdict.ContainsKey(key))
+                                {
+
+                                    dimdict.Add(key, new List<string>());
+                                }
+                                dimdict[key].AddRange(children.Select(i => i.Item.ID));
+
+                            }
+                            domtodimdefinitions.Add(dlink);
+                        }
+
+                    }
+                }
+                foreach (var dimelement in this.DimensionItems)
+                {
+                    if (!String.IsNullOrEmpty(dimelement.TypedDomainRef))
+                    {
+                        var doc = TaxonomyDocumentDictionary[dimelement.FileName];
+                        var domainelement = LocateIn(doc, dimelement.TypedDomainRef);
+                        var eldoc = TaxonomyDocumentDictionary[domainelement.FileName];
+                        var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                        if (!dimdict.ContainsKey(key))
+                        {
+                            dimdict.Add(key, new List<string>());
+                        }
+                        var typeddomain = String.Format("{0}:{1}", eldoc.TargetNamespacePrefix, domainelement.Name);
+                        dimdict[key].Add(typeddomain);
                     }
                 }
 
+                var memtodomdefinitions = new List<DefinitionLink>();
+                foreach (var doc in memtodom_docs)
+                {
+
+                    var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
+                    foreach (var deflink in deflinks)
+                    {
+                        if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                        {
+                            var dlink = mapping.Map<DefinitionLink>(deflink);
+                            dlink.LoadHierarchy();
+                            var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
+                            if (roots.Count > 1)
+                            {
+                                var hroot = new Hierarchy<Locator>(new Locator());
+                                foreach (var root in roots)
+                                {
+                                    hroot.Children.Add(root);
+                                }
+                                dlink.DefinitionRoot = hroot;
+
+                            }
+                            var domkey = dlink.DefinitionRoot.Item.ID;
+                            foreach (var item in dlink.DefinitionRoot.Children)
+                            {
+                                item.Item.Locate(doc);
+
+                                if (item.Item.Element != null)
+                                {
+                                    var key = item.Item.Element.Name;
+                                    if (!domdict.ContainsKey(domkey))
+                                    {
+                                        domdict.Add(domkey, new List<string>());
+                                    }
+                                    domdict[domkey].Add(key);
+                                }
+
+                            }
+
+                            memtodomdefinitions.Add(dlink);
+                        }
+
+                    }
+                }
+                var dimlist = new List<string>();
+                foreach (var dim in dimdict)
+                {
+                    foreach (var dom in dim.Value)
+                    {
+                        if (domdict.ContainsKey(dom))
+                        {
+                            var dommembers = domdict[dom];
+                            foreach (var member in dommembers)
+                            {
+                                dimlist.Add(String.Format("[{0}]{1}:{2}", dim.Key, dom, member));
+                            }
+                        }
+                        else
+                        {
+                            dimlist.Add(String.Format("[{0}]{1}", dim.Key, dom));
+                        }
+                    }
+
+                }
+                dimlist.AddRange(Concepts.Select(i => i.Key));
+
+                dimlist = dimlist.OrderBy(i => i).ToList();
+
+                var sb = new StringBuilder();
+                var ix = 0;
+                var fd = new FactDictionaries();
+
+                foreach (var dim in dimlist)
+                {
+                    //sb.AppendLine(dim);
+                    FactParts.Add(dim, ix);
+                    CounterFactParts.Add(ix, dim);
+                    ix++;
+                }
+                var z = 0;
+                fd.CounterFactParts = CounterFactParts;
+                fd.FactParts = FactParts;
+                Utilities.FS.WriteAllText(this.TaxonomyDimensionPath, Utilities.Converters.ToJson(fd));
+
             }
-            dimlist.AddRange(Concepts.Select(i => i.Key));
-
-            dimlist = dimlist.OrderBy(i => i).ToList();
-
-            var sb = new StringBuilder();
-            var ix = 0;
-            foreach (var dim in dimlist) 
+            else
             {
-                //sb.AppendLine(dim);
-                FactParts.Add(dim, ix);
-                CounterFactParts.Add(ix, dim);
-                ix++;
+                var fd = new FactDictionaries();
+                fd = Utilities.Converters.JsonTo<FactDictionaries>(Utilities.FS.ReadAllText(this.TaxonomyDimensionPath));
+                this.CounterFactParts = fd.CounterFactParts;
+                this.FactParts = fd.FactParts;
             }
-            var z = 0;
-        }
+            Logger.WriteLine("Load Dimensions completed");
 
+        }
+        class FactDictionaries
+        {
+            public Dictionary<string, int> FactParts { get; set; }
+            public Dictionary<int, string> CounterFactParts { get; set; }
+
+        }
         public override void LoadHierarchy()
         {
             Logger.WriteLine("Load Hierarchies");
