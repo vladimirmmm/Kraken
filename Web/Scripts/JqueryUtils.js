@@ -661,7 +661,7 @@ function _SetFunctions() {
         return $(target).width();
     };
     _Parent = function (target, selector) {
-        var parent = $(target).parent(selector);
+        var parent = $(target).parents(selector);
         return parent.length == 0 ? null : parent[0];
     };
     _Parents = function (target, selector) {

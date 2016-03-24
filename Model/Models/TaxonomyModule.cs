@@ -63,7 +63,11 @@ namespace LogicalModel
                 {
                     itsetting.UnitID = unit.ID;
                 }
-                UserSettings.ItemTypeSettings.Add(itsetting);
+                var existing = UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itsetting.ItemType);
+                if (existing == null)
+                {
+                    UserSettings.ItemTypeSettings.Add(itsetting);
+                }
             }
         }
 

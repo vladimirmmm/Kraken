@@ -37,6 +37,24 @@ module Applications
                 handled = true;
                 me.OpenWebPath(lid);
             } 
+            if (In(lid, "save_xbrl_instance"))
+            {
+                var parameter = { facts: JSON.stringify(me.instancecontainer.Instance.Facts) };
+                AjaxRequest("Instance/Save", "post", "json", parameter,
+                    (result) => {
+                        ShowNotification(Format("{0} facts were saved!", parameter.facts.length));
+                        app.instancecontainer.LoadInstance(null);
+                        //() => {
+                        //    me.LoadInstance(me.Instance);
+                        //}
+                        // );
+                    }
+                    ,
+                    (error) => {
+                        ShowError("Facts were not saved: " + GetErrorObj(error).message);
+                    });
+                handled = true;
+            }
             if (In(lid, "validate_folder", "process_folder")) {
                 handled = true;
                 BrowseFolder(lid, me.MenuAccessorFunction);

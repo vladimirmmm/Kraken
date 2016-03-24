@@ -31,8 +31,8 @@ namespace LogicalModel
 	</xbrli:unit>
              */
             sb.AppendLine(String.Format("<xbrli:unit id=\"{0}\">", this.ID));
-            sb.AppendLine(String.Format("<xbrli:measure>{0}</xbrli:measure>", this.Measure));
-            sb.AppendLine("</xbrli:unit>");
+            sb.AppendLine(Literals.Tab + String.Format("<xbrli:measure>{0}</xbrli:measure>", this.Measure));
+            sb.Append("</xbrli:unit>");
 
             return sb.ToString();
         }

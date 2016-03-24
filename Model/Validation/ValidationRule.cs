@@ -294,7 +294,7 @@ namespace LogicalModel.Validation
 
         public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
-            if (this.ID.Contains("1067")) 
+            if (this.ID.Contains("0010")) 
             { 
             }
             var allresults = GetAllResults();
@@ -569,6 +569,7 @@ namespace LogicalModel.Validation
                 if (this.ID.Contains("173")) 
                 { 
                 }
+                var formula = Taxonomy.SimpleValidationRules.FirstOrDefault(i => i.ID == this.ID);
                 try
                 {
                     partialresult = Function(Parameters);

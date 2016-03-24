@@ -163,6 +163,7 @@
             _Value(this.SelFromFact(s_listfilter_selector + " " + "textarea"), "");
             this.FilterFacts();
         }
+
         private GetFilterValue(selector: string): string {
             var element = this.SelFromFact(s_listfilter_selector + " " + selector);
             if (!IsNull(element)) {
@@ -170,6 +171,7 @@
             }
             return "";
         }
+
         public FilterFacts()
         {
             var me = this;
@@ -399,7 +401,7 @@
        
         }
 
-
+        
     
 
     }

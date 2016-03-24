@@ -265,7 +265,7 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
         Communication_ToApp(msg);
     }
     else {
-        Ajax("Instance/Index", "get", { msg: msg }, AjaxResponse, contenttype);
+        Ajax("Instance/Index", method, { msg: msg }, AjaxResponse, contenttype);
     }
     return requesthandler;
 }

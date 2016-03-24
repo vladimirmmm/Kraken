@@ -114,7 +114,7 @@ namespace Engine
                     new MenuCommand("Exit", "Exit", (o) => { UI.Close(); }, null)
                     ),
                 new MenuCommand("Instance", "Instance",
-                    new MenuCommand("Validate_Insatnce", "Validate", (o) => { ValidateInstance(); }, null),
+                    new MenuCommand("Validate_Instance", "Validate", (o) => { ValidateInstance(); }, null),
                     new MenuCommand("Validate_Folder", "Validate Folder", (o) => { ValidateFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
                     new MenuCommand("SaveInstance", "Save", (o) => { SaveInstance(""); }, null),
                     new MenuCommand("SaveInstanceAs", "Save As", (o) => { SaveInstanceAs(); }, () => new object[] { UI.BrowseFile("", "") }),

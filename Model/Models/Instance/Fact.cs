@@ -85,7 +85,7 @@ namespace LogicalModel
             {
                 unitref = String.Format("unitRef=\"{0}\"", UnitID);
             }
-            sb.AppendLine(String.Format("<{0} {2} contextRef=\"{3}\" {4}>{1}<{0}>",
+            sb.Append(String.Format(Literals.Tab +  "<{0} {2} contextRef=\"{3}\" {4}>{1}</{0}>",
                 this.Concept.Content, this.Value, decimals, ContextID, unitref));
 
             return sb.ToString();

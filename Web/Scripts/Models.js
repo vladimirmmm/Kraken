@@ -216,7 +216,7 @@ var Model;
         function FactBase() {
             this.Concept = null;
             this.Dimensions = [];
-            this._FactString = "";
+            this.FactString = "";
         }
         FactBase.prototype.GetFactString = function () {
             var me = this;
@@ -235,18 +235,23 @@ var Model;
                 //result += Format("{0},", dimstr);
                 result += dimstr + ",";
             });
-            me._FactString = result;
+            me.FactString = result;
             return result;
         };
-        FactBase.prototype.GetFactKey = function () {
-            var me = this;
+        FactBase.GetFactKey = function (fact) {
             var result = "";
-            if (!IsNull(this.FactString)) {
-                var parts = this.FactString.split(",");
+            if (!IsNull(fact.FactString)) {
+                var parts = fact.FactString.split(",");
                 parts.forEach(function (part) {
                     if (!IsNull(part)) {
                         if (Dimension.IsTyped(part)) {
-                            result += part.substring(0, part.lastIndexOf(":"));
+                            var dimparts = part.split(":");
+                            if (dimparts.length > 3) {
+                                result += part.substring(0, part.lastIndexOf(":"));
+                            }
+                            else {
+                                result += part;
+                            }
                         }
                         else {
                             result += part;
@@ -257,19 +262,15 @@ var Model;
             }
             return result;
         };
-        Object.defineProperty(FactBase.prototype, "FactString", {
-            get: function () {
-                if (IsNull(this._FactString)) {
-                    this._FactString = this.GetFactString();
-                }
-                return this._FactString;
-            },
-            set: function (value) {
-                this._FactString = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
+        //public get FactString(): string {
+        //    if (IsNull(this._FactString)) {
+        //        this._FactString = this.GetFactString();
+        //    }
+        //    return this._FactString;
+        //}
+        //public set FactString(value:string) {
+        //    this._FactString = value;
+        //}
         FactBase.Merge = function (target, item, overwrite) {
             if (overwrite === void 0) { overwrite = false; }
             if (IsNull(target.Concept)) {
@@ -440,6 +441,9 @@ var Model;
             return item;
         };
         InstanceFact.prototype.Load = function () {
+            if (IsNull(this.FactString)) {
+                return null;
+            }
             var items = this.FactString.split(",");
             if (items.length > 0) {
                 var item = items[0];
@@ -583,7 +587,7 @@ var Model;
         Instance.GetFactFor = function (me, cellfact, cellid) {
             var facts = [];
             var fact = null;
-            var factkey = cellfact.GetFactKey();
+            var factkey = FactBase.GetFactKey(cellfact);
             var factstring = cellfact.FactString;
             if (factkey in me.FactDictionary) {
                 facts = me.FactDictionary[factkey];
@@ -592,6 +596,39 @@ var Model;
                 }
             }
             return fact;
+        };
+        Instance.SaveFact = function (instance, fact) {
+            var me = this;
+            var existingfact = null;
+            var factkey = FactBase.GetFactKey(fact);
+            var existingfacts = instance.FactDictionary[factkey];
+            if (IsNull(existingfacts)) {
+                existingfact = fact;
+                instance.FactDictionary[factkey] = [existingfact];
+                existingfacts = instance.FactDictionary[factkey];
+            }
+            else {
+                if (existingfacts.length == 0) {
+                    existingfacts.push(fact);
+                    existingfact = fact;
+                }
+                else if (existingfacts.length == 1) {
+                    existingfact = existingfacts[0];
+                }
+                else {
+                    existingfact = existingfacts.AsLinq().FirstOrDefault(function (i) { return i.FactString == fact.FactString; });
+                    if (IsNull(existingfact)) {
+                        existingfacts.push(fact);
+                        existingfact = fact;
+                    }
+                }
+            }
+            if (IsNull(fact.Value)) {
+                removeFromArray(existingfact, existingfacts);
+            }
+            else {
+                existingfact.Value = fact.Value;
+            }
         };
         return Instance;
     })();

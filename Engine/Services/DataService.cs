@@ -117,6 +117,15 @@ namespace Engine.Services
                                     var json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.CurrentInstancePath);
                                     result.Data = json;
                                 }
+                                if (part1 == "save")
+                                {
+                                    var factsjson = request.GetParameter("facts");
+                                    var facts = Utilities.Converters.JsonTo<List<InstanceFact>>(factsjson);
+                                    var json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.CurrentInstancePath);
+                                    Engine.CurrentInstance.SaveFacts(facts);
+                                    this.AppEngine.Features.SaveInstance("");
+                                    //result.Data = "Ok";
+                                }
                                 if (part1 == "validation")
                                 {
                                     var json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.CurrentInstanceValidationResultPath);
@@ -162,7 +171,10 @@ namespace Engine.Services
                                             foreach (var fid in p.FactIDs)
                                             {
                                                 var fact = instance.GetFactBaseByIndexString(fid);
-                                                p.Facts.Add(fact.FactString);
+                                                if (fact != null)
+                                                {
+                                                    p.Facts.Add(fact.FactString);
+                                                }
                                             }
                                         }
                                     }

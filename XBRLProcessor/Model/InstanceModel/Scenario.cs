@@ -80,15 +80,15 @@ namespace Model.InstanceModel
             }
         }
 
-        public string ToXmlString() 
+        public string ToXmlString(string prefix) 
         {
             var sb = new StringBuilder();
-            sb.AppendLine("<scenario>");
+            sb.AppendLine(prefix + "<scenario>");
             foreach (var dimension in Dimensions) 
             {
-                sb.AppendLine(dimension.ToXmlString());
+                sb.AppendLine(prefix + dimension.ToXmlString(prefix + Literals.Tab));
             }
-            sb.AppendLine("</scenario>");
+            sb.Append(prefix + "</scenario>");
             return sb.ToString();
         }
     }

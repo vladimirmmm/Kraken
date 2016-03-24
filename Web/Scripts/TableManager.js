@@ -166,6 +166,12 @@ var Controls;
                 CallFunction(me.Manager.OnColumnAdded, [col]);
                 //me.Manager.OnRowAdded(row);
             };
+            this.OnCellChanged = function (cell, value) {
+                var me = (this);
+                //me.ManageRows();
+                CallFunction(me.Manager.OnCellChanged, [cell, value]);
+                //me.Manager.OnRowAdded(row);
+            };
             this.OnLayoutChanged = function (row) {
                 var me = (this);
                 CallFunction(me.Manager.OnLayoutChanged, [row]);
@@ -204,25 +210,17 @@ var Controls;
             }
             return cell;
         };
-        Table.prototype.GetRowOfCell = function (cellelement) {
+        Table.prototype.GetRowOfCell = function (cell) {
             var me = this;
             var result = null;
-            var rowelement = _Parent(cellelement);
-            me.Rows.forEach(function (row, ix) {
-                if (rowelement == row.UIElement) {
-                    result = row;
-                }
-            });
+            cell.RowID;
+            result = me.Rows.AsLinq().FirstOrDefault(function (i) { return i.ID == cell.RowID; });
             return result;
         };
-        Table.prototype.GetColOfCell = function (cellelement) {
+        Table.prototype.GetColOfCell = function (cell) {
             var me = this;
             var result = null;
-            var rowelement = _Parent(cellelement);
-            var ix = Property(cellelement, "cellIndex") - _Select("th", rowelement).length;
-            if (ix > -1 && ix < me.Columns.length) {
-                result = me.Columns[ix];
-            }
+            result = me.Columns.AsLinq().FirstOrDefault(function (i) { return i.ID == cell.ColID; });
             return result;
         };
         Table.prototype.ValidateRow = function (rowid) {
@@ -373,8 +371,19 @@ var Controls;
             return column;
         };
         Table.prototype.GetRowByElement = function (element) {
+            var rowelement = _TagName(element) == "TR" ? element : _Parent(element);
             var row = this.Rows.AsLinq().FirstOrDefault(function (i) { return i.UIElement == element; });
             return row;
+        };
+        Table.prototype.GetColByElement = function (element) {
+            var rowelement = _Parent(element);
+            var me = this;
+            var result = null;
+            var ix = Property(element, "cellIndex") - _Select("th", rowelement).length;
+            if (ix > -1 && ix < me.Columns.length) {
+                result = me.Columns[ix];
+            }
+            return result;
         };
         Table.prototype.RemoveRowByID = function (rowid) {
             var rowtoremove = this.GetRowByID(rowid);

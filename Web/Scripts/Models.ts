@@ -209,7 +209,7 @@
         public Concept: QualifiedName = null;
         public Dimensions: Dimension[] = [];
 
-        private _FactString: string = "";
+        public FactString: string = "";
         public GetFactString(): string
         {
             var me = this;
@@ -227,20 +227,28 @@
                 //result += Format("{0},", dimstr);
                 result += dimstr + ",";
             });
-            me._FactString = result;
+            me.FactString = result;
             return result;
         }
  
-        public GetFactKey(): string {
-            var me = this;
+        public static GetFactKey(fact:FactBase): string {
+
             var result = "";
-            if (!IsNull(this.FactString))
+            if (!IsNull(fact.FactString))
             {
-                var parts = this.FactString.split(",");
+                var parts = fact.FactString.split(",");
                 parts.forEach(function (part) {
                     if (!IsNull(part)) {
                         if (Dimension.IsTyped(part)) {
-                            result += part.substring(0, part.lastIndexOf(":"));
+                            var dimparts = part.split(":");
+                            if (dimparts.length > 3) {
+                                result += part.substring(0, part.lastIndexOf(":"));
+
+                            } else
+                            {
+                                result += part;
+
+                            }
                         }
                         else {
                             result += part;
@@ -252,15 +260,15 @@
             return result;
         }
 
-        public get FactString(): string {
-            if (IsNull(this._FactString)) {
-                this._FactString = this.GetFactString();
-            }
-            return this._FactString;
-        }
-        public set FactString(value:string) {
-            this._FactString = value;
-        }
+        //public get FactString(): string {
+        //    if (IsNull(this._FactString)) {
+        //        this._FactString = this.GetFactString();
+        //    }
+        //    return this._FactString;
+        //}
+        //public set FactString(value:string) {
+        //    this._FactString = value;
+        //}
 
         public static Merge(target: FactBase, item: FactBase, overwrite:boolean=false)
         {
@@ -418,7 +426,7 @@
         public UnitID: string;
         public ContextID: string;
         public FactKey: string;
-        public FactString: string;
+        //public FactString: string;
         public FactID: number;
         public Cells: string[] = [];
 
@@ -435,6 +443,7 @@
 
         public Load()
         {
+            if (IsNull(this.FactString)) { return null; }
             var items = this.FactString.split(",");
             if (items.length > 0)
             {
@@ -566,7 +575,7 @@
         {
             var facts: InstanceFact[] = [];
             var fact: InstanceFact = null;
-            var factkey = cellfact.GetFactKey();
+            var factkey = FactBase.GetFactKey(cellfact);
             var factstring = cellfact.FactString;
             if (factkey in me.FactDictionary) {
                 facts = me.FactDictionary[factkey];
@@ -577,6 +586,42 @@
             return fact;
         }
 
+        public static SaveFact(instance:Instance, fact: InstanceFact) {
+            var me = this;
+
+            var existingfact: InstanceFact = null;
+            var factkey = FactBase.GetFactKey(fact);
+            var existingfacts = instance.FactDictionary[factkey];
+            if (IsNull(existingfacts)) {
+                existingfact = fact;
+                instance.FactDictionary[factkey] = [existingfact];
+                existingfacts = instance.FactDictionary[factkey];
+            }
+            else {
+
+                if (existingfacts.length == 0) {
+                    existingfacts.push(fact);
+                    existingfact = fact;
+                }
+                else if (existingfacts.length == 1) {
+                    existingfact = existingfacts[0];
+                }
+                else
+                {
+                    existingfact = existingfacts.AsLinq<InstanceFact>().FirstOrDefault(i=> i.FactString == fact.FactString);
+                    if (IsNull(existingfact)) {
+                        existingfacts.push(fact);
+                        existingfact = fact;
+                    } 
+                }
+            }
+            if (IsNull(fact.Value)) {
+                removeFromArray(existingfact, existingfacts);
+            } else
+            {
+                existingfact.Value = fact.Value;
+            }
+        }
     }   
 
     export class Label {

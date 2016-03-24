@@ -729,8 +729,15 @@ namespace LogicalModel
             }
             else
             {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyModulePath);
+                var jsoncontent = Utilities.FS.ReadAllText(TaxonomyModulePath);
                 this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
+                this.Module.Taxonomy = this;
+                this.Module.Load();
+                var jsoncontent2 = Utilities.Converters.ToJson(this.Module);
+                if (jsoncontent != jsoncontent2) 
+                {
+                    Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent2);
+                }
                 this.Tables.Clear();
                 foreach (var tablepath in Module.TablePaths)
                 {

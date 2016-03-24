@@ -18,7 +18,7 @@ namespace XBRLProcessor.Model.InstanceModel
         public string ToXmlString() 
         {
             var sb = new StringBuilder();
-            sb.AppendLine(String.Format("<find:filingIndicator contextRef=\"{1}\" find:filed=\"{2}\">{0}</find:filingIndicator>", this.Value, this.ContextID,this.Filed));
+            sb.Append(LogicalModel.Literals.Tab + String.Format("<find:filingIndicator contextRef=\"{1}\" find:filed=\"{2}\">{0}</find:filingIndicator>", this.Value, this.ContextID, this.Filed));
             return sb.ToString(); 
         }
     }

@@ -26,6 +26,7 @@ var UI;
             this.Current_ExtensionCode = "";
             this.Current_ReportID = "";
             this.IsInstanceLoaded = false;
+            this.changes = {};
         }
         Table.prototype.LoadTable = function (reportid) {
             var me = this;
@@ -35,6 +36,7 @@ var UI;
                 me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
                 ShowNotification("Getting Html");
                 AjaxRequest(me.HtmlTemplatePath, "get", "text/html", null, function (data) {
+                    me.SaveInstance();
                     _Html(_SelectFirst("#ReportContainer"), data);
                     me.Current_ReportID = reportid;
                     me.SetExternals();
@@ -89,6 +91,9 @@ var UI;
         Table.prototype.Load = function () {
             var me = this;
             me.UITable = Factories.GetTablewithManager();
+            me.UITable.OnCellChanged = function (cell, value) {
+                me.UITable.Manager.OnCellChanged();
+            };
             me.UITable.LoadfromHtml(_SelectFirst("#ReportContainer > table.report"));
             this.LoadCellsFromHtml();
             var hash = window.location.hash;
@@ -139,6 +144,7 @@ var UI;
         };
         Table.prototype.LoadInstance = function (instance) {
             var me = this;
+            me.SaveInstance();
             ShowNotification("Loading Instance to UI");
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
@@ -157,18 +163,11 @@ var UI;
                     var cell_factstring = _Attribute(cellelement, "factstring");
                     var cellfb = new Model.FactBase();
                     cellfb.FactString = cell_factstring; //  cell.FactString;
-                    //Dynamic Attempt 6
-                    /*
-                    Model.FactBase.LoadFromFactString(cellfb);
-                    Model.FactBase.Merge(cellfb, me.CurrentExtension);
-                    var factstring = cellfb.GetFactString();
-                    */
                     var factstring = cell_factstring;
-                    if (me.UITable.Manager.TemplateRow == null) {
-                        Model.FactBase.LoadFromFactString(cellfb);
-                        Model.FactBase.Merge(cellfb, me.CurrentExtension);
-                        factstring = cellfb.GetFactString();
-                    }
+                    Model.FactBase.LoadFromFactString(cellfb);
+                    Model.FactBase.LoadFromFactString(me.CurrentExtension);
+                    Model.FactBase.Merge(cellfb, me.CurrentExtension);
+                    factstring = cellfb.GetFactString();
                     if (!IsNull(factstring)) {
                         var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell_layoutid);
                         if (!IsNull(fact)) {
@@ -180,6 +179,50 @@ var UI;
             });
             ShowNotification(Format("{0} cells were populated!", c));
         };
+        Table.prototype.SaveInstance = function () {
+            var me = this;
+            if (me.UITable == null) {
+                return null;
+            }
+            var instance = me.Instance;
+            ShowNotification("Saving Instance to UI");
+            var c = 0;
+            var cells = me.UITable.Cells; //this.Cells;
+            var facts = [];
+            cells.forEach(function (cell, index) {
+                if (!_HasClass(cell, "blocked") && !IsNull(cell.ColID) && !IsNull(cell.RowID)) {
+                    var row = me.UITable.GetRowOfCell(cell);
+                    var col = me.UITable.GetColOfCell(cell);
+                    var celluielement = cell.UIElement;
+                    var value = _Text(celluielement);
+                    var dynamicfact = new Model.InstanceFact();
+                    if (_HasClass(row.UIElement, "dynamicdata")) {
+                        var keys = "";
+                        row.Cells.forEach(function (c) {
+                            if (_HasClass(c.UIElement, "key")) {
+                                dynamicfact.FactString += _Attribute(c.UIElement, "factstring");
+                                dynamicfact.FactString += _Value(c.UIElement);
+                            }
+                        });
+                    }
+                    if (_HasClass(col.UIElement, "dynamicdata")) {
+                        var keys = "";
+                        col.Cells.forEach(function (c) {
+                            if (_HasClass(c.UIElement, "key")) {
+                                dynamicfact.FactString += _Attribute(c.UIElement, "factstring");
+                                dynamicfact.FactString += _Value(c.UIElement);
+                            }
+                        });
+                    }
+                    var cellfact = new Model.InstanceFact();
+                    cellfact.FactString = _Attribute(cell.UIElement, "factstring");
+                    Model.FactBase.Merge(cellfact, dynamicfact, true);
+                    Model.FactBase.Merge(cellfact, me.CurrentExtension, true);
+                    cellfact.Value = value;
+                    Model.Instance.SaveFact(me.Instance, cellfact);
+                }
+            });
+        };
         Table.prototype.SetDynamicRows = function () {
             var me = this;
             var cellobj = me.Cells[0];
@@ -190,18 +233,11 @@ var UI;
             var dynamicdatacontainer = me.Instance.DynamicReportCells[reportid];
             var rows = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.RowDictionary);
             var cols = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.ColDictionary);
+            var exts = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.ExtDictionary);
             var templaterow = me.UITable.Manager.TemplateRow;
             var templatecol = me.UITable.Manager.TemplateColumn;
             if (!IsNull(templaterow)) {
                 me.UITable.Manager.ClearDynamicItems(me.UITable);
-                //_Html(tbody, "");
-                //var uirows = me.UITable.Rows.AsLinq<Controls.Row>().Where(i=> _HasClass(i.UIElement, "dynamicdata")).Select(i=> i.ID).ToArray();
-                //me.UITable.CanManageRows = false;
-                //uirows.forEach(function (rowid, ix) {
-                //    var count = uirows.length;
-                //    me.UITable.RemoveRowByID(rowid);
-                //});
-                //me.UITable.CanManageRows = true;
                 var templatefacts = [];
                 //s
                 me.UITable.CanManageRows = false;
@@ -218,13 +254,6 @@ var UI;
                 me.UITable.Manager.ManageRows(me.UITable);
             }
             if (!IsNull(templatecol)) {
-                //var uicols = me.UITable.Columns.AsLinq<Controls.Column>().Where(i=> _HasClass(i.UIElement, "dynamicdata")).Select(i=> i.ID).ToArray();
-                //me.UITable.CanManageColumns = false;
-                //uicols.forEach(function (colid, ix) {
-                //    var count = uicols.length;
-                //    me.UITable.RemoveColumnByID(colid);
-                //});
-                //me.UITable.CanManageColumns = true;
                 var templatefacts = [];
                 //s
                 me.UITable.CanManageColumns = false;
@@ -240,6 +269,12 @@ var UI;
                 });
                 //me.UITable.CanManageColumns = true;
                 me.UITable.Manager.ManageColumns(me.UITable);
+            }
+            if (exts.length > 0) {
+                var extitem = Model.Hierarchy.FirstOrDefault(me.ExtensionsRoot, function (i) { return i.Item.LabelContent == me.CurrentExtension.LabelContent; });
+                var extix = me.ExtensionsRoot.Children.indexOf(extitem);
+                var extdictitem = exts[extix];
+                me.CurrentExtension.FactString = extdictitem.Key;
             }
         };
         Table.prototype.SetDataCells = function (cellcontainer, ditem, templatefacts) {
@@ -289,30 +324,6 @@ var UI;
             }
             return "";
         };
-        /*
-        private SetCellIDs(row: Controls.CellContainer, col: Controls.Column) {
-            if (!IsNull(row)) {
-                var rowid = _Attribute(row.UIElement, "id");
-                row.Cells.forEach(function (cell, index) {
-                    var cellid = _Attribute(cell.UIElement, "id");
-                    cellid = cellid.substring(cellid.indexOf("|"));
-                    cellid = rowid + cellid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                    //_Attribute(cell.UIElement, "title", cellid);
-                });
-            }
-            if (!IsNull(col)) {
-                var colid = _Attribute(col.UIElement, "id");
-                col.Cells.forEach(function (cell, index) {
-                    var cellid = _Attribute(cell.UIElement, "id");
-                    cellid = cellid.substring(0, cellid.indexOf("|") + 1);
-                    cellid = cellid + colid;
-                    _Attribute(cell.UIElement, "id", cellid);
-                    //_Attribute(cell.UIElement, "title", cellid);
-                });
-            }
-        }
-        */
         Table.prototype.SetExtensionByCode = function (code) {
             if (this.Extensions.Count() > 0) {
                 var ext = this.Extensions.FirstOrDefault();

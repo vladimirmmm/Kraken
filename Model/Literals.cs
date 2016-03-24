@@ -9,5 +9,6 @@ namespace LogicalModel
     public class Literals
     {
         public const string FilingIndicator = "filingindicator";
+        public const string Tab = "   ";
     }
 }

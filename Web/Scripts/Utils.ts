@@ -275,7 +275,7 @@ function asyncFunc(func:Function) {
     }, 10);
 }
 
-function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function): RequestHandler {
+function AjaxRequest(url: string, method: string, contenttype: string, parameters: Object, success: Function, error: Function): RequestHandler {
 
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
 }
@@ -300,7 +300,7 @@ function AjaxRequestComplexX(url: string, method: string, contenttype: string, p
 
 } 
 */
-function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
+function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Object, success: [Function], error: [Function]): RequestHandler {
 
 
     var requestid = Guid();
@@ -322,7 +322,7 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
     if (IsDesktop()) {
         Communication_ToApp(msg);
     } else {
-        Ajax("Instance/Index", "get",(<Dictionary>{ msg: msg }), AjaxResponse, contenttype);
+        Ajax("Instance/Index", method,(<Dictionary>{ msg: msg }), AjaxResponse, contenttype);
     }
     return requesthandler;
 } 

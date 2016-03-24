@@ -220,6 +220,15 @@ module Controls {
       
             //me.Manager.OnRowAdded(row);
         }
+        public OnCellChanged: Function = function (cell: Cell, value:any) {
+            var me = <Table>(this);
+            //me.ManageRows();
+         
+            CallFunction(me.Manager.OnCellChanged, [cell,value]);
+      
+            //me.Manager.OnRowAdded(row);
+        }
+
 
         public OnLayoutChanged: Function = function (row: Row) {
             var me = <Table>(this);
@@ -245,6 +254,7 @@ module Controls {
                 }
             };
         }
+
         public GetCellByID(id: string): Cell {
             var parts = id.split("|");
             var rowid = parts[0];
@@ -262,27 +272,20 @@ module Controls {
             return cell;
 
         }
-        public GetRowOfCell(cellelement: Element): Row {
+
+        public GetRowOfCell(cell: Cell): Row {
             var me = this;
             var result: Row = null;
-            var rowelement = _Parent(cellelement);
-            me.Rows.forEach(function (row, ix) {
-                if (rowelement == row.UIElement) {
-                    result = row;
-                }
-            });
+            cell.RowID
+            result = me.Rows.AsLinq<Row>().FirstOrDefault(i=> i.ID == cell.RowID);
             return result;
         }
 
-        public GetColOfCell(cellelement: Element): Column {
+        public GetColOfCell(cell: Cell): Column {
             var me = this;
-            var result: Column = null;
-            var rowelement = _Parent(cellelement);
-            var ix = Property(cellelement, "cellIndex") - _Select("th", rowelement).length;
-            if (ix > -1 && ix < me.Columns.length)
-            {
-                result = me.Columns[ix];
-            }
+            var result: Column = null;       
+
+            result = me.Columns.AsLinq<Column>().FirstOrDefault(i=> i.ID == cell.ColID);
             return result;
         }
 
@@ -303,6 +306,7 @@ module Controls {
             //    _EnsureEventHandler(column.UIElement, "click", me.Manager.OnColumnSelected);
             //});
         }
+
         public LoadRowEventHandlers(row: Row) {
             var me = this;
             _EnsureEventHandler(row.UIElement, "click",() => me.Manager.OnRowSelected(row));
@@ -464,9 +468,22 @@ module Controls {
             var column = this.Columns.AsLinq<Column>().FirstOrDefault(i=> i.ID == id);
             return column;
         }
+
         public GetRowByElement(element: Element): Row {
+            var rowelement =_TagName( element)=="TR" ? element : _Parent(element);
             var row = this.Rows.AsLinq<Row>().FirstOrDefault(i=> i.UIElement == element);
             return row;
+        }
+
+        public GetColByElement(element: Element): Column {
+            var rowelement = _Parent(element);
+            var me = this;
+            var result: Column = null;
+            var ix = Property(element, "cellIndex") - _Select("th", rowelement).length;
+            if (ix > -1 && ix < me.Columns.length) {
+                result = me.Columns[ix];
+            }
+            return result;
         }
 
         public RemoveRowByID(rowid: string) {
@@ -498,6 +515,7 @@ module Controls {
             //}
             return true;
         }
+
         public RemoveColumnByID(colid: string) {
 
             var coltoremove = this.GetColumnByID(colid);
@@ -507,6 +525,7 @@ module Controls {
 
 
         }
+
         public RemoveColumn(col: Column): boolean {
             var me = this;
             //if (me.Columns.length > 1) {

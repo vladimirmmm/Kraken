@@ -45,10 +45,7 @@ namespace LogicalModel
 
         public void Set(string itemtype, Taxonomy taxonomy)
         {
-            //var concepttosearch = concept.ToLower();
-            //var taxconcept = taxonomy.Concepts.FirstOrDefault(i => i.Content.ToLower() == concepttosearch);
-            //if (taxconcept == null) 
-            //{
+
             ItemType = itemtype;
             if (ItemType.In("integerItemType"))
             {

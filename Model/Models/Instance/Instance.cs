@@ -333,10 +333,10 @@ namespace LogicalModel
 
         public void SaveToJson() 
         {
-            foreach (var table in Taxonomy.Tables) 
-            {
-                GetTableExtensions(table);
-            }
+            //foreach (var table in Taxonomy.Tables) 
+            //{
+            //    GetTableExtensions(table);
+            //}
             //var json_instance = Utilities.Converters.ToJson<Instance>(this);
             var json_instance = Utilities.Converters.ToJson(this);
             //Utilities.FS.WriteAllText(this.Taxonomy.CurrentInstancePath, "var currentinstance = " + json_instance + ";");
@@ -418,8 +418,6 @@ namespace LogicalModel
             }
         }
 
-       
-   
         public string GetDynamicCellID(string cellID, FactBase fact) 
         {
             var dynamiccellID = cellID;
@@ -450,13 +448,7 @@ namespace LogicalModel
                 {
                     Logger.WriteLine("No Dynamic Data found for " + reportid);
                 }
-                //var cellsofreportdict = DynamicCellDictionary_Old[reportid];
-
-                //if (cellsofreportdict.ContainsKey(cellobj.FactString)) 
-                //{
-                //    var cellid = cellsofreportdict[cellobj.FactString];
-                //    cellobj.SetFromCellID(cellid);
-                //}
+        
             }
 
             return cellobj.CellID;
@@ -489,6 +481,39 @@ namespace LogicalModel
             result = result.OrderByDescending(i => i.HasData > 0).ToList();
             return result;
         }
-    
+
+        public void SaveFacts(List<InstanceFact> factstosave)
+        {
+            if (factstosave == null) { factstosave = new List<InstanceFact>(); }
+            foreach (var fact in factstosave)
+            {
+                fact.SetFromString(fact.FactString);
+                InstanceFact factitem = null;
+                if (FactDictionary.ContainsKey(fact.FactKey))
+                {
+                    var factsforkey = FactDictionary[fact.FactKey];
+
+                    if (factsforkey.Count == 1)
+                    {
+                        factitem = factsforkey.FirstOrDefault();
+                    }
+                    if (factsforkey.Count > 1)
+                    {
+                        factitem = factsforkey.FirstOrDefault(i => i.FactString == fact.FactString);
+                    }
+                }
+                if (factitem == null)
+                {
+                    FactDictionary.Add(fact.FactKey, new List<InstanceFact>() { fact });
+                    Facts.Add(fact);
+                    factitem = fact;
+                }
+                else 
+                {
+                    factitem.Value = fact.Value;
+                }
+            }
+            SaveToJson();
+        }
     }
 }

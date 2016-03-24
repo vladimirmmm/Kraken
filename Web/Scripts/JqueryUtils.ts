@@ -776,12 +776,12 @@ function _SetFunctions() {
     };
 
     _Parent = function (target: Element, selector?: string):Element {
-        var parent = $(target).parent(selector)
+        var parent = $(target).parents(selector);
         return parent.length == 0 ? null : parent[0];
     };
 
     _Parents = function (target: Element, selector?: string): Element[] {
-        var parents = $(target).parents(selector)
+        var parents = $(target).parents(selector);
         return ToElements(parents);
     };
 

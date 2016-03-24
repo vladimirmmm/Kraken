@@ -285,42 +285,50 @@ namespace Model.InstanceModel
             SetFilingIndicators();
             SetInstanceFacts();
 
-            var templatecontent = System.IO.File.ReadAllText(TemplateFileName);
-            var xmlstring = templatecontent;
-            var sb_ns = new StringBuilder();
-            foreach (var ns in namespaces) 
+            if (Utilities.FS.FileExists(TemplateFileName))
             {
-                sb_ns.Append(String.Format("xmlns:{0}=\"{1}\" ", ns.Key, ns.Value));
-            }
-            xmlstring = xmlstring.Replace("#namespaces#", sb_ns.ToString());
-            xmlstring = xmlstring.Replace("#taxonomymodulereference#", this.SchemaRef.Href);
+                var templatecontent = System.IO.File.ReadAllText(TemplateFileName);
+                var xmlstring = templatecontent;
+                var sb_ns = new StringBuilder();
+                foreach (var ns in namespaces)
+                {
+                    sb_ns.Append(String.Format("xmlns:{0}=\"{1}\" ", ns.Key, ns.Value));
+                }
+                xmlstring = xmlstring.Replace("#namespaces#", sb_ns.ToString());
+                xmlstring = xmlstring.Replace("#taxonomymodulereference#", this.SchemaRef.Href);
 
-            var sb_xml = new StringBuilder();
-            foreach (var unit in Units) 
+                var sb_xml = new StringBuilder();
+                foreach (var unit in Units)
+                {
+                    sb_xml.AppendLine(unit.ToXmlString());
+
+                }
+
+                foreach (var context in Contexts)
+                {
+                    sb_xml.AppendLine(context.ToXmlString());
+
+                }
+                sb_xml.AppendLine("<find:fIndicators>");
+                foreach (var find in this.XbrlFilingIndicators)
+                {
+                    sb_xml.AppendLine(find.ToXmlString());
+                }
+                sb_xml.AppendLine("</find:fIndicators>");
+                foreach (var fact in Facts)
+                {
+                    sb_xml.AppendLine(fact.ToXmlString());
+
+                }
+
+                xmlstring = xmlstring.Replace("#content#", sb_xml.ToString());
+                Utilities.FS.WriteAllText(filepath, xmlstring);
+                Utilities.Logger.WriteLine(String.Format("Instance was saved as {0}", filepath));
+            }
+            else 
             {
-                sb_xml.AppendLine(unit.ToXmlString());
-
+                Logger.WriteLine("Error: " + "Template not found: " + TemplateFileName);
             }
-
-            foreach (var context in Contexts)
-            {
-                sb_xml.AppendLine(context.ToXmlString());
-
-            }
-            sb_xml.AppendLine("<find:fIndicators>");
-            foreach (var find in this.XbrlFilingIndicators)
-            {
-                sb_xml.AppendLine(find.ToXmlString());
-            }
-            sb_xml.AppendLine("</find:fIndicators>");
-            foreach (var fact in Facts) 
-            {
-                sb_xml.AppendLine(fact.ToXmlString());
-
-            }
-
-           xmlstring = xmlstring.Replace("#content#", sb_xml.ToString());
-           System.IO.File.WriteAllText(filepath, xmlstring);
         }
 
         protected Dictionary<String,String> GetNameSpaces() 
@@ -334,11 +342,11 @@ namespace Model.InstanceModel
                 foreach (var dim in fact.Dimensions) 
                 {
                     AddNamespace(GetNamespace(dim.DimensionItem), namespaces);
-                    AddNamespace(dim.Domain, namespaces);
+                    AddNamespace(GetNamespace(dim.Domain), namespaces);
+                    //AddNamespace(dim.Domain, namespaces);
                 }
 
             }
-            AddNamespace("find", namespaces);
             return namespaces;
         }
         
@@ -353,7 +361,7 @@ namespace Model.InstanceModel
        
         private string GetNamespace(string qname) 
         {
-            var ns="";
+            var ns=qname;
             if (qname.Contains(":")) 
             {
                 ns = qname.Remove(qname.IndexOf(":"));
@@ -365,11 +373,12 @@ namespace Model.InstanceModel
         {
             foreach (var fact in Facts) 
             {
-                var itemtype = fact.Concept.ItemType;
+                var concept = this.Taxonomy.Concepts.FirstOrDefault(i => i.Key == fact.Concept.Content);
+                var itemtype = concept.Value.ItemType;
                 var setting = Taxonomy.Module.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itemtype);
                 if (!String.IsNullOrEmpty(setting.UnitID))
-                { 
-
+                {
+                    fact.Decimals = String.Format("{0}", setting.Decimals);
                 }
 
             }

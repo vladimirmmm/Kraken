@@ -851,10 +851,10 @@ select.celleditor {
 
     position:absolute;
     bottom:0px;
-    left:450px;
+    left:0px;
     padding:5px;
     background:#ffffff;
-    width:calc(100% - 470px);
+    width:100%; /*calc(100% - 470px);*/
 
 
 

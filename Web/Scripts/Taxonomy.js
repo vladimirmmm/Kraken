@@ -514,13 +514,15 @@ var Control;
                 parameter.FactItems = IsNull(parameter.FactItems) ? [] : parameter.FactItems;
                 parameter.FactIDs.forEach(function (factrefrence, ix) {
                     var fi = new Model.FactItem();
-                    var factstring = parameter.Facts[ix];
-                    var strval = TaxonomyContainer.GetFactValue(factstring);
-                    fi.FactString = factstring;
-                    fi.Value = strval;
-                    fi.Cells = parameter.Cells[ix];
-                    var strval = TaxonomyContainer.GetFactValue(factstring);
-                    parameter.FactItems.push(fi);
+                    if (parameter.Facts.length == parameter.FactIDs.length) {
+                        var factstring = parameter.Facts[ix];
+                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        fi.FactString = factstring;
+                        fi.Value = strval;
+                        fi.Cells = parameter.Cells[ix];
+                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        parameter.FactItems.push(fi);
+                    }
                 });
                 parameter.FactItems = parameter.FactItems.AsLinq().OrderByDescending(function (i) { return i.Value; }).ToArray();
                 if (parameter.BindAsSequence) {
@@ -539,7 +541,7 @@ var Control;
             var tmpfact = new Model.FactBase();
             tmpfact.FactString = factstring;
             Model.FactBase.LoadFromFactString(tmpfact);
-            var factkey = tmpfact.GetFactKey();
+            var factkey = Model.FactBase.GetFactKey(tmpfact);
             var facts = app.instancecontainer.Instance.FactDictionary[factkey];
             if (!IsNull(facts) && facts.length > 0) {
                 var fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
