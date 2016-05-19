@@ -26,8 +26,8 @@ namespace LogicalModel.Validation
         public List<SimpleValidationRule> GetValidationRules() 
         {           
             var rules = new List<SimpleValidationRule>();
-            var enumerationconcepts = taxonomy.Concepts.Select(i => i.Value).ToList();
-            foreach (var conceptelement in enumerationconcepts)
+            var concepts = taxonomy.Concepts.Select(i => i.Value).ToList();
+            foreach (var conceptelement in concepts)
             {
                 var conceptrule = new ConceptValidationRule();
                 conceptrule.ID = "v_tax_" + conceptelement.Content;
@@ -50,22 +50,7 @@ namespace LogicalModel.Validation
                     else 
                     {
                         var domainstr = taxonomy.GetDomainID(conceptelement.Domain);
-                        //var domkey = conceptelement.Domain.Content;
-                        //if (!taxonomy.domdict.ContainsKey(domkey)) 
-                        //{
-                        //    var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.LocalRelPath == conceptelement.file));
-
-                        //    var ns = nsmanager.LookupNamespace(conceptelement.Domain.Namespace);
-                        //}
-                        //if (!d_con.ContainsKey(nsprefix))
-                        //{
-                        //    var ns = nsmanager.LookupNamespace(nsprefix);
-                        //    var nsdoc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
-                        //    if (nsdoc != null)
-                        //    {
-                        //        d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
-                        //    }
-                        //}
+              
                         var domainmembers = taxonomy.SchemaElements.Where(i => i.Namespace == domainstr && i.Type == "nonnum:domainItemType").Select(i=>new LogicalModel.Base.QualifiedName( i.Namespace+":"+i.Name)).ToList();
                         var possibilities = domainmembers.Select(i => String.Format("{0} [{1}]",i.Content, i.Name)).ToArray();
                         var possibilitystr = Utilities.Strings.ArrayToString(possibilities, ", ");
@@ -73,6 +58,7 @@ namespace LogicalModel.Validation
                         conceptrule.IsOk = (fact) => domainmembers.FirstOrDefault(i => i.Content == fact.Value) != null;
                
                     }
+
                     rules.Add(conceptrule);
 
                 }
@@ -90,6 +76,8 @@ namespace LogicalModel.Validation
                     rules.Add(conceptrule);
 
                 }
+                conceptrule.Concept = conceptelement.Content;
+
             }
             var typedelements = taxonomy.SchemaElements.Where(i => i.FileName == "typ.xsd");
             foreach (var typedelement in typedelements) 
@@ -112,11 +100,12 @@ namespace LogicalModel.Validation
                     rules.Add(typedrule);
 
                 }
-                
+                typedrule.TypedDimension = fullname;
 
             }
             return rules;
         }
+        
         public string ValidateByTypedDimension(InstanceFact fact, List<ValidationRuleResult> results, StringBuilder sb)
         {
 
@@ -150,6 +139,7 @@ namespace LogicalModel.Validation
 
             return sb.ToString();
         }
+        
         public string ValidateByConcept(InstanceFact fact, List<ValidationRuleResult> results, StringBuilder sb)
         {
             var concept = fact.Concept;

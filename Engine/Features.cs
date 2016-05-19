@@ -126,6 +126,7 @@ namespace Engine
                     new MenuCommand("TestTaxonomy", "Test", (o) => { Taxonomy_Test(); }, null),
                     new MenuCommand("Z_Axis_Test", "Z Axis Test", (o) => { Extensions_Test(); }, null),
                     new MenuCommand("Export_Layout", "Export Layout", (o) => { Export_Layout(); }, null),
+                    new MenuCommand("Export_Validations_RG", "Export Validations 4 RG", (o) => { Export_Validations_RG(); }, null),
                     new MenuCommand("Export_Validations", "Export Validations", (o) => { Export_Validations(); }, null),
 
                     new MenuCommand("Refresh_all_but_Structure", "Refresh all (but Structure)", (o) => { ClearTaxonomy(ClearEnum.AllButStructure); }, null),
@@ -536,9 +537,7 @@ namespace Engine
         {
             if (UI.DispatcherCheckAccess())
             {
-                //UI.TB_Title.Text = Engine.CurrentInstance.FullPath;
-                //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
-                //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
+            
             }
             else
             {
@@ -557,11 +556,7 @@ namespace Engine
                     msg.Category = "action";
                     msg.Data = "taxonomyloaded";
                     UI.ToUI(msg);
-                    //UI.XML_Tree.ItemsSource = new List<TaxonomyDocument>() { Engine.CurrentTaxonomy.EntryDocument };
-                    //UI.Table_Tree.ItemsSource = Engine.CurrentTaxonomy.Tables;
-                    //UI.TB_TaxonomyPath.Text = Engine.CurrentTaxonomy.EntryDocument.LocalPath;
-                    //ShowInBrowser(Engine.HtmlPath); 
-
+             
                 }
                 else
                 {
@@ -721,6 +716,99 @@ namespace Engine
             var text = Utilities.Strings.ArrayToString(dimensions.ToArray(),"\r\n");
             Utilities.Logger.WriteLine(text);
         }
+        public void Export_Validations_RG()
+        {
+            var tax = this.Engine.CurrentTaxonomy;
+            var tablerules = new Dictionary<string,List<LogicalModel.Validation.ValidationRule>>();
+            foreach (var rule in tax.ValidationRules) 
+            {
+                var key = Utilities.Strings.ArrayToString(rule.Tables.Select(i => tax.Tables.FirstOrDefault(j => j.ID == i).Name).ToArray(), "__");
+                if (!tablerules.ContainsKey(key)) 
+                {
+                    tablerules.Add(key, new List<LogicalModel.Validation.ValidationRule>());
+                }
+                tablerules[key].Add(rule);
+
+            }
+            var wts_sb = new StringBuilder();
+            wts_sb.AppendLine("insert into message (msg_id,msg_ref,msg_type,msg_language,msg_text)");
+            wts_sb.AppendLine("values (:1,:2,:3,:4,:5)");
+            wts_sb.AppendLine("\\");
+
+            foreach (var item in tablerules) 
+            {
+                var sb = new StringBuilder();
+                /*
+                 insert into message (msg_id,msg_ref,msg_type,msg_language,msg_text)
+values (:1,:2,:3,:4,:5)
+\
+                 */
+          
+                foreach (var rule in item.Value)
+                {
+                    var ruleresults = rule.GetAllResults();
+                    var simplerule = tax.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
+                    var stringrgrules = new List<string>();
+                    var taxdate = tax.Module.FromDate.HasValue ? String.Format("{0:yyyymmdd}", tax.Module.FromDate) : "1001-01-01";
+
+                    foreach (var ruleresult in ruleresults) 
+                    {
+                        var rg_rule_expression = simplerule.OriginalExpression;
+                        var errorkey = String.Format("{0}_{1}_{2}", rule.ID, tax.Module.Name, taxdate);
+                        foreach (var param in ruleresult.Parameters) 
+                        {
+                            var cells = param.Cells.FirstOrDefault();
+                            if (cells != null && cells.Count > 0)
+                            {
+                                var cellid = cells.FirstOrDefault();
+                                var cell = new Cell();
+                                cell.SetFromCellID(cellid);
+                                var table = tax.Tables.FirstOrDefault(i => i.ID == cell.Report);
+                                var ext = table.Extensions.FirstOrDefault(i => i.Item.LabelCode == cell.Extension);
+                                var extname = ext == null ? "_" : ext.Item.LabelCode == "000" ? "_" : ext.Item.LabelContent;
+                                //<'C05.01_CA5 rev4','Total'>['Row210'|'Col060']
+                                var cellreference = String.Format(" <'{0}','{1}'>['{2}'|'{3}'] ", table.Name, extname, cell.Row, cell.Column);
+                                rg_rule_expression = rg_rule_expression.Replace("$" + param.Name, cellreference);
+
+                            }
+                            else 
+                            {
+                                rg_rule_expression = rg_rule_expression.Replace("$" + param.Name, "0");
+
+
+                            }
+                        }
+                        var rg_rule = String.Format("Y {0}; ERROR={1}; $1", rg_rule_expression, errorkey);
+
+                        if (!stringrgrules.Contains(rg_rule))
+                        {
+                            sb.AppendLine("/* " + simplerule.DisplayText + " */");
+                            sb.AppendLine("/* " + simplerule.OriginalExpression + " */");
+                            sb.AppendLine(rg_rule);
+                            sb.AppendLine();
+                            /*
+                             insert into message (msg_id,msg_ref,msg_type,msg_language,msg_text)
+values (:1,:2,:3,:4,:5)
+\
+9001,COREP_FINREP_C1000,D,ENG,Return_id
+                             */
+
+                            wts_sb.AppendLine(String.Format("0,{0},W,ENG,\"{1}\"", errorkey, simplerule.DisplayText));
+                            stringrgrules.Add(rg_rule);
+                        }
+                    }
+                }
+                var outputpath = String.Format("{0}{1}.ina", tax.TaxonomyValidationFolder + "RG\\", item.Key);
+                Utilities.FS.WriteAllText(outputpath, sb.ToString());
+                Utilities.Logger.WriteLine(String.Format("Validation Rules exported to {0}", outputpath));
+           
+               
+            }
+            var wtsoutputpath = String.Format("{0}{1}.wts", tax.TaxonomyValidationFolder + "RG\\", "Validation_Messages");
+            Utilities.FS.WriteAllText(wtsoutputpath, wts_sb.ToString());
+
+        }
+       
         public void Export_Layout()
         {
             if (Engine.CurrentTaxonomy != null)

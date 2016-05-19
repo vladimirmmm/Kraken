@@ -17,12 +17,34 @@ namespace LogicalModel.Validation
     }
     public class ConceptValidationRule : SimpleValidationRule 
     {
+        public string Concept;
+
         public Func<InstanceFact, bool> IsOk = (f) => true;
-    
+
+        public override List<ValidationRuleResult> GetAllResults(Taxonomy taxonomy)
+        {
+            var results = new List<ValidationRuleResult>();
+            if (taxonomy.FactsOfConcepts.ContainsKey(Concept))
+            {
+                var facts = taxonomy.FactsOfConcepts[Concept];
+            }
+            return results;
+        }
     }
     public class TypedDimensionValidationRule : SimpleValidationRule
     {
         public Func<string, bool> IsOk = (s) => true;
+        public string TypedDimension;
+
+        public override List<ValidationRuleResult> GetAllResults(Taxonomy taxonomy)
+        {
+            var results = new List<ValidationRuleResult>();
+            if (taxonomy.FactsOfDimensions.ContainsKey(TypedDimension)) 
+            {
+                var facts = taxonomy.FactsOfDimensions[TypedDimension];
+            }
+            return results;
+        }
 
     }
     public class SimpleValidationRule
@@ -45,6 +67,17 @@ namespace LogicalModel.Validation
             this.OriginalExpression = rule.OriginalExpression;
             this.Tables = rule.Tables;
            
+        }
+
+        public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
+        {
+            return GetAllResults(instance.Taxonomy);
+        }
+        public virtual List<ValidationRuleResult> GetAllResults(Taxonomy taxonomy)
+        {
+            var results = new List<ValidationRuleResult>();
+
+            return results;
         }
 
     }
@@ -160,7 +193,11 @@ namespace LogicalModel.Validation
             }
             return values;
         }
-
+        public override List<ValidationRuleResult> GetAllResults(Taxonomy taxonomy)
+        {
+            SetTaxonomy(taxonomy);
+            return GetAllResults();
+        }
         public List<ValidationRuleResult> GetAllResults()
         {
             var results = new List<ValidationRuleResult>();
@@ -364,73 +401,76 @@ namespace LogicalModel.Validation
                            ))).ToList();
                     var resultfactgroup = result.FactGroup;
 
-                    var firstfact = facts.FirstOrDefault();
-                    var instancefacts = instance.GetFacts(firstfact.GetFactKey());
-                    var typestoreplace = new Dictionary<string, string>();
-                    if (instancefacts.Count > 0) 
+                    foreach (var firstfact in facts)
                     {
-                        resultstoremove.Add(result);
-                        var typedfacts = instancefacts[0].Dimensions.Where(i=>i.IsTyped).Select(i=>i.ToStringForKey());
-                        foreach (var typedfact in typedfacts) 
+                        var instancefacts = instance.GetFacts(firstfact.GetFactKey());
+                        var typestoreplace = new Dictionary<string, string>();
+                        if (instancefacts.Count > 0)
                         {
-                            var key = typedfact.Substring(typedfact.IndexOf(":"));
-                            typestoreplace.Add(key, "");
-                        }
-
-                    }
-                    for (int i = 0; i < instancefacts.Count;i++ )
-                    {
-                        var instancefact = instancefacts[i];
-                        var typedimensions = instancefact.Dimensions.Where(d=>d.IsTyped).ToList();
-                        foreach (var tdim in typedimensions) 
-                        {
-                            var key = tdim.ToStringForKey();
-                            key = key.Substring(key.IndexOf(":"));
-                            typestoreplace[key] = tdim.DomainMemberFullName.Substring(tdim.DomainMemberFullName.IndexOf(":"));
-                        }
-
-                        var dynamicresult = new ValidationRuleResult();
-                        resultstoadd.Add(dynamicresult);
-                        dynamicresult.FactGroup = new List<string>() { instancefact.GetFactString() };
-
-                        dynamicresult.ID = result.ID;
-                        dynamicresult.Parameters.AddRange(result.Parameters.Select(p => p.Copy()));
-                        dynamicresult.Message = result.Message;
-                        foreach (var p in dynamicresult.Parameters)
-                        {
-                            p.Cells.Clear();
-                            //for (var f_ix = 0; f_ix < p.Facts.Count; f_ix++)
-                            for (var f_ix = 0; f_ix < p.FactIDs.Count; f_ix++) 
+                            resultstoremove.Add(result);
+                            var typedfacts = instancefacts[0].Dimensions.Where(i => i.IsTyped).Select(i => i.ToStringForKey());
+                            foreach (var typedfact in typedfacts)
                             {
-                         
-                                var factid = Utilities.Converters.FastParse( p.FactIDs[f_ix].Substring(2));
-                                var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[factid]);
-                                //var fact = p.Facts[f_ix];
-                                var newfactstring = fact.ToString();
-                                foreach (var key in typestoreplace.Keys) 
-                                {
-                                    newfactstring = newfactstring.Replace(key, typestoreplace[key]);
-                                }
-                                //p.Facts[f_ix] = newfactstring;
-                                var instfact = GetFact(newfactstring, instance);
-                                var inst_ix = instfact == null ? -1 : instfact.IX;
-                                p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
-                                var newfact = FactBase.GetFactFrom(newfactstring);
-                                if (Taxonomy.HasFact(fact))
-                                {
-                                    var cellist = new List<string>();
-                                    p.Cells.Add(cellist);
-                                    var cells = Taxonomy.GetCellsOfFact(fact);
-                                    cellist.Clear();
-                                    foreach (var cell in cells)
-                                    {
-                                        cellist.Add(instance.GetDynamicCellID(cell, newfact));
-                                    }
-                                }
-                             
+                                var key = typedfact.Substring(typedfact.IndexOf(":"));
+                                typestoreplace.Add(key, "");
                             }
+
                         }
-                        
+                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        for (int i = 0; i < instancefacts.Count; i++)
+                        {
+                            var instancefact = instancefacts[i];
+                            var typedimensions = instancefact.Dimensions.Where(d => d.IsTyped).ToList();
+                            foreach (var tdim in typedimensions)
+                            {
+                                var key = tdim.ToStringForKey();
+                                key = key.Substring(key.IndexOf(":"));
+                                typestoreplace[key] = tdim.DomainMemberFullName.Substring(tdim.DomainMemberFullName.IndexOf(":"));
+                            }
+
+                            var dynamicresult = new ValidationRuleResult();
+                            resultstoadd.Add(dynamicresult);
+                            dynamicresult.FactGroup = new List<string>() { instancefact.GetFactString() };
+
+                            dynamicresult.ID = result.ID;
+                            dynamicresult.Parameters.AddRange(result.Parameters.Select(p => p.Copy()));
+                            dynamicresult.Message = result.Message;
+                            foreach (var p in dynamicresult.Parameters)
+                            {
+                                p.Cells.Clear();
+                                //for (var f_ix = 0; f_ix < p.Facts.Count; f_ix++)
+                                for (var f_ix = 0; f_ix < p.FactIDs.Count; f_ix++)
+                                {
+
+                                    var factid = Utilities.Converters.FastParse(p.FactIDs[f_ix].Substring(2));
+                                    var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[factid]);
+                                    //var fact = p.Facts[f_ix];
+                                    var newfactstring = fact.ToString();
+                                    foreach (var key in typestoreplace.Keys)
+                                    {
+                                        newfactstring = newfactstring.Replace(key, typestoreplace[key]);
+                                    }
+                                    //p.Facts[f_ix] = newfactstring;
+                                    var instfact = GetFact(newfactstring, instance);
+                                    var inst_ix = instfact == null ? -1 : instfact.IX;
+                                    p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
+                                    var newfact = FactBase.GetFactFrom(newfactstring);
+                                    if (Taxonomy.HasFact(fact))
+                                    {
+                                        var cellist = new List<string>();
+                                        p.Cells.Add(cellist);
+                                        var cells = Taxonomy.GetCellsOfFact(fact);
+                                        cellist.Clear();
+                                        foreach (var cell in cells)
+                                        {
+                                            cellist.Add(instance.GetDynamicCellID(cell, newfact));
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
                     }
                 }
 

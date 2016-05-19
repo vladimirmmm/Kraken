@@ -240,7 +240,7 @@ namespace LogicalModel
             {
                 var table = this.Taxonomy.Tables.FirstOrDefault(i => i.ID == report);
                 var find = this.FilingIndicators.FirstOrDefault(i => i.ID == table.FilingIndicator);
-                if (find == null)
+                if (find == null || !find.Filed)
                 {
                     if (!MissingFilingindicators.Contains(table.FilingIndicator))
                     {

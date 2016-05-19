@@ -273,7 +273,7 @@ namespace XBRLProcessor.Mapping
                  ),
                  Mappings.Map<FilingIndicator>("<find:filingIndicator>",
                     Mappings.PropertyMap("contextRef", (FilingIndicator i) => i.ContextID),
-                    Mappings.PropertyMap(":filed", (FilingIndicator i) => i.Filed),
+                    Mappings.PropertyMap("find:filed", (FilingIndicator i) => i.Filed),
                     Mappings.PropertyMap("@content", (FilingIndicator i) => i.Value)
                  ),
                  Mappings.Map<Context>("<*:context>",

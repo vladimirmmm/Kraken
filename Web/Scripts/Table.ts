@@ -49,12 +49,22 @@ module UI {
                 AjaxRequest(me.HtmlTemplatePath, "get", "text/html", null, function (data) {
                     me.SaveInstance();
                     _Html(_SelectFirst("#ReportContainer"), data);
-
                     me.Current_ReportID = reportid;
 
                     me.SetExternals();
                     me.Load();
                     me.GetData();
+                    var table = Model.Hierarchy.FirstOrDefault(app.taxonomycontainer.TableStructure,
+                        i=> {
+                            var id = i.ID;
+                            id = id.indexOf("<") > -1 ? id.substr(0, id.indexOf("<")) : id;
+                            console.log(Format("{0}=={1}", id, reportid));
+
+                            return id == reportid
+                        });
+                    if (!IsNull(table) && !IsNull(table.Item)) {
+                        _Html(_SelectFirst("#DetailTitle"), table.Item.Name);
+                    }
                 },
                     function (error) {
                         console.log(error);
@@ -73,6 +83,7 @@ module UI {
         }
  
         public SetExternals() {
+            var me = this;
             var extensions = this.ExtensionsRoot.Children;
             var dynamiccells = this.Instance.DynamicReportCells[this.Current_ReportID];
             if (!IsNull(dynamiccells)) {
@@ -84,8 +95,13 @@ module UI {
             this.Extensions = extensions.AsLinq<Model.Hierarchy<Model.LayoutItem>>()
                 .Select(i=> i.Item);
 
-
-            this.CurrentExtension = this.ExtensionsRoot.Item;
+            var current_extension = this.ExtensionsRoot.Item;
+            if (this.ExtensionsRoot.Children.length > 0)
+            {
+                current_extension = this.ExtensionsRoot.Children[0].Item;
+            }
+            me.LoadExtension(current_extension);
+            //this.CurrentExtension = current_extension;
 
         }
 
@@ -110,7 +126,6 @@ module UI {
                     this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
                 }
             }
-            me.SetExtensionByCode(this.Current_ExtensionCode);
             me.LoadToUI();
             me.HighlightCell();
 
@@ -187,6 +202,7 @@ module UI {
         }
 
         public LoadExtension(li: Model.LayoutItem) {
+            Log("LoadExtension");
             this.CurrentExtension = li;
             var extensionscell = _SelectFirst("#Extension");
             var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq<Model.Dimension>().Where(i=> i.IsTyped).ToArray();
@@ -212,9 +228,12 @@ module UI {
             }
             me.UITable.Manager.Clear(me.UITable);
             me.SetDynamicRows();
+            me.SetExtensionByCode(me.Current_ExtensionCode);
 
             var c = 0;
             var cells = this.UITable.Cells; //this.Cells;
+            Model.FactBase.LoadFromFactString(me.CurrentExtension);
+
             cells.forEach(function (cell, index) {
                 if (!_HasClass(cell, "blocked")) {
                     var cellelement = cell.UIElement;
@@ -226,8 +245,8 @@ module UI {
                     var factstring = cell_factstring;
 
                     Model.FactBase.LoadFromFactString(cellfb);
-                    Model.FactBase.LoadFromFactString(me.CurrentExtension);
-                    Model.FactBase.Merge(cellfb, me.CurrentExtension);
+                    Model.FactBase.Merge(cellfb, me.CurrentExtension, true);
+
                     factstring = cellfb.GetFactString();
           
                     if (!IsNull(factstring)) {
@@ -250,6 +269,7 @@ module UI {
 
         public SaveInstance()
         {
+            return null;
             var me = this;
             if (me.UITable == null) { return null;}
             var instance = me.Instance;
@@ -367,11 +387,29 @@ module UI {
             }
             if (exts.length > 0)
             {
-                var extitem = Model.Hierarchy.FirstOrDefault(me.ExtensionsRoot,
-                    i=> i.Item.LabelContent == me.CurrentExtension.LabelContent);
-                var extix = me.ExtensionsRoot.Children.indexOf(extitem);
-                var extdictitem = exts[extix];
-                me.CurrentExtension.FactString = extdictitem.Key;
+                //var extitem = Model.Hierarchy.FirstOrDefault(me.ExtensionsRoot,
+                //    i=> i.Item.LabelContent == me.CurrentExtension.LabelContent);
+                //var extix = me.ExtensionsRoot.Children.indexOf(extitem);
+
+                //var extdictitem = exts[extix];
+                Log("SetExtension");
+
+                exts.forEach((item) => {
+                    var ix = exts.indexOf(item);
+                    var extitem = me.ExtensionsRoot.Children[ix];
+                    var id = Format("Ext_{0}", item.Value);
+                    var labelcontent = Format("Extension {0}", item.Value);
+                    extitem.Item.ID = id;
+                    extitem.Item.Label = new Model.Label();
+                    extitem.Item.LabelCode = item.Value;
+                    extitem.Item.LabelContent = labelcontent;
+                    extitem.Item.Label.Code = item.Value;
+                    extitem.Item.Label.Content = labelcontent;
+                    extitem.Item.FactString = item.Key;
+
+                });
+                me.LoadExtension(me.CurrentExtension);
+                //me.CurrentExtension.FactString = extdictitem.Key;
             }
 
         }
@@ -436,10 +474,10 @@ module UI {
             
         }
         
-        public SetExtensionByCode(code: string)
-        {
-              if (this.Extensions.Count() > 0) {
-                  var ext = this.Extensions.FirstOrDefault();
+        public SetExtensionByCode(code: string) {
+            Log("SetExtensionByCode "+ code);
+            if (this.Extensions.Count() > 0) {
+                var ext = this.Extensions.FirstOrDefault();
                 if (!IsNull(code)) {
                     ext = this.Extensions.FirstOrDefault(i=> i.LabelCode == code);
 
@@ -447,7 +485,7 @@ module UI {
                 if (!IsNull(ext)) {
                     this.LoadExtension(ext);
                 }
-            } 
+            }
 
         }
 
@@ -494,6 +532,24 @@ module UI {
      
         }
   
+        public GetExtensionEditor(): string
+        {
+            var me = this;
+            var html = "";
+            return html;
+            var extensiontemplate = me.CurrentExtension;
+            extensiontemplate.Dimensions.forEach((dim) => {
+                if (IsNull(dim.DomainMember))
+                {
+                    if (dim.IsTyped) {
+
+                    } else {
+
+                    }
+                }
+            });
+        }
+
     }
 
 

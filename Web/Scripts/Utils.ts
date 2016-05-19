@@ -1029,27 +1029,7 @@ function AssignEditor(targetsaccessor: Function, editorAccessor: Function, edite
         }
     });
 }
-/*
-function AssignEditor(cellselector: any, editorAccessor: Function, editedcallback: Function) {
-    var targets = _Select(cellselector);
-    _AddEventHandler(targets, "click", function (event: any) {
-        var target = event.currentTarget;
 
-        if (!_HasClass(target, Editor.editclass)) {
-            var editor = editorAccessor(target);
-
-            editor.Load(target,
-                () => _Html(target),
-                () => {
-                    var value = editor.ValueGetter(editor.$Me);
-                    _Html(target, value);
-                    editedcallback(target, value);
-                }
-                );
-        }
-    });
-}
-*/
 function MakeEditable(cellselector)
 {
     function SaveCell(target)

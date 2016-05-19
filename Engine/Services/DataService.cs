@@ -1,5 +1,6 @@
 ﻿using BaseModel;
 using LogicalModel;
+using LogicalModel.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -154,8 +155,19 @@ namespace Engine.Services
                                     var query = Engine.CurrentInstance.ValidationRuleResults.AsQueryable();
                                     if (full == "1")
                                     { 
-                                        var rule= taxonomy.ValidationRules.FirstOrDefault(i=>i.ID.Equals(ruleid,StringComparison.OrdinalIgnoreCase));
-                                        query = rule.GetAllInstanceResults(instance).AsQueryable();
+                                        SimpleValidationRule rule= taxonomy.ValidationRules.FirstOrDefault(i=>i.ID.Equals(ruleid,StringComparison.OrdinalIgnoreCase));
+                                        if (rule == null)
+                                        {
+                                            rule = taxonomy.SimpleValidationRules.FirstOrDefault(i => i.ID.Equals(ruleid, StringComparison.OrdinalIgnoreCase));
+                                        }
+                                        if (rule != null)
+                                        {
+                                            query = rule.GetAllInstanceResults(instance).AsQueryable();
+                                        }
+                                        else 
+                                        {
+                                            Utilities.Logger.WriteLine(String.Format("Rule {0} was not Found (DataService)",ruleid));
+                                        }
                                     }
                                     query = query.Where(i => i.ID.Equals(ruleid, StringComparison.OrdinalIgnoreCase));
                                     //TODO
@@ -261,6 +273,14 @@ namespace Engine.Services
                                 if (part1 == "documents")
                                 {
                                     json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyStructurePath);
+                                    if (Utilities.FS.FileExists( Engine.CurrentInstance.FullPath))
+                                    {
+                                        var td = new TaxonomyDocument();
+                                        td.LocalRelPath = Engine.CurrentInstance.FullPath;
+                                        td.FileName = Utilities.Strings.GetFileName(td.LocalRelPath);
+                                        var instjson = Utilities.Converters.ToJson(td);
+                                        json = json.Insert(json.IndexOf("[") + 1, instjson+", ");
+                                    }
 
                                 }
                                 if (part1 == "validationrules")

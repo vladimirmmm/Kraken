@@ -398,9 +398,16 @@ namespace XBRLProcessor.Model
                 foreach (var conceptnode in concepts) 
                 {
                     var logicalconcept = new LogicalModel.Concept();
-                    logicalconcept.Content = conceptnode.Item.Element.Key;
-                    logicalconcept.Name = conceptnode.Item.Element.Name;
-                    hypercube.Concepts.Add(logicalconcept);
+                    if (conceptnode.Item.Element != null)
+                    {
+                        logicalconcept.Content = conceptnode.Item.Element.Key;
+                        logicalconcept.Name = conceptnode.Item.Element.Name;
+                        hypercube.Concepts.Add(logicalconcept);
+                    }
+                    else 
+                    {
+                        Logger.WriteLine(String.Format("Concept Element not found for {0}!", conceptnode.Item.ID));
+                    }
 
                 }
 

@@ -79,9 +79,9 @@
             return result;
         }
 
-        public static FirstOrDefault<TClass>(item: Hierarchy<TClass>, func :Function): Hierarchy<TClass> {
+        public static FirstOrDefault<TClass>(item: Hierarchy<TClass>, func :Action<TClass>): Hierarchy<TClass> {
             var result: Hierarchy<TClass>= null;
-            if (func(item)) {
+            if (func(item.Item)) {
                 result = item;
             }
             else {

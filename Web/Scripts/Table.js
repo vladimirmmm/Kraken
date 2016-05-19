@@ -42,6 +42,15 @@ var UI;
                     me.SetExternals();
                     me.Load();
                     me.GetData();
+                    var table = Model.Hierarchy.FirstOrDefault(app.taxonomycontainer.TableStructure, function (i) {
+                        var id = i.ID;
+                        id = id.indexOf("<") > -1 ? id.substr(0, id.indexOf("<")) : id;
+                        console.log(Format("{0}=={1}", id, reportid));
+                        return id == reportid;
+                    });
+                    if (!IsNull(table) && !IsNull(table.Item)) {
+                        _Html(_SelectFirst("#DetailTitle"), table.Item.Name);
+                    }
                 }, function (error) {
                     console.log(error);
                 });
@@ -53,6 +62,7 @@ var UI;
             });
         };
         Table.prototype.SetExternals = function () {
+            var me = this;
             var extensions = this.ExtensionsRoot.Children;
             var dynamiccells = this.Instance.DynamicReportCells[this.Current_ReportID];
             if (!IsNull(dynamiccells)) {
@@ -61,7 +71,12 @@ var UI;
                 }
             }
             this.Extensions = extensions.AsLinq().Select(function (i) { return i.Item; });
-            this.CurrentExtension = this.ExtensionsRoot.Item;
+            var current_extension = this.ExtensionsRoot.Item;
+            if (this.ExtensionsRoot.Children.length > 0) {
+                current_extension = this.ExtensionsRoot.Children[0].Item;
+            }
+            me.LoadExtension(current_extension);
+            //this.CurrentExtension = current_extension;
         };
         Table.prototype.GetData = function () {
             var me = this;
@@ -77,7 +92,6 @@ var UI;
                     this.Current_ExtensionCode = this.Extensions.FirstOrDefault().LabelCode;
                 }
             }
-            me.SetExtensionByCode(this.Current_ExtensionCode);
             me.LoadToUI();
             me.HighlightCell();
         };
@@ -132,6 +146,7 @@ var UI;
             this.Cells = cells;
         };
         Table.prototype.LoadExtension = function (li) {
+            Log("LoadExtension");
             this.CurrentExtension = li;
             var extensionscell = _SelectFirst("#Extension");
             var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
@@ -154,8 +169,10 @@ var UI;
             }
             me.UITable.Manager.Clear(me.UITable);
             me.SetDynamicRows();
+            me.SetExtensionByCode(me.Current_ExtensionCode);
             var c = 0;
             var cells = this.UITable.Cells; //this.Cells;
+            Model.FactBase.LoadFromFactString(me.CurrentExtension);
             cells.forEach(function (cell, index) {
                 if (!_HasClass(cell, "blocked")) {
                     var cellelement = cell.UIElement;
@@ -165,8 +182,7 @@ var UI;
                     cellfb.FactString = cell_factstring; //  cell.FactString;
                     var factstring = cell_factstring;
                     Model.FactBase.LoadFromFactString(cellfb);
-                    Model.FactBase.LoadFromFactString(me.CurrentExtension);
-                    Model.FactBase.Merge(cellfb, me.CurrentExtension);
+                    Model.FactBase.Merge(cellfb, me.CurrentExtension, true);
                     factstring = cellfb.GetFactString();
                     if (!IsNull(factstring)) {
                         var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell_layoutid);
@@ -180,6 +196,7 @@ var UI;
             ShowNotification(Format("{0} cells were populated!", c));
         };
         Table.prototype.SaveInstance = function () {
+            return null;
             var me = this;
             if (me.UITable == null) {
                 return null;
@@ -271,10 +288,25 @@ var UI;
                 me.UITable.Manager.ManageColumns(me.UITable);
             }
             if (exts.length > 0) {
-                var extitem = Model.Hierarchy.FirstOrDefault(me.ExtensionsRoot, function (i) { return i.Item.LabelContent == me.CurrentExtension.LabelContent; });
-                var extix = me.ExtensionsRoot.Children.indexOf(extitem);
-                var extdictitem = exts[extix];
-                me.CurrentExtension.FactString = extdictitem.Key;
+                //var extitem = Model.Hierarchy.FirstOrDefault(me.ExtensionsRoot,
+                //    i=> i.Item.LabelContent == me.CurrentExtension.LabelContent);
+                //var extix = me.ExtensionsRoot.Children.indexOf(extitem);
+                //var extdictitem = exts[extix];
+                Log("SetExtension");
+                exts.forEach(function (item) {
+                    var ix = exts.indexOf(item);
+                    var extitem = me.ExtensionsRoot.Children[ix];
+                    var id = Format("Ext_{0}", item.Value);
+                    var labelcontent = Format("Extension {0}", item.Value);
+                    extitem.Item.ID = id;
+                    extitem.Item.Label = new Model.Label();
+                    extitem.Item.LabelCode = item.Value;
+                    extitem.Item.LabelContent = labelcontent;
+                    extitem.Item.Label.Code = item.Value;
+                    extitem.Item.Label.Content = labelcontent;
+                    extitem.Item.FactString = item.Key;
+                });
+                me.LoadExtension(me.CurrentExtension);
             }
         };
         Table.prototype.SetDataCells = function (cellcontainer, ditem, templatefacts) {
@@ -325,6 +357,7 @@ var UI;
             return "";
         };
         Table.prototype.SetExtensionByCode = function (code) {
+            Log("SetExtensionByCode " + code);
             if (this.Extensions.Count() > 0) {
                 var ext = this.Extensions.FirstOrDefault();
                 if (!IsNull(code)) {
@@ -369,6 +402,20 @@ var UI;
                 }
             }
             var currentextensioncode = this.Current_ExtensionCode;
+        };
+        Table.prototype.GetExtensionEditor = function () {
+            var me = this;
+            var html = "";
+            return html;
+            var extensiontemplate = me.CurrentExtension;
+            extensiontemplate.Dimensions.forEach(function (dim) {
+                if (IsNull(dim.DomainMember)) {
+                    if (dim.IsTyped) {
+                    }
+                    else {
+                    }
+                }
+            });
         };
         return Table;
     })();

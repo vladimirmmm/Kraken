@@ -1,4 +1,12 @@
 ﻿
+interface Action<T> {
+    (item: T): void;
+}
+
+interface Func<T, TResult> {
+    (item: T): TResult;
+}
+
 interface cbdelegate { (result: any): any; }
 interface Dictionary { [s: string]: Object; }
 interface F_Progress { (id: string): any; }

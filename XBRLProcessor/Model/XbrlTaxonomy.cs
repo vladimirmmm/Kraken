@@ -928,7 +928,9 @@ namespace XBRLProcessor.Models
             if (!System.IO.File.Exists(TaxonomySimpleValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 var TaxonomyValidations = new LogicalModel.Validation.TaxonomyValidation(this);
-                this.SimpleValidationRules.AddRange(TaxonomyValidations.GetValidationRules());
+                var taxrules = TaxonomyValidations.GetValidationRules();
+                this.SimpleValidationRules.AddRange(taxrules);
+     
                 var jsoncontent = Utilities.Converters.ToJson(this.SimpleValidationRules);
                 Utilities.FS.WriteAllText(this.TaxonomySimpleValidationPath, jsoncontent);
             }

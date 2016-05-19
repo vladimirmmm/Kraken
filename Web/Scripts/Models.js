@@ -76,7 +76,7 @@ var Model;
         };
         Hierarchy.FirstOrDefault = function (item, func) {
             var result = null;
-            if (func(item)) {
+            if (func(item.Item)) {
                 result = item;
             }
             else {
