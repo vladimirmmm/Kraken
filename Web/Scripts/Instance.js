@@ -251,6 +251,7 @@ var Control;
             var me = this;
             var eventhandlers = {};
             var text = $(sender).text();
+            _AddClass(_SelectFirst("#colgroup1"), "wide");
             if (contentid == "Instance") {
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") == -1) {

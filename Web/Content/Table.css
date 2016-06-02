@@ -1,13 +1,14 @@
 ﻿
-#LogWindow 
-{
-    position:fixed; width:100%; height:200px; 
-    background-color:white; 
-    bottom:0px; 
-    right:0px;
-    left:0px;
-    border-top:solid 1px black;
-}
+#LogWindow {
+    position: fixed;
+    width: 100%;
+    height: 200px;
+    background-color: white;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    border-top: solid 1px black;
+}  
 #contentlog {
     overflow-y:auto;
     height:100%;
@@ -427,9 +428,14 @@ iframe {
    
 }
 #colgroup1 {
-    width: 350px;
+   
 }
-
+col.narrow {
+     width: 350px;
+}
+col.wide {
+     width: 700px;
+}
 #colgroup2 {
 
 }
@@ -875,5 +881,14 @@ select.celleditor {
 {
     float:left;
     width:calc(50% - 10px);
-    height:200px; 
+    min-height:200px; 
+}
+#LogWindow .window 
+{
+    height:100%;
+}
+
+.tabdiv > div {
+    height:100%;
+    overflow-y:auto;
 }

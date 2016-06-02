@@ -151,7 +151,8 @@
                         item.Item.CssClass += item.Item.HasData > 0 ? " hasdata" : " empty";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
                         //item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
-                        item.Item["uid"] = Guid();
+                        //item.Item["uid"] = Guid();
+                        item["uid"] = Guid();
 
                     }
                 });
@@ -245,14 +246,18 @@
         public LoadContentToUI(sender: any) {
             var me = this;
             var target = GetHashPart(_Attribute(sender, "href"));
-        
             me.LoadContentToUIX(target, sender);
         }
 
         public LoadContentToUIX(contentid: string, sender: any) {
             var me = this;
 
-            if (contentid == "Taxonomy") {
+            if (contentid == "Tables") {
+                _RemoveClass(_SelectFirst("#colgroup1"), "wide");
+
+            } else
+            {
+                _AddClass(_SelectFirst("#colgroup1"), "wide");
 
             }
             if (contentid == "Taxonomy") {
@@ -515,6 +520,7 @@
             var me = this;
             var $sender = $(sender);
             var $parent = $(sender).parent("li");
+            var uid = _Attribute($parent[0], "uid");
             var $childrencontainer = $parent.children("ul").first();
             var $extensioncontainers = $(".table>.treeview");
             var $extensioncontainer = $parent.children(".treeview").first();
@@ -534,6 +540,14 @@
             }
             if (In(ttype, "table", "extension")) {
                 me.NavigateTo(id);
+
+            }
+            if (In(ttype, "tablegroup")) {
+                var hitem = Model.Hierarchy.FirstOrDefault(me.TableStructure,(i) => i["uid"] == uid);
+                var firstreport = hitem.Children.length > 0 ? hitem.Children[0] : null;
+                if (!IsNull(firstreport)) {
+                    me.NavigateTo(firstreport.Item.ID);
+                }
 
             }
         }
@@ -646,7 +660,7 @@
                             var clkp = new Model.ConceptLookUp();
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
                             
-                            var subhier = Model.Hierarchy.FirstOrDefault(hier, i =>i.Content == concept.Domain.Content)
+                            var subhier = Model.Hierarchy.FirstOrDefault(hier, i =>i.Item.Content == concept.Domain.Content)
                             var items = Model.Hierarchy.ToArray(IsNull(subhier) ? hier : subhier);
                             if (subhier == hier) { removeFromArray(items, hier.Item);}
 

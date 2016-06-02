@@ -225,8 +225,17 @@ namespace LogicalModel.Validation
                     sp.Name = p.Name;
                     sp.BindAsSequence = p.BindAsSequence;
                     vruleresult.Parameters.Add(sp);
+                    
+                    //TODO
+                    List<int> facts=null;
+                    if (i >= p.TaxFacts.Count && p.TaxFacts.Count==1)
+                    {
+                        facts = p.TaxFacts[0];
 
-                    var facts = p.TaxFacts[i];
+                    }else
+                    {
+                        facts = p.TaxFacts[i];
+                    }
 
                     if (p.BindAsSequence)
                     {

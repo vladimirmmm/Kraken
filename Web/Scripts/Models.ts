@@ -79,9 +79,9 @@
             return result;
         }
 
-        public static FirstOrDefault<TClass>(item: Hierarchy<TClass>, func :Action<TClass>): Hierarchy<TClass> {
+        public static FirstOrDefault<TClass>(item: Hierarchy<TClass>, func: Func<Hierarchy<TClass>,boolean>): Hierarchy<TClass> {
             var result: Hierarchy<TClass>= null;
-            if (func(item.Item)) {
+            if (func(item)) {
                 result = item;
             }
             else {
@@ -136,6 +136,11 @@
         {
             if (domainmemberfullname.indexOf("_typ") > -1) { return true; }
             return false;
+        }
+
+        public static GetDomainFullName(dimension:Dimension): string
+        {
+            return "[" + dimension.DimensionItem + "]" + dimension.Domain;
         }
     }
 

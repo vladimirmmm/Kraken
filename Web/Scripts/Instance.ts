@@ -313,6 +313,7 @@
             var me = this;
             var eventhandlers = {};
             var text = $(sender).text();
+            _AddClass(_SelectFirst("#colgroup1"), "wide");
        
             if (contentid == "Instance")
             {

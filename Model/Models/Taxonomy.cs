@@ -585,6 +585,10 @@ namespace LogicalModel
                 foreach (var item in items) 
                 {
                     parts = item.Split(sp_pipe, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length < 2) 
+                    {
+                        continue;
+                    }
                     keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
                     values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
                     intkeys = new int[keys.Length];
@@ -633,6 +637,25 @@ namespace LogicalModel
 
             }
             a(sb, page);
+            var dictionarypath = string.Format(TaxonomyFactsPathFormat, "Dictionary");
+            Utilities.FS.WriteAllText(dictionarypath, "");
+            var sb_dict = new StringBuilder();
+            foreach (var x in this.Facts)
+            {
+                var fs = GetFactStringKeyFromIntKey(x.Key);
+                var item = String.Format("{0} [{1}]\n", fs, "@cells");
+                var cells = "";
+                foreach (var cell in x.Value) 
+                {
+                    cells += cell + ", ";
+                }
+                cells = cells.TrimEnd(',', ' ');
+                item = item.Replace("@cells", cells);
+                sb_dict.Append(item);
+            }
+            Utilities.FS.WriteAllText(dictionarypath, sb_dict.ToString());
+
+            Logger.WriteLine("Dictionary was created at " + dictionarypath);
         }
 
         private Dictionary<int[], List<string>> DeserialzieFactsX(string json)

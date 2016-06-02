@@ -137,6 +137,7 @@ namespace LogicalModel.Models
                             li_new.FactString = fact.FactString;
                             var code = String.Format(Table.LabelCodeFormat, typedext.Value);
                             var content = String.Format(Table.ExtensionLableContentFormat, code);
+                            li_new.ID = content;
                             li_new.LabelCode = code;
                             li_new.LabelContent = content;
                             var hli = new Hierarchy<LayoutItem>(li_new);

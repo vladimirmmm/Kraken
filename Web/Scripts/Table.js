@@ -43,9 +43,9 @@ var UI;
                     me.Load();
                     me.GetData();
                     var table = Model.Hierarchy.FirstOrDefault(app.taxonomycontainer.TableStructure, function (i) {
-                        var id = i.ID;
+                        var id = i.Item.ID;
                         id = id.indexOf("<") > -1 ? id.substr(0, id.indexOf("<")) : id;
-                        console.log(Format("{0}=={1}", id, reportid));
+                        //console.log(Format("{0}=={1}", id, reportid));
                         return id == reportid;
                     });
                     if (!IsNull(table) && !IsNull(table.Item)) {
@@ -192,6 +192,14 @@ var UI;
                         }
                     }
                 }
+            });
+            var extensioncell = _SelectFirst(".report #Extension");
+            var extensioneditorelement = _SelectFirst("#ExtensionEditor");
+            var extensioneditorcontainerelement = _SelectFirst("#ExtensionEditor .editors");
+            _AddEventHandler(extensioncell, "dblclick", function () {
+                var html = me.GetExtensionEditor();
+                _Html(extensioneditorcontainerelement, html);
+                _Show(extensioneditorelement);
             });
             ShowNotification(Format("{0} cells were populated!", c));
         };
@@ -406,15 +414,30 @@ var UI;
         Table.prototype.GetExtensionEditor = function () {
             var me = this;
             var html = "";
-            return html;
+            //return html;
             var extensiontemplate = me.CurrentExtension;
             extensiontemplate.Dimensions.forEach(function (dim) {
-                if (IsNull(dim.DomainMember)) {
+                var name = Model.Dimension.GetDomainFullName(dim);
+                var label = Model.Dimension.DomainMemberFullName(dim);
+                html += "<label for='" + name + "'>" + label + "</label>\n";
+                if (IsNull(dim.DomainMember) || dim.IsTyped) {
+                    var membervalue = IsNull(dim.DomainMember) ? "" : dim.DomainMember;
+                    html += "<input type='text' fact='" + name + "' value='" + membervalue + "'/>\n";
                     if (dim.IsTyped) {
                     }
                     else {
                     }
                 }
+                html += "<br/>\n";
+            });
+            return html;
+        };
+        Table.prototype.SaveExtension = function () {
+            var me = this;
+            var extensiontemplate = me.CurrentExtension;
+            extensiontemplate.Dimensions.forEach(function (dim) {
+                var domainfullname = Model.Dimension.GetDomainFullName(dim);
+                dim.DomainMember = _Value(_SelectFirst("input[fact='" + domainfullname + "']"));
             });
         };
         return Table;

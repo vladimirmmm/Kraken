@@ -66,7 +66,7 @@
 
         <table id="maintable">
             <colgroup>
-                <col id="colgroup1" />
+                <col id="colgroup1" class="narrow"/>
                 <col id="colgroup2" />
             </colgroup>
             <thead>
@@ -75,25 +75,18 @@
                         <div id="menucontainer" class="horizontal"></div>
                     </th>
                 </tr>
-                <!--<tr class="colHeaders">
-                    <th id="colgroup1h" class="th1 hresizable">
-                        &nbsp;
-                    </th>
-                    <th id="colgroup2h" class="th2 ">
-                        &nbsp;
-                    </th>
-                </tr>-->
+
             </thead>
             <tbody>
                 <tr>
                     <td class="th2" id="resizablecol1">
-                        <!-- href="#tab_logs" -->
+                 
                         <div id="Contents" class=" vresizable">
                             <div id="MainContainer" class="contentcontainer">
                                 <ul id="MainCommands" class="commands">
                                    
                                     <li>
-                                        <a href="#Tables" onclick="">Reports</a>
+                                        <a href="#Tables" onclick="app.taxonomycontainer.LoadContentToUI(this)">Reports</a>
                                     </li>
                                     <li>
                                         <a href="#TaxonomyContainer" onclick="app.taxonomycontainer.LoadContentToUI(this)">Taxonomy</a>
@@ -243,6 +236,11 @@
         </table>
     </div>
     <div id="tempcontainer" class="hidden"></div>
+    <div class="centered window hidden" id="ExtensionEditor">
+        <div class="editors"></div>
+        <input type="button" value="Save" onclick="app.taxonomycontainer.Table.SaveExtension()" />
+        <input type="button" value="Cancel" onclick="app.CloseWindow(this)" />
+    </div>
     <div id="LogWindow">
         <div id="ConsoleWindow" class="half window">
             <ul>

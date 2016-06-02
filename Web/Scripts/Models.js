@@ -76,7 +76,7 @@ var Model;
         };
         Hierarchy.FirstOrDefault = function (item, func) {
             var result = null;
-            if (func(item.Item)) {
+            if (func(item)) {
                 result = item;
             }
             else {
@@ -127,6 +127,9 @@ var Model;
                 return true;
             }
             return false;
+        };
+        Dimension.GetDomainFullName = function (dimension) {
+            return "[" + dimension.DimensionItem + "]" + dimension.Domain;
         };
         return Dimension;
     })();

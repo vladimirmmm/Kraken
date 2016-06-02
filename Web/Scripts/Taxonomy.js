@@ -130,7 +130,8 @@ var Control;
                         item.Item.CssClass += item.Item.HasData > 0 ? " hasdata" : " empty";
                         item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
                         //item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
-                        item.Item["uid"] = Guid();
+                        //item.Item["uid"] = Guid();
+                        item["uid"] = Guid();
                     }
                 });
                 BindX($("#tabletreeview"), me.TableStructure, 5);
@@ -222,7 +223,11 @@ var Control;
         };
         TaxonomyContainer.prototype.LoadContentToUIX = function (contentid, sender) {
             var me = this;
-            if (contentid == "Taxonomy") {
+            if (contentid == "Tables") {
+                _RemoveClass(_SelectFirst("#colgroup1"), "wide");
+            }
+            else {
+                _AddClass(_SelectFirst("#colgroup1"), "wide");
             }
             if (contentid == "Taxonomy") {
             }
@@ -428,6 +433,7 @@ var Control;
             var me = this;
             var $sender = $(sender);
             var $parent = $(sender).parent("li");
+            var uid = _Attribute($parent[0], "uid");
             var $childrencontainer = $parent.children("ul").first();
             var $extensioncontainers = $(".table>.treeview");
             var $extensioncontainer = $parent.children(".treeview").first();
@@ -444,6 +450,13 @@ var Control;
             }
             if (In(ttype, "table", "extension")) {
                 me.NavigateTo(id);
+            }
+            if (In(ttype, "tablegroup")) {
+                var hitem = Model.Hierarchy.FirstOrDefault(me.TableStructure, function (i) { return i["uid"] == uid; });
+                var firstreport = hitem.Children.length > 0 ? hitem.Children[0] : null;
+                if (!IsNull(firstreport)) {
+                    me.NavigateTo(firstreport.Item.ID);
+                }
             }
         };
         TaxonomyContainer.SetValues = function (ruleresult) {
@@ -538,7 +551,7 @@ var Control;
                         if (!IsNull(hier)) {
                             var clkp = new Model.ConceptLookUp();
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);
-                            var subhier = Model.Hierarchy.FirstOrDefault(hier, function (i) { return i.Content == concept.Domain.Content; });
+                            var subhier = Model.Hierarchy.FirstOrDefault(hier, function (i) { return i.Item.Content == concept.Domain.Content; });
                             var items = Model.Hierarchy.ToArray(IsNull(subhier) ? hier : subhier);
                             if (subhier == hier) {
                                 removeFromArray(items, hier.Item);
