@@ -43,6 +43,7 @@ namespace LogicalModel
         public List<Label> TaxonomyLabels = new List<Label>();
         public Dictionary<string, Concept> Concepts = new Dictionary<string, Concept>();
         public List<Element> DimensionItems = new List<Element>();
+        public List<Element> Domains = new List<Element>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
         public Dictionary<string, int> FactParts = new Dictionary<string, int>();
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
@@ -191,6 +192,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Facts\\Facts_{0}.json"; }
         }
+        public string TaxonomyFactDictionaryPath
+        {
+            get { return ModuleFolder + "Facts\\FactDictionary.json"; }
+        }
         public string TaxonomySimpleValidationPath
         {
             get { return ModuleFolder + "Validations\\SimpleValidations.json"; }
@@ -273,8 +278,8 @@ namespace LogicalModel
             }
             return null;
         }
-        
-        public Dictionary<string, List<string>> TypedDimensions = new Dictionary<string, List<string>>();
+
+        public Dictionary<string, List<Element>> TypedDimensions = new Dictionary<string, List<Element>>();
         public virtual void LoadTypedDimensions() 
         {
             TypedDimensions.Clear();
@@ -283,16 +288,16 @@ namespace LogicalModel
             {
                 if (!TypedDimensions.ContainsKey(element.Namespace)) 
                 {
-                    TypedDimensions.Add(element.Namespace, new List<string>());
+                    TypedDimensions.Add(element.Namespace, new List<Element>());
                 }
-                TypedDimensions[element.Namespace].Add(element.Name);
+                TypedDimensions[element.Namespace].Add(element);
             }
         }
 
         public static bool IsTyped(string domain)
         {
             var result = false;
-            var ix = domain.IndexOf(":");
+            var ix = domain.IndexOf(":", StringComparison.Ordinal);
             var ns = ix > -1 ? domain.Remove(ix) : domain;
             if (TaxonomyEngine.CurrentEngine != null &&
                 TaxonomyEngine.CurrentEngine.CurrentTaxonomy != null &&
@@ -315,10 +320,16 @@ namespace LogicalModel
         }
         public bool HasFact(string factkey) 
         {
-            if (factkey.Contains(":"))
-            {
-                factkey = GetFactStringKeyFromStringKey(factkey);
-            }
+            //int[] intkeys = null;
+            //if (factkey.Contains(":"))
+            //{
+            //    factkey = GetFactStringKeyFromStringKey(factkey);
+            //    intkeys = GetFactIntKey(factkey).ToArray();
+            //}
+            //else 
+            //{
+
+            //}
             var ids = GetFactIntKey(factkey).ToArray();
 
             return this.Facts.ContainsKey(ids);
@@ -335,6 +346,15 @@ namespace LogicalModel
             }
             var ids = GetFactIntKey(factkey).ToArray();
             return this.Facts[ids];
+        }
+        public List<string> GetCellsOfFact(int[] factintkey)
+        {
+            //if (factkey.Contains(":"))
+            //{
+            //    factkey = GetFactStringKeyFromStringKey(factkey);
+            //}
+            //var ids = GetFactIntKey(factkey).ToArray();
+            return this.Facts[factintkey];
         }
         public List<string> GetCellsOfFact(IEnumerable<int> factkey)
         {
@@ -362,23 +382,38 @@ namespace LogicalModel
         //    }
         //    return sb.ToString();
         //}
+        private static char[] splitter = new char[] { ',' };
         public List<int> GetFactIntKey(string key)
         {
             var intlist = new List<int>();
-            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //var parts = Utilities.Strings.FactSplit(key, ',', 8);
             if (key.Contains(":"))
             {
+                var parts = Utilities.Strings.FactSplit(key, ',', 8);
+
                 foreach (var part in parts)
                 {
-                    intlist.Add(this.FactParts[part]);
+                    if (this.FactParts.ContainsKey(part))
+                    {
+                        intlist.Add(this.FactParts[part]);
+                    }
+                    else 
+                    {
+                        intlist.Add(-1);
+
+                    }
 
                 }
             }
             else 
             {
+                var parts = key.Split(Taxonomy.splitter, StringSplitOptions.RemoveEmptyEntries);
+
                 foreach (var part in parts)
                 {
-                    intlist.Add(int.Parse(part));
+                    intlist.Add(Utilities.Converters.FastParse(part));
+                    //intlist.Add(int.Parse(part));
 
                 }
             }
@@ -417,17 +452,25 @@ namespace LogicalModel
         }
         public string GetFactStringKeyFromStringKey(string key)
         {
-            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            return GetFactStringKeyFromStringKey(key, this.FactParts);
+        }
+        public string GetFactStringKeyFromStringKey(string key, Dictionary<string,int> dict)
+        {
+            //var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = Utilities.Strings.FactSplit(key, ',', 8);
             var sb = new StringBuilder();
             foreach (var part in parts)
             {
-                if (this.FactParts.ContainsKey(part))
+                if (dict.ContainsKey(part))
                 {
-                    sb.Append(this.FactParts[part] + ",");
+                    sb.Append(dict[part]);
+                    sb.Append(",");
                 }
                 else 
                 {
-                    Logger.WriteLine(String.Format("FactPart {0} was not found! Key: {1}", part, key));
+                    sb.Append("-1,");
+
+                    //Logger.WriteLine(String.Format("FactPart {0} was not found! Key: {1}", part, key));
                 }
             }
             return sb.ToString();
@@ -466,7 +509,15 @@ namespace LogicalModel
             {
 
                 LabelHandler.HandleTaxonomy(this);
-                Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
+                if (this.TaxonomyLabels.Count > 0)
+                {
+                    Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
+                }
+                else 
+                {
+                    Logger.WriteLine("No Labels Found");
+
+                }
 
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyLabels);
                 Utilities.FS.WriteAllText(TaxonomyLabelPath, jsoncontent);
@@ -637,7 +688,7 @@ namespace LogicalModel
 
             }
             a(sb, page);
-            var dictionarypath = string.Format(TaxonomyFactsPathFormat, "Dictionary");
+            var dictionarypath = TaxonomyFactDictionaryPath;
             Utilities.FS.WriteAllText(dictionarypath, "");
             var sb_dict = new StringBuilder();
             foreach (var x in this.Facts)
@@ -1073,6 +1124,7 @@ namespace LogicalModel
                     }
                     concept.Name = conceptelement.Name;
                     concept.Namespace = conceptelement.Namespace;
+                    concept.NamespaceURI = conceptelement.NamespaceURI;
                     concept.ItemType = conceptelement.Type.IndexOf(":") > -1 ? conceptelement.Type.Substring(conceptelement.Type.IndexOf(":") + 1) : conceptelement.Type;
 
                     this.Concepts.Add(concept.Content, concept);

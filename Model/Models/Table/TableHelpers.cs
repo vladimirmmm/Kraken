@@ -81,11 +81,14 @@ namespace LogicalModel
 
                 //setting the dimensions for the combination
                 var dimensions = new List<Dimension>();
+                Concept concept = null;
                 foreach (var item in combination)
                 {
                     Dimension.SetDimensions(item);
                     Dimension.MergeDimensions(dimensions, item.Item.Dimensions);
-
+                    if (concept == null) {
+                        concept = item.Item.Concept;
+                    }
 
                     //adding the parts of the combination to the extesnion node
                     if (!item.Item.IsAbstract)
@@ -101,8 +104,8 @@ namespace LogicalModel
                     dim.SetTyped();
                 }
 
-                li.Dimensions = dimensions;
-
+                li.Dimensions = dimensions.Where(i => !i.IsDefaultMember).ToList();
+                li.Concept=concept;
                 extensions.Children.Add(hli);
                 ix++;
             }
@@ -271,9 +274,9 @@ namespace LogicalModel
         public static void SetDynamicColumns(Table table)
         {
 
-            var rowsnode = table.GetAxisNode("y");
-            var columnsnode = table.GetAxisNode("x");
-            var extensionnode = table.GetAxisNode("z");
+            var rowsnode = table.CreateAxisNode("y");
+            var columnsnode = table.CreateAxisNode("x");
+            var extensionnode = table.CreateAxisNode("z");
 
             var aspects = rowsnode.Where(i => i.Item.IsAspect).ToList();
 

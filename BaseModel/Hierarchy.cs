@@ -59,7 +59,26 @@ namespace BaseModel
                 this.Children.Add(newchild);
             }
         }
-
+        public void AddChildren(List<TClass> items)
+        {
+            foreach (var item in items)
+            {
+                var hi = new Hierarchy<TClass>(item);
+                AddChild(hi);
+            }
+        }
+        public void AddChildren(List<Hierarchy<TClass>> items)
+        {
+            foreach (var item in items) 
+            {
+                AddChild(item);
+            }
+        }
+        public void AddChild(Hierarchy<TClass> item) 
+        {
+            this.Children.Add(item);
+            item.Parent = this;
+        }
         public int GetTotalChildCount(Hierarchy<TClass> item)
         {
             item = item == null ? this : item;

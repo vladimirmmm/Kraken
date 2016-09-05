@@ -107,8 +107,9 @@ namespace Desktop
                 }
                 catch (Exception ex)
                 {
-                    response.Error = ex.Message + "\r\n";
-                    Logger.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, ex.Message));
+                    var errormsg = Utilities.Objects.GetFullException(ex);
+                    response.Error = errormsg + "\r\n";
+                    Logger.WriteLine(String.Format("Error at Features.ProcessRequest. Reqest: {0} > {1}", request, errormsg));
                     engine.Features.UI.ToUI(response);
 
                 }

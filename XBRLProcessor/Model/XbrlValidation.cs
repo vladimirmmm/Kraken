@@ -206,7 +206,7 @@ namespace XBRLProcessor.Model
                     var facts = GetFactsKV(fbq, parameterfacts, parameterfactdict);
 
                     var ok = true;
-
+                  
                     if (isnonsequenced && facts.Count > 1 )
                     {
                         multiplefactsfornonseqparameter++;
@@ -234,19 +234,19 @@ namespace XBRLProcessor.Model
                     {
 
                         parameter.TaxFacts.Add(facts.Select(i=>i.Value).ToList());
-                        if (qix > 1 && qix % bsize == 0)
-                        {
-                            //if (!issorted)
-                            //{
-                            //    issorted = true;
-                            //    parameterfacts = parameterfacts.OrderBy(i => i).ToList();
+                        //if (qix > 1 && qix % bsize == 0)
+                        //{
+                            ////if (!issorted)
+                            ////{
+                            ////    issorted = true;
+                            ////    parameterfacts = parameterfacts.OrderBy(i => i).ToList();
 
-                            //}
-                            //factids = factids.OrderBy(i => i).ToList();
-                            //parameterfacts = Utilities.Objects.SortedExcept(parameterfacts, factids);
-                            //factids.Clear();
-                            //Utilities.Logger.WriteLine(String.Format("Remaining: {0}",mergedqueries.Count- mergedqueries.IndexOf(fbq)));
-                        }
+                            ////}
+                            ////factids = factids.OrderBy(i => i).ToList();
+                            ////parameterfacts = Utilities.Objects.SortedExcept(parameterfacts, factids);
+                            ////factids.Clear();
+                            ////Utilities.Logger.WriteLine(String.Format("Remaining: {0}",mergedqueries.Count- mergedqueries.IndexOf(fbq)));
+                        //}
                     }
             
 
@@ -370,7 +370,7 @@ namespace XBRLProcessor.Model
         private void AddDimensionIfNotExists(LogicalModel.Dimension dimension, LogicalModel.Base.FactBase fact)
         {
             var existingdim = fact.Dimensions.FirstOrDefault(i => i.DimensionItem == dimension.DimensionItem);
-            if (existingdim == null && !dimension.IsDefaultMemeber)
+            if (existingdim == null && !dimension.IsDefaultMember)
             {
                 fact.Dimensions.Add(dimension);
             }

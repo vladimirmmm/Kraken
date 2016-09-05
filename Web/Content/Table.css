@@ -158,7 +158,7 @@ ul {
 }
 
     ul > li {
-        margin-left: 20px;
+        /*margin-left: 20px;*/
     }
 
 #maintable {
@@ -238,8 +238,8 @@ a, a:visited{
     color:#375990;
 }
 
-li {
-    clear: both;
+#pivot li {
+    /*clear: both;*/
     border-bottom:solid 1px transparent;
     border-top:solid 1px transparent;
 }
@@ -351,6 +351,7 @@ th.dynamicdata {
     width: 100%;
     height: 100%;
     min-width: 1000px;
+    /*display:none;*/
 }
 
 .pivotitem {
@@ -853,18 +854,7 @@ select.celleditor {
                                          translateX(-50%) and translateY(-50%) */
  
 }
-.absolutetabcontent {
 
-    position:absolute;
-    bottom:0px;
-    left:0px;
-    padding:5px;
-    background:#ffffff;
-    width:100%; /*calc(100% - 470px);*/
-
-
-
-}
 
 .mh500 {
     max-height:500px;
@@ -891,4 +881,23 @@ select.celleditor {
 .tabdiv > div {
     height:100%;
     overflow-y:auto;
+}
+div.absolutetabcontent {
+
+    position:absolute;
+    bottom:0px;
+    left:0px;
+    padding:5px;
+    background:#ffffff;
+    width:100%; /*calc(100% - 470px);*/
+    height:auto;
+
+
+}
+li{
+    margin-left: 20px;
+}
+.commands {
+    margin-left: 0px;
+
 }

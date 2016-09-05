@@ -72,6 +72,10 @@ namespace LogicalModel
         {
             return true;
         }
+        public virtual string GetFilePath()
+        {
+            return "";
+        }
         public virtual bool LoadTaxonomy(string filepath)
         {
             return true;

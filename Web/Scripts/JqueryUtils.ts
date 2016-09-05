@@ -476,6 +476,10 @@ function Css(obj, name: string, value?: string): string {
 }
 
 function Value(obj, value?: string): string {
+    if (_Attribute(obj, "type").toLocaleLowerCase() == "checkbox")
+    {
+        return _Attribute(obj, "checked") ? "True" : "False";
+    }
     return CallJQueryFunction(obj, "val", "", value);
 }
 
@@ -700,7 +704,13 @@ function BindVash(target: any, data: any, parent?: any) {
 }
 function GetFromData(form: Element):any[]
 {
-    return $(form).serializeArray();
+    var inputs = _Select("input[name]", form);
+    var result = [];
+    inputs.forEach(function (element) {
+        result.push({ name: _Attribute(element, "name"), value: _Value(element)});
+    });
+    return result;
+    //return $(form).serializeArray();
 }
 function ConvertFormDataToObj(formdata: any[]): Object
 {

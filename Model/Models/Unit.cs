@@ -2,6 +2,7 @@
 using LogicalModel.Base;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,19 @@ namespace LogicalModel
 {
     public class InstanceUnit:Identifiable
     {
+        public void Test() 
+        {
+            var s = "2016-5-10 17:00:15 AM";
+            DateTime d;
+            var c = (CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            var df=new DateTimeFormatInfo();
+            df.FullDateTimePattern="yyyy-M-D HH:mm:ss zz";
+            c.DateTimeFormat.FullDateTimePattern = "yyyy-M-d HH:mm:ss tt";
+            if (!DateTime.TryParse(s, c, System.Globalization.DateTimeStyles.None, out d)) 
+            {
+
+            }
+        }
         public QualifiedName Measure { get; set; }
 
         public String ItemType { get; set; }

@@ -6,8 +6,42 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
+    public class ArrayEqualityComparer:IEqualityComparer<int[]>{
+
+        public bool Equals(int[] x, int[] y)
+        {
+            if (x.Length != y.Length) { return false; }
+            for (int i = 0; i < x.Length; i++)
+            {
+                if (x[i] != y[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public int GetHashCode(int[] obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
     public class Objects
     {
+        public static string GetFullException(Exception ex) 
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(ex.Message);
+            sb.AppendLine(ex.StackTrace);
+            if (ex.InnerException != null)
+            {
+                sb.AppendLine("Inner Exception:");
+                sb.AppendLine(ex.InnerException.Message);
+                sb.AppendLine(ex.InnerException.StackTrace);
+            }
+            return sb.ToString();
+        }
         public static Type GetEnumerableType(Type type)
         {
             foreach (Type intType in type.GetInterfaces())

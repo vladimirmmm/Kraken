@@ -90,13 +90,24 @@ module Applications
 
         public Settings_Show() {
             var settingscontainer = _SelectFirst("#EngineSettings");
+            var settingslist = _SelectFirst("#SettingsList");
+            
             AjaxRequest("Settings/Get", "get", "json", null, function (data) {
-                var control: HTMLInputElement = null;
+        
                 var items = GetProperties(data);
+                _Html(settingslist, " ");
+                var c_html = "";
                 items.forEach(function (item) {
-                    control = <HTMLInputElement>_SelectFirst("[name="+item.Key+"]", settingscontainer);
-                    control.checked = ToBool(item.Value);
+                    var isbool = In(item.Value.toLowerCase(), "true", "false");
+                    var html = Format('<input type="text" name="{0}" value="{1}"/>', item.Key, item.Value);
+            
+                    if (isbool) {
+                        html = Format('<input type="checkbox" name="{0}" {1}/> \n', item.Key, ToBool(item.Value)?' checked="checked"':'');
+                    }
+                    html = Format("<li>\n{0}\n<label>{1}</label>\n</li>", html, item.Key);
+                    c_html = c_html + html;
                 });
+                _Html(settingslist, c_html);
                 //_Center(settingscontainer);
                 _Show(settingscontainer);
             }, null);

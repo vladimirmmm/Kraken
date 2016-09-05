@@ -348,6 +348,7 @@ namespace XBRLProcessor.Mapping
             toitem.SubstitutionGroup = item.SubstitutionGroup;
             toitem.Type = item.Type;
             toitem.Namespace = item.Namespace;
+            toitem.NamespaceURI = item.NamespaceURI;
             toitem.TypedDomainRef = item.TypedDomainRef;
             toitem.LinkRole = item.LinkRole;
             return toitem;

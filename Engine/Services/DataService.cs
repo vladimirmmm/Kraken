@@ -94,17 +94,23 @@ namespace Engine.Services
                             }
                             if (part1 == "save")
                             {
+                                var keys = settings.Keys.ToList();
 
-                                settings.CheckValidationCells = request.GetParameter<bool>("CheckValidationCells");
-                                settings.ReDownloadFiles = request.GetParameter<bool>("ReDownloadFiles");
-                                settings.ReloadFullTaxonomy = request.GetParameter<bool>("ReloadFullTaxonomy");
-                                settings.ReloadFullTaxonomyButStructure = request.GetParameter<bool>("ReloadFullTaxonomyButStructure");
+                                foreach (var key in keys) 
+                                {
+                                    var value = request.GetParameter(key);
+                                    settings.SetValue(key, value);
+                                }
+                                //settings.CheckValidationCells = request.GetParameter<bool>("CheckValidationCells");
+                                //settings.ReDownloadFiles = request.GetParameter<bool>("ReDownloadFiles");
+                                //settings.ReloadFullTaxonomy = request.GetParameter<bool>("ReloadFullTaxonomy");
+                                //settings.ReloadFullTaxonomyButStructure = request.GetParameter<bool>("ReloadFullTaxonomyButStructure");
                                 if (settings.ReloadFullTaxonomy)
                                 {
                                     settings.ReloadFullTaxonomyButStructure = true;
                                 }
-                                settings.ReloadTaxonomyOnInstanceLoaded = request.GetParameter<bool>("ReloadTaxonomyOnInstanceLoaded");
-                                settings.ValidateOnInstanceLoaded = request.GetParameter<bool>("ValidateOnInstanceLoaded");
+                                //settings.ReloadTaxonomyOnInstanceLoaded = request.GetParameter<bool>("ReloadTaxonomyOnInstanceLoaded");
+                                //settings.ValidateOnInstanceLoaded = request.GetParameter<bool>("ValidateOnInstanceLoaded");
 
                                 this.AppEngine.Features.SaveSettings();
                             }

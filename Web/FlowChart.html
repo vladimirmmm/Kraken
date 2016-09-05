@@ -1,0 +1,512 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>
+        </title>
+    <script src="Scripts/jsPlumb-2.1.2.js"></script>
+    <script src="Scripts/jquery-2.1.4.min.js"></script>
+    <script src="Scripts/moment.js"></script>
+    <link href="Content/FlowChart.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="eventcontainer">
+      
+    </div>
+    <div id="eventdetail">
+        <p>
+            <label>ID: </label>
+            <a id="Link" href="" target="_blank"> <span id="ID"></span></a>
+        </p>
+        <p>
+            <label>Title: </label>
+            <span id="Title"></span>
+        </p>
+        <p>
+            <label>Path: </label>
+            <span id="Path"></span>
+        </p>
+        <p>
+            <label>Time: </label>
+            <span id="Time"></span>
+        </p>
+        <p>
+            <label>Type: </label>
+            <span id="Type"></span>
+        </p>
+        <p>
+            <label>Content: </label>
+            <span id="Content"></span>
+        </p>
+        
+</div>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+        });
+        var jsplumbinstance = null;
+
+        jsPlumb.ready(function () {
+
+            var instance = window.jsp = jsPlumb.getInstance({
+                // default drag options
+                DragOptions: { cursor: 'pointer', zIndex: 2000 },
+                // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
+                // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
+               
+                Container: "canvas"
+            });
+
+            jsplumbinstance = instance;
+  
+			
+
+            instance.DefaultDragOptions = { cursor: 'pointer', zIndex: 2000 };
+
+
+            EventstoUI(events, instance);
+            
+        });
+        var events =
+            [
+                 {
+                     ID: "REG-13474",
+                     Link: "https://findit.wkfs-frc.com/browse/REG-13474",
+                    Title: "REG-13474: Creating or connecting to a LDM linked to GDM will fail when having JAVA 7 installed",
+                    Time: "2016-04-27 00:02:00",
+                    Content: "",
+                    Path: "p1",
+                    Type: "jyra"
+                },
+                {
+                    ID: "REG-13322",
+                    Link: "https://findit.wkfs-frc.com/browse/REG-13322",
+                    Title: "REG-13322 (filed attribute generated instead of find:filed) resulting in validation errors at regulators – this is the most important one.",
+                    Time: "2016-03-24 00:02:00",
+                    Path: "p2",
+                    Content: "",
+                    Type: "jyra"
+                },
+                {
+                    ID: "REG-13475",
+                    Link: "https://findit.wkfs-frc.com/browse/REG-13475",
+                    Title: "REG-13475 Standard Delivery generates filed attribute instead of find:filed for find:filingIndicator tag",
+                    Time: "2016-04-28 00:02:00",
+                    Path: "p3",
+                    Content: "",
+                    Type: "jyra"
+                },
+                {
+                    ID: "CORE-12612",
+                    Link: "https://findit.wkfs-frc.com/browse/CORE-12612",
+                    Title: "CORE-12612 – EBA LIQREP NSFR delivery doesn’t works due to missing contexts for filingindicators",
+                    Time: "2016-03-24 00:03:00",
+                    Path: "p2",
+                    Content: "",
+                    Type: "jyra"
+                }
+                ,
+                {
+                    ID: "UK-5213",
+                    Link: "https://findit.wkfs-frc.com/browse/UK-5213",
+                    Title: "UK-5213 – similar to the previous one, however COREP LE module is customized in UKA, therefore this needs to get addressed separately at UKA level.",
+                    Time: "2016-03-24 00:05:00",
+                    Path: "p2",
+                    Content: "",
+                    Type: "jyra"
+                }
+                  ,
+                {
+                    ID: "CORE-12653",
+                    Link: "https://findit.wkfs-frc.com/browse/CORE-12653",
+                    Title: "CORE-12653 – Filing Indicator not generating in some cases for C02",
+                    Time: "2016-04-01 00:05:00",
+                    Path: "p3",
+                    Content: "",
+                    Type: "jyra"
+                }
+                 ,
+                {
+                    ID: "REL-3966",
+                    Link: "https://findit.wkfs-frc.com/browse/REL-3966",
+                    Title: "REL-3966 - Hotfix KB 586 - 587",
+
+                    Time: "2016-05-04 00:05:00",
+                    Path: "p1",
+                    Content: "",
+                    Type: "rel-hotfix"
+                }
+                 ,
+                {
+                    ID: "HF-KB_586_587",
+                    Title: "HF-KB_586_587 - Hotfix KB 586 - 587",
+                    Time: "2016-03-21 00:05:00",
+                    Path: "p1",
+                    Content: "",
+                    Type: "hotfix"
+                }
+                ,
+                {
+                    ID: "REL-3969",
+                    Title: "REL-3969 - Hotfix (UKA 6.4.0_HOTFIX_XBRL) for find:filed xbrl issue",
+                    Link: "https://findit.wkfs-frc.com/browse/REL-3969",
+                    Time: "2016-05-05 00:05:00",
+                    Path: "p2",
+                    Content: "",
+                    Type: "rel-hotfix"
+                }          
+                ,
+                {
+                    ID: "REL-3892",
+                    Link: "https://findit.wkfs-frc.com/browse/REL-3892",
+                     Title: "REL-3892 - UKA 6.4.0_HOTFIX_XBRL",
+                     Time: "2016-04-20 00:05:00",
+                     Path: "p3",
+                     Content: "",
+                     Type: "rel-hotfix"
+                 }
+                ,
+                {
+                    ID: "REL-3928",
+                    Link: "https://findit.wkfs-frc.com/browse/REL-3928",
+                    Title: "REL-3928 - RG DESKTOP 1.8.3 HOTFIX",
+                    Time: "2016-04-20 00:05:00",
+                    Path: "p1",
+                    Content: "",
+                    Type: "rel-hotfix"
+                }
+                ,
+                {
+                    ID: "Workaround-CORE-12653",
+                    Title: "Workaround-CORE-12653: manual adjustment required from customer on several tempaltes.",
+                    Time: "2016-04-01 00:05:00",
+                    Path: "p3",
+                    Content: "",
+                    Type: "workaround"
+                }
+                ,
+                {
+                    ID: "UKA-Delivery",
+                    Title: "UKA Delivery Regulator Does handles filed attribute",
+                    Time: "2016-05-20 00:05:00",
+                    Path: "p2",
+                    Content: "",
+                    Type: "delivery"
+                }
+                ,
+                {
+                    ID: "LUA-Delivery",
+                    Title: "LUA Delivery: regulator doesn't handles filed attribute",
+                    Time: "2016-05-20 00:05:00",
+                    Path: "p4",
+                    Content: "",
+                    Type: "delivery"
+                },
+                {
+                    ID: "SF-00390272",
+                    Title: "XBRL generated from UKA 6.4.0 using RG 1.8.3 fails independent validation ",
+                    Link: "https://na32.salesforce.com/5003800000kol8TAAQ",
+                    Time: "2016-04-11 00:05:00",
+                    Path: "p5",
+                    Content: "",
+                    Type: "sf"
+                },
+                {
+                    ID: "SF-00393907",
+                    Title: "LCR validation error  ",
+                    Link: "https://na32.salesforce.com/5003800000lA6EpAAK",
+                    Time: "2016-05-09 18:47:00",
+                    Path: "p5",
+                    Content: "",
+                    Type: "sf"
+                }
+                //00393907
+                //00390272 
+            ];
+        var connectionobjects = {};
+        var connections = {
+                "CORE-12653":["Workaround-CORE-12653"],
+                "REG-13322": ["REG-13475", "REL-3892", "REL-3969", "SF-00390272","SF-00393907"],
+                "REG-13474": ["REL-3928", "REL-3966", "HF-KB_586_587"],
+                "CORE-12612": ["UK-5213", "SF-00393907"],
+                "REG-13475": ["REL-3892", "REL-3969", "REL-3928", "SF-00390272", "SF-00393907"],
+                "UK-5213": ["REL-3969", "REL-3892", "SF-00393907"],
+                "REL-3892": ["UKA-Delivery"],
+                "REL-3928": ["UKA-Delivery"],
+                "REL-3966": ["UKA-Delivery", "LUA-Delivery"],
+                "HF-KB_586_587":["REL-3928","REL-3966"],
+                "Workaround-CORE-12653": ["LUA-Delivery", "UKA-Delivery", "SF-00390272", "SF-00393907"]
+            };
+            function DateDiff(date1, date2) {
+                var t1 = date1.getTime();
+                var t2 = date2.getTime();
+                //var result = Math.floor((t1 - t2) / (1000 * 60 * 60 * 24));
+                var result = Math.floor((t1 - t2));
+                return result;
+            }
+            function ToDate(string)
+            {
+                return moment(string, "YYYY-MM-DD hh:mm:ss").toDate();
+            }
+            function IsNull(item) {
+                //return item == 'undefined' || item == null || (typeof (item) == "string" && item == "");
+                return item === undefined || item == null || item === "";
+            };
+            function EventstoUI(events, instance) {
+                var xmap = {};
+                var maxwidth = $(window).width() - 250;
+                var maxheight = $(window).height() - 100;
+                var margin_left = 50;
+                var pathmap = {};
+                var pathindex = 0;
+                var totalhtml = "";
+                var mintime = null; var maxtime = null;
+                events.forEach(function (event, index) {
+                    var id = event.ID;
+                    var html = '<div class="box ' + event.Type + '" id="' + id + '" title="' + event.Time + ': ' + event.Title + '">' + event.ID + '<br/></div>';
+                    totalhtml += html;
+                    var date = ToDate(event.Time);
+                    if (mintime == null) { mintime = date; }
+                    if (maxtime == null) { maxtime = date; }
+                    if (date < mintime) { mintime = date; }
+                    if (date > maxtime) { maxtime = date; }
+
+                    var eventpath = event.Path;
+                    var pix = -1;
+                    if (!(eventpath in pathmap)) {
+                        pathmap[eventpath] = pathindex;
+                        pathindex++;
+                    }
+
+                });
+                var totaltimediff = DateDiff(maxtime, mintime);
+                $("#eventcontainer").html(totalhtml);
+                events.forEach(function (event, index) {
+                    var id = event.ID;
+                    var uielement = $("#" + id);
+                    var eventpath = event.Path;
+                    var pix = -1;
+
+                    pix = pathmap[eventpath];
+                    var date = ToDate(event.Time);
+                    var difftostart = DateDiff(date, mintime);
+                    var relativetimediff = (difftostart) / totaltimediff;
+                    var y = maxheight * relativetimediff;
+                    var x = (pix / pathindex) * maxwidth;
+                    var xid = '' + x + '|' + Math.floor(y / 50);
+                    if (!(xid in xmap)) {
+                        xmap[xid] = -1;
+                    }
+                    xmap[xid] = xmap[xid] + 1;
+                    var mx = Math.floor(x + xmap[xid] * 120) + margin_left;
+                    var my = Math.floor(y);
+                    console.log("id: " + id + "; x: " + mx + "; y: " + my);
+                    uielement.css("top", '' + my + 'px');
+                    uielement.css("left", '' + mx + 'px');
+
+                });
+                var activeobj = {Connections:[]};
+                $(".box").on("click", function (uielement)
+                {
+                    $(".box").removeClass("highlighted");
+                    $(".box").removeClass("focused");
+                    $(uielement.currentTarget).addClass("highlighted");
+                    $(uielement.currentTarget).addClass("focused");
+
+                    var id = $(uielement.currentTarget).attr("id");
+                    var connectionobj = connectionobjects[id];
+                    activeobj["Connections"].forEach(function (c, ix) {
+                        //c.connector.lineWidth = 5;
+                        c.setPaintStyle(connectorStyle);
+                        $(c.source).removeClass("highlighted");
+                        $(c.source).removeClass("source");
+                        $(c.target).removeClass("target");
+                        //c.endpoints[0].connectorStyle.lineWidth = 5;
+                        //c.endpoints[1].connectorStyle.lineWidth = 5;
+                    });
+                    connectionobj["Connections"].forEach(function (c, ix) {
+                        //c.connector.lineWidth = 5;
+                        $(c.source).addClass("source highlighted");
+                        $(c.target).addClass("target highlighted");
+                        c.setPaintStyle({
+                            //strokeStyle: getConnectionColor(source, target),
+                            //gradient: { stops: [[0, sourcecolor], [1, targetcolor]] },
+                            lineWidth: 3,
+                            strokeStyle: sourcecolor,
+                            //outlineColor: "transparent",
+                            //fillStyle: exampleColor,
+                        });
+                        c.setHoverPaintStyle(hoverStyle);
+                        //c.endpoints[0].connectorStyle.lineWidth = 5;
+                        //c.endpoints[1].connectorStyle.lineWidth = 5;
+                    });
+                    activeobj = connectionobj;
+                    instance.repaintEverything();
+                    var event = null;
+                    events.forEach(function (item, index) {
+                        if (id == item.ID)
+                        {
+                            event = item;
+                        }
+                    });
+                    for (var key in event) {
+                        var value = event[key];
+                        if (key == "Link") {
+                            $("#" + key).attr("href",value);
+
+                        }
+                        else {
+                            $("#" + key).html(value);
+                        }
+
+                    }
+                });
+                /*
+                Each of these string representations is just a wrapper around the 
+                underlying array-based syntax [x, y, dx, dy], where x and y are coordinates 
+                in the interval [0,1] specifying the position of the anchor, and dx and dy,
+                which specify the orientation of the curve incident to the anchor, 
+                can have a value of 0, 1 or -1
+                */
+                //var sourceAnchors = [[0.2, 0, 0, -1], [1, 0.2, 1, 0], [0.8, 1, 0, 1], [0, 0.8, -1, 0]];
+                //var targetAnchors = [[0.6, 0, 0, -1], [1, 0.6, 1, 0], [0.4, 1, 0, 1], [0, 0.4, -1, 0]];
+
+                var dir_b_x = -1;
+                var dir_l_x = -1;
+                var dir_r_x = 0;
+                var dir_t_x = -1;
+
+                var dir_b_y = 1;
+                var dir_l_y = 0;
+                var dir_r_y = -1;
+                var dir_t_y = 0;
+
+                var sourceAnchors = [
+                  /*left*/[0.0, 0.2, dir_l_x, dir_l_y], [0.0, 0.4, dir_l_x, dir_l_y], [0.0, 0.6, dir_l_x, dir_l_y], [0.0, 0.8, dir_l_x, dir_l_y],
+                  /*right*/[1.0, 0.2, dir_r_x, dir_r_y], [1.0, 0.4, dir_r_x, dir_r_y], [1.0, 0.6, dir_r_x, dir_r_y], [1.0, 0.8, dir_r_x, dir_r_y],
+                  /*top*/[0.2, 0.0, dir_t_x, dir_t_y], [0.4, 0.0, dir_t_x, dir_t_y], [0.6, 0.0, dir_t_x, dir_t_y], [0.8, 0.0, dir_t_x, dir_t_y],
+                  /*bottom*/[0.2, 1.0, dir_b_x, dir_b_y], [0.4, 1.0, dir_b_x, dir_b_y], [0.6, 1.0, dir_b_x, dir_b_y], [0.8, 1.0, dir_b_x, dir_b_y]
+                ];
+                var targetAnchors = [
+                                   /*left*/[0.0, 0.2, dir_l_x, dir_l_y], [0.0, 0.4, dir_l_x, dir_l_y], [0.0, 0.6, dir_l_x, dir_l_y], [0.0, 0.8, dir_l_x, dir_l_y],
+                  /*right*/[1.0, 0.2, dir_r_x, dir_r_y], [1.0, 0.4, dir_r_x, dir_r_y], [1.0, 0.6, dir_r_x, dir_r_y], [1.0, 0.8, dir_r_x, dir_r_y],
+                  /*top*/[0.2, 0.0, dir_t_x, dir_t_y], [0.4, 0.0, dir_t_x, dir_t_y], [0.6, 0.0, dir_t_x, dir_t_y], [0.8, 0.0, dir_t_x, dir_t_y],
+                  /*bottom*/[0.2, 1.0, dir_b_x, dir_b_y], [0.4, 1.0, dir_b_x, dir_b_y], [0.6, 1.0, dir_b_x, dir_b_y], [0.8, 1.0, dir_b_x, dir_b_y]
+                ];
+
+
+                //sourceAnchors = [[0.0, 0.2, 0, 1], [0.0, 0.4, 0, 1], [0.0, 0.6, 0, 1], [0.0, 0.0, 0, -1], [0.2, 0.0, 0, -1], [0.4, 0.0, 0, -1], [0.2, 0, 0, -1], [1, 0.2, 1, 0], [0.8, 1, 0, 1], [0, 0.8, -1, 0]];
+                //targetAnchors = [[0.0, 0.2, 0, 1], [0.0, 0.4, 0, 1], [0.0, 0.6, 0, 1], [0.0, 0.0, 0, -1], [0.2, 0.0, 0, -1], [0.4, 0.0, 0, -1], [0.6, 0, 0, -1], [1, 0.6, 1, 0], [0.4, 1, 0, 1], [0, 0.4, -1, 0]];
+
+                var sourcecolor = "#FF0000";
+                var targetcolor = "#33FF33";
+                exampleColor = '#00f';
+                exampleDropOptions = {
+                    tolerance: 'touch',
+                    hoverClass: 'dropHover',
+                    activeClass: 'dragActive'
+                };
+                var connector = ["Flowchart", { stub: [20, 20], gap: 0, cornerRadius: 5, alwaysRespectStubs: true, cssClass: "connectorClass", hoverClass: "connectorHoverClass" }];
+                //connector = basicType;
+                var connectorStyle = {
+                    //gradient: { stops: [[0, exampleColor], [0.5, '#09098e'], [1, exampleColor]] },
+                    gradient: { stops: [[0, sourcecolor], [1, targetcolor]] },
+                    lineWidth: 1,
+                    strokeStyle: sourcecolor,
+                    outlineColor: "transparent",
+                    fillStyle: sourcecolor,
+                };
+                var hoverStyle = {
+                    strokeStyle: "yellow",
+                    fillStyle: "yellow",
+                    lineWidth: 3,
+                    //outlineColor: "#ff0000",
+                };
+                var overlays = [["PlainArrow", { width: 8, length: 10 }]];
+                var endpoint = ["Dot", { cssClass: "endpointClass", radius: 2, hoverClass: "endpointHoverClass" }];
+                var endpointStyle = { };
+                var anEndpoint = {
+                    endpoint: "Blank",//endpoint,
+                    paintStyle: endpointStyle,
+                    //hoverPaintStyle: { fillStyle: "#ff0000" },
+                    isSource: true,
+                    isTarget: true,
+                    maxConnections: -1,
+                    connector: connector,
+                    connectorStyle: connectorStyle,
+                    connectorHoverStyle: hoverStyle,
+                    connectorOverlays: overlays,
+                    overlays: overlays
+                };
+
+                var endpoints = {};
+                var els = document.querySelectorAll(".box");
+
+                for (var i = 0 ; i < els.length; i++) {
+                    var id = jsPlumb.getId(els[i]);
+                    endpoints[id] = [
+                        
+                    ];
+                }
+                // then connect everything using the connections map declared above.
+                var from_ix = 0;
+                var connections_nr = Object.keys(connections).length;
+                Object.keys(connections).forEach(function (key, ix) {
+                    var sourceid = key;
+                    var targets = connections[key];
+                    targets.forEach(function (target, ix2) {
+                        var targetid = target;
+                 
+                        if (!(sourceid in connectionobjects)) { connectionobjects[sourceid] = {}; }
+                        if (!(targetid in connectionobjects)) { connectionobjects[targetid] = {}; }
+                        var sourceitem = connectionobjects[sourceid];
+                        var targetitem = connectionobjects[targetid];
+                        if (!("Connections" in sourceitem)) { sourceitem["Connections"] = []; }
+                        if (!("Connections" in targetitem)) { targetitem["Connections"] = []; }
+                        if (!("FC" in sourceitem)) { sourceitem["FC"] = 0; }
+                        if (!("TC" in targetitem)) { targetitem["TC"] = 0; }
+                        var from_anchor = sourceAnchors[sourceitem["FC"] % sourceAnchors.length];
+                        var to_anchor = targetAnchors[targetitem["TC"] % targetAnchors.length];
+                        var ep_s = instance.addEndpoint(sourceid, anEndpoint);
+                        var ep_t = instance.addEndpoint(targetid, anEndpoint);
+            
+                        ep_s.setAnchor(from_anchor);
+                        ep_t.setAnchor(to_anchor);
+                        var connection = instance.connect({
+                            source: ep_s,
+                            target: ep_t,
+                            //anchors: [from_anchor, to_anchor]
+                            anchors: [from_anchor, to_anchor],
+                        });
+                        sourceitem["Connections"].push(connection);
+                        targetitem["Connections"].push(connection);
+
+                        sourceitem["FC"]++;
+                        targetitem["TC"]++;
+                        console.log(sourceid + "> " + targetid + ' { [' + from_anchor + "], [" + to_anchor + '] }');
+
+                    });
+                    
+                });
+                
+                // bind click listener; delete connections on click			
+                instance.bind("click", function (conn) {
+                    //instance.detach(conn);
+                    //conn.setPaintStyle({ fillStyle: 'red' });
+                });
+
+                // bind beforeDetach interceptor: will be fired when the click handler above calls detach, and the user
+                // will be prompted to confirm deletion.
+                instance.bind("beforeDetach", function (conn) {
+                    //return confirm("Delete connection?");
+                });
+
+
+                //
+                instance.draggable(jsPlumb.getSelector(".box"));
+
+                instance.fire("jsPlumbDemoLoaded", instance);
+            }
+    </script>
+
+</body>
+</html>

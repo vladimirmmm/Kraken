@@ -116,6 +116,7 @@ namespace Engine
                 new MenuCommand("Instance", "Instance",
                     new MenuCommand("Validate_Instance", "Validate", (o) => { ValidateInstance(); }, null),
                     new MenuCommand("Validate_Folder", "Validate Folder", (o) => { ValidateFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
+                    new MenuCommand("CehckMissing", "Check Missing Facts", (o) => { CheckMissing(); }, null),
                     new MenuCommand("SaveInstance", "Save", (o) => { SaveInstance(""); }, null),
                     new MenuCommand("SaveInstanceAs", "Save As", (o) => { SaveInstanceAs(); }, () => new object[] { UI.BrowseFile("", "") }),
                     new MenuCommand("CloseInstance", "Close", (o) => { CloseInstance(); }, null),
@@ -197,6 +198,7 @@ namespace Engine
                 //ShowInBrowser(Engine.HtmlPath); 
             }
         }
+        
         public void ClearProcessedTaxonmies() 
         {
             var taxonomycontainerfolder = TaxonomyEngine.LocalFolder;
@@ -214,6 +216,7 @@ namespace Engine
                 Utilities.FS.DeleteFolder(folder);
             }
         }
+       
         public void ClearTaxonomy(ClearEnum cleartype) 
         {
             if (Engine.CurrentTaxonomy != null) 
@@ -265,15 +268,18 @@ namespace Engine
             RegValueToList(RegKey_Recent_Instances, RecentInstances);
            
         }
+        
         public static string GetSettingValue(string key, string defaultvalue = "")
         {
             return GetRegValue(RegSettingsPath + key);
         }
+        
         public static void SetSettingValue(string key, string value )
         {
             SetRegValue(RegSettingsPath + key, value);
 
         }
+        
         public static string GetRegValue(string key, string defaultvalue = "")
         {
             RegistryKey rk = Registry.CurrentUser;
@@ -310,6 +316,7 @@ namespace Engine
             }
             SetRegValue(RegSettingsPath + regkey, sb.ToString());
         }
+        
         public void NavigateToCell(string report, string extension, string row, string column) 
         {
             var table = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.ID.ToLower() == report);
@@ -374,6 +381,7 @@ namespace Engine
              ListToRegValue(RegID, items);
              LoadRecentCommands();
         }
+        
         protected void OpenTaxonomy(object[] parameters)
         {
             if (parameters.Length > 0) 
@@ -384,6 +392,7 @@ namespace Engine
                 OpenTaxonomy(fixedpaths.FirstOrDefault());
             }
         }
+        
         public void OpenTaxonomy(string path) 
         {
             Engine.TaxonomyLoad -= Engine_TaxonomyLoad;
@@ -391,6 +400,7 @@ namespace Engine
             Engine.LoadTaxonomy(path);
     
         }
+        
         public void OpenInstance(object[] parameters)
         {
             if (parameters.Length > 0)
@@ -398,6 +408,7 @@ namespace Engine
                 OpenInstance(String.Format("{0}", parameters[0]));
             }
         }
+        
         public void OpenInstance(string path)
         {
             SetRegValue(RegSettingsPath + "LastInstance", path);
@@ -420,11 +431,13 @@ namespace Engine
             }
             //ValidateInstance();
         }
+        
         private void Engine_TaxonomyLoad(object sender, TaxonomyEventArgs e)
         {
             SetRegValue(RegSettingsPath + "LastTaxonomy", e.FilePath);
             AddToRecent(RecentTaxonomies, RegKey_Recent_Taxonomies, e.FilePath);
         }
+        
         private void Engine_InstanceLoaded(object sender, EventArgs e)
         {
             UIReload();
@@ -447,12 +460,14 @@ namespace Engine
                 UI.DispatcherInvoke(() => { LoadInstanceToUI(); });
             }
         }
+        
         public void CloseInstance()
         {
             Engine.CurrentInstance = null;
             Utilities.FS.DeleteFile(Engine.CurrentTaxonomy.CurrentInstancePath);
             Utilities.FS.DeleteFile(Engine.CurrentTaxonomy.CurrentInstanceValidationResultPath);
         }
+        
         public void SaveInstanceAs()
         {
             if (Engine.CurrentInstance != null)
@@ -464,6 +479,7 @@ namespace Engine
                 SaveInstance(filepath);
             }
         }
+       
         public void SaveInstance(string path)
         {
             if (Engine.CurrentInstance != null)
@@ -487,6 +503,65 @@ namespace Engine
                 msg.Category="action";
                 msg.Url="Instance";
                 msg.Data="instancevalidated";
+                UI.ToUI(msg);
+            }
+        }
+
+        public void CheckMissing() 
+        {
+            if (Engine.CurrentInstance != null)
+            {
+                var results = Engine.CurrentInstance.Validate(null);
+                var instance = Engine.CurrentInstance;
+                var taxonomy = Engine.CurrentTaxonomy;
+                var allfiling = taxonomy.Tables.Select(i => i.FilingIndicator).Distinct().ToList();
+                var instfiling = instance.FilingIndicators.Where(i => i.Filed).Select(i=>i.ID).ToList();
+                var missingfilling = allfiling.Except(instfiling).ToList();
+                var instancefactkeys = new List<int[]>();
+                foreach (var instancefact in instance.Facts) 
+                {
+                    //var keys = taxonomy.GetFactStringKeyFromStringKey(instance.Facts[0].FactKey);
+                    var keys = taxonomy.GetFactIntKey(instancefact.FactKey).ToArray();
+                    //var key = taxonomy.GetFactIntStringKey(instancefact.FactKey);
+                    instancefactkeys.Add(keys);
+
+                }
+                var taxkeylist = taxonomy.Facts.Keys.ToList(); //.Select(i=>Utilities.Strings.ArrayToString(i,",")+",").ToList();
+                var missingfacts = taxkeylist.Except(instancefactkeys,new Utilities.IntArrayEqualityComparer()).ToList();
+                var instancefilename = Utilities.Strings.GetFileName(TaxonomyEngine.CurrentEngine.CurrentInstance.FullPath);
+                var csvpath = TaxonomyEngine.LocalFolder +"FeatureOutput\\"+ String.Format("MissingInstanceFactsFor-{0}.csv",instancefilename);
+                var sb = new StringBuilder();
+                var c = 0;
+                Utilities.FS.WriteAllText(csvpath,"Report,Extension Code,Extension Label,Row,Col\n");
+
+                foreach (var missingfact in missingfacts) 
+                {
+                    c++;
+                    var cells = taxonomy.Facts[missingfact];
+                    foreach (var cell in cells) 
+                    {
+                        var cellobj = new Cell();
+                        cellobj.SetFromCellID(cell);
+                        var table = taxonomy.Tables.FirstOrDefault(i => i.ID == cellobj.Report);
+                        var extension = table.Extensions.FirstOrDefault(i=>i.Item.LabelCode==cellobj.Extension);
+                        var extlabel = extension != null ? extension.Item.LabelContent : "";
+                        
+
+                        sb.AppendLine(String.Format("\"\t{0}\",\"\t{1}\",\"\t{2}\",\"\t{3}\",\"\t{4}\"", cellobj.Report, cellobj.Extension,extlabel, cellobj.Row, cellobj.Column));
+                    }
+                    if (c % 10000 == 0) 
+                    {
+                        Utilities.FS.AppendAllText(csvpath, sb.ToString());
+                        sb.Clear();
+                    }
+                }
+                Utilities.FS.AppendAllText(csvpath, sb.ToString());
+                sb.Clear();
+                Utilities.Logger.WriteLine("Missing cells exported to " + csvpath);
+                var msg = new Message();
+                msg.Category = "action";
+                msg.Url = "Instance";
+                msg.Data = "instancevalidated";
                 UI.ToUI(msg);
             }
         }

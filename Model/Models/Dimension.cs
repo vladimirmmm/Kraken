@@ -12,7 +12,8 @@ namespace LogicalModel
         private String _DimensionItem = "";
         private String _Domain = "";
         private String _DomainMember = "";
-  
+
+        public int MapID = -1;
 
         public String DimensionItem
         {
@@ -91,6 +92,7 @@ namespace LogicalModel
         }
         public void SetTyped() 
         {
+            if (this.IsTyped) { return; }
             var ix = this.Domain.IndexOf(":", StringComparison.Ordinal);
             if (ix > -1)
             {
@@ -134,7 +136,7 @@ namespace LogicalModel
             return false;
         }
 
-        public bool IsDefaultMemeber 
+        public bool IsDefaultMember 
         {
             get { return DomainMember == "x0"; }
         }
@@ -150,14 +152,17 @@ namespace LogicalModel
             while (current != null)
             {
                 MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
-
-                if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
+                if (item.Item.Concept == null) 
                 {
+                    item.Item.Concept = current.Item.Concept;
                 }
+                //if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
+                //{
+                //}
 
                 current = current.Parent;
             }
-            item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMemeber).ToList();
+            item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMember).ToList();
         }
         public static void SetDimensions(List<BaseModel.Hierarchy<LayoutItem>> items)
         {

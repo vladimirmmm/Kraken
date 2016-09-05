@@ -248,7 +248,7 @@ namespace XBRLProcessor.Model
             //factids.AddRange(GetFactIDs(fbq, IdList));
             var factsofrule = GetFactsKVByIds(GetFactIDs(fbq, IdList, IdDict));
             var facts = fbq.ToList(factsofrule);
-
+ 
             //foreach (var fact in facts)
             //{
             //    var key = Taxonomy.GetFactIntKey(fact).ToArray();

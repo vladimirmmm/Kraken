@@ -401,6 +401,9 @@ function Css(obj, name, value) {
     return CallJQueryFunction(obj, "css", name, value);
 }
 function Value(obj, value) {
+    if (_Attribute(obj, "type").toLocaleLowerCase() == "checkbox") {
+        return _Attribute(obj, "checked") ? "True" : "False";
+    }
     return CallJQueryFunction(obj, "val", "", value);
 }
 //function Content(obj, value?: string): string {
@@ -599,7 +602,13 @@ function BindVash(target, data, parent) {
     });
 }
 function GetFromData(form) {
-    return $(form).serializeArray();
+    var inputs = _Select("input[name]", form);
+    var result = [];
+    inputs.forEach(function (element) {
+        result.push({ name: _Attribute(element, "name"), value: _Value(element) });
+    });
+    return result;
+    //return $(form).serializeArray();
 }
 function ConvertFormDataToObj(formdata) {
     var result = {};

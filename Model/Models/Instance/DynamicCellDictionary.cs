@@ -92,7 +92,19 @@ namespace LogicalModel.Models
             if (dynamiccell.CellID != cell.CellID)
             {
                 //var cellfactstring = fact.FactString;
-                CellOfFact.Add(fact.FactString, dynamiccell.CellID);
+                if (CellOfFact.ContainsKey(fact.FactString))
+                {
+                    //var existing = CellOfFact[fact.FactString];
+
+                    var existingfacts = TaxonomyEngine.CurrentEngine.CurrentInstance.FactDictionary[fact.GetFactKey()];
+                    var existingfact = existingfacts.FirstOrDefault(i => i.FactString == fact.FactString);
+                    var msg = String.Format("Fact {0} already exist >> {1}!", fact, existingfact);
+                    Utilities.Logger.WriteLine(msg);
+                }
+                else
+                {
+                    CellOfFact.Add(fact.FactString, dynamiccell.CellID);
+                }
             }
             return dynamiccell;
         }

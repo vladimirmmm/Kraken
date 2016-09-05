@@ -270,11 +270,12 @@ namespace LogicalModel.Base
                 {
                     sb.Append(Concept + ",");
                 }
-                var lastdimns = "";
+                //var lastdimns = "";
                 foreach (var dimension in Dimensions)
                 {
                     var dimstr = dimension.ToStringForKey().Trim();
-                    sb.Append(Format(dimstr, ref lastdimns) + ",");
+                    sb.Append(dimstr + ",");
+                    //sb.Append(Format(dimstr, ref lastdimns) + ",");
                 }
                 _FactKey = sb.ToString();
                 //ClearObjects();
@@ -312,7 +313,71 @@ namespace LogicalModel.Base
 
         }
 
-        public void SetFromString(string item) 
+        public void SetFromString(string item)
+        {
+            this.Dimensions.Clear();
+            this.Concept = null;
+            //var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = Utilities.Strings.FactSplit(item, ',', 8);
+            var toskip = 0;
+            if (parts.Count > 0)
+            {
+                if (parts[0].IndexOf("[") == -1)
+                {
+                    toskip = 1;
+                    var concept = new Concept();
+                    concept.Content = parts[0];
+                    this.Concept = concept;
+                }
+            }
+            var dimparts = parts.Skip(toskip).ToList();
+            foreach (var dimpart in dimparts)
+            {
+                var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
+                var domainpart = dimpart.Substring(dimitem.Length + 2);
+
+                var domain = domainpart;
+                var member = "";
+                var dim = new Dimension();
+
+                if (domainpart.Contains(":"))
+                {
+                    var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    switch (domainparts.Length)
+                    {
+                        case 2:
+                            dim.IsTyped = Taxonomy.IsTyped(domain);
+                            if (dim.IsTyped)
+                            {
+                                domain = domainpart;
+                            }
+                            else
+                            {
+                                domain = domainparts[0];
+                                member = domainparts[1];
+                            }
+                            break;
+                        case 3:
+                            domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                            member = domainparts[2];
+                            dim.IsTyped = true;
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                }
+                dim.DimensionItem = dimitem;
+                dim.Domain = domain;
+                dim.DomainMember = member;
+                this.Dimensions.Add(dim);
+            }
+            this._FactString = item;
+            this._FactKey = "";
+        }
+
+
+        public void SetFromStringOld(string item) 
         {
             this.Dimensions.Clear();
             this.Concept = null;
@@ -608,6 +673,9 @@ namespace LogicalModel.Base
 
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
+
+        private string _NamespaceURI = "";
+        public string NamespaceURI { get { return _NamespaceURI; } set { _NamespaceURI = value; } }
 
         private string _TypedDomainRef = "";
         public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }

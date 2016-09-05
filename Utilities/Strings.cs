@@ -24,6 +24,37 @@ namespace Utilities
     
     public class Strings
     {
+        public static void testc()
+        {
+            var str="sdgsdg,dfgs,sdg,";
+            var result = Strings.FactSplit(str, ',', 3);
+        }
+        public static List<string> FactSplit(string input,char splitter,int minlength=1)
+        {
+            var Result = new List<string>(20);
+            //foreach (var ch in input)
+            char ch;
+            int lastix = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                //ch = input[i];
+                if (input[i] == splitter)
+                {
+                    var word = input.Substring(lastix, i - lastix);
+                    if (!String.IsNullOrEmpty(word)) 
+                    {
+                        Result.Add(word);
+                        lastix = i + 1;
+                        i = i + minlength-1;
+                    }
+                 
+                }
+           
+            }
+         
+            return Result;
+        }
+
         public static string GetFolder(string FilePath)
         {
             if (!String.IsNullOrEmpty(FilePath))
@@ -101,6 +132,9 @@ namespace Utilities
         }
         public static string ResolveRelativePath(string referencePath, string relativePath)
         {
+            if (relativePath.StartsWith("./")) { 
+                relativePath = relativePath.Substring(2); 
+            }
             var hashix = relativePath.IndexOf("#");
             if (hashix > -1)
             {
@@ -124,8 +158,8 @@ namespace Utilities
         }
         public static bool IsRelativePath(string FilePath) 
         {
-            if ((!FilePath.Contains("\\") && !FilePath.Contains("/")) 
-                || FilePath.StartsWith(".."))
+            if ((!FilePath.Contains("\\") && !FilePath.Contains("/"))
+                || FilePath.StartsWith("..") || FilePath.StartsWith("."))
             {
                 return true;
             }
@@ -384,8 +418,35 @@ namespace Utilities
             }
             return rs;
         }
+        public static string ArrayToString<T>(T[] arr, string delimiter = ", ")
+        {
+            string rs = "";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                rs += delimiter + arr[i];
+            }
+            if (rs.StartsWith(delimiter))
+            {
+                rs = rs.Substring(delimiter.Length);
+            }
+            return rs;
+        }
 
         public static string ArrayToString(decimal[] arr)
+        {
+            string rs = "";
+            var delimiter = ", ";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                rs += delimiter + arr[i].ToString();
+            }
+            if (rs.StartsWith(delimiter))
+            {
+                rs = rs.Substring(delimiter.Length);
+            }
+            return rs;
+        }
+        public static string ArrayToString(int[] arr)
         {
             string rs = "";
             var delimiter = ", ";
@@ -680,5 +741,6 @@ namespace Utilities
             }
             return sb.ToString();
         }
+
     }
 }

@@ -92,6 +92,19 @@ namespace LogicalModel
                 return this.GetFactKey();
             }
         }
+        public int[] FactIntKey
+        {
+            get
+            {
+                int[] keys = new int[this.Dimensions.Count + 1];
+                keys[0] = this.Concept == null ? -1 : this.Concept.MapID;
+                for (int i = 0; i < this.Dimensions.Count;i++ )
+                {
+                    keys[i + 1] = this.Dimensions[i].MapID;
+                }
+                return keys;
+            }
+        }
         public Cell() 
         {
 

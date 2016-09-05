@@ -140,6 +140,7 @@ namespace XBRLProcessor.Models
             FactsIndex = new Dictionary<int, int[]>(this.Facts.Count);
             FactKeyIndex = new Dictionary<int[], int>(10,new IntArrayEqualityComparer());
             var ix=-1;
+            var unmappedfacts = 0;
             foreach (var fact in this.Facts)
             {
                 ix++;
@@ -163,8 +164,14 @@ namespace XBRLProcessor.Models
                     }
                     keylist2.Add(ix);
                 }
+
+                if (fact.Value.Count == 0) 
+                {
+                    unmappedfacts++;
+                }
              
             }
+            Utilities.Logger.WriteLine(String.Format("Unmapped facts: {0}", unmappedfacts));
             foreach (var key in FactsOfDimensions.Keys)
             {
                 FactsOfDimensions[key].TrimExcess();
@@ -363,10 +370,11 @@ namespace XBRLProcessor.Models
         public override void LoadDimensions()
         {
             Logger.WriteLine("Load Dimensions");
+            this.DimensionItems = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();         
+            this.Domains = SchemaElements.Where(i => i.Type == "model:explicitDomainType").ToList();
 
             if (!System.IO.File.Exists(TaxonomyDimensionPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
-                this.DimensionItems = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();
                 var defdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("link:definitionLink")).ToList();
                 var domtodim_docs = new List<XbrlTaxonomyDocument>();
                 var memtodom_docs = new List<XbrlTaxonomyDocument>();
@@ -646,7 +654,7 @@ namespace XBRLProcessor.Models
             var predocpath = this.EntryDocument.LocalRelPath.Replace(".xsd","-pre.xml");
             if (!this.TaxonomyDocumentDictionary.ContainsKey(predocpath))
             {
-                Utilities.Logger.WriteLine("error: File " + predocpath + "was mot found!");
+                Utilities.Logger.WriteLine("error: File " + predocpath + " was not found!");
             }
             else
             {
@@ -794,110 +802,108 @@ namespace XBRLProcessor.Models
             if (!Utilities.FS.FileExists(TaxonomyValidationPathFormat) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 //var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
-                var validationdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("va:valueAssertion")).ToList();
-
-                //
-                var validations = new List<XbrlValidation>();
-                var sb = new StringBuilder();
-                var parser = new XbrlFormulaParser();
-                var csparser = new CSharpParser();
-    
-                var expressionfile = this.ModuleFolder + "expressions.txt";
-                Utilities.FS.WriteAllText(TaxonomyTestPath, "");
-                Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
-                //var b1 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3724"));
-                //var b2 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v3727"));
-                //var b3 = validationdocuments.FirstOrDefault(i => i.FileName.Contains("v0253"));
-                //validationdocuments.Remove(b1);
-                //validationdocuments.Remove(b2);
-                //validationdocuments.Remove(b3);
-                //validationdocuments.Insert(0, b1);
-                //validationdocuments.Insert(0, b2);
-                //validationdocuments.Insert(0, b3);
-                //v3153_m
-                MoveToFirst("4025", validationdocuments);
-                MoveToFirst("v3153", validationdocuments);
-                MoveToFirst("3727", validationdocuments);
-                MoveToFirst("3724", validationdocuments);
-                MoveToFirst("1671", validationdocuments);
-
-                
-
-                foreach (var validdoc in validationdocuments)
+                if (LogicalModel.Settings.Current.LoadValidationRules)
                 {
-                    var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, "//gen:link");
-                    var validation = new XbrlValidation();
-                    validation.Taxonomy = this;
-                    Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
-                    validation.LoadValidationHierarchy();
-                    var assertions = new List<Hierarchy<XbrlIdentifiable>>();
-                    if (validation.ValidationRoot != null)
+                    var validationdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("va:valueAssertion")).ToList();
+
+                    //
+                    var validations = new List<XbrlValidation>();
+                    var sb = new StringBuilder();
+                    var parser = new XbrlFormulaParser();
+                    var csparser = new CSharpParser();
+
+                    var expressionfile = this.ModuleFolder + "expressions.txt";
+                    Utilities.FS.WriteAllText(TaxonomyTestPath, "");
+                    Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
+
+                    MoveToFirst("4025", validationdocuments);
+                    MoveToFirst("v3153", validationdocuments);
+                    MoveToFirst("3727", validationdocuments);
+                    MoveToFirst("3724", validationdocuments);
+                    MoveToFirst("1671", validationdocuments);
+
+
+
+                    foreach (var validdoc in validationdocuments)
                     {
-                        if (validation.ValidationRoot.Item is ValueAssertion)
+                        var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, "//gen:link");
+                        var validation = new XbrlValidation();
+                        validation.Taxonomy = this;
+                        Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
+                        validation.LoadValidationHierarchy();
+                        var assertions = new List<Hierarchy<XbrlIdentifiable>>();
+                        if (validation.ValidationRoot != null)
                         {
-                            assertions.Add(validation.ValidationRoot);
-                        }
-                        else
-                        {
-                            var valueassertions = validation.ValidationRoot.Children.Where(i => i.Item is ValueAssertion).ToList();
-                            assertions.AddRange(valueassertions);
-                        }
-                        foreach (var assertion in assertions)
-                        {
-
-                            var valueassertion = assertion.Item as ValueAssertion;
-
-                            
-                            if (valueassertion != null)
+                            if (validation.ValidationRoot.Item is ValueAssertion)
                             {
-                               // var logicalrule = validation.GetLogicalRule(assertion, validdoc);
-                                var xasssertion = assertion.Copy();
-                                var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
+                                assertions.Add(validation.ValidationRoot);
+                            }
+                            else
+                            {
+                                var valueassertions = validation.ValidationRoot.Children.Where(i => i.Item is ValueAssertion).ToList();
+                                assertions.AddRange(valueassertions);
+                            }
+                            foreach (var assertion in assertions)
+                            {
 
-                                //var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
+                                var valueassertion = assertion.Item as ValueAssertion;
 
-                                if (logicalrule.FunctionName.Contains("boiv78712w"))
+
+                                if (valueassertion != null)
                                 {
+                                    // var logicalrule = validation.GetLogicalRule(assertion, validdoc);
+                                    var xasssertion = assertion.Copy();
+                                    var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
+
+                                    //var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
+
+                                    if (logicalrule.FunctionName.Contains("boiv78712w"))
+                                    {
+
+                                    }
+                                    validations.Add(validation);
+                                    logicalrule.RootExpression = parser.ParseExpression(valueassertion.Test);
+                                    var translated = csparser.GetFunction(logicalrule);
+                                    //clear the rule
+                                    logicalrule.RootExpression = null;
+
+                                    logicalrule.FunctionString = translated;
+                                    this.ValidationRules.Add(logicalrule);
+
+                                    var tree = parser.GetTreeString(valueassertion.Test);
+                                    sb.AppendLine(valueassertion.ID);
+                                    sb.AppendLine(valueassertion.Test);
+                                    sb.AppendLine(assertion.ToHierarchyString(i => i.ToString()));
+                                    logicalrule.ClearObjects();
 
                                 }
-                                validations.Add(validation);
-                                logicalrule.RootExpression = parser.ParseExpression(valueassertion.Test);
-                                var translated = csparser.GetFunction(logicalrule);
-                                //clear the rule
-                                logicalrule.RootExpression = null;
-
-                                logicalrule.FunctionString = translated;
-                                this.ValidationRules.Add(logicalrule);
-
-                                var tree = parser.GetTreeString(valueassertion.Test);
-                                sb.AppendLine(valueassertion.ID);
-                                sb.AppendLine(valueassertion.Test);
-                                sb.AppendLine(assertion.ToHierarchyString(i => i.ToString()));
-                                logicalrule.ClearObjects();
 
                             }
+                            validdoc.ClearDocument();
 
                         }
-                        validdoc.ClearDocument();
-                   
                     }
+
+                    this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID).ToList();
+
+                    if (!System.IO.File.Exists(expressionfile))
+                    {
+                        Utilities.FS.WriteAllText(expressionfile, sb.ToString());
+                    }
+                    ClearValidationObjects();
+
+                    LogicalModel.Helpers.FileManager.SaveToJson(this.ValidationRules, this.TaxonomyValidationPathFormat);
                 }
-
-                this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID).ToList();
-
-                if (!System.IO.File.Exists(expressionfile))
+                else 
                 {
-                    Utilities.FS.WriteAllText(expressionfile, sb.ToString());
+                    Logger.WriteLine("Loading Validation rules are disabled from Settings.");
                 }
-                ClearValidationObjects();
-     
-                LogicalModel.Helpers.FileManager.SaveToJson(this.ValidationRules,this.TaxonomyValidationPathFormat);
                 //var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
                 //Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
                 //jsoncontent = null;
-             
+
             }
-            else 
+            else
             {
                 //var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
                 //this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
@@ -909,10 +915,10 @@ namespace XBRLProcessor.Models
                     this.SimpleValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.SimpleValidationRule>>(jsoncontent2);
                     jsoncontent2 = null;
                 }
-                foreach (var rule in this.ValidationRules) 
+                foreach (var rule in this.ValidationRules)
                 {
                     rule.SetTaxonomy(this);
-                    foreach (var p in rule.Parameters) 
+                    foreach (var p in rule.Parameters)
                     {
                         //p.SetMyFactBase();
                         p.ClearObjects();
@@ -921,8 +927,8 @@ namespace XBRLProcessor.Models
                     //var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
 
                 }
-                
-           
+
+
             }
 
             if (!System.IO.File.Exists(TaxonomySimpleValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
@@ -1207,9 +1213,12 @@ namespace XBRLProcessor.Models
             if (!String.IsNullOrEmpty(Utilities.Xml.Attr(node, Literals.Attributes.ID)))
             {
                 Mappings.CurrentMapping.Map(node, element);
-
+            
                 element.Namespace = taxonomydocument.TargetNamespacePrefix; // SetTargetNamespace(node.OwnerDocument);
-
+                element.NamespaceURI = taxonomydocument.TargetNamespace; // SetTargetNamespace(node.OwnerDocument);
+                //if (element.Namespace.Contains("typ"))
+                //{
+                //}
                 var logicalelement = Mappings.ToLogical(element);
 
                 logicalelement.FileName = taxonomydocument.LocalRelPath;

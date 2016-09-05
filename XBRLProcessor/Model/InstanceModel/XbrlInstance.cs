@@ -20,7 +20,15 @@ namespace Model.InstanceModel
         public Link SchemaRef { get; set; }
 
 
-        private List<Context> _Contexts = new List<Context>();
+        private Dictionary<string, Context> _ContextDictionary = new Dictionary<string, Context>();
+        [JsonProperty]
+        public Dictionary<string, Context> ContextDictionary
+        {
+            get { return _ContextDictionary; }
+            set { _ContextDictionary = value; }
+        }
+
+        private List<Context> _Contexts = new List< Context>();
         [JsonProperty]
         public List<Context> Contexts
         {
@@ -72,6 +80,7 @@ namespace Model.InstanceModel
         {
             this.FullPath = filepath;
         }
+        
         public void LoadSimple()
         {
             var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
@@ -80,21 +89,67 @@ namespace Model.InstanceModel
             this.TaxonomyModuleReference = this.SchemaRef.Href;
 
         }
+
+        private void FixNamespaces() 
+        {
+            var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(XmlDocument);
+            var dimensionnamespaces = this.Taxonomy.DimensionItems.Select(i=>i.NamespaceURI).Distinct().ToList();
+
+            foreach (var ct in this.Contexts) 
+            {
+                if (ct.Scenario != null)
+                {
+                    foreach (var dim in ct.Scenario.Dimensions)
+                    {
+                        var dparts = dim.DimensionItem.Split(':');
+                        var dimnsuri = Utilities.Xml.Namespaces[dparts[0]];
+                        var dimelement = Taxonomy.DimensionItems.FirstOrDefault(i => i.NamespaceURI == dimnsuri);
+                        dim.DimensionItem = string.Format("{0}:{1}", dimelement.Namespace, dparts[1]);
+
+                        if (dim.IsTyped)
+                        {
+                            var parts = dim.Domain.Split(':');
+
+                            var nsuri = Utilities.Xml.Namespaces[parts[0]];
+                            var tdecontainer = this.Taxonomy.TypedDimensions.FirstOrDefault(i => i.Value.FirstOrDefault(t => t.NamespaceURI == nsuri) != null);
+                            var tde = tdecontainer.Value.FirstOrDefault(t => t.NamespaceURI == nsuri);
+                            dim.Domain = string.Format("{0}:{1}", tde.Namespace, parts[1]);
+
+                        }
+                        else 
+                        {
+                            var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
+                            dim.Domain = domainelement.Namespace;
+                        }
+
+                    }
+                }
+                ContextDictionary.Add(ct.ID, ct);
+            }
+            var conceptnslist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.Namespace).Distinct().ToList();
+            foreach (var conceptns in conceptnslist)
+            {
+
+            }
+        }
         public void LoadComplex() 
         {
             var XbrlTaxonomy= (XBRLProcessor.Models.XbrlTaxonomy)this.Taxonomy;
             Clear();
             var allnodes = Utilities.Xml.AllNodes(XmlDocument);
+            FixNamespaces();
 
-
-            var conceptnslist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.Namespace).Distinct().ToList();
-            foreach (var conceptns in conceptnslist)
+            var conceptnsurilist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.NamespaceURI).Distinct().ToList();
+            foreach (var conceptnsuri in conceptnsurilist)
             {
-                var factnodes = allnodes.Where(i => i.Name.StartsWith(conceptns + ":")).ToList();
+                var sampleconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Value.NamespaceURI == conceptnsuri);
+                var factnodes = allnodes.Where(i => i.NamespaceURI == conceptnsuri).ToList();
                 foreach (var factnode in factnodes)
                 {
                     var item = new XbrlFact();
                     Mappings.CurrentMapping.Map<XbrlFact>(factnode, item);
+                    var parts = item.Concept.Split(':');
+                    item.Concept = String.Format("{0}:{1}", sampleconcept.Value.Namespace, parts[1]);
                     this.XbrlFacts.Add(item);
                 }
             }
@@ -129,7 +184,7 @@ namespace Model.InstanceModel
             var ix = 0;
             foreach (var xbrlfact in XbrlFacts) 
             {
-                var xbrlcontext = this.Contexts.FirstOrDefault(i => i.ID == xbrlfact.ContextRef);
+                var xbrlcontext = this.ContextDictionary[xbrlfact.ContextRef];
                 var logicalfact = new LogicalModel.InstanceFact();
                 logicalfact.IX = ix;
                 ix++;
@@ -146,7 +201,12 @@ namespace Model.InstanceModel
                 var factkey = factstring;
   
                 logicalfact.Concept = new LogicalModel.Concept();
+               
                 logicalfact.Concept.Content = xbrlfact.Concept;
+                //var conceptns = logicalfact.Concept.Namespace;
+                //var uri = Utilities.Xml.Namespaces[conceptns];
+                //var taxconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Value.NamespaceURI == uri && i.Value.Name == logicalfact.Concept.Name);
+                //logicalfact.Concept = taxconcept.Value;
                 if (xbrlcontext.Scenario != null)
                 {
                     var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
@@ -154,14 +214,15 @@ namespace Model.InstanceModel
                     {
                         var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
            
-                        var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());
+                        var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());         
+
                         factstring += dimitem;
                         factkey += dimension.IsTyped ? dimitemforkey : dimitem;
                     }
                 }
                 logicalfact.SetFromString(factstring);
- 
-                if (logicalfact.Concept == null) 
+
+                if (logicalfact.ContextID == "CT_560") 
                 {
                 }
                 //logicalfact.FactString = factstring;
@@ -183,7 +244,7 @@ namespace Model.InstanceModel
             var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));
             if (miconceptfact != null)
             {
-                var micontext = Contexts.FirstOrDefault(i => i.ID == miconceptfact.ContextID);
+                var micontext = ContextDictionary[miconceptfact.ContextID];
                 var miunit = Units.FirstOrDefault(i => i.ID == miconceptfact.UnitID);
                 if (miunit != null)
                 {

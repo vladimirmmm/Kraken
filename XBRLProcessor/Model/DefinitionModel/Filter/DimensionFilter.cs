@@ -101,7 +101,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         query.Filter = (s) =>
                         {
 
-                            var ok = s.Contains(tag);
+                            var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
                             if (ok)
                             {
 
@@ -117,7 +117,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
                         query.Filter = (s) =>
                         {
-                            var ok = !s.Contains(tag);
+                            var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
                             if (ok)
                             {
 
@@ -135,7 +135,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         query.Filter = (s) =>
                         {
 
-                            var ok = !s.Contains(tag);
+                            var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
                             if (ok)
                             {
 
@@ -173,11 +173,8 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                             query.TrueFilters = query.TrueFilters + String.Format("{0}, ", tag);
                             query.Filter = (s) =>
                             {
-                                var ok = s.Contains(tag);
-                                if (ok)
-                                {
-
-                                }
+                                var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
+                           
                                 return ok;
                             };
                         }
@@ -210,9 +207,9 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
 
                 query.TrueFilters = query.TrueFilters + String.Format("{0} ", tag);
-                query.Filter = (s) =>
+                query.Filter = (string s) =>
                 {
-                    var ok = s.Contains(tag);
+                    var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
                     if (ok)
                     {
 
@@ -228,7 +225,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
                 query.Filter = (s) =>
                 {
-                    var ok = !s.Contains(tag);
+                    var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
                     if (ok)
                     {
 
