@@ -264,6 +264,7 @@ namespace LogicalModel
                     {
                         ix = target.Children.Count;
                     }
+                    placeholder.Item.LabelCode = target.Item.LabelCode;
                     target.Children.Insert(ix, placeholder);
                     placeholder.Parent = target;
                 }
@@ -295,16 +296,21 @@ namespace LogicalModel
         {
 
         }
-
+        public void ReloadLayout()
+        {
+            LayoutRoot.SetParents();
+            this.LayoutItems = this.LayoutRoot.All();
+            this.LayoutItems.ForEach(i => i.Item.Table = this);
+        }
         public void Reload() 
         {
-            if (LayoutItems.Count == 0)
-            {
-                LayoutRoot.SetParents();
-                this.LayoutItems = this.LayoutRoot.All();
-                this.LayoutItems.ForEach(i => i.Item.Table = this);
-            }
-
+            //if (LayoutItems.Count == 0)
+            //{
+            //    LayoutRoot.SetParents();
+            //    this.LayoutItems = this.LayoutRoot.All();
+            //    this.LayoutItems.ForEach(i => i.Item.Table = this);
+            //}
+            ReloadLayout();
             foreach (var hypercube in HyperCubes) 
             {
                 hypercube.SetReferences();
@@ -368,16 +374,7 @@ namespace LogicalModel
                         if (!dimmember.IsDefaultMember)
                         {
                             var dimitem = String.Format("[{0}]{1}", dimmember.Domain.DimensionItem.FullName, dimmember.FullName);
-                            //old
-                            //if (dimmember is TypedDimensionMember)
-                            //{
-                            //   // dimitem = String.Format("[{0}]{1},", dimmember.Domain.DimensionItem.FullName, dimmember.Domain.ID);
-                            //    dimitem = String.Format("[{0}]{1},", dimmember.Domain.DimensionItem.FullName, dimmember.FullName);
 
-                            //}
-                            //else
-                            //{
-                            //}
                             dimkeyparts.Add(dimitem);
 
                         }
@@ -390,26 +387,15 @@ namespace LogicalModel
                     foreach (var dimkeypart in dimkeyparts)
                     {
                         //performance
-                        //key += dimkeypart + ",";
+     
                         intkeys.Add(Taxonomy.FactParts[dimkeypart]);
 
                     }
-                    /*
-                    var tempfact = new FactBase();
-                    tempfact.SetFromString(key);
-                    key = tempfact.GetFactKey();
-                    */
-                    //FactKeys.Add(key);
-                    //performance
-                    //sb_fact.AppendLine(key);
-                    //var newkey = Taxonomy.GetFactIntKey(key);
+
                     var newkey = intkeys;
                     if (!this.Taxonomy.HasFact(newkey.ToArray())) 
                     {
-                        //if (key == "de_sprv_met:si6,[de_sprv_dim:COL]de_sprv_CL:x010,[*:GRA]de_sprv_typ:GR,[*:ROW]de_sprv_RO:x010,[*:TEM]de_sprv_TE:GRP,") 
-                        //{ 
 
-                        //}
                         this.Taxonomy.AddFactKey(newkey);
                
                     }
@@ -459,12 +445,15 @@ namespace LogicalModel
                 var aspectnodes = node.Where(j => j.Item.IsAspect).ToList();
                 foreach (var aspectnode in aspectnodes)
                 {
-                    if (!node.Item.Dimensions.Any(i => i.IsTyped))
+                    if (!aspectnode.Item.Dimensions.Any(i => i.IsTyped))
                     {
                         var expandednodes = TableHelpers.GetAspectItems(aspectnode, this);
-                        var parent = aspectnode.Parent;
-                        parent.Remove(aspectnode);
-                        parent.AddChildren(expandednodes);
+                        if (expandednodes.Count > 0)
+                        {
+                            var parent = aspectnode.Parent;
+                            parent.Remove(aspectnode);
+                            parent.AddChildren(expandednodes);
+                        }
                     }
 
                 }
@@ -474,20 +463,31 @@ namespace LogicalModel
             if (nodes.Count > 0)
             {
                 var basenode = nodes.FirstOrDefault();
+                //var basenodelist = new List<Hierarchy<LayoutItem>>();
+                //basenodelist.Add(basenode);
 
                 for (int i=1;i<nodes.Count;i++)
                 {
                     var node= nodes[i];
                     var baseleafs = basenode.GetLeafs();
-                    List<LayoutItem> projectionnodes = null;
+                    //List<LayoutItem> projectionnodes = null;
 
-                    projectionnodes = node.GetLeafs().Select(l => l.Item).ToList();
+                    var projectionnodes = node.GetLeafs();
                     foreach (var leaf in baseleafs)
                     {
                         foreach (var projectionnode in projectionnodes)
                         {
-                            var hi = new Hierarchy<LayoutItem>(projectionnode);
-                            leaf.AddChild(hi);
+                            var hi = new Hierarchy<LayoutItem>(projectionnode.Item);
+                            hi.Parent = projectionnode.Parent;
+                            var targetparent = leaf;
+                            var targetchild = hi;
+                            if (leaf.Parent.Children.Count == 1)
+                            {
+                                targetparent = leaf.Parent;
+                                targetchild = hi.Parent;
+                            }
+                            targetchild.Parent.Remove(targetchild);
+                            targetparent.AddChild(targetchild);
                         }
                     }
                 }
@@ -501,6 +501,8 @@ namespace LogicalModel
             //    axisnode.Children.Add(node);
             //    node.Item.Category = LayoutItemCategory.BreakDown;
             //}
+            axisnode.All().ForEach(i=>i.Item.SetTyped());
+          
             return axisnode;
      
         }
@@ -595,22 +597,27 @@ namespace LogicalModel
             Y_Axis.Clear();
             Z_Axis.Clear();
 
-            if (this.ID.Contains("S.19.01.01.01"))
+
+            if (this.ID.Contains("28"))
             {
 
             }
+            var lrstr = Utilities.Converters.ToJson(LayoutRoot);
+            var lr = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
+            LayoutRoot = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
+            ReloadLayout();
             rowsnode = CreateAxisNode("y");
             columnsnode = CreateAxisNode("x");
             extensionnode = CreateAxisNode("z");
-
    
-             var aspects=new List<Hierarchy<LayoutItem>>();
-             aspects.AddRange(rowsnode.Where(i => i.Item.IsAspect));
-             aspects.AddRange(columnsnode.Where(i => i.Item.IsAspect));
+             //var aspects=new List<Hierarchy<LayoutItem>>();
+             //aspects.AddRange(rowsnode.Where(i => i.Item.IsAspect));
+             //aspects.AddRange(columnsnode.Where(i => i.Item.IsAspect));
 
             TableHelpers.SetDynamicAxis(this, rowsnode, columnsnode);
-            TableHelpers.SetDynamicAxis(this, columnsnode, rowsnode);       
-            
+            TableHelpers.SetDynamicAxis(this, columnsnode, rowsnode);
+
+  
             //fix here
             FixLayoutItem(columnsnode,null);
             SetSpans(columnsnode,null);
@@ -627,16 +634,16 @@ namespace LogicalModel
 
             //Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural && !i.Item.IsAbstract).ToList();
             Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsVisible).ToList();
-            Rows = Rows.Where(i => i.Item.Label!=null || i.Item.IsDynamic).ToList();
+            Rows = Rows.Where(i => !String.IsNullOrEmpty( i.Item.LabelContent) || i.Item.IsDynamic).ToList();
 
             FixLabelCodes(Columns, Table.LabelCodeFormat);
             FixLabelCodes(Rows, Table.LabelCodeFormat);
 
-            var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
-            if (xRows.Count > 1) 
-            {
+            //var xRows = Rows.Where(i => String.IsNullOrEmpty(i.Item.LabelCode)).ToList();
+            //if (xRows.Count > 1) 
+            //{
 
-            }
+            //}
             if (Extensions.Children.Count == 0)
             {
                 SetExtensions();
@@ -736,6 +743,7 @@ namespace LogicalModel
                             factintkeys.Add(xcell.FactIntKey);
                             //factkeys.Add(xcell.FactKey);
                             cell.IsBlocked = cell.IsKey ? false : true;
+
                             for (int i = 0; i < factintkeys.Count; i++)
                             //foreach (var factintkey in factintkeys)
                             {
@@ -751,86 +759,7 @@ namespace LogicalModel
                                 }
                                
                             }
-                            /*Old 
                             
-                            var dimensionswithoutmember = cell.Dimensions.Where(i => String.IsNullOrEmpty(i.DomainMember) && !i.IsTyped).ToList();
-                            var firstsuchdim = dimensionswithoutmember.FirstOrDefault();
-                            if (firstsuchdim != null) 
-                            {
-                                var dimensiondomain = firstsuchdim.Domain;
-                                dimensiondomain = dimensiondomain.IndexOf("_") > -1 ? dimensiondomain.Substring(dimensiondomain.LastIndexOf("_") + 1) : dimensiondomain;
-                                var aspect = aspects.FirstOrDefault(i=>i.Item.Dimensions.Any(j=>j.DimensionItemFullName==firstsuchdim.DimensionItemFullName));
-                                var role = aspect.Item.Role;
-                                var domainmembers = GetMembersOf(firstsuchdim.Domain, role);
-
-                                foreach (var domainandmember in domainmembers)
-                                {
-                                    var newfactkey = "";
-                                    var tempfact = new FactBase();
-                                    tempfact.SetFromString(xcell.FactKey);
-                                    var dimension = tempfact.Dimensions.FirstOrDefault(i => i.DimensionItemFullName == firstsuchdim.DimensionItemFullName);
-                                    if (dimension.Domain.EndsWith(":"))
-                                    {
-                                        dimension.Domain = dimension.Domain.Substring(0, dimension.Domain.Length - 1);
-                                    }
-
-                                    var qn = new QualifiedName(domainandmember);
-                                    if (qn.Name == "x0")
-                                    {
-                                        tempfact.Dimensions.Remove(dimension);
-                                    }
-                                    else
-                                    {
-                                        dimension.DomainMember = qn.Name;
-                                    }
-                                    newfactkey = tempfact.GetFactKey();
-
-                                    factkeys.Add(newfactkey);
-                                }
-                            }
-                            else
-                            {
-                                //factkeys.Add(xcell.FactKey);
-                                factintkeys.Add(xcell.FactIntKey);
-                            }
-
-                            cell.IsBlocked = cell.IsKey ? false : true;
-                            foreach (var factkey in factkeys)
-                            {
-                                if (this.Taxonomy.HasFact(factkey))
-                                {
-                                    var item = this.Taxonomy.GetCellsOfFact(factkey);
-                                    item.Add(xcell.CellID);
-                                    cell.IsBlocked = false;
-
-                                }
-                                else
-                                {
-                                    if (this.ID.Contains("S.02.02.01.02")) //s2md_tS.02.02.01.02-facts.json
-                                    {
-                                    }
-                                    var aspectcolumnitem = cell.LayoutColumn.Item;
-                                    if (cell.LayoutColumn.Parent != null && !aspectcolumnitem.IsAspect) 
-                                    {
-                                        aspectcolumnitem = cell.LayoutColumn.Parent.Item;
-                                    }
-
-                               
-                                    if (cell.Concept==null
-                                        && cell.LayoutColumn.Item.Category != LayoutItemCategory.BreakDown
-                                        && cell.LayoutRow.Item.Category != LayoutItemCategory.BreakDown
-                                        )
-                                    {
-                                        //cell.Dimensions = aspectcolumnitem.Dimensions;
-                                    }
-                                    else
-                                    {
-                                        //cell.IsBlocked = true;
-                                       
-                                    }
-                                }
-                            }
-                            */
                             if (cell.IsBlocked && !blocked.ContainsKey(cell.ToString()))
                             {
                                 blocked.Add(cell.ToString(), true);
@@ -848,8 +777,10 @@ namespace LogicalModel
                 
 
             }
+           
 
             CreateHtmlLayout();
+            this.LayoutRoot = lr;
         }
 
         private Dictionary<string, List<string>> _Hierarchies = new Dictionary<string, List<string>>();
@@ -1095,7 +1026,7 @@ namespace LogicalModel
             var cubelist = new List<List<QualifiedName>>();
 
             cubelist.Add(cube.Concepts.Cast<QualifiedName>().ToList());
-            var domains = cube.DimensionItems.OrderBy(i => i.FullName).Select(i => i.Domains.FirstOrDefault()).OrderBy(i => i.FullName).ToList();
+            var domains = cube.DimensionItems.OrderBy(i => i.FullName, StringComparer.Ordinal).Select(i => i.Domains.FirstOrDefault()).OrderBy(i => i.FullName, StringComparer.Ordinal).ToList();
             foreach (var domain in domains)
             {
                 cubelist.Add(domain.DomainMembers.Cast<QualifiedName>().ToList());

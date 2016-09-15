@@ -43,7 +43,7 @@ function GetXbrlCellEditor(target) {
     if (concept.indexOf(":di") > -1) {
         typeclass = "di";
     }
-    var editor = null;
+    var editor = GetDefaultEditor(target);
     if (typeclass == "bi") {
         editor = new Editor('<select class="celleditor"><option>true</option><option>false</option></select>', function (i) { return i.val(); }, function (i, val) {
             i.val(val);
@@ -57,7 +57,7 @@ function GetXbrlCellEditor(target) {
     if (IsNull(concept)) {
         var fact = Model.FactBase.GetFactFromString(factstring);
         Log("NullConcept");
-        if (fact.Dimensions.length == 1 && !fact.Dimensions[0].IsTyped) {
+        if (!IsNull(fact.Dimensions) && fact.Dimensions.length == 1 && !fact.Dimensions[0].IsTyped) {
             Log("NullConcept >>");
             var role = _Attribute(target, "role");
             editor = new Editor(Format('<select class="celleditor">{0}</select>', app.taxonomycontainer.GetMembersOfHierarchy(role)), function (i) { return i.val(); }, function (i, val) {

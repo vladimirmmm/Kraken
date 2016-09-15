@@ -12,6 +12,7 @@ namespace Model.InstanceModel
         public String Concept { get; set; }
         public String Decimals { get; set; }
         public String ContextRef { get; set; }
+        public String ID { get; set; }
         public String UnitRef { get; set; }
         private String _Value = "";
         public String Value { get { return _Value;} set { _Value=value;} }

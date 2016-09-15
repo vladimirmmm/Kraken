@@ -15,7 +15,7 @@ namespace LogicalModel.Validation
         {
             decimal treshold = 0;
             int decimals=0;
-            if (fact.Decimals=="INF") 
+            if (fact.Decimals=="INF" || string.IsNullOrEmpty(fact.Decimals)) 
             {
                 return 0;
             }

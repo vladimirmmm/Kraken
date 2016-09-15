@@ -229,7 +229,7 @@ namespace LogicalModel
             //var columnsnode = table.GetAxisNode("x");
             //var extensionnode = table.GetAxisNode("z");
 
-            var aspects = source.Where(i => i.Item.IsAspect).ToList();
+            var aspects = source.Where(i =>i.Item.Category!= LayoutItemCategory.Key && i.Item.Dimensions.Any(d=>d.IsTyped)).ToList();
 
             var targetAxisnode = target.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
             if (targetAxisnode != null)
@@ -241,6 +241,7 @@ namespace LogicalModel
                 {
                     aspect.Item.LabelID = aspect.Parent.Item.LabelID;
                     aspect.Item.Label = aspect.Parent.Item.Label;
+                    aspect.Item.LabelContent = aspect.Parent.Item.LabelContent;
                     aspect.Item.LabelCode = String.Format(Table.KeyLabelCodeFormat, ix);
                     aspect.Item.LabelID = "";
                     var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
@@ -250,8 +251,13 @@ namespace LogicalModel
                         aspect.Item.RoleAxis = rolenode.Item.RoleAxis;
 
                     }
+                    aspect.Item.Category = LayoutItemCategory.Key;
+
                     targetAxisnode.Children.Insert(ix, aspect);
+
                     source.Remove(aspect.Parent);
+
+                    aspect.Parent.Remove(aspect);
                     aspect.Parent = targetAxisnode;
                     ix++;
                     aspect_source_dimensions.AddRange(aspect.Item.Dimensions);
@@ -270,6 +276,59 @@ namespace LogicalModel
                 }
             }
         }
+
+        public static void SetDynamicAxis2(Table table, Hierarchy<LayoutItem> source, Hierarchy<LayoutItem> target)
+        {
+
+
+            var aspects = source.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
+
+            var targetAxisnode = target.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Axis));
+            if (targetAxisnode != null)
+            {
+                var aspect_source_dimensions = new List<Dimension>();
+
+                var ix = 0;
+                foreach (var aspect in aspects)
+                {
+                    aspect.Item.LabelID = aspect.Parent.Item.LabelID;
+                    aspect.Item.Label = aspect.Parent.Item.Label;
+                    aspect.Item.LabelContent = aspect.Parent.Item.LabelContent;
+                    aspect.Item.LabelCode = String.Format(Table.KeyLabelCodeFormat, ix);
+                    aspect.Item.LabelID = "";
+                    var rolenode = aspect.FirstOrDefault(i => !String.IsNullOrEmpty(i.Item.Role));
+                    if (rolenode != null)
+                    {
+                        aspect.Item.Role = rolenode.Item.Role;
+                        aspect.Item.RoleAxis = rolenode.Item.RoleAxis;
+
+                    }
+                    aspect.Item.Category = LayoutItemCategory.Key;
+
+                    targetAxisnode.Children.Insert(ix, aspect);
+
+                    source.Remove(aspect.Parent);
+
+                    aspect.Parent.Remove(aspect);
+                    aspect.Parent = targetAxisnode;
+                    ix++;
+                    aspect_source_dimensions.AddRange(aspect.Item.Dimensions);
+                    //aspect.Item.Dimensions.Clear();
+                }
+                if (source.Children.Count == 0)
+                {
+                    var dyn_li = new LayoutItem();
+
+                    dyn_li.ID = "dynamic_" + source.Item.Axis;
+                    dyn_li.Dimensions = aspect_source_dimensions;
+                    dyn_li.Category = LayoutItemCategory.Dynamic;
+                    //var dyn_h = new Hierarchy<LayoutItem>(dyn_li);
+                    source.Item = dyn_li;
+
+                }
+            }
+        }
+
 
         public static void SetDynamicColumns(Table table)
         {

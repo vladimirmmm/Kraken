@@ -18,6 +18,12 @@ namespace XBRLProcessor.Model.Base
         private string _Href = "";
         [JsonIgnore]
         public string Href { get { return _Href; } set { _Href = value; } }
+        [JsonIgnore]
+        public string XmlContent = "";
+        public virtual string ToXmlString()
+        {
+            return XmlContent;
+        }
     }
 
     public class Arc : Link

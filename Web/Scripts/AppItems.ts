@@ -52,7 +52,7 @@ function GetXbrlCellEditor(target: Element) {
     if (concept.indexOf(":di") > -1) {
         typeclass = "di";
     }
-    var editor: Editor = null;
+    var editor: Editor = GetDefaultEditor(target);
     if (typeclass == "bi") {
         editor = new Editor('<select class="celleditor"><option>true</option><option>false</option></select>',
             (i: JQuery) => i.val(),
@@ -70,7 +70,7 @@ function GetXbrlCellEditor(target: Element) {
     {
         var fact = Model.FactBase.GetFactFromString(factstring);
         Log("NullConcept")
-        if (fact.Dimensions.length == 1 && !fact.Dimensions[0].IsTyped)
+        if (!IsNull(fact.Dimensions) && fact.Dimensions.length == 1 && !fact.Dimensions[0].IsTyped)
         {
             Log("NullConcept >>")
 

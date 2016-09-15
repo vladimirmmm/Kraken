@@ -19,6 +19,7 @@ namespace LogicalModel
         [JsonProperty]
         public String FactKey { get { return _FactKey; } set { _FactKey = value; } }
 
+        [JsonProperty]
         public string Decimals { get; set; }
 
         private String _Value = "";
@@ -54,6 +55,9 @@ namespace LogicalModel
 
         [JsonProperty]
         public String ContextID { get; set; }
+
+        [JsonProperty]
+        public String ID { get; set; }
 
         [JsonProperty]
         public Period Period { get; set; }

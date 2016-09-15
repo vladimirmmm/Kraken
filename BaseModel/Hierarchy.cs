@@ -76,8 +76,11 @@ namespace BaseModel
         }
         public void AddChild(Hierarchy<TClass> item) 
         {
-            this.Children.Add(item);
-            item.Parent = this;
+            if (item != this & item.FirstOrDefault(i=>i.Item==this.Item)==null)
+            {
+                this.Children.Add(item);
+                item.Parent = this;
+            }
         }
         public int GetTotalChildCount(Hierarchy<TClass> item)
         {

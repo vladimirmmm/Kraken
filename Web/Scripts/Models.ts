@@ -428,6 +428,8 @@
         public Value: string;
         public Entity: Entity;
         public Unit: Unit;
+        public ID: string;
+        public Decimals: string;
         public UnitID: string;
         public ContextID: string;
         public FactKey: string;

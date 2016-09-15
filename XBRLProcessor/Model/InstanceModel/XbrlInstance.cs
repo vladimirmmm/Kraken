@@ -190,6 +190,7 @@ namespace Model.InstanceModel
                 ix++;
                 logicalfact.UnitID = xbrlfact.UnitRef;
                 logicalfact.ContextID = xbrlfact.ContextRef;
+                logicalfact.ID = xbrlfact.ID;
                 logicalfact.Decimals = xbrlfact.Decimals;
                 logicalfact.Unit = this.Units.FirstOrDefault(i => i.ID == xbrlfact.UnitRef);
                 if (xbrlcontext!=null){
@@ -209,7 +210,7 @@ namespace Model.InstanceModel
                 //logicalfact.Concept = taxconcept.Value;
                 if (xbrlcontext.Scenario != null)
                 {
-                    var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
+                    var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
                     foreach (var dimension in dimensions)
                     {
                         var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());

@@ -236,8 +236,8 @@ namespace LogicalModel
                 TaxValidation.ValidateByTypedDimension(fact, ValidationRuleResults, invalidtypevalues);
                 TaxValidation.ValidateByConcept(fact, ValidationRuleResults, invalidtypevalues);
             }
-          
-            var reports = reportsdictionary.Keys.OrderBy(i=>i).ToList();
+
+            var reports = reportsdictionary.Keys.OrderBy(i => i, StringComparer.Ordinal).ToList();
             var MissingFilingindicators =new List<string>();
             var sb_missingfind = new StringBuilder();
             foreach (var report in reports) 

@@ -159,6 +159,30 @@ namespace XBRLProcessor.Model
             return resultx;
         }
 
+        protected Hierarchy<Link> GetXbrlRendering() 
+        {
+            var result = new Hierarchy<Link>();
+            foreach (var arc in Arcs) 
+            {
+                var from = Identifiables.FirstOrDefault(i => i.LabelID == arc.From);
+                var to = Identifiables.FirstOrDefault(i => i.LabelID == arc.To);
+                var harc = new Hierarchy<Link>(arc);
+                var hfrom = new Hierarchy<Link>(from);
+                var hto = new Hierarchy<Link>(to);
+                hfrom.AddChild(harc);
+                harc.AddChild(hto);
+                if (result.Item==null)
+                {
+                    result=hfrom;
+                }
+            }
+            while (result.Parent != null) 
+            {
+                result = result.Parent;
+            }
+            return result;
+        }
+
         public void LoadLayoutHierarchy(LogicalModel.Table logicaltable)
         {
             Identifiables.Clear();
@@ -312,9 +336,15 @@ namespace XBRLProcessor.Model
             logicaltable.Name = logicaltable.LayoutRoot.Item.LabelContent;
             logicaltable.SetHtmlPath();
             Utilities.FS.WriteAllText(logicaltable.FullHtmlPath.Replace(".html", "_layout.txt"), logicaltable.LayoutRoot.ToHierarchyString(GetLayoutString));
+            //var x = GetXbrlRendering();
+            //Utilities.FS.WriteAllText(logicaltable.FullHtmlPath.Replace(".html", "_layout.txt"), x.ToHierarchyString(GetLayoutString));
 
         }
-
+        private string GetLayoutString(Link li)
+        {
+            var result = li.ToXmlString();
+            return result;
+        }
         private string GetLayoutString(LogicalModel.LayoutItem li) 
         {
             var result = "";

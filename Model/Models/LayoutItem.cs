@@ -20,6 +20,7 @@ namespace LogicalModel
         BreakDown = 3,
         Dynamic = 4,
         Filter = 5,
+        Key = 6,
     }
     public class LayoutItem 
     {
@@ -177,7 +178,7 @@ namespace LogicalModel
             get
             {
                 //return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect);
-                return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, LayoutItemCategory.Dynamic);
+                return !IsAbstract && Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, LayoutItemCategory.Dynamic, LayoutItemCategory.Key);
             }
         }
         public static bool IsLayoutLeaf(BaseModel.Hierarchy<LayoutItem> hli) 
@@ -191,7 +192,7 @@ namespace LogicalModel
         {
             get
             {
-                return Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, LayoutItemCategory.Dynamic);
+                return Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, LayoutItemCategory.Dynamic, LayoutItemCategory.Key);
             }
         }
         public bool IsStructural
@@ -199,7 +200,7 @@ namespace LogicalModel
             get
             {
                 return Category.In(LayoutItemCategory.Rule, LayoutItemCategory.Aspect, 
-                    LayoutItemCategory.BreakDown, LayoutItemCategory.Dynamic);
+                    LayoutItemCategory.BreakDown, LayoutItemCategory.Dynamic, LayoutItemCategory.Key);
             }
         }
 
@@ -232,6 +233,14 @@ namespace LogicalModel
             li_new._LabelID = li_original._LabelID;
             li_new._Role = li_original._Role;
             return li_new;
+        }
+
+        internal void SetTyped()
+        {
+            foreach (var d in Dimensions) 
+            {
+                d.SetTyped();
+            }
         }
     }
 }

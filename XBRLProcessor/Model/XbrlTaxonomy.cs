@@ -529,7 +529,7 @@ namespace XBRLProcessor.Models
                 }
                 dimlist.AddRange(Concepts.Select(i => i.Key));
 
-                dimlist = dimlist.OrderBy(i => i).ToList();
+                dimlist = dimlist.OrderBy(i => i, StringComparer.Ordinal).ToList();
 
                 var sb = new StringBuilder();
                 var ix = 0;
@@ -884,7 +884,7 @@ namespace XBRLProcessor.Models
                         }
                     }
 
-                    this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID).ToList();
+                    this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID, StringComparer.Ordinal).ToList();
 
                     if (!System.IO.File.Exists(expressionfile))
                     {
@@ -1102,9 +1102,7 @@ namespace XBRLProcessor.Models
               
 
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
-                if (definitiondocument.LocalPath.Contains("33.01.01.01")) 
-                {
-                }
+
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
              

@@ -286,6 +286,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@name", (XbrlFact i) => i.Concept),
                     Mappings.PropertyMap("decimals", (XbrlFact i) => i.Decimals),
                     Mappings.PropertyMap("contextRef", (XbrlFact i) => i.ContextRef),
+                    Mappings.PropertyMap("id", (XbrlFact i) => i.ID),
                     Mappings.PropertyMap("unitRef", (XbrlFact i) => i.UnitRef),
                     Mappings.PropertyMap("@content", (XbrlFact i) => i.Value)
                  ),

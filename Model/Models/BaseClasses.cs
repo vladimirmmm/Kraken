@@ -231,7 +231,7 @@ namespace LogicalModel.Base
         
         public void SetFactString()
         {
-            Dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+            Dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal).ToList();
             _FactString = "";
         }
         
@@ -554,7 +554,7 @@ namespace LogicalModel.Base
                 {
                     newfact.Concept = Concept;
                 }
-                newfact.Dimensions = newfact.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+                newfact.Dimensions = newfact.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal).ToList();
             }
             return newfacts;
         }
