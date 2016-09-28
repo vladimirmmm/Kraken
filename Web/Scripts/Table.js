@@ -63,17 +63,17 @@ var UI;
         };
         Table.prototype.SetExternals = function () {
             var me = this;
-            var extensions = this.ExtensionsRoot.Children;
             var dynamiccells = this.Instance.DynamicReportCells[this.Current_ReportID];
             if (!IsNull(dynamiccells)) {
                 if (!IsNull(dynamiccells.Extensions)) {
-                    extensions = dynamiccells.Extensions.Children;
+                    me.ExtensionsRoot.Children = dynamiccells.Extensions.Children;
                 }
             }
+            var extensions = me.ExtensionsRoot.Children;
             this.Extensions = extensions.AsLinq().Select(function (i) { return i.Item; });
-            var current_extension = this.ExtensionsRoot.Item;
+            var current_extension = me.ExtensionsRoot.Item;
             if (this.ExtensionsRoot.Children.length > 0) {
-                current_extension = this.ExtensionsRoot.Children[0].Item;
+                current_extension = me.ExtensionsRoot.Children[0].Item;
             }
             me.LoadExtension(current_extension);
             //this.CurrentExtension = current_extension;
@@ -301,17 +301,16 @@ var UI;
                 //var extix = me.ExtensionsRoot.Children.indexOf(extitem);
                 //var extdictitem = exts[extix];
                 Log("SetExtension");
-                exts.forEach(function (item) {
-                    var ix = exts.indexOf(item);
+                exts.forEach(function (item, ix) {
                     var extitem = me.ExtensionsRoot.Children[ix];
                     var id = Format("Ext_{0}", item.Value);
-                    var labelcontent = Format("Extension {0}", item.Value);
+                    //var labelcontent = Format("Extension {0}", item.Value);
                     extitem.Item.ID = id;
                     extitem.Item.Label = new Model.Label();
                     extitem.Item.LabelCode = item.Value;
-                    extitem.Item.LabelContent = labelcontent;
+                    //extitem.Item.LabelContent = labelcontent;
                     extitem.Item.Label.Code = item.Value;
-                    extitem.Item.Label.Content = labelcontent;
+                    //extitem.Item.Label.Content = labelcontent;
                     extitem.Item.FactString = item.Key;
                 });
                 me.LoadExtension(me.CurrentExtension);

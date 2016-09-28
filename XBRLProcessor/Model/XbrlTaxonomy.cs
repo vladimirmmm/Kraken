@@ -143,8 +143,11 @@ namespace XBRLProcessor.Models
             var unmappedfacts = 0;
             foreach (var fact in this.Facts)
             {
+                EnsureFactIndex(fact.Key);
+                LoadFactToFactsOfParts(fact.Key);
                 ix++;
-                FactsIndex.Add(ix, fact.Key);
+                //EnsureFactIndex(fact.Key);
+               
                 var parts = fact.Key;
                 var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -170,6 +173,10 @@ namespace XBRLProcessor.Models
                     unmappedfacts++;
                 }
              
+            }
+            foreach (var key in FactsOfParts)
+            {
+                key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
             }
             Utilities.Logger.WriteLine(String.Format("Unmapped facts: {0}", unmappedfacts));
             foreach (var key in FactsOfDimensions.Keys)
@@ -508,22 +515,27 @@ namespace XBRLProcessor.Models
                     }
                 }
                 var dimlist = new List<string>();
+                var memebrsofdomain = new Dictionary<string, List<string>>();
                 foreach (var dim in dimdict)
                 {
                     foreach (var dom in dim.Value)
                     {
+                        var dimdom = String.Format("[{0}]{1}", dim.Key, dom);
+
+                        memebrsofdomain.Add(dimdom,new List<string>(){});
+                        var dimdomkvp = memebrsofdomain[dimdom];
                         if (domdict.ContainsKey(dom))
                         {
                             var dommembers = domdict[dom];
                             foreach (var member in dommembers)
                             {
-                                dimlist.Add(String.Format("[{0}]{1}:{2}", dim.Key, dom, member));
+                                var dimdommem = String.Format("[{0}]{1}:{2}", dim.Key, dom, member);
+                                dimdomkvp.Add(dimdommem);
+                                dimlist.Add(dimdommem);
                             }
                         }
-                        else
-                        {
-                            dimlist.Add(String.Format("[{0}]{1}", dim.Key, dom));
-                        }
+                        dimlist.Add(dimdom);
+
                     }
 
                 }
@@ -542,9 +554,18 @@ namespace XBRLProcessor.Models
                     CounterFactParts.Add(ix, dim);
                     ix++;
                 }
-                var z = 0;
+                var keys = memebrsofdomain.Keys.OrderBy(i => i, StringComparer.InvariantCultureIgnoreCase);
+                foreach (var dimdomkey in keys) 
+                {
+                    var dimdomembers = memebrsofdomain[dimdomkey];
+                    var int_dimdomkey = FactParts[dimdomkey];
+                    var int_dimdommemberlist = dimdomembers.Select(i => FactParts[i]).ToList();
+                    MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdommemberlist);
+                }
+          
                 fd.CounterFactParts = CounterFactParts;
                 fd.FactParts = FactParts;
+                fd.MembersOfDimensionDomains = MembersOfDimensionDomains;
                 Utilities.FS.WriteAllText(this.TaxonomyDimensionPath, Utilities.Converters.ToJson(fd));
 
             }
@@ -554,7 +575,13 @@ namespace XBRLProcessor.Models
                 fd = Utilities.Converters.JsonTo<FactDictionaries>(Utilities.FS.ReadAllText(this.TaxonomyDimensionPath));
                 this.CounterFactParts = fd.CounterFactParts;
                 this.FactParts = fd.FactParts;
+                this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains;
             }
+            //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
+            //foreach (var item in dimensiondomainparts) 
+            //{
+
+            //}
             Logger.WriteLine("Load Dimensions completed");
 
         }
@@ -562,6 +589,7 @@ namespace XBRLProcessor.Models
         {
             public Dictionary<string, int> FactParts { get; set; }
             public Dictionary<int, string> CounterFactParts { get; set; }
+            public Dictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
 
         }
         public override void LoadHierarchy()
@@ -1059,12 +1087,17 @@ namespace XBRLProcessor.Models
                 var definitionfilename = taxonomydocument.FileName.Replace(".xsd", Literal.DefinitionFileSuffix).ToLower();
 
                 table.XsdPath = taxonomydocument.LocalPath;
+    
                 logicaltable.FolderName = Utilities.Strings.GetFolderName(table.XsdPath);
 
                 var layoutdocument = taxonomydocument.References.FirstOrDefault(i => i.FileName.ToLower() == layoutfilename);
                 table.LayoutPath = layoutdocument.LocalPath;
                 var definitiondocument = taxonomydocument.References.FirstOrDefault(i => i.FileName.ToLower() == definitionfilename);
                 table.DefinitionPath = definitiondocument.LocalPath;
+
+                logicaltable.XmlPathColection.Add(table.XsdPath);
+                logicaltable.XmlPathColection.Add(definitiondocument.LocalPath);
+                logicaltable.XmlPathColection.Add(layoutdocument.LocalPath);
 
                 MapDefinition(definitiondocument.XmlDocument.ChildNodes[0], table);
                 var definitionreferences = new Dictionary<string, XbrlTaxonomyDocument>();

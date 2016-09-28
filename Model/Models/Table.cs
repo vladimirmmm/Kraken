@@ -17,8 +17,9 @@ namespace LogicalModel
     {
         private int datacellminwidth = 100;
         private int cellpadding = 15;
-        private int titlecellminwidth = 300; 
+        private int titlecellminwidth = 300;
         private string _HtmlPath = "";
+        public List<string> XmlPathColection = new List<string>();
         public static string DefaultExtensionCode = "000";
         public static string LabelCodeFormat = "{0:D5}";
         public static string KeyLabelCodeFormat 
@@ -29,6 +30,20 @@ namespace LogicalModel
 
         public string Name { get; set; }
         public string FilingIndicator { get; set; }
+        public string RelatedFiles 
+        {
+            get { 
+                var sb = new StringBuilder();
+                foreach (var xml in XmlPathColection)
+                {
+                    sb.Append(xml + "\n");
+                }
+                sb.Append(this.LayoutPath+"\n");
+                sb.Append(this.DefPath + "\n");
+                return sb.ToString();
+            }
+
+        }
         public string HtmlPath 
         {
             get { return _HtmlPath; }
@@ -325,7 +340,8 @@ namespace LogicalModel
                 item.Item.LoadLabel(this.Taxonomy);
             }
         }
-
+        private List<int[]> FactList = new List<int[]>();
+        private List<int> FactindexList = new List<int>();
         public void LoadDefinitions() 
         {
             var folder = this.FolderName;
@@ -393,12 +409,15 @@ namespace LogicalModel
                     }
 
                     var newkey = intkeys;
-                    if (!this.Taxonomy.HasFact(newkey.ToArray())) 
+                    if (!this.Taxonomy.HasFact(newkey)) 
                     {
 
                         this.Taxonomy.AddFactKey(newkey);
                
                     }
+                    FactList.Add(newkey.ToArray());
+                    FactindexList.Add(Taxonomy.FactKeyIndex[newkey.ToArray()]);
+
                     //sb_fact.AppendLine();
                 }
             }
@@ -415,99 +434,17 @@ namespace LogicalModel
        
         private void SetExtensions()
         {
-
-            if (this.ID.Contains("07.00"))
-            {
-
+            if (this.ID.Contains("09.03")) 
+            { 
             }
             if (extensionnode != null)
             {
-                //var leafs = extensionnode.GetLeafs().Where(i => i.Parent != null).ToList();
-                var leafs = extensionnode.All().Where(i => i.Item.IsVisible).ToList();
-                
                 //this.Extensions =  TableHelpers.CombineExtensionNodes(extensionnode, this);
-                this.Extensions = TableHelpers.GetExtensions(extensionnode, this);
+                this.Extensions = TableHelpers.GetExtensions2(extensionnode, this);
             }
         }
 
-        public Hierarchy<LayoutItem> CreateAxisNode(string axis) 
-        {
-            var nodes = LayoutRoot.Where(i => String.Equals(i.Item.Axis, axis, StringComparison.InvariantCultureIgnoreCase)).OrderBy(i => i.Order).ToList();
-            var axislayoutitem = new LayoutItem();
-            axislayoutitem.Category=LayoutItemCategory.BreakDown;
-            axislayoutitem.ID = String.Format("Axis {0}", axis);
-            axislayoutitem.IsAbstract = true;
-            var axisnode = new Hierarchy<LayoutItem>(axislayoutitem);
-            
-            //Expand AspectNodes
-            foreach (var node in nodes)
-            {
-                var aspectnodes = node.Where(j => j.Item.IsAspect).ToList();
-                foreach (var aspectnode in aspectnodes)
-                {
-                    if (!aspectnode.Item.Dimensions.Any(i => i.IsTyped))
-                    {
-                        var expandednodes = TableHelpers.GetAspectItems(aspectnode, this);
-                        if (expandednodes.Count > 0)
-                        {
-                            var parent = aspectnode.Parent;
-                            parent.Remove(aspectnode);
-                            parent.AddChildren(expandednodes);
-                        }
-                    }
-
-                }
-            }
-       
-            //Project Axisnodes
-            if (nodes.Count > 0)
-            {
-                var basenode = nodes.FirstOrDefault();
-                //var basenodelist = new List<Hierarchy<LayoutItem>>();
-                //basenodelist.Add(basenode);
-
-                for (int i=1;i<nodes.Count;i++)
-                {
-                    var node= nodes[i];
-                    var baseleafs = basenode.GetLeafs();
-                    //List<LayoutItem> projectionnodes = null;
-
-                    var projectionnodes = node.GetLeafs();
-                    foreach (var leaf in baseleafs)
-                    {
-                        foreach (var projectionnode in projectionnodes)
-                        {
-                            var hi = new Hierarchy<LayoutItem>(projectionnode.Item);
-                            hi.Parent = projectionnode.Parent;
-                            var targetparent = leaf;
-                            var targetchild = hi;
-                            if (leaf.Parent.Children.Count == 1)
-                            {
-                                targetparent = leaf.Parent;
-                                targetchild = hi.Parent;
-                            }
-                            targetchild.Parent.Remove(targetchild);
-                            targetparent.AddChild(targetchild);
-                        }
-                    }
-                }
-                axisnode.Children.Add(basenode);
-                basenode.Item.Category = LayoutItemCategory.BreakDown;
-            }
-
-            //previous
-            //foreach (var node in nodes) 
-            //{
-            //    axisnode.Children.Add(node);
-            //    node.Item.Category = LayoutItemCategory.BreakDown;
-            //}
-            axisnode.All().ForEach(i=>i.Item.SetTyped());
-          
-            return axisnode;
-     
-        }
-
-
+   
         private void FixLabelCodes(List<Hierarchy<LayoutItem>> items,string format) 
         {
             var ix = 1;
@@ -586,6 +523,7 @@ namespace LogicalModel
                         Utilities.Logger.WriteLine(msg);
                     }
                     dimension.MapID = this.Taxonomy.FactParts[dimension.DomainMemberFullName];
+                    dimension.DomMapID = this.Taxonomy.FactParts[dimension.DimensionDomain];
                 }
             }
         }
@@ -598,7 +536,7 @@ namespace LogicalModel
             Z_Axis.Clear();
 
 
-            if (this.ID.Contains("28"))
+            if (this.ID.Contains("S.02.02.01.02"))
             {
 
             }
@@ -606,17 +544,20 @@ namespace LogicalModel
             var lr = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
             LayoutRoot = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
             ReloadLayout();
-            rowsnode = CreateAxisNode("y");
-            columnsnode = CreateAxisNode("x");
-            extensionnode = CreateAxisNode("z");
+            rowsnode = TableHelpers.CreateAxisNode3(this, "y");
+            columnsnode = TableHelpers.CreateAxisNode3(this, "x");
+            extensionnode = TableHelpers.CreateAxisNode3(this, "z");
    
              //var aspects=new List<Hierarchy<LayoutItem>>();
              //aspects.AddRange(rowsnode.Where(i => i.Item.IsAspect));
              //aspects.AddRange(columnsnode.Where(i => i.Item.IsAspect));
 
-            TableHelpers.SetDynamicAxis(this, rowsnode, columnsnode);
-            TableHelpers.SetDynamicAxis(this, columnsnode, rowsnode);
+            TableHelpers.SetDynamicAxis2(this, rowsnode, columnsnode);
+            TableHelpers.SetDynamicAxis2(this, columnsnode, rowsnode);
 
+            TableHelpers.ProjectNodes(rowsnode);
+            TableHelpers.ProjectNodes(columnsnode);
+            TableHelpers.ProjectNodes(extensionnode);
   
             //fix here
             FixLayoutItem(columnsnode,null);
@@ -714,7 +655,7 @@ namespace LogicalModel
                                 {
 
                                 }
-                                SetDimensions(cell);
+                                TableHelpers.SetDimensions(cell);
                                 cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMember).ToList();
                                 //LayoutCells.Add(cell);
                                 LayoutCellDictionary.Add(cell.LayoutID, cell);
@@ -749,6 +690,7 @@ namespace LogicalModel
                             {
                                 var factintkey = factintkeys[i];
                                 //var factkey = factkeys[i];
+                                //this.Taxonomy.HasFact
                                 if (this.Taxonomy.Facts.ContainsKey(factintkey))
                                 {
                                     //var item = this.Taxonomy.GetCellsOfFact(factkey);
@@ -756,6 +698,22 @@ namespace LogicalModel
                                     item.Add(xcell.CellID);
                                     cell.IsBlocked = false;
 
+                                }
+                                else 
+                                {
+                                    if (!factintkey.Any(fk => fk == -1))
+                                    {
+                                        var results = this.Taxonomy.SearchFacts2(FactindexList, factintkey,true);
+                                        var results2 = this.Taxonomy.SearchFacts2(FactindexList, factintkey,false);
+                                        results.AddRange(results2);
+                                        cell.IsBlocked = results.Count == 0;
+                                        foreach (var result in results) 
+                                        {
+                                            var item = this.Taxonomy.GetCellsOfFact(result);
+                                            item.Add(xcell.CellID);
+                                        }
+                               
+                                    }
                                 }
                                
                             }
@@ -777,7 +735,13 @@ namespace LogicalModel
                 
 
             }
-           
+            foreach (var fact in FactList) 
+            {
+                if (this.Taxonomy.Facts[fact].Count == 0) 
+                {
+                    Utilities.Logger.WriteLine(String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.Name));
+                }
+            }
 
             CreateHtmlLayout();
             this.LayoutRoot = lr;
@@ -979,45 +943,10 @@ namespace LogicalModel
             return sb.ToString();
 
         }
-        
-        private void SetDimensions(Cell cell)
-        {
-            var currentrow = cell.LayoutRow.Parent;
-            while (currentrow != null)
-            {
-                MergeDimensions(cell.Dimensions, currentrow.Item.Dimensions);
-                if (cell.Concept == null) 
-                {
-                    cell.Concept = currentrow.Item.Concept;
-                }
-                currentrow = currentrow.Parent;
-            }
-            var currentcol = cell.LayoutColumn.Parent;
-            while (currentcol != null)
-            {
-                MergeDimensions(cell.Dimensions, currentcol.Item.Dimensions);
-                if (cell.Concept == null)
-                {
-                    cell.Concept = currentcol.Item.Concept;
-                }
-                currentcol = currentcol.Parent;
-            }
-            cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMember).OrderBy(i=>i.MapID).ToList();
-            cell.Dimensions = cell.Dimensions.Distinct().ToList();
-        }
 
 
-        private void MergeDimensions(List<Dimension> target, List<Dimension> items)
-        {
-            foreach (var item in items)
-            {
-                var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
-                if (existing == null)
-                {
-                    target.Add(item);
-                }
-            }
-        }
+
+
 
         #region Cubes
 

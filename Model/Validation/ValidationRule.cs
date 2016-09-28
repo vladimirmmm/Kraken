@@ -69,7 +69,7 @@ namespace LogicalModel.Validation
            
         }
 
-        public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
+        public virtual List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
             return GetAllResults(instance.Taxonomy);
         }
@@ -338,7 +338,7 @@ namespace LogicalModel.Validation
             return facts.FirstOrDefault();
         }
 
-        public List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
+        public override List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
             if (this.ID.Contains("0010")) 
             { 
@@ -491,6 +491,27 @@ namespace LogicalModel.Validation
 
             }
             allinstanceresults.AddRange(resultstoadd);
+            foreach (var result in allinstanceresults) 
+            {
+                foreach (var p in result.Parameters) 
+                {
+                    if (p.Cells.Any(c1 => c1.Any(c2 => c2.Contains("*"))))
+                    {
+                        for (int i = 0; i < p.FactIDs.Count;i++ )
+                        {
+                            var cells = p.Cells[i];
+                            var fid = p.FactIDs[i];
+                            var fs = instance.GetFactBaseByIndexString(fid);
+                            var dcells = instance.GetDynamicCellID(cells.FirstOrDefault(), fs);
+                            cells.Clear();
+                            cells.Add(dcells );
+
+                        }
+                    }
+
+                }
+            }
+
             return allinstanceresults;
         }
 

@@ -450,6 +450,10 @@ namespace BaseModel
 
         public void Clear()
         {
+            foreach (var child in this.Children) 
+            {
+                child.Parent = null;
+            }
             this.Children.Clear();
         }
 

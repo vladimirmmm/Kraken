@@ -225,7 +225,7 @@
                         cellobj.SetFromCellID(cell);
                         var reportid = cellobj.Report;
                         var dynmicdata = me.Instance.DynamicReportCells[reportid];
-                        if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || cellobj.Extension == "_")
+                        if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || IsNull(cellobj.Extension))
                         {
                             var celldictionary = IsNull(dynmicdata) ? null : dynmicdata.CellOfFact;
                             if (!IsNull(celldictionary)) {

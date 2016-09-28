@@ -220,6 +220,12 @@ namespace Utilities
             //results.TrimExcess();
             return results;
         }
+
+        public static List<string> SearchDictionary<T>(Dictionary<string, T> dict, String key) 
+        {
+            return dict.Keys.Where(i => i.Contains(key)).ToList();
+        }
+
         public static List<int> IntersectSorted(IEnumerable<int> sequence1, HashSet<int> sequence2, Comparer<int> comparer)
         {
             var results = new List<int>();//sequence1.Count());

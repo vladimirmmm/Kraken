@@ -263,7 +263,7 @@ namespace Model.InstanceModel
             }
 
             SetCells();
-
+            SetExtensions();
             SaveToJson();
         }
 

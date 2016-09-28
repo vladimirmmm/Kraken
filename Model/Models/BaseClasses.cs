@@ -79,6 +79,76 @@ namespace LogicalModel.Base
             }
         }
     }
+    public class FactFilter 
+    {
+        public Boolean Positive = true;
+        public string Representation = "";
+        public Func<string,int[], bool> Filter = (keystring,key) => true;
+        public int Level = 0; 
+        //0 - dimensiondomian
+        //1 - dimensiondomainmember
+
+        public FactFilter() 
+        {
+      
+        }
+
+        public FactFilter(Boolean Positive, string Representation, int Level, Func<string, int[], bool> Filter)
+        {
+            this.Positive = Positive;
+            this.Representation = Representation;
+            this.Level = Level;
+            this.Filter = Filter;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("[{1}] {0}{2}", Positive ? "" : "!", Level, Representation);
+        }
+    }
+    public class FactBaseQuery2
+    {
+        public List<FactBaseQuery2> ChildQueries = new List<FactBaseQuery2>();
+        public List<FactFilter> Filters = new List<FactFilter>();
+        public Func<string,int[], bool> _Filter = (s,k) => true;
+
+        public Func<string, int[], bool> GetFilter() 
+        {
+            Func<string, int[], bool> filter = null;
+            var filters = new List<FactFilter>();
+            if (ChildQueries.Count > 0)
+            {
+                var results = new List<KeyValue<string, int>>();
+                foreach (var childquery in ChildQueries)
+                {
+                    filters.AddRange(childquery.Filters);
+                }
+            }
+            return filter;
+        }
+
+        public Boolean Filter(string factstring, int[] factintkey) 
+        {
+            var result = true;
+            result = _Filter(factstring, factintkey);
+            return result;
+        }
+
+        public List<String> ToList(IQueryable<String> queryable)
+        {
+            return queryable.Where(i => Filter(i,new int[]{})).ToList();
+        }
+        public List<int> ToIndexList(IQueryable<int> queryable)
+        {
+            int[] keys =new int[]{};
+            return queryable.Where(i => Filter("", keys)).ToList();
+        }
+        public List<int[]> ToIntKeyList(IQueryable<int[]> queryable)
+        {
+            return queryable.Where(i => Filter("", i)).ToList();
+        }
+
+    }
     public class FactBaseQuery 
     {
         public string FalseFilters = "";
@@ -154,20 +224,33 @@ namespace LogicalModel.Base
             }
             return result;
         }
+        
         public List<KeyValue<string, int>> ToList(List<KeyValue<string, int>> queryable)
         {
             //var mainitems = new List<KeyValue<string, int>>();
             var items = new List<KeyValue<string, int>>();
 
             var queryablecount = queryable.Count();
+            var sb = new StringBuilder();
             for (int i = 0; i < queryablecount; i++) 
             {
                 var str = queryable[i].Key;
 
-                if (Filter(str)) 
+                if (Filter(str))
                 {
                     items.Add(queryable[i]);
                 }
+                else 
+                {
+                    var intkey = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.FactsIndex[queryable[i].Value];
+                    var x = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.GetFactStringKey(intkey);
+                    sb.AppendLine(x);
+                }
+            
+            }
+            if (items.Count == 0)
+            {
+
             }
             if (ChildQueries.Count > 0)
             {
@@ -180,9 +263,17 @@ namespace LogicalModel.Base
             }
             return items;
         }
+        
         public override string ToString()
         {
-            return String.Format("{0} NOT: {1}", TrueFilters, FalseFilters);
+            var thisstr = String.Format("DictFilters: {0}\n FalseFilters: {2}\n TrueFilters: {1}\n", DictFilters, TrueFilters, FalseFilters);
+            var sb = new StringBuilder();
+            sb.Append(thisstr);
+            foreach (var child in ChildQueries) 
+            {
+                sb.Append(">" + child.ToString());
+            }
+            return sb.ToString();
         }
     }
     public class FactBase 
@@ -437,29 +528,7 @@ namespace LogicalModel.Base
                         default:
                             break;
                     }
-                    //if (domainparts.Length == 2)
-                    //{
-                    //    if (Taxonomy.IsTyped(domainpart))
-                    //    {
-                    //        domain = domainpart;
-
-                    //    }
-                    //    else
-                    //    {
-                    //        domain = domainparts[0];
-                    //        member = domainparts[1];
-
-                    //    }
-                    //    dim.IsTyped = Taxonomy.IsTyped(domain);
-
-                   
-                    //}
-                    //if (domainparts.Length == 3)
-                    //{
-                    //    domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
-                    //    member = domainparts[2];
-                    //    dim.IsTyped = true;
-                    //}
+                
                 }
                 dim.DimensionItem = dimitem;
                 dim.Domain = domain;

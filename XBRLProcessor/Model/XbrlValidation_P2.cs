@@ -475,10 +475,6 @@ namespace XBRLProcessor.Model
 
         public void Merge(FactBaseQuery source, FactBaseQuery target)
         {
-            if (target.TrueFilters.Length > 150) 
-            { 
-
-            }
             target.TrueFilters = target.TrueFilters + source.TrueFilters ;
             target.FalseFilters = target.FalseFilters + source.FalseFilters;
             target.DictFilters = target.DictFilters + source.DictFilters;

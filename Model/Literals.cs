@@ -10,5 +10,6 @@ namespace LogicalModel
     {
         public const string FilingIndicator = "filingindicator";
         public const string Tab = "   ";
+        public const string DynamicCode = "*";
     }
 }

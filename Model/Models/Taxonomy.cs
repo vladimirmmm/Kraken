@@ -46,7 +46,9 @@ namespace LogicalModel
         public List<Element> Domains = new List<Element>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
         public Dictionary<string, int> FactParts = new Dictionary<string, int>();
+        public Dictionary<int, List<int>> FactsOfParts = new Dictionary<int, List<int>>();
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
+        public Dictionary<int, List<int>> MembersOfDimensionDomains = new Dictionary<int, List<int>>();
 
         public List<Element> SchemaElements = new List<Element>();
 
@@ -312,27 +314,157 @@ namespace LogicalModel
             }
             return result;
         }
-
-        public void AddFactKey(List<int> key) 
+        public void LoadFactToFactsOfParts(int[] key)
         {
-            Facts.Add(key.ToArray(), new List<String>(1));
+            foreach (var part in key)
+            {
+                var factix = FactKeyIndex[key];
+                if (!this.FactsOfParts.ContainsKey(part))
+                {
+                    this.FactsOfParts.Add(part, new List<int>() { });
+                }
+                this.FactsOfParts[part].Add(factix);
+                var dimensiondomainpart = GetDimensionDomainPart(part);
+
+                if (!this.FactsOfParts.ContainsKey(dimensiondomainpart))
+                {
+                    this.FactsOfParts.Add(dimensiondomainpart, new List<int>() { });
+                }
+                this.FactsOfParts[dimensiondomainpart].Add(factix);
+
+
+            }
+        }
+
+        public int GetDimensionDomainPart(int factpartkey) 
+        {
+            var keys = MembersOfDimensionDomains.Keys.ToList();
+            for (int i =0;i<keys.Count;i++)
+            {
+                if (factpartkey<keys[i])
+                {
+                    return keys[i - 1];
+                }
+            }
+            return keys[keys.Count-1];
+        
+        }
+
+        public void AddFactKey(int[] key) 
+        {
+            Facts.Add(key, new List<String>());
+            EnsureFactIndex(key);
+            LoadFactToFactsOfParts(key);
+
+
+        }
+
+        public void EnsureFactIndex(int[] key) 
+        {
+            if (!FactKeyIndex.ContainsKey(key))
+            {
+                var ix = FactsIndex.Count;
+                FactsIndex.Add(ix, key);
+                FactKeyIndex.Add(key, ix);
+            }
+            else 
+            {
+            }
+
+        }
+
+
+        public void AddFactKey(List<int> key)
+        {
+            AddFactKey(key.ToArray());
+
 
         }
         public bool HasFact(string factkey) 
         {
-            //int[] intkeys = null;
-            //if (factkey.Contains(":"))
-            //{
-            //    factkey = GetFactStringKeyFromStringKey(factkey);
-            //    intkeys = GetFactIntKey(factkey).ToArray();
-            //}
-            //else 
-            //{
-
-            //}
             var ids = GetFactIntKey(factkey).ToArray();
 
             return this.Facts.ContainsKey(ids);
+        }
+        public bool HasFact(int[] factkey)
+        {
+            return this.Facts.ContainsKey(factkey);
+        }
+        public List<int> SearchFacts(int[] factkey) 
+        {
+            var result = new List<int>();
+            var factspool = new List<List<int>>();
+            foreach (var keypart in factkey) 
+            {
+
+                factspool.Add(FactsOfParts[keypart]);
+            }
+            factspool = factspool.OrderBy(i => i.Count).ToList();
+            result = factspool.FirstOrDefault();
+            for (int i = 1; i < factspool.Count; i++)
+            {
+                result = Utilities.Objects.IntersectSorted(result, factspool[i], null);
+            }
+
+            return result;
+        }
+        public List<int> SearchFactsGetIndex2(List<int> facts, int[] factkey,bool ensuredimensiondomains)
+        {
+            var resultfacts = SearchFactsGetIndex2(factkey, ensuredimensiondomains);
+            resultfacts = Utilities.Objects.IntersectSorted(resultfacts, facts,null);
+            return resultfacts;
+        }
+        public List<int[]> SearchFacts2(List<int> facts, int[] factkey,bool ensuredimensiondomains)
+        {
+            var resultfacts = SearchFactsGetIndex2(factkey, ensuredimensiondomains);
+            resultfacts = Utilities.Objects.IntersectSorted(resultfacts, facts, null);
+            return resultfacts.Select(i=>FactsIndex[i]).ToList();
+        }
+        public List<int> SearchFactsGetIndex2(int[] factkey,bool ensuredimensiondomains, bool ensurefactnumber = true)
+        {
+            var result = new List<int>();
+            var factspool = new List<List<int>>();
+            var domainpool = new List<List<int>>();
+            foreach (var keypart in factkey)
+            {
+                bool addtofactpool = true;
+                if (!ensuredimensiondomains && this.MembersOfDimensionDomains.ContainsKey(keypart))
+                {
+                    addtofactpool = false;
+
+                }
+                if (addtofactpool)
+                {
+                    if (FactsOfParts.ContainsKey(keypart))
+                    {
+                        factspool.Add(FactsOfParts[keypart]);
+                    }
+                    else 
+                    {
+                        return new List<int>();
+                    }
+                }
+               
+
+            }
+            factspool = factspool.OrderBy(i => i.Count).ToList();
+            result = factspool.FirstOrDefault();
+            for (int i = 1; i < factspool.Count; i++)
+            {
+                result = Utilities.Objects.IntersectSorted(result, factspool[i], null);
+            }
+            if (ensurefactnumber)
+            {
+                return result.Where(i => FactsIndex[i].Length == factspool.Count).ToList();
+            }
+            else
+            {
+                return result;
+            }
+        }
+        public List<int[]> SearchFacts2(int[] factkey,bool ensurefactnumber=false)
+        {
+            return SearchFactsGetIndex2(factkey, ensurefactnumber).Select(i => FactsIndex[i]).ToList();
         }
         public bool HasFact(IEnumerable<int> factkey)
         {
@@ -349,11 +481,7 @@ namespace LogicalModel
         }
         public List<string> GetCellsOfFact(int[] factintkey)
         {
-            //if (factkey.Contains(":"))
-            //{
-            //    factkey = GetFactStringKeyFromStringKey(factkey);
-            //}
-            //var ids = GetFactIntKey(factkey).ToArray();
+
             return this.Facts[factintkey];
         }
         public List<string> GetCellsOfFact(IEnumerable<int> factkey)
@@ -428,6 +556,20 @@ namespace LogicalModel
                parts.Add( this.CounterFactParts[part]);
             }
             return parts;
+        }
+        public string GetFactStringKeys(IEnumerable<int> indexes)
+        {
+            var keys = indexes.Select(i => FactsIndex[i]);
+            return GetFactStringKeys(keys);
+        }
+        public string GetFactStringKeys(IEnumerable<int[]> keys) 
+        {
+            var sb = new StringBuilder();
+            foreach (var key in keys) 
+            {
+                sb.AppendLine(GetFactStringKey(key));
+            }
+            return sb.ToString();
         }
         public string GetFactStringKeyFromIntKey(IEnumerable<int> key)
         {
@@ -635,15 +777,14 @@ namespace LogicalModel
                 List<string> cells = null;
                 foreach (var item in items) 
                 {
-                    parts = item.Split(sp_pipe, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length < 2) 
-                    {
-                        continue;
-                    }
+                    parts = item.Split(sp_pipe, StringSplitOptions.None);
+                    //if (parts.Length < 2) 
+                    //{
+                    //    continue;
+                    //}
                     keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
-                    values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
                     intkeys = new int[keys.Length];
-                    cells = new List<string>(values);
+   
                     for (int i = 0; i < keys.Length;i++ )
                     {
                         intkeys[i] = Utilities.Converters.FastParse(keys[i]);
@@ -652,6 +793,9 @@ namespace LogicalModel
                     //{
                     //    cells.Add(val);
                     //}
+                    values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+
+                    cells = new List<string>(values);
                     Facts.Add(intkeys, cells);
                 }
                 items = null;
@@ -676,6 +820,10 @@ namespace LogicalModel
                 sb.Append(" | ");
                 foreach (var id in x.Value)
                 {
+                    if (String.IsNullOrEmpty(id)) 
+                    { 
+
+                    }
                     sb.Append(id + ",");
                 }
                 sb.Append("\n");
@@ -1185,6 +1333,16 @@ namespace LogicalModel
             }
         }
 
+        public virtual void Clear_Dimensions() 
+        {
+            this.FactParts.Clear();
+            this.CounterFactParts.Clear();
+            this.DimensionItems.Clear();
+            this.FactsOfDimensions.Clear();
+
+            Utilities.FS.DeleteFile(this.TaxonomyDimensionPath);
+        }
+
         public virtual Instance GetNewInstance()
         {
             return new Instance();
@@ -1213,16 +1371,32 @@ namespace LogicalModel
             return dimensions.Select(i => i.Value).ToList();
         }
 
-        public string GetLabelForDimension(Dimension dimension) 
+        public Label GetLabelForDimension(Dimension dimension) 
         {
+            var l = new Label();
             var sb = new StringBuilder();
             sb.Append(String.Format("{0}: {1} | ", dimension.DimensionItem, GetLabelForDimensionItem(dimension.DimensionItem)));
             sb.Append(String.Format("{0}: {1} | ", dimension.Domain, GetLabelForDimensionItem(dimension.Domain)));
             sb.Append(String.Format("{0}: {1}", dimension.DomainAndMember, GetLabelForDimensionItem(dimension.DomainAndMember)));
-            return sb.ToString() ;
-        }
 
-        public string GetLabelForDimensionItem(string dimensionitem)
+            l.Content = sb.ToString();
+            return l;
+        }
+        public Label GetLabelForDimensionDomainMember(Dimension dimension)
+        {
+            Label l = new Label();
+            if (dimension.IsTyped || String.IsNullOrEmpty(dimension.DomainMember))
+            {
+                l = GetLabelForDomain(dimension.Domain);
+            }
+            else
+            {
+                l = GetLabelForMember(dimension.DomainAndMember);
+
+            }
+            return l;
+        }
+        public Label GetLabelForDimensionItem(string dimensionitem)
         {
             var dimparts = dimensionitem.Split(":");
 
@@ -1232,7 +1406,7 @@ namespace LogicalModel
             //if (element!=null)
             var labelkey = Label.GetKey("dim", element.ID);
             var label = this.FindLabel(labelkey);
-            var content = label != null ? label.Content : "";
+            var content = label != null ? label : new Label();
             return content;
         }
         public virtual Element FindDimensionDomain(string dimensionitem) 
@@ -1278,19 +1452,19 @@ namespace LogicalModel
             return element;
         }
 
-        public string GetLabelForDomain(string domain)
+        public Label GetLabelForDomain(string domain)
         {
             var element = GetDomain(domain);
             var labelkey = Label.GetKey("dom", element.ID);
             var label = this.FindLabel(labelkey);
-            var content = label != null ? label.Content : "";
+            var content = label != null ? label : new Label();
             return content;
         }
 
-        public string GetLabelForMember(string domainandmember)
+        public Label GetLabelForMember(string domainandmember)
         {
             var dimparts = domainandmember.Split(new string[] { ":" }, StringSplitOptions.None);
-            if (dimparts.Length > 2) { return ""; }
+            if (dimparts.Length > 2) { return new Label(); }
             var domain = dimparts[0];
             var member = dimparts[1];
             var domainelement = GetDomain(domain);
@@ -1298,7 +1472,7 @@ namespace LogicalModel
 
             var labelkey = Label.GetKey(domainelement.Name, memberelement.ID);
             var label = this.FindLabel(labelkey);
-            var content = label != null ? label.Content : "";
+            var content = label != null ? label : new Label();
             return content;
         }
 
@@ -1312,6 +1486,7 @@ namespace LogicalModel
             Clear_Layout();
             Clear_Labels();
             Clear_SchemaElements();
+            Clear_Dimensions();
             Clear_Facts();
             Clear_Validations();
 

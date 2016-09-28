@@ -80,7 +80,13 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             return f;
         }
+        private void Handle(bool result,string factstring,string tag,string operation) 
+        {
+            if (!result) 
+            {
 
+            }
+        }
         public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level=0)
         {
             var queries = new List<FactBaseQuery>();
@@ -102,10 +108,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         {
 
                             var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
-                            if (ok)
-                            {
-
-                            }
+                            Handle(ok,s,tag,"contains");     
                             return ok;
                         };
 
@@ -118,10 +121,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         query.Filter = (s) =>
                         {
                             var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
-                            if (ok)
-                            {
-
-                            }
+                            Handle(ok, s,tag, "not contains");
                             return ok;
                         };
                     }
@@ -136,10 +136,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                         {
 
                             var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
-                            if (ok)
-                            {
-
-                            }
+                            Handle(ok,s,tag,"not contains");
                             return ok;
                         };
                     }
@@ -174,7 +171,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                             query.Filter = (s) =>
                             {
                                 var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
-                           
+                                Handle(ok,s,tag, "contains");
                                 return ok;
                             };
                         }

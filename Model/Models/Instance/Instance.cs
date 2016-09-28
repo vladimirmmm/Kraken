@@ -108,7 +108,26 @@ namespace LogicalModel
             }
             return -1;
         }
+        public int[] GetFactKeyByIdString(string factstring) 
+        {
+            if (factstring.StartsWith("I:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (id > -1 && id < this.Facts.Count)
+                {
+                    var fs = this.Facts[id].FactString;
+                    return Taxonomy.GetFactIntKey(fs).ToArray();
+                }
+            }
+            if (factstring.StartsWith("T:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                var key = Taxonomy.FactsIndex[id];
+                return key;
 
+            }
+            return null;
+        }
         public InstanceFact GetFactByIDString(string factstring)
         {
             if (factstring.StartsWith("I:"))
@@ -457,7 +476,13 @@ namespace LogicalModel
 
             return cellobj.CellID;
         }
-
+        public void SetExtensions() 
+        {
+            foreach (var table in Taxonomy.Tables) 
+            {
+                GetTableExtensions(table);
+            }
+        }
         public List<TableInfo> GetTableExtensions(Table table) 
         {
             var result = new List<TableInfo>();

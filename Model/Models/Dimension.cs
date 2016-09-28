@@ -14,6 +14,7 @@ namespace LogicalModel
         private String _DomainMember = "";
 
         public int MapID = -1;
+        public int DomMapID = -1;
 
         public String DimensionItem
         {
@@ -59,7 +60,13 @@ namespace LogicalModel
                 }
             }
         }
-  
+        public string DimensionDomain 
+        {
+            get
+            {
+                return String.Format("[{0}]{1}", DimensionItem, Domain);
+            }
+        }
         public string DomainMemberFullName 
         {
             get 

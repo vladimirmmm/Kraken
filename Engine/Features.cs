@@ -840,7 +840,7 @@ values (:1,:2,:3,:4,:5)
                                 cell.SetFromCellID(cellid);
                                 var table = tax.Tables.FirstOrDefault(i => i.ID == cell.Report);
                                 var ext = table.Extensions.FirstOrDefault(i => i.Item.LabelCode == cell.Extension);
-                                var extname = ext == null ? "_" : ext.Item.LabelCode == "000" ? "_" : ext.Item.LabelContent;
+                                var extname = ext == null ? Literals.DynamicCode : ext.Item.LabelCode == "000" ? Literals.DynamicCode : ext.Item.LabelContent;
                                 //<'C05.01_CA5 rev4','Total'>['Row210'|'Col060']
                                 var cellreference = String.Format(" <'{0}','{1}'>['{2}'|'{3}'] ", table.Name, extname, cell.Row, cell.Column);
                                 rg_rule_expression = rg_rule_expression.Replace("$" + param.Name, cellreference);
