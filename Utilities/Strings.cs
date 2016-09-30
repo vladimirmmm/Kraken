@@ -51,7 +51,10 @@ namespace Utilities
                 }
            
             }
-         
+            //if (Result.Count == 0) 
+            //{
+            //    Result.Add(input);
+            //}
             return Result;
         }
 

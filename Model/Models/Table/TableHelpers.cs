@@ -144,11 +144,11 @@ namespace LogicalModel
             var aspectnodes = axisnode.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
             foreach (var aspectnode in aspectnodes)
             {
-                var aspectchildren = aspectnode.Children.SingleOrDefault();
-                aspectnode.Item.Role = aspectchildren.Item.Role;
-                aspectnode.Item.RoleAxis = aspectchildren.Item.RoleAxis;
+                //var aspectchildren = aspectnode.Children.SingleOrDefault();
+                //aspectnode.Item.Role = aspectchildren.Item.Role;
+                //aspectnode.Item.RoleAxis = aspectchildren.Item.RoleAxis;
                 aspectnode.Item.Category = LayoutItemCategory.Dynamic;
-                aspectnode.Children.Clear();
+                //aspectnode.Children.Clear();
 
                 //var aspectnodeitems = GetAspectItems(aspectnode, table);
                 //if (aspectnodeitems.Count != 0)
@@ -168,7 +168,7 @@ namespace LogicalModel
             
             var zaxisnodelistcollection = new List<List<Hierarchy<LayoutItem>>>();
             //get the axis nodes
-            var zaxisnodes = axisnode.Where(i => i.Item.Axis == "z").ToList();
+            var zaxisnodes = axisnode.Where(i => i.Item.Axis == "z" && i!=axisnode).ToList();
 
             foreach (var zaxisnode in zaxisnodes)
             {
@@ -231,6 +231,43 @@ namespace LogicalModel
             return extensions;
         }
 
+        public static Hierarchy<LayoutItem> GetExtensions3(Hierarchy<LayoutItem> axisnode, Table table)
+        {
+            var extensions = new Hierarchy<LayoutItem>(table.GetRootExtension());
+            //Getting the layout nodes
+            var nodes = axisnode.All().Where(i => i.Item.IsLayout).ToList();
+
+            //ensuring typed
+            foreach (var node in nodes)
+            {
+                node.Item.SetTyped();
+            }
+
+            //Getting typed nodes
+            var typednodes = nodes.Where(i => i.Item.Dimensions.Count == 1 && i.Item.Dimensions.FirstOrDefault().IsTyped).ToList();
+            //Getting non typed ndoes
+            var nontypednodes = nodes.Except(typednodes);
+
+
+            //Set the aspect nodes
+            var aspectnodes = axisnode.Where(i => i.Item.Category == LayoutItemCategory.Aspect).ToList();
+            foreach (var aspectnode in aspectnodes)
+            {
+                aspectnode.Item.Category = LayoutItemCategory.Dynamic;
+
+            }
+            var leafs = axisnode.GetLeafs();
+            foreach (var leaf in leafs) 
+            {
+                SetDimensions(leaf);
+            }
+            extensions.AddChildren(leafs);
+            //Fixing the labels
+            FixLabels(extensions);
+
+            return extensions;
+        }
+
 
         public static void FixLabels(Hierarchy<LayoutItem> hli)
         {
@@ -286,6 +323,47 @@ namespace LogicalModel
 
         }
 
+        public static List<int> GetOptionalItems(int[] factintkey,Table table) 
+        {
+            var result = new List<int>();
+            foreach (var keypart in factintkey) 
+            {
+                if (table.Taxonomy.MembersOfDimensionDomains.ContainsKey(keypart))
+                {
+                    var items = GetAspectItems(keypart, table);
+                    if (items.Any(i => i.Contains(":x0"))) 
+                    {
+                        result.Add(keypart);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static List<string> GetAspectItems(int dimkey, Table table)
+        {
+            var result = new List<string>();
+            var dimensionstr = table.Taxonomy.CounterFactParts[dimkey];
+            var f = new LogicalModel.Base.FactBase();
+            f.SetFromStringStable(dimensionstr);
+            var dimension = f.Dimensions.FirstOrDefault();
+
+            if (!dimension.IsTyped)
+            {
+                var hypercubes = table.HyperCubes.Where(i => i.DimensionItems.Any(j => j.FullName == dimension.DimensionItemFullName)).ToList();
+                var domains = hypercubes.SelectMany(i => i.DimensionItems.Where(j => j.FullName == dimension.DimensionItemFullName)).SelectMany(k => k.Domains).ToList();
+                var distinctdomains = domains.Distinct().ToList();
+                if (distinctdomains.Count == 1)
+                {
+                    foreach (var dm in distinctdomains.FirstOrDefault().DomainMembers)
+                    {
+
+                        result.Add(dm.Content);
+                    }
+                }
+            }
+            return result;
+        }
         public static List<LayoutItem> GetAspectItems(Hierarchy<LayoutItem> hli, Table table)
         {
             var results = new List<LayoutItem>();
@@ -401,6 +479,15 @@ namespace LogicalModel
                 }
             }
         }
+        public static void SetDimensions(List<Hierarchy<LayoutItem>> hlis)
+        {
+            foreach (var hli in hlis) 
+            {
+                SetDimensions(hli);
+            }
+         
+        }
+
         public static void SetDimensions(Hierarchy<LayoutItem> hli)
         {
             var currentrow = hli.Parent;
@@ -484,16 +571,17 @@ namespace LogicalModel
                 }
                 var visiblenodes = source.Where(i => i.Item.IsVisible);
           
-                if (visiblenodes.Count == 0)
+                if (aspects.Count > 0)
                 {
                     var dyn_li = new LayoutItem();
 
-                    dyn_li.ID = "dynamic_" + source.Item.Axis;
+                    dyn_li.ID = "dynamic_" + sourceAxisnode.Item.Axis;
                     dyn_li.Dimensions = aspect_source_dimensions;
                     dyn_li.Category = LayoutItemCategory.Dynamic;
                     //var dyn_h = new Hierarchy<LayoutItem>(dyn_li);
-                    source.Item = dyn_li;
-
+                    //source.Item = dyn_li;
+                    var dyn_hli = new Hierarchy<LayoutItem>(dyn_li);
+                    source.AddChild(dyn_hli);
                 }
                 //source.Item
 
@@ -579,7 +667,7 @@ namespace LogicalModel
 
         public static void ProjectNodes(Hierarchy<LayoutItem> axisnode) 
         {
-            var nodes = axisnode.Children;
+            var nodes = axisnode.Children.Where(i=> Utilities.ObjectExtensions.In( i.Item.Category, LayoutItemCategory.BreakDown, LayoutItemCategory.Dynamic)).ToList();
             //Project Axisnodes
             if (nodes.Count > 0)
             {
@@ -598,24 +686,48 @@ namespace LogicalModel
                     {
                         foreach (var projectionnode in projectionnodes)
                         {
-                            var hi = new Hierarchy<LayoutItem>(projectionnode.Item);
-                            hi.Parent = projectionnode.Parent;
-                            var targetparent = leaf;
-                            var targetchild = hi;
-                            if (leaf.Parent.Children.Count == 1)
-                            {
-                                targetparent = leaf.Parent;
-                                targetchild = hi.Parent;
-                            }
-                            targetchild.Parent.Remove(targetchild);
-                            targetparent.AddChild(targetchild);
+                            var copynode = projectionnode.Copy();
+                            copynode.All().ForEach(n => n.Item = new LayoutItem(n.Item));
+                            leaf.AddChild(copynode);
+                            //var hi = new Hierarchy<LayoutItem>(projectionnode.Item);
+                            //hi.Parent = projectionnode.Parent;
+                            //var targetparent = leaf;
+                            //var targetchild = hi;
+                            //if (leaf.Parent.Children.Count == 1)
+                            //{
+                            //    targetparent = leaf.Parent;
+                            //    targetchild = hi.Parent;
+                            //}
+                            //targetchild.Parent.Remove(targetchild);
+                            //targetparent.AddChild(targetchild);
                         }
                     }
                 }
-                axisnode.Clear();
-                axisnode.AddChild(basenode);
-                basenode.Item.Category = LayoutItemCategory.BreakDown;
+                if (nodes.Count > 1) 
+                {
+                    var li = new LayoutItem();
+                    li.Category = LayoutItemCategory.BreakDown;
+                    li.Axis = axisnode.Item.Axis;
+                    li.ID = "Effective_Breakdown_" + li.Axis;
+                    li.LabelID = li.ID;
+                    var hli = new Hierarchy<LayoutItem>(li);
+                    hli.AddChild(basenode);
+                    axisnode.Clear();
+                    axisnode.AddChild(hli);
+                }
+                //axisnode.Clear();
+                //axisnode.AddChild(basenode);
+                //basenode.Item.Category = LayoutItemCategory.BreakDown;
             }
+        }
+
+        public static string GetStateOfNodes(Hierarchy<LayoutItem> node, string tag) 
+        {
+            var sbe = new StringBuilder();
+            sbe.AppendLine(tag);
+            sbe.AppendLine(node.ToHierarchyString2());
+            sbe.AppendLine();
+            return sbe.ToString();
         }
         public static Hierarchy<LayoutItem> CreateAxisNode3(Table table, string axis)
         {
@@ -623,11 +735,28 @@ namespace LogicalModel
             var axislayoutitem = new LayoutItem();
             axislayoutitem.Category = LayoutItemCategory.BreakDown;
             axislayoutitem.ID = String.Format("Axis {0}", axis);
+            axislayoutitem.Axis = axis;
             axislayoutitem.IsAbstract = true;
             var axisnode = new Hierarchy<LayoutItem>(axislayoutitem);
             axisnode.AddChildren(nodes);
-            axisnode.All().ForEach(i => i.Item.SetTyped());
-
+            var nodestoremove = new List<Hierarchy<LayoutItem>>();
+            axisnode.All().ForEach(i => {
+                i.Item.SetTyped();
+                if (i.Item.Category == LayoutItemCategory.Filter) 
+                {
+                    var parent = i.Parent;
+                    if (parent!= null) 
+                    {
+                        parent.Item.Role = i.Item.Role;
+                        parent.Item.RoleAxis = i.Item.RoleAxis;
+                        nodestoremove.Add(i);
+                    }
+                }
+            });
+            foreach (var n in nodestoremove) 
+            {
+                n.Parent.Remove(n);
+            }
             return axisnode;
         }
         public static Hierarchy<LayoutItem> CreateAxisNode2(Table table, string axis)

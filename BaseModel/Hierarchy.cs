@@ -375,12 +375,12 @@ namespace BaseModel
         public string ToHierarchyString2(string tag = "")
         {
             var sb = new StringBuilder();
+         
+            sb.AppendLine(String.Format("{0}{1}", tag, this.Item));
             foreach (var child in this.Children)
             {
                 sb.Append(child.ToHierarchyString2(tag + "    "));
             }
-            sb.AppendLine(String.Format("{0}{1}", tag, this.Item));
-
             return sb.ToString();
         }
 

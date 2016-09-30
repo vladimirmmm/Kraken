@@ -88,6 +88,7 @@ namespace XBRLProcessor.Models
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.XmlResolver = null;
             xmlDoc.Load(xmlReader);
+  
         }
 
         private List<XmlNodeHandler> structurehandlers = new List<XmlNodeHandler>();

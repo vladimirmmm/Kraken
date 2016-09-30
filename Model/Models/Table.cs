@@ -440,7 +440,7 @@ namespace LogicalModel
             if (extensionnode != null)
             {
                 //this.Extensions =  TableHelpers.CombineExtensionNodes(extensionnode, this);
-                this.Extensions = TableHelpers.GetExtensions2(extensionnode, this);
+                this.Extensions = TableHelpers.GetExtensions3(extensionnode, this);
             }
         }
 
@@ -536,7 +536,7 @@ namespace LogicalModel
             Z_Axis.Clear();
 
 
-            if (this.ID.Contains("S.02.02.01.02"))
+            if (this.ID.Contains("s2md_tS.16.01.01.01"))
             {
 
             }
@@ -544,21 +544,25 @@ namespace LogicalModel
             var lr = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
             LayoutRoot = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
             ReloadLayout();
+            var sbe = new StringBuilder();
             rowsnode = TableHelpers.CreateAxisNode3(this, "y");
             columnsnode = TableHelpers.CreateAxisNode3(this, "x");
             extensionnode = TableHelpers.CreateAxisNode3(this, "z");
-   
-             //var aspects=new List<Hierarchy<LayoutItem>>();
-             //aspects.AddRange(rowsnode.Where(i => i.Item.IsAspect));
-             //aspects.AddRange(columnsnode.Where(i => i.Item.IsAspect));
+            
+            LayoutRoot.Clear(); LayoutRoot.AddChildren(new List<Hierarchy<LayoutItem>>() { rowsnode, columnsnode, extensionnode });
+            
+            sbe.AppendLine(TableHelpers.GetStateOfNodes(LayoutRoot,"Step 1"));
 
             TableHelpers.SetDynamicAxis2(this, rowsnode, columnsnode);
             TableHelpers.SetDynamicAxis2(this, columnsnode, rowsnode);
 
+            sbe.AppendLine(TableHelpers.GetStateOfNodes(LayoutRoot, "Step 2"));
+
             TableHelpers.ProjectNodes(rowsnode);
             TableHelpers.ProjectNodes(columnsnode);
             TableHelpers.ProjectNodes(extensionnode);
-  
+
+            sbe.AppendLine(TableHelpers.GetStateOfNodes(LayoutRoot, "Step 3"));
             //fix here
             FixLayoutItem(columnsnode,null);
             SetSpans(columnsnode,null);
@@ -572,9 +576,11 @@ namespace LogicalModel
             //Columns = columnsnode.Where(i => IsChildren(i));
             Columns = columnsnode.ToHierarchyList().Where(i => i.Item.IsVisible).ToList();
 
-
+         
             //Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsStructural && !i.Item.IsAbstract).ToList();
             Rows = rowsnode.ToHierarchyList().Where(i => i.Item.IsVisible).ToList();
+            TableHelpers.SetDimensions(Rows);
+            TableHelpers.SetDimensions(Columns);
             Rows = Rows.Where(i => !String.IsNullOrEmpty( i.Item.LabelContent) || i.Item.IsDynamic).ToList();
 
             FixLabelCodes(Columns, Table.LabelCodeFormat);
@@ -614,21 +620,29 @@ namespace LogicalModel
                 SetMapID(rowsnode.All().Select(i=>i.Item).ToList());
                 SetMapID(columnsnode.All().Select(i => i.Item).ToList());
                 //var factmap = new Dictionary<string, Dictionary<string,string>>();
+                var bigcell =new Cell();
+                var dimensions =new List<Dimension>();
+                dimensions.AddRange(exts.SelectMany(i=>i.Dimensions));
+                dimensions.AddRange(Rows.SelectMany(i=>i.Item.Dimensions));
+                dimensions.AddRange(Columns.SelectMany(i=>i.Item.Dimensions));
+                var dimkeys = dimensions.Where(i=> String.IsNullOrEmpty(i.DomainMember)).Select(i=>i.DomMapID).Distinct().ToArray();
+                var optionalkeys = TableHelpers.GetOptionalItems(dimkeys, this);
                 foreach (var ext in exts)
                 {
                     //var factextdict = new Dictionary<string, string>();
                     //factmap.Add(ext.FactString, factextdict);
-
+                    var rowix=0;
                     foreach (var row in Rows)
                     {
+                        var colix = 0;
                         foreach (var col in Columns)
                         {
                             var tempcell = new Cell();
                             tempcell.Row = row.Item.LabelCode;
                             tempcell.Column = col.Item.LabelCode;
                             Cell cell = null;
-  
-                            if (!this.LayoutCellDictionary.ContainsKey(tempcell.LayoutID))
+                            var layoutid = String.Format("{0}|{1}", rowix, colix);
+                            if (!this.LayoutCellDictionary.ContainsKey(layoutid))
                             {
                                 cell = new Cell();
                                 cell.Report = this.ID;
@@ -637,8 +651,11 @@ namespace LogicalModel
                                 cell.LayoutColumn = col;
                                 cell.Column = col.Item.LabelCode;
                                 cell.Concept = row.Item.Concept != null ? row.Item.Concept : col.Item.Concept;
-                                var isrowkey = row.Item.IsDynamic && cell.Concept == null;
-                                var iscolkey = col.Item.IsDynamic && cell.Concept == null;
+                                //var isrowkey = row.Item.IsDynamic && cell.Concept == null;
+                                //var iscolkey = col.Item.IsDynamic && cell.Concept == null;
+                                var isrowkey = row.Item.IsKey && cell.Concept == null;
+                                var iscolkey = col.Item.IsKey && cell.Concept == null;
+                                
                                 if (!isrowkey)
                                 {
                                     cell.Dimensions.AddRange(row.Item.Dimensions);//.Where(i=> !i.IsDefaultMember));
@@ -658,7 +675,7 @@ namespace LogicalModel
                                 TableHelpers.SetDimensions(cell);
                                 cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMember).ToList();
                                 //LayoutCells.Add(cell);
-                                LayoutCellDictionary.Add(cell.LayoutID, cell);
+                                LayoutCellDictionary.Add(layoutid, cell);
                             }
                             else 
                             {
@@ -691,6 +708,8 @@ namespace LogicalModel
                                 var factintkey = factintkeys[i];
                                 //var factkey = factkeys[i];
                                 //this.Taxonomy.HasFact
+                                sbe.AppendLine(xcell.FactKey);
+
                                 if (this.Taxonomy.Facts.ContainsKey(factintkey))
                                 {
                                     //var item = this.Taxonomy.GetCellsOfFact(factkey);
@@ -701,18 +720,29 @@ namespace LogicalModel
                                 }
                                 else 
                                 {
-                                    if (!factintkey.Any(fk => fk == -1))
+                                    if (!factintkey.Any(fk => fk < 0))
                                     {
-                                        var results = this.Taxonomy.SearchFacts2(FactindexList, factintkey,true);
-                                        var results2 = this.Taxonomy.SearchFacts2(FactindexList, factintkey,false);
+                                        var results = this.Taxonomy.SearchFacts2(FactindexList, factintkey, true);
+                                        var results2 = this.Taxonomy.SearchFacts2(FactindexList, factintkey, false);
                                         results.AddRange(results2);
                                         cell.IsBlocked = results.Count == 0;
-                                        foreach (var result in results) 
+                                        foreach (var result in results)
                                         {
                                             var item = this.Taxonomy.GetCellsOfFact(result);
                                             item.Add(xcell.CellID);
                                         }
-                               
+                                        if (results.Count == 0)
+                                        {
+                                            sbe.AppendLine(xcell.CellID + " " + Taxonomy.GetFactStringKey(factintkey));
+                                        }
+
+                                    }
+                                    else 
+                                    {
+                                        if (factintkey.Any(fk => fk == -1))
+                                        {
+ 
+                                        }
                                     }
                                 }
                                
@@ -722,7 +752,9 @@ namespace LogicalModel
                             {
                                 blocked.Add(cell.ToString(), true);
                             }
+                            colix++;
                         }
+                        rowix++;
                     }
                 }
                 //var jscontent = "var FactMap = " + jsoncontent.Replace("\r\n", "\\ \r\n") + ";";
@@ -735,13 +767,42 @@ namespace LogicalModel
                 
 
             }
+            var fsb = new StringBuilder();
+            var firstunmappefact = "";
             foreach (var fact in FactList) 
             {
                 if (this.Taxonomy.Facts[fact].Count == 0) 
                 {
-                    Utilities.Logger.WriteLine(String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.Name));
+
+                    var identifier = String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.ID);
+                    if (String.IsNullOrEmpty(firstunmappefact)) 
+                    {
+                        firstunmappefact = identifier.Replace(",",",\n");
+                    }
+                    fsb.AppendLine(identifier);
                 }
             }
+            sbe.AppendLine("Extenstions");
+            foreach (var item in Extensions.Children) 
+            {
+                sbe.AppendLine("    " + item.Item.GetFactString());
+            }
+            sbe.AppendLine("Rows");
+            foreach (var item in Rows)
+            {
+                sbe.AppendLine("    " + item.Item.GetFactString());
+            }
+            sbe.AppendLine("Columns");
+            foreach (var item in Columns)
+            {
+                sbe.AppendLine("    " + item.Item.GetFactString());
+            }
+            if (!String.IsNullOrEmpty(firstunmappefact)) 
+            {
+                sbe.AppendLine(firstunmappefact);
+
+            }
+            Utilities.Logger.WriteLine(fsb.ToString());
 
             CreateHtmlLayout();
             this.LayoutRoot = lr;
@@ -861,8 +922,10 @@ namespace LogicalModel
 
             //new version
             var maxlevel = Y_Axis.Count;
+            var rowix = 0;
             foreach (var row in Rows) 
             {
+                var colix = 0;
                 var level = row.GetLevel(rowsnode); //-3 for the LayoutRoot and -2 for the Rows roots node
                 var sublevelcount = level > -1 ? maxlevel - level : maxlevel;
                 var rowclass = "";
@@ -909,8 +972,8 @@ namespace LogicalModel
                     tempcell.Row = row.Item.LabelCode;
                     tempcell.Column = column.Item.LabelCode;
                     Cell cell = null;
-
-                    cell = LayoutCellDictionary[tempcell.LayoutID];
+                    var layoutid = String.Format("{0}|{1}", rowix, colix);
+                    cell = LayoutCellDictionary[layoutid];
                     //if (!String.IsNullOrEmpty(cell.FactKey) && String.IsNullOrEmpty(row.Item.LabelCode)) 
                     //{
                     //}
@@ -930,10 +993,11 @@ namespace LogicalModel
                         "<td id=\"{0}\" {3} factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>",
                         alt, cssclass, cell.FactKey, rl
                         ));
+                    colix++;
                 }
 
                 sb.AppendLine("</tr>");
-
+                rowix++;
             }
             
 

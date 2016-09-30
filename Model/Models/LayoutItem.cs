@@ -105,10 +105,14 @@ namespace LogicalModel
 
         public override string ToString()
         {
-            return String.Format("{0} - [{1}] {2}", ID, Label == null ? LabelID : LabelCode, Label == null ? LabelID : LabelContent);
+            return String.Format("{3} {0} - [{1}] {2} {4}", ID, Label == null ? LabelID : LabelCode, Label == null ? LabelID : LabelContent, Category.ToString("G"), FactString);
         }
 
         private string _FactString = "";
+        public string GetFactString() 
+        {
+            return QNameHelpers.GetFactString(Concept, Dimensions); 
+        }
         public string FactString
         {
             get
@@ -146,8 +150,12 @@ namespace LogicalModel
             this.IsAbstract = item.IsAbstract;
             this.Category = item.Category;
             this.Axis = item.Axis;
-            this.Concept = item.Concept;
-            this.Dimensions = item.Dimensions;
+            if (item.Concept != null)
+            {
+                this.Concept = new Concept();
+                this.Concept.Content = item.Concept.Content;
+            }
+            this.Dimensions.AddRange(item.Dimensions);
             this.Label = item.Label;
             this.Order = item.Order;
             this.Role = item.Role;
@@ -209,6 +217,14 @@ namespace LogicalModel
             get
             {
                 return Category == LayoutItemCategory.Dynamic;
+            }
+        }
+
+        public bool IsKey
+        {
+            get
+            {
+                return Category == LayoutItemCategory.Key;
             }
         }
 

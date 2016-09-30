@@ -403,7 +403,68 @@ namespace LogicalModel.Base
             return item;
 
         }
+        public void SetFromStringStable(string item)
+        {
+            this.Dimensions.Clear();
+            this.Concept = null;
+            var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //var parts = Utilities.Strings.FactSplit(item, ',', 8);
+            var toskip = 0;
+            if (parts.Length > 0)
+            {
+                if (parts[0].IndexOf("[") == -1)
+                {
+                    toskip = 1;
+                    var concept = new Concept();
+                    concept.Content = parts[0];
+                    this.Concept = concept;
+                }
+            }
+            var dimparts = parts.Skip(toskip).ToList();
+            foreach (var dimpart in dimparts)
+            {
+                var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
+                var domainpart = dimpart.Substring(dimitem.Length + 2);
 
+                var domain = domainpart;
+                var member = "";
+                var dim = new Dimension();
+
+                if (domainpart.Contains(":"))
+                {
+                    var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    switch (domainparts.Length)
+                    {
+                        case 2:
+                            dim.IsTyped = Taxonomy.IsTyped(domain);
+                            if (dim.IsTyped)
+                            {
+                                domain = domainpart;
+                            }
+                            else
+                            {
+                                domain = domainparts[0];
+                                member = domainparts[1];
+                            }
+                            break;
+                        case 3:
+                            domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                            member = domainparts[2];
+                            dim.IsTyped = true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+                dim.DimensionItem = dimitem;
+                dim.Domain = domain;
+                dim.DomainMember = member;
+                this.Dimensions.Add(dim);
+            }
+            this._FactString = item;
+            this._FactKey = "";
+        }
         public void SetFromString(string item)
         {
             this.Dimensions.Clear();
