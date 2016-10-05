@@ -625,8 +625,26 @@ namespace LogicalModel
                 dimensions.AddRange(exts.SelectMany(i=>i.Dimensions));
                 dimensions.AddRange(Rows.SelectMany(i=>i.Item.Dimensions));
                 dimensions.AddRange(Columns.SelectMany(i=>i.Item.Dimensions));
-                var dimkeys = dimensions.Where(i=> String.IsNullOrEmpty(i.DomainMember)).Select(i=>i.DomMapID).Distinct().ToArray();
-                var optionalkeys = TableHelpers.GetOptionalItems(dimkeys, this);
+                //var dimkeys = dimensions.Where(i=> String.IsNullOrEmpty(i.DomainMember)).Select(i=>i.DomMapID).Distinct().ToArray();
+                //var optionalkeys = TableHelpers.GetOptionalItems(dimkeys, this);
+                
+                //var domainkeys = exts.FirstOrDefault().Dimensions.Where(i => Taxonomy.MembersOfDimensionDomains.ContainsKey(i.MapID)).Select(i=>i.MapID).ToList();
+                //var missing = new Dictionary<int,int>();
+                //foreach (var fact in FactList)
+                //{
+                //    foreach (var domkey in domainkeys)
+                //    {
+                //        if (!fact.Contains(domkey))
+                //        {
+                //            if (!missing.ContainsKey(domkey))
+                //            {
+                //                missing.Add(domkey, 0);
+                //            }
+                //        }
+                //    }
+              
+                //}
+
                 foreach (var ext in exts)
                 {
                     //var factextdict = new Dictionary<string, string>();
@@ -722,9 +740,11 @@ namespace LogicalModel
                                 {
                                     if (!factintkey.Any(fk => fk < 0))
                                     {
-                                        var results = this.Taxonomy.SearchFacts2(FactindexList, factintkey, true);
-                                        var results2 = this.Taxonomy.SearchFacts2(FactindexList, factintkey, false);
-                                        results.AddRange(results2);
+                                        List<int[]> results = new List<int[]>();
+                                        //results = this.Taxonomy.SearchFacts2(FactindexList, factintkey, true);
+                                        //var results2 = this.Taxonomy.SearchFacts2(FactindexList, factintkey, false);
+                                        results = this.Taxonomy.SearchFacts3(FactindexList, factintkey);
+                                        //results.AddRange(results2);
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var result in results)
                                         {
@@ -802,6 +822,8 @@ namespace LogicalModel
                 sbe.AppendLine(firstunmappefact);
 
             }
+            FactList.Clear();
+            FactindexList.Clear();
             Utilities.Logger.WriteLine(fsb.ToString());
 
             CreateHtmlLayout();

@@ -358,7 +358,9 @@ namespace Engine.Services
                                     }
                                     if (!String.IsNullOrEmpty(cellid))
                                     {
-                                        query = query.Where(i => i.Value.Any(j => j.Contains(cellid)));
+                                        Int64 longcellid = 0;
+                                        //longcellid=cellid
+                                        //query = query.Where(i => i.Value.Any(j => j.Contains(cellid)));
                                     }
 
                                     rs.Items = query.Skip(pagesize * page).Take(pagesize).Select(i=>new KeyValue(taxonomy.GetFactStringKey(i.Key),i.Value)).ToList();

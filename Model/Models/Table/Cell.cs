@@ -109,6 +109,7 @@ namespace LogicalModel
         {
 
         }
+  
         public void SetFromCellID(string CellID)
         {
             var reportpart = CellID.Remove(CellID.IndexOf("<"));

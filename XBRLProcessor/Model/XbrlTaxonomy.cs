@@ -176,7 +176,7 @@ namespace XBRLProcessor.Models
             }
             foreach (var key in FactsOfParts)
             {
-                key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
+                //key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
             }
             Utilities.Logger.WriteLine(String.Format("Unmapped facts: {0}", unmappedfacts));
             foreach (var key in FactsOfDimensions.Keys)
@@ -577,6 +577,7 @@ namespace XBRLProcessor.Models
                 this.FactParts = fd.FactParts;
                 this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains;
             }
+            this.MembersOfDimensionDomainsIndex = this.MembersOfDimensionDomains.Keys.ToArray();
             //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
             //foreach (var item in dimensiondomainparts) 
             //{
@@ -589,7 +590,7 @@ namespace XBRLProcessor.Models
         {
             public Dictionary<string, int> FactParts { get; set; }
             public Dictionary<int, string> CounterFactParts { get; set; }
-            public Dictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
+            public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
 
         }
         public override void LoadHierarchy()
@@ -1308,6 +1309,8 @@ namespace XBRLProcessor.Models
             this.FactsOfDimensions.Clear();
             //this.FactsOfDimensionsD.Clear();
             this.FactsIndex.Clear();
+            this.FactsLengths.Clear();
+            this.MembersOfDimensionDomains.Clear();
             this.FactKeyIndex.Clear();
             this.TaxonomyDocuments.Clear();
             this.Cells.Clear();

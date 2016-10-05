@@ -541,7 +541,8 @@ namespace Engine
                     foreach (var cell in cells) 
                     {
                         var cellobj = new Cell();
-                        cellobj.SetFromCellID(cell);
+                        string cellid = ""; //from cell
+                        cellobj.SetFromCellID(cellid);
                         var table = taxonomy.Tables.FirstOrDefault(i => i.ID == cellobj.Report);
                         var extension = table.Extensions.FirstOrDefault(i=>i.Item.LabelCode==cellobj.Extension);
                         var extlabel = extension != null ? extension.Item.LabelContent : "";
