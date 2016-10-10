@@ -46,7 +46,7 @@ namespace LogicalModel
         public List<Element> Domains = new List<Element>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
         public Dictionary<string, int> FactParts = new Dictionary<string, int>();
-        public Dictionary<int, HashSet<int>> FactsOfParts = new Dictionary<int, HashSet<int>>();
+        public IndexDictionary FactsOfParts = new IndexDictionary();
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
         public SortedDictionary<int, List<int>> MembersOfDimensionDomains = new SortedDictionary<int, List<int>>();
         public int[] MembersOfDimensionDomainsIndex = null;
@@ -67,7 +67,7 @@ namespace LogicalModel
        }
          */
 
-        private Dictionary<int[], List<String>> _Facts = new Dictionary<int[], List<String>>(new Utilities.IntArrayEqualityComparer());
+       private Dictionary<int[], List<String>> _Facts = new Dictionary<int[], List<String>>(new Utilities.IntArrayEqualityComparer());
        public Dictionary<int[], List<String>> Facts 
        {
            get { return _Facts; }
@@ -327,24 +327,14 @@ namespace LogicalModel
         }
         public void LoadFactToFactsOfParts(int[] key)
         {
-            foreach (var part in key)
-            {
-                var factix = FactKeyIndex[key];
-                if (!this.FactsOfParts.ContainsKey(part))
-                {
-                    this.FactsOfParts.Add(part, new HashSet<int>() { });
-                }
-                this.FactsOfParts[part].Add(factix);
-                var dimensiondomainpart = GetDimensionDomainPart(part);
+            //foreach (var part in key)
+            //{
+            //    var factix = FactKeyIndex[key];
+            //    this.FactsOfParts.Add(part, factix);
 
-                if (!this.FactsOfParts.ContainsKey(dimensiondomainpart))
-                {
-                    this.FactsOfParts.Add(dimensiondomainpart, new HashSet<int>() { });
-                }
-                this.FactsOfParts[dimensiondomainpart].Add(factix);
-
-
-            }
+            //    var dimensiondomainpart = GetDimensionDomainPart(part);
+            //    this.FactsOfParts.Add(dimensiondomainpart, factix);
+            //}
         }
 
         public int GetDimensionDomainPart(int factpartkey) 
@@ -374,7 +364,12 @@ namespace LogicalModel
 
 
         }
+        public void AddFactKey(List<int> key)
+        {
+            AddFactKey(key.ToArray());
 
+
+        }
         public void EnsureFactIndex(int[] key) 
         {
             if (!FactKeyIndex.ContainsKey(key))
@@ -390,13 +385,11 @@ namespace LogicalModel
 
         }
 
-
-        public void AddFactKey(List<int> key)
+        public IQueryable<KeyValuePair<int[], List<string>>> GetFactsAsQuearyable() 
         {
-            AddFactKey(key.ToArray());
-
-
+            return this.Facts.AsQueryable();
         }
+  
         public bool HasFact(string factkey) 
         {
             var ids = GetFactIntKey(factkey).ToArray();
@@ -407,42 +400,42 @@ namespace LogicalModel
         {
             return this.Facts.ContainsKey(factkey);
         }
-        public List<int> SearchFacts(int[] factkey) 
-        {
-            var result = new List<int>();
-            var factspool = new List<IEnumerable<int>>();
-            foreach (var keypart in factkey) 
-            {
+        //public List<int> SearchFacts(int[] factkey) 
+        //{
+        //    var result = new List<int>();
+        //    var factspool = new List<IEnumerable<int>>();
+        //    foreach (var keypart in factkey) 
+        //    {
 
-                factspool.Add(FactsOfParts[keypart]);
-            }
-            factspool = factspool.OrderBy(i => i.Count()).ToList();
-            var results = factspool.FirstOrDefault();
-            for (int i = 1; i < factspool.Count; i++)
-            {
-                results=Utilities.Objects.IntersectSorted(results, factspool[i], null);
-            }
+        //        factspool.Add(FactsOfParts[keypart]);
+        //    }
+        //    factspool = factspool.OrderBy(i => i.Count()).ToList();
+        //    var results = factspool.FirstOrDefault();
+        //    for (int i = 1; i < factspool.Count; i++)
+        //    {
+        //        results=Utilities.Objects.IntersectSorted(results, factspool[i], null);
+        //    }
 
-            return results.ToList();
-        }
-        public List<int> SearchFactsGetIndex2(List<int> facts, int[] factkey,bool ensuredimensiondomains)
+        //    return results.ToList();
+        //}
+        //public List<int> SearchFactsGetIndex2(List<int> facts, int[] factkey,bool ensuredimensiondomains)
+        //{
+        //    var resultfacts = SearchFactsGetIndex2(factkey, ensuredimensiondomains);
+        //    resultfacts = Utilities.Objects.IntersectSorted(resultfacts, facts,null);
+        //    return resultfacts;
+        //}
+        //public List<int[]> SearchFacts2(List<int> facts, int[] factkey,bool ensuredimensiondomains)
+        //{
+        //    var resultfacts = SearchFactsGetIndex2(factkey, ensuredimensiondomains);
+        //    resultfacts = Utilities.Objects.IntersectSorted(resultfacts, facts, null);
+        //    return resultfacts.Select(i=>FactsIndex[i]).ToList();
+        //}
+        public List<int[]> SearchFacts3(IndexDictionary factsOfParts, int[] factkey)
         {
-            var resultfacts = SearchFactsGetIndex2(factkey, ensuredimensiondomains);
-            resultfacts = Utilities.Objects.IntersectSorted(resultfacts, facts,null);
-            return resultfacts;
-        }
-        public List<int[]> SearchFacts2(List<int> facts, int[] factkey,bool ensuredimensiondomains)
-        {
-            var resultfacts = SearchFactsGetIndex2(factkey, ensuredimensiondomains);
-            resultfacts = Utilities.Objects.IntersectSorted(resultfacts, facts, null);
-            return resultfacts.Select(i=>FactsIndex[i]).ToList();
-        }
-        public List<int[]> SearchFacts3(List<int> facts, int[] factkey)
-        {
-            var resultfacts = SearchFactsGetIndexX(factkey, facts);
+            var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts);
             return resultfacts.Select(i => FactsIndex[i]).ToList();
         }
-        public List<int> SearchFactsGetIndexX(int[] factkey, List<int> Facts)
+        public List<int> SearchFactsGetIndex3(int[] factkey, IndexDictionary factsOfParts)
         {
             var result = new List<int>();
             var domainkeys = factkey.Where(i => this.MembersOfDimensionDomains.ContainsKey(i)).ToList();
@@ -450,9 +443,9 @@ namespace LogicalModel
             var memberfactspool = new List<IEnumerable<int>>();
             foreach (var memberkey in memberkeys) 
             {
-                if (FactsOfParts.ContainsKey(memberkey))
+                if (factsOfParts.ContainsKey(memberkey))
                 {
-                    memberfactspool.Add(FactsOfParts[memberkey]);
+                    memberfactspool.Add(factsOfParts[memberkey]);
                 }
             }
             var partcount = memberfactspool.Count;
@@ -494,9 +487,9 @@ namespace LogicalModel
                     factpartpool.AddRange(i_domainkeys.Where(i => i != -1));
                     foreach (var factpart in factpartpool)
                     {
-                        if (FactsOfParts.ContainsKey(factpart))
+                        if (factsOfParts.ContainsKey(factpart))
                         {
-                            factspool.Add(FactsOfParts[factpart]);
+                            factspool.Add(factsOfParts[factpart]);
                         }
                     }
                     var pcount = partcount + factspool.Count;
@@ -531,51 +524,10 @@ namespace LogicalModel
             Task.WaitAll(actions.Select(i => Task.Factory.StartNew(i)).ToArray());
             return result;
         }
-        public List<int> SearchFactsGetIndex2(int[] factkey,bool ensuredimensiondomains, bool ensurefactnumber = true)
-        {
-            var result = new List<int>();
-            var factspool = new List<IEnumerable<int>>();
-            var domainpool = new List<List<int>>();
-            foreach (var keypart in factkey)
-            {
-                bool addtofactpool = true;
-                if (!ensuredimensiondomains && this.MembersOfDimensionDomains.ContainsKey(keypart))
-                {
-                    addtofactpool = false;
 
-                }
-                if (addtofactpool)
-                {
-                    if (FactsOfParts.ContainsKey(keypart))
-                    {
-                        factspool.Add(FactsOfParts[keypart]);
-                    }
-                    else 
-                    {
-                        return new List<int>();
-                    }
-                }
-               
-
-            }
-            factspool = factspool.OrderBy(i => i.Count()).ToList();
-            var results = factspool.FirstOrDefault();
-            for (int i = 1; i < factspool.Count; i++)
-            {
-                results = Utilities.Objects.IntersectSorted(result, factspool[i], null);
-            }
-            if (ensurefactnumber)
-            {
-                return results.Where(i => FactsIndex[i].Length == factspool.Count).ToList();
-            }
-            else
-            {
-                return results.ToList();
-            }
-        }
-        public List<int[]> SearchFacts2(int[] factkey,bool ensurefactnumber=false)
+        public bool ClearFacts() 
         {
-            return SearchFactsGetIndex2(factkey,true, ensurefactnumber).Select(i => FactsIndex[i]).ToList();
+            this.Facts.Clear();
         }
         public bool HasFact(IEnumerable<int> factkey)
         {
@@ -589,7 +541,7 @@ namespace LogicalModel
                 factkey = GetFactStringKeyFromStringKey(factkey);
             }
             var ids = GetFactIntKey(factkey).ToArray();
-            return this.Facts[ids];
+            return GetCellsOfFact(ids);
         }
         public List<string> GetCellsOfFact(int[] factintkey)
         {
@@ -598,8 +550,8 @@ namespace LogicalModel
         }
         public List<string> GetCellsOfFact(IEnumerable<int> factkey)
         {
-  
-            return this.Facts[factkey.ToArray()];
+
+            return GetCellsOfFact(factkey.ToArray());
         }
 
         public string GetFactIntStringKey(string key) 
@@ -835,48 +787,18 @@ namespace LogicalModel
             }
             Logger.WriteLine("Load Facts completed");
         }
-
-        private Dictionary<int[], List<string>> DeserialzieFacts(string json) 
-        {
-            //var elements = json.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Split(new string[] { "{", "}" }, StringSplitOptions.RemoveEmptyEntries);
-            var elements = json.Split(new string[] { "{\n","},\n","}\n" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var element in elements) 
-            {
-                var parts = element.Trim().Split(new string[] { "[\n", "],\n", "]\n" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 4) 
-                {
-                    var keys = parts[1].Split(new string[] { ",\n","\n" }, StringSplitOptions.RemoveEmptyEntries);
-                    var values = parts[3].Split(new string[] { ",\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                    var intkeys = new int[keys.Length];
-                    var cells = new List<string>();
-                    var ix=0;
-                    foreach (var key in keys) 
-                    {
-                        intkeys[ix] = int.Parse(key);
-                        ix++;
-                    }
-                    foreach (var val in values)
-                    {
-                        cells.Add(val.Trim('"'));
-                    }
-                    Facts.Add(intkeys, cells);
-                    //Facts.Add(intkeys, new List<Int64>());
-
-                }
-            }
-            return null;
-        }
         
         public void DeSerializeFacts()
         {
+            
             var pathformat = TaxonomyFactsPathFormat;
             var folder = Utilities.Strings.GetFolder(pathformat);
             var filename = Utilities.Strings.GetFileName(pathformat);
             var searchpattern = filename.Replace("{0}", "*");
             var files = System.IO.Directory.GetFiles(folder, searchpattern).ToList();
-            var sp_pipe = new string[] { " | " };
-            var sp_coma = new string[] { "," };
-            Facts.Clear();
+            var sp_pipe = new string[] { Literals.PipeSeparator };
+            var sp_coma = new string[] { Literals.Coma };
+            ClearFacts();
             Facts = new Dictionary<int[], List<string>>(50000 * files.Count, new Utilities.IntArrayEqualityComparer());
             //Facts = new Dictionary<int[], List<Int64>>(50000 * files.Count, new Utilities.IntArrayEqualityComparer());
             foreach (var file in files)
@@ -889,14 +811,9 @@ namespace LogicalModel
                 string[] values = null;
                 int[] intkeys = null;
                 List<string> cells = null;
-                //List<Int64> cells = null;
                 foreach (var item in items) 
                 {
                     parts = item.Split(sp_pipe, StringSplitOptions.None);
-                    //if (parts.Length < 2) 
-                    //{
-                    //    continue;
-                    //}
                     keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
                     intkeys = new int[keys.Length];
    
@@ -904,14 +821,10 @@ namespace LogicalModel
                     {
                         intkeys[i] = Utilities.Converters.FastParse(keys[i]);
                     }
-                    //foreach (var val in values)
-                    //{
-                    //    cells.Add(val);
-                    //}
+           
                     values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
 
                     cells = new List<string>(values);
-                    //cells = new List<Int64>();//values);
                     Facts.Add(intkeys, cells);
                 }
                 items = null;
@@ -968,36 +881,6 @@ namespace LogicalModel
             Utilities.FS.WriteAllText(dictionarypath, sb_dict.ToString());
 
             Logger.WriteLine("Dictionary was created at " + dictionarypath);
-        }
-
-        private Dictionary<int[], List<string>> DeserialzieFactsX(string json)
-        {
-            //var elements = json.Replace("\r\n", "").Replace("\r", "").Replace("\n", "").Split(new string[] { "{", "}" }, StringSplitOptions.RemoveEmptyEntries);
-            var elementskeys = Utilities.Strings.TextsBetween(json, "\"Key\": [", "]");
-            var elementsvals= Utilities.Strings.TextsBetween(json, "\"Value\": [", "]");
-
-            for (int i = 0; i < elementskeys.Count;i++ )
-            {
-
-                var keys = elementskeys[i].Split(new string[] { ",\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                var values = elementsvals[i].Split(new string[] { ",\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                    var intkeys = new int[keys.Length];
-                    var cells = new List<string>();
-                    var ix = 0;
-                    foreach (var key in keys)
-                    {
-                        intkeys[ix] = int.Parse(key);
-                        ix++;
-                    }
-                    foreach (var val in values)
-                    {
-                        cells.Add(val.Trim('"'));
-                    }
-                    Facts.Add(intkeys, cells);
-                    //Facts.Add(intkeys, new List<Int64>());
-
-            }
-            return null;
         }
 
         private void LoadCells()
@@ -1465,7 +1348,7 @@ namespace LogicalModel
         public List<String> GetAllDimensions() 
         {
             var dimensions = new Dictionary<string,string>();
-            var factkeys = this.Facts.Select(i=>i.Key).ToList();
+            var factkeys = this.GetFactsAsQuearyable().Select(i=>i.Key).ToList();
             foreach (var factkey in factkeys) 
             {
                 var fact = new FactBase();

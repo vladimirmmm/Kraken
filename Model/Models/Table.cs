@@ -123,6 +123,7 @@ namespace LogicalModel
         private Hierarchy<LayoutItem> columnsnode = null;
         private Hierarchy<LayoutItem> extensionnode = null;
 
+        protected IndexDictionary FactsOfParts = new IndexDictionary();
         //private List<String> _FactList = new List<string>();
         //public List<String> FactList 
         //{
@@ -409,14 +410,16 @@ namespace LogicalModel
                     }
 
                     var newkey = intkeys;
+                    var newkeyarray = newkey.ToArray();
                     if (!this.Taxonomy.HasFact(newkey)) 
                     {
 
                         this.Taxonomy.AddFactKey(newkey);
+                        this.AddFactKey(newkeyarray);
                
                     }
-                    FactList.Add(newkey.ToArray());
-                    FactindexList.Add(Taxonomy.FactKeyIndex[newkey.ToArray()]);
+                    FactList.Add(newkeyarray);
+                    FactindexList.Add(Taxonomy.FactKeyIndex[newkeyarray]);
 
                     //sb_fact.AppendLine();
                 }
@@ -431,7 +434,19 @@ namespace LogicalModel
             sb_fact.Clear();
 
         }
-       
+
+        public void AddFactKey(int[] key) 
+        {
+            foreach (var part in key)
+            {
+                var factix = this.Taxonomy.FactKeyIndex[key];
+                this.FactsOfParts.Add(part, factix);
+
+                var dimensiondomainpart = this.Taxonomy.GetDimensionDomainPart(part);
+                this.FactsOfParts.Add(dimensiondomainpart, factix);
+
+            }
+        }
         private void SetExtensions()
         {
             if (this.ID.Contains("09.03")) 
@@ -728,7 +743,8 @@ namespace LogicalModel
                                 //this.Taxonomy.HasFact
                                 sbe.AppendLine(xcell.FactKey);
 
-                                if (this.Taxonomy.Facts.ContainsKey(factintkey))
+                                //if (this.Taxonomy.Facts.ContainsKey(factintkey))
+                                if (this.Taxonomy.HasFact(factintkey))
                                 {
                                     //var item = this.Taxonomy.GetCellsOfFact(factkey);
                                     var item = this.Taxonomy.GetCellsOfFact(factintkey);
@@ -743,7 +759,7 @@ namespace LogicalModel
                                         List<int[]> results = new List<int[]>();
                                         //results = this.Taxonomy.SearchFacts2(FactindexList, factintkey, true);
                                         //var results2 = this.Taxonomy.SearchFacts2(FactindexList, factintkey, false);
-                                        results = this.Taxonomy.SearchFacts3(FactindexList, factintkey);
+                                        results = this.Taxonomy.SearchFacts3(this.FactsOfParts, factintkey);
                                         //results.AddRange(results2);
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var result in results)
@@ -791,7 +807,7 @@ namespace LogicalModel
             var firstunmappefact = "";
             foreach (var fact in FactList) 
             {
-                if (this.Taxonomy.Facts[fact].Count == 0) 
+                if (this.Taxonomy.GetCellsOfFact(fact).Count == 0) 
                 {
 
                     var identifier = String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.ID);
@@ -822,6 +838,7 @@ namespace LogicalModel
                 sbe.AppendLine(firstunmappefact);
 
             }
+            FactsOfParts.Clear();
             FactList.Clear();
             FactindexList.Clear();
             Utilities.Logger.WriteLine(fsb.ToString());

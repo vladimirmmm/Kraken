@@ -11,6 +11,10 @@ namespace Utilities
         public TKey Key { get; set; }
         public TValue Value { get; set; }
 
+        public KeyValue() 
+        { 
+
+        }
         public KeyValue(TKey key)
         {
             this.Key = Key;

@@ -321,7 +321,7 @@ namespace Engine.Services
                                     var factstring = request.GetParameter("factstring").ToLower();
                                     var cellid = request.GetParameter("cellid").ToLower();
                                     var rs = new DataResult<KeyValue>();
-                                    var query = Engine.CurrentTaxonomy.Facts.AsQueryable();
+                                    var query = Engine.CurrentTaxonomy.GetFactsAsQuearyable();
 
                                     var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO

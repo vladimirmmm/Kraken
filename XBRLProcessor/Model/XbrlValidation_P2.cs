@@ -52,7 +52,7 @@ namespace XBRLProcessor.Model
                     else
                     {
 
-                        var s_facts = Taxonomy.Facts.Keys.AsEnumerable();
+                        var s_facts = Taxonomy.GetFactsAsQuearyable().Select(i=>i.Key).AsEnumerable();
                         if (fact.Concept != null)
                         {
                             //s_facts = s_facts.Where(i => i.StartsWith(fact.Concept.Content));

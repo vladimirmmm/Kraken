@@ -137,11 +137,11 @@ namespace XBRLProcessor.Models
             Utilities.Logger.WriteLine("Load LoadFactDictionary");
             FactsOfConcepts.Clear();
             FactsOfDimensions.Clear();
-            FactsIndex = new Dictionary<int, int[]>(this.Facts.Count);
+            FactsIndex = new Dictionary<int, int[]>();
             FactKeyIndex = new Dictionary<int[], int>(10,new IntArrayEqualityComparer());
             var ix=-1;
             var unmappedfacts = 0;
-            foreach (var fact in this.Facts)
+            foreach (var fact in this.GetFactsAsQuearyable())
             {
                 EnsureFactIndex(fact.Key);
                 LoadFactToFactsOfParts(fact.Key);
@@ -174,10 +174,10 @@ namespace XBRLProcessor.Models
                 }
              
             }
-            foreach (var key in FactsOfParts)
-            {
-                //key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
-            }
+            //foreach (var key in FactsOfParts)
+            //{
+            //    //key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
+            //}
             Utilities.Logger.WriteLine(String.Format("Unmapped facts: {0}", unmappedfacts));
             foreach (var key in FactsOfDimensions.Keys)
             {

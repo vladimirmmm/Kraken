@@ -11,7 +11,30 @@ using Utilities;
 
 namespace LogicalModel.Base
 {
- 
+    public class IndexDictionary : Dictionary<int, HashSet<int>> 
+    {
+        public void Add(int key, int value) 
+        {
+            if (!this.ContainsKey(key)) 
+            {
+                this.Add(key, new HashSet<int>());
+            }
+            this[key].Add(value);
+        }
+    }
+
+    public class FactDictionary : Dictionary<int[], List<string>>
+    {
+        public void AddKvp(KeyValuePair<int[], List<string>> kvp)
+        {
+            if (!this.ContainsKey(kvp.Key))
+            {
+                this.Add(kvp.Key, kvp.Value);
+            }
+        }
+
+    }
+
     public class QualifiedItem : QualifiedName, ILabeled 
     {
         private Label _Label = null;
