@@ -389,6 +389,11 @@ namespace LogicalModel
         {
             return this.Facts.AsQueryable();
         }
+
+        public IEnumerable<KeyValuePair<int[], List<string>>> FactsAsEnumerable()
+        {
+            return this.Facts.AsEnumerable();
+        }
   
         public bool HasFact(string factkey) 
         {
@@ -525,7 +530,7 @@ namespace LogicalModel
             return result;
         }
 
-        public bool ClearFacts() 
+        public void ClearFacts() 
         {
             this.Facts.Clear();
         }
@@ -840,7 +845,7 @@ namespace LogicalModel
                 Utilities.FS.WriteAllText(string.Format(TaxonomyFactsPathFormat, p), i.ToString());
                 sb.Clear();
             };
-            foreach (var x in this.Facts) 
+            foreach (var x in this.FactsAsEnumerable()) 
             {
                 foreach(var id in x.Key)
                 {
@@ -865,7 +870,7 @@ namespace LogicalModel
             var dictionarypath = TaxonomyFactDictionaryPath;
             Utilities.FS.WriteAllText(dictionarypath, "");
             var sb_dict = new StringBuilder();
-            foreach (var x in this.Facts)
+            foreach (var x in this.FactsAsEnumerable())
             {
                 var fs = GetFactStringKeyFromIntKey(x.Key);
                 var item = String.Format("{0} [{1}]\n", fs, "@cells");
