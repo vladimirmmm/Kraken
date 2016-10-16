@@ -11,29 +11,199 @@ using Utilities;
 
 namespace LogicalModel.Base
 {
-    public class IndexDictionary : Dictionary<int, HashSet<int>> 
+    public class IndexDictionaryCollection : Dictionary<int, IndexDictionary2>
     {
+        public Func<int, int> DomainIndexAccessor = (i) => -1;
+
+        public HashSet<int> GetFacts(int key)
+        {
+            if (!this.ContainsKey(key))
+            {
+                var domainkey = DomainIndexAccessor(key);
+                if (this.ContainsKey(domainkey))
+                {
+                    IndexDictionary2 item = base[domainkey];
+                    return item.ContainsKey(key) ? item[key] : new HashSet<int>();
+
+                }
+                return new HashSet<int>();
+            }
+            else
+            {
+                var itemx = new HashSet<int>();
+                foreach (var id in base[key])
+                {
+                    itemx.UnionWith(id.Value);
+                }
+                return itemx;
+            }
+
+
+        }
+    }
+    public class IndexDictionary2 : Dictionary<int, HashSet<int>> 
+    {
+        int maxitemnr = 0;
+
+        public IndexDictionary2() { }
+        public IndexDictionary2(int maxnr) 
+        {
+            this.maxitemnr = maxnr;
+        }
+        List<int> loaded = new List<int>();
+        public Func<int, string> AccessHashset = (i) => "";
+        public Action<int,string> SaveHashSet = (k,s) => { };
         public void Add(int key, int value) 
         {
             if (!this.ContainsKey(key)) 
             {
                 this.Add(key, new HashSet<int>());
+                LoadKey(key);
             }
             this[key].Add(value);
         }
-    }
-
-    public class FactDictionary : Dictionary<int[], List<string>>
-    {
-        public void AddKvp(KeyValuePair<int[], List<string>> kvp)
+        public void LoadKey(int key)
         {
-            if (!this.ContainsKey(kvp.Key))
+            loaded.Add(key);
+            if (loaded.Count > maxitemnr && maxitemnr!=0)
             {
-                this.Add(kvp.Key, kvp.Value);
+                Unload(loaded.FirstOrDefault());
+            }
+        }
+        public new HashSet<int> this[int key]
+        {
+            get
+            {
+                if (base[key] == null) 
+                {
+                    Console.WriteLine("IndexDictionary Loading " + key);
+
+                    var str = AccessHashset(key);
+                    var items = str.Split(new string[] { Literals.NewLine  },StringSplitOptions.RemoveEmptyEntries);
+                    var h = new HashSet<int>();
+                    foreach (var item in items) 
+                    {
+                        h.Add(Utilities.Converters.FastParse(item));
+                    }
+                    base[key] = h;
+                    LoadKey(key);
+                  
+                }
+                return base[key];
+            }
+            set 
+            {
+                base[key] = value;
             }
         }
 
+        public void Unload(int key) 
+        {
+            Console.WriteLine("IndexDictionary Unloading " + key);
+            var sb = new StringBuilder();
+            foreach (int item in this[key]) 
+            {
+                sb.AppendLine(item.ToString());
+            }
+            SaveHashSet(key, sb.ToString());
+            loaded.Remove(key);
+            this[key] = null;
+
+        }
+
     }
+
+    public class FactDictionary : Dictionary<int[], List<int>>
+    {
+        public FactDictionary(IEqualityComparer<int[]> comparer)
+            : base(comparer)
+        {
+
+        }
+        public void AddKvp(KeyValuePair<int[], List<int>> kvp)
+        {
+            if (!this.ContainsKey(kvp.Key))
+            {
+                AddItem(kvp.Key, kvp.Value);
+            }
+        }
+        public void AddItem(int[] key, List<int> value)
+        {
+            if (!this.ContainsKey(key))
+            {
+                this.Add(key, value);
+            }
+        }
+
+
+        public void LoadValues(Func<int[],List<int>> loader)
+        {
+            foreach(var key in this.Keys)
+            {
+                this[key]=loader(key);
+            }
+
+        }
+
+        public void Unload() 
+        {
+            foreach (var key in this.Keys)
+            {
+                this[key] = null;
+            }
+            IsLoaded = false;
+        }
+
+        private bool _IsLoaded = false;
+        public bool IsLoaded { get; set; }
+    }
+
+    public class FactDictionary2 : Dictionary<int, List<int>>
+    {
+        public FactDictionary2()
+            : base()
+        {
+
+        }
+        public void AddKvp(KeyValuePair<int, List<int>> kvp)
+        {
+            if (!this.ContainsKey(kvp.Key))
+            {
+                AddItem(kvp.Key, kvp.Value);
+            }
+        }
+        public void AddItem(int key, List<int> value)
+        {
+            if (!this.ContainsKey(key))
+            {
+                this.Add(key, value);
+            }
+        }
+
+
+        public void LoadValues(Func<int, List<int>> loader)
+        {
+            foreach (var key in this.Keys)
+            {
+                this[key] = loader(key);
+            }
+
+        }
+
+        public void Unload()
+        {
+            foreach (var key in this.Keys)
+            {
+                this[key] = null;
+            }
+            IsLoaded = false;
+        }
+
+        private bool _IsLoaded = false;
+        public bool IsLoaded { get; set; }
+    }
+
+
 
     public class QualifiedItem : QualifiedName, ILabeled 
     {
@@ -265,7 +435,7 @@ namespace LogicalModel.Base
                 }
                 else 
                 {
-                    var intkey = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.FactsIndex[queryable[i].Value];
+                    var intkey = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.FactsManager.GetFactKey(queryable[i].Value);
                     var x = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.GetFactStringKey(intkey);
                     sb.AppendLine(x);
                 }

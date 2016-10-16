@@ -157,6 +157,10 @@ namespace XBRLProcessor
                 //LogicalModel.Settings.Current.ReloadFullTaxonomy = true;
                 //LogicalModel.Settings.Current.ReDownloadFiles= true;
                 ////End test
+                CurrentTaxonomy.FactsManager.maxdictnr = 1000;
+                CurrentTaxonomy.FactsManager.SaveToFile = true;
+                CurrentTaxonomy.FactsManager.DataFolder = CurrentTaxonomy.TaxonomyFactsFolder;
+                CurrentTaxonomy.FactsManager.ManageLoadedFacts = CurrentTaxonomy.ManageLoadedFacts;
                 CurrentTaxonomy.LoadAllReferences();
 
                 CheckMapping();
@@ -172,13 +176,14 @@ namespace XBRLProcessor
                 CurrentTaxonomy.LoadDimensions();
                 CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadTables();
+                CurrentXbrlTaxonomy.ClearXmlObjects();
                 CurrentTaxonomy.LoadFacts();
                 //CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
                 CurrentTaxonomy.LoadValidationFunctions();
 
+
                 CurrentXbrlTaxonomy.ClearXmlObjects();
-            
                 
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;

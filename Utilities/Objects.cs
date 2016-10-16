@@ -226,9 +226,9 @@ namespace Utilities
             return dict.Keys.Where(i => i.Contains(key)).ToList();
         }
 
-        public static List<int> IntersectSorted(IEnumerable<int> sequence1, HashSet<int> sequence2, Comparer<int> comparer)
+        public static List<T> IntersectSorted<T>(IEnumerable<T> sequence1, HashSet<T> sequence2, IComparer<T> comparer)
         {
-            var results = new List<int>();//sequence1.Count());
+            var results = new List<T>();//sequence1.Count());
             foreach (var item in sequence1)
             {
                 if (sequence2.Contains(item))
@@ -243,6 +243,17 @@ namespace Utilities
         public static List<T> IntersectSorted<T>( List<T> sequence1, List<T> sequence2, IComparer<T> comparer)
         {
             return IntersectSorted(sequence1.AsEnumerable(), sequence2.AsEnumerable(), comparer).ToList();
+        }
+        public static List<T> IntersectSorted<T>(IEnumerable<T> sequence1, List<HashSet<T>> sequence2, IComparer<T> comparer)
+        {
+            var results = new List<T>();//sequence1.Count());
+
+            foreach (HashSet<T> item in sequence2)
+            {
+
+                results.AddRange( IntersectSorted(sequence1, item,comparer));
+            }
+            return results;
         }
         public static IEnumerable<T> IntersectSorted<T>( IEnumerable<T> sequence1, IEnumerable<T> sequence2, IComparer<T> comparer)
         {

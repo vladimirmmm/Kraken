@@ -321,7 +321,7 @@ namespace Engine.Services
                                     var factstring = request.GetParameter("factstring").ToLower();
                                     var cellid = request.GetParameter("cellid").ToLower();
                                     var rs = new DataResult<KeyValue>();
-                                    var query = Engine.CurrentTaxonomy.GetFactsAsQuearyable();
+                                    var query = Engine.CurrentTaxonomy.FactsAsQuearyable();
 
                                     var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO
@@ -330,7 +330,7 @@ namespace Engine.Services
                                     foreach (var fs in factstrings)
                                     {
                                         var fsidlist = new List<int>();
-                                        var dimparts = taxonomy.FactsOfDimensions.Where(i => i.Key.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>-1);
+                                        var dimparts = new List<Utilities.KeyValue<int,List<int>>>(); //TODO taxonomy.FactsOfParts.Where(i => taxonomy.GetFactStringKey(i).Key.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>-1);
                                         foreach (var dimpart in dimparts) 
                                         {
                                             fsidlist.AddRange(dimpart.Value);
@@ -352,7 +352,7 @@ namespace Engine.Services
                                     }
                                     if (factstrings.Length > 0)
                                     {
-                                        var keys = idlist.Select(i => taxonomy.FactsIndex[i]).ToDictionary(k => k, v => true);
+                                        var keys = idlist.Select(i => taxonomy.FactsManager.GetFactKey(i)).ToDictionary(k => k, v => true);
                                         var comparer = new Utilities.IntArrayEqualityComparer();
                                         query = query.Where(i => keys.ContainsKey(i.Key));
                                     }

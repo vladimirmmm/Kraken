@@ -526,7 +526,7 @@ namespace Engine
                     instancefactkeys.Add(keys);
 
                 }
-                var taxkeylist = taxonomy.GetFactsAsQuearyable().Select(i=>i.Key).ToList(); //.Select(i=>Utilities.Strings.ArrayToString(i,",")+",").ToList();
+                var taxkeylist = taxonomy.FactKeysAsEnumerable().ToList(); //.Select(i=>Utilities.Strings.ArrayToString(i,",")+",").ToList();
                 var missingfacts = taxkeylist.Except(instancefactkeys,new Utilities.IntArrayEqualityComparer()).ToList();
                 var instancefilename = Utilities.Strings.GetFileName(TaxonomyEngine.CurrentEngine.CurrentInstance.FullPath);
                 var csvpath = TaxonomyEngine.LocalFolder +"FeatureOutput\\"+ String.Format("MissingInstanceFactsFor-{0}.csv",instancefilename);

@@ -24,9 +24,11 @@ namespace LogicalModel.Validation
         public override List<ValidationRuleResult> GetAllResults(Taxonomy taxonomy)
         {
             var results = new List<ValidationRuleResult>();
-            if (taxonomy.FactsOfConcepts.ContainsKey(Concept))
+            var ix = taxonomy.FactParts[Concept];
+            //FP if (taxonomy.FactsOfConcepts.ContainsKey(Concept))
+            if (taxonomy.FactsOfParts.ContainsKey(ix))
             {
-                var facts = taxonomy.FactsOfConcepts[Concept];
+                var facts = taxonomy.FactsOfParts[ix];
             }
             return results;
         }
@@ -39,9 +41,10 @@ namespace LogicalModel.Validation
         public override List<ValidationRuleResult> GetAllResults(Taxonomy taxonomy)
         {
             var results = new List<ValidationRuleResult>();
-            if (taxonomy.FactsOfDimensions.ContainsKey(TypedDimension)) 
+            var ix = taxonomy.FactParts[TypedDimension];
+            if (taxonomy.FactsOfParts.ContainsKey(ix)) 
             {
-                var facts = taxonomy.FactsOfDimensions[TypedDimension];
+                var facts = taxonomy.FactsOfParts[ix];
             }
             return results;
         }
@@ -246,7 +249,7 @@ namespace LogicalModel.Validation
                         {
                             var cellist = new List<string>();
                             sp.Cells.Add(cellist);
-                            var taxfactkey = Taxonomy.FactsIndex[tax_fact];
+                            var taxfactkey = Taxonomy.FactsManager.GetFactKey(tax_fact);
                             if (Taxonomy.HasFact(taxfactkey))
                             {
 
@@ -271,7 +274,7 @@ namespace LogicalModel.Validation
                                 //var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[facts.FirstOrDefault()]);
                                 //itemfacts.Add(fact);
                                 var fact = facts.FirstOrDefault();
-                                var factkey = Taxonomy.FactsIndex[fact];
+                                var factkey = Taxonomy.FactsManager.GetFactKey(fact);
                                 itemfactids.Add(fact);
                                 //set the cells
                                 var cells = new List<String>();
@@ -398,7 +401,7 @@ namespace LogicalModel.Validation
                     waschecked = true;
                     //facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
                     facts = result.Parameters.SelectMany(i => i.FactIDs).Select(i => FactBase.GetFactFrom(
-                        Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[Utilities.Converters.FastParse(i.Substring(2))]
+                        Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(Utilities.Converters.FastParse(i.Substring(2)))
                          ))).ToList();
                     hastyped = facts.Any(i => i.Dimensions.Any(j => j.IsTyped));
                 }
@@ -406,7 +409,7 @@ namespace LogicalModel.Validation
                 {
                     //facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
                     facts = result.Parameters.SelectMany(i => i.FactIDs).Select(i => FactBase.GetFactFrom(
-                          Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[Utilities.Converters.FastParse(i.Substring(2))]
+                          Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(Utilities.Converters.FastParse(i.Substring(2)))
                            ))).ToList();
                     var resultfactgroup = result.FactGroup;
 
@@ -452,7 +455,7 @@ namespace LogicalModel.Validation
                                 {
 
                                     var factid = Utilities.Converters.FastParse(p.FactIDs[f_ix].Substring(2));
-                                    var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[factid]);
+                                    var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(factid));
                                     //var fact = p.Facts[f_ix];
                                     var newfactstring = fact.ToString();
                                     foreach (var key in typestoreplace.Keys)

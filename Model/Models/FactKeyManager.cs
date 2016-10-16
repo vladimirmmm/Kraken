@@ -7,16 +7,132 @@ using System.Threading.Tasks;
 
 namespace LogicalModel.Models
 {
+    public class FactPage2
+    {
+        public string Key = "";
+        public bool IsDirty = false;
+        //public FactDictionary Facts = new FactDictionary(new Utilities.IntArrayEqualityComparer());
+        public FactDictionary2 Facts = new FactDictionary2();
+        public FactPage2()
+        {
+
+        }
+        public FactPage2(string key)
+        {
+            this.Key = key;
+        }
+
+    }
+
+    public class FactPage 
+    {
+        public string Key = "";
+        public bool IsDirty = false;
+        //public FactDictionary Facts = new FactDictionary(new Utilities.IntArrayEqualityComparer());
+        public FactDictionary Facts = new FactDictionary(new Utilities.IntArrayEqualityComparer());
+        public FactPage() 
+        {
+
+        }
+        public FactPage(string key)
+        {
+            this.Key = key;
+        }
+      
+    }
+    public class FactKeyManager2
+    {
+        public int maxdictnr = 10;
+        public bool SaveToFile = true;
+        public string DataFolder = "";
+        public FactDictionary2 LastPage = null;
+        public string LastPageKey = "";
+        public FactDictionaryCollection FactsOfPages = new FactDictionaryCollection();
+        public List<Utilities.KeyValue<string, FactPage2>> LoadedFactsOfPages = new List<Utilities.KeyValue<string, FactPage2>>();
+        public HashSet<string> ExistingFiles = new HashSet<string>();
+        public Action<FactDictionary2> ManageLoadedFacts = (f) => { };
+        public Func<int[], int> GetFactIndex = (key) => -1;
+        public Func<int> GetNewFactIndex = () => -1;
+        public Func<int, int[]> GetFactKey = (index) => new int[] { -1 };
+        public string GetPagePath(string pagekey)
+        {
+            return DataFolder + pagekey + ".dat";
+        }
+
+        public FactKeyManager2() 
+        {
+            GetFactIndex = FactsOfPages.Index;
+            GetFactKey = FactsOfPages.Key;
+        }
+
+        public bool FactKeyExists(int[] factkey)
+        {
+            return FactsOfPages.ContainsKey(factkey);
+        }
+        public Utilities.KeyValue<int, List<int>> GetFact(int[] factkey)
+        {
+            return FactsOfPages.GetKvp(factkey);
+        }
+        public void EnsureFact(int[] factkey)
+        {
+            FactsOfPages.Save(factkey);
+        }
+
+
+
+        public void Load()
+        {
+            FactsOfPages.Clear();
+            FactsOfPages.LoadPages();
+        }
+
+        public void SaveAll()
+        {
+             FactsOfPages.SavePages();
+        }
+        public IEnumerable<int> IndexesAsEnumerable()
+        {
+            return FactsOfPages.FactIndexes;
+        }
+        public IEnumerable<int[]> KeysAsEnumerable()
+        {
+            return FactsOfPages.FactKeysAsEnumerable;
+        }
+        public IEnumerable<Utilities.KeyValue<int[],List<int>>> FactsAsEnumerable()
+        {
+            return FactsOfPages.FactsAsEnumerable;
+        }
+
+
+
+
+        public void Clear()
+        {
+            this.ExistingFiles.Clear();
+            this.FactsOfPages.Clear();
+            this.LoadedFactsOfPages.Clear();
+        }
+
+        public int Count 
+        {
+            get { return FactsOfPages.Count; }
+        }
+
+    }
+
+
     public class FactKeyManager
     {
         public int maxdictnr = 10;
+        public bool SaveToFile = true;
         public string DataFolder = "";
         public FactDictionary LastPage = null;
         public string LastPageKey="";
-        //public Dictionary<string, List<int[]>> FactsOfPages = new Dictionary<string, List<int[]>>();
-        public Dictionary<string, FactDictionary> FactsOfPages = new Dictionary<string, FactDictionary>();
-        public Dictionary<string, FactDictionary> LoadedFactsOfPages = new Dictionary<string, FactDictionary>();
-        
+        public Dictionary<string, FactPage> FactsOfPages = new Dictionary<string, FactPage>();
+        public List<Utilities.KeyValue<string, FactPage>> LoadedFactsOfPages = new List<Utilities.KeyValue<string, FactPage>>();
+        public HashSet<string> ExistingFiles = new HashSet<string>();
+        public Action<FactDictionary> ManageLoadedFacts = (f) => { };
+
         public string GetPagePath(string pagekey) 
         {
             return DataFolder + pagekey+".dat";
@@ -30,12 +146,12 @@ namespace LogicalModel.Models
                 return false;
             }
             var page = GetPage(pagekey);
-            return page.ContainsKey(factkey);
+            return page.Facts.ContainsKey(factkey);
         }
-        public Utilities.KeyValue<int[], List<string>> GetFact(int[] factkey) 
+        public Utilities.KeyValue<int[], List<int>> GetFact(int[] factkey) 
         {
             var pagekey = GetPageKey(factkey);
-            var result = new Utilities.KeyValue<int[], List<string>>();
+            var result = new Utilities.KeyValue<int[], List<int>>();
             if (!PageExists(pagekey))
             {
                 //return new KeyValuePair<int[], List<string>>();
@@ -43,10 +159,10 @@ namespace LogicalModel.Models
             else 
             {
                 var page = GetPage(pagekey);
-                if (page.ContainsKey(factkey)) 
+                if (page.Facts.ContainsKey(factkey)) 
                 {
                     result.Key = factkey;
-                    result.Value = page[factkey];
+                    result.Value = page.Facts[factkey];
                 }
             }
             return result;
@@ -56,28 +172,34 @@ namespace LogicalModel.Models
             var pagekey = GetPageKey(factkey);
             if (!FactKeyExists(factkey)) 
             {
-                var dict = GetPage(pagekey);
-                dict.Add(factkey, new List<string>());
+                var page = GetPage(pagekey);
+                page.Facts.AddItem(factkey, new List<int>());
             }
         }
 
         public string GetPageKey(int[] factkey) 
         {
-            var ix = factkey.Length / 2 + 1;
-            var pb = new StringBuilder();
-            for (int i = 0; i < ix; i++) 
-            {
-                pb.Append(factkey[i]);
-                pb.Append("-");
-            }
-            return pb.ToString();
+            //var limit = 1;
+            //var ix = factkey.Length > limit ? limit : factkey.Length;
+            //var pb = new StringBuilder();
+            //for (int i = 0; i < ix; i++) 
+            //{
+            //    pb.Append(factkey[i]);
+            //    pb.Append("-");
+            //}
+            return factkey[0].ToString();
         }
 
         public bool PageExists(string pagekey)
         {
-
-            if (Utilities.FS.FileExists(GetPagePath(pagekey)))
+            var path = GetPagePath(pagekey);
+            if (ExistingFiles.Contains(path)) { return true; }
+            if (Utilities.FS.FileExists(path))
             {
+                if (!ExistingFiles.Contains(path))
+                {
+                    ExistingFiles.Add(path);
+                }
                 return true;
             }
             return false;
@@ -85,14 +207,14 @@ namespace LogicalModel.Models
 
    
 
-        public FactDictionary GetPage(string pagekey) 
+        public FactPage GetPage(string pagekey) 
         {
             if (!FactsOfPages.ContainsKey(pagekey)) 
             {
                 FactsOfPages.Add(pagekey, null);
             }
-            var dict = FactsOfPages[pagekey];
-            if (dict == null) 
+            var page = FactsOfPages[pagekey];
+            if (page == null) 
             {
                 if (!PageExists(pagekey)) 
                 {
@@ -102,41 +224,52 @@ namespace LogicalModel.Models
             }
             return FactsOfPages[pagekey];
         }
+        
         public void CreatePage(string pagekey)
         {
-            Utilities.FS.WriteAllText(GetPagePath(pagekey), "");
+            var path = GetPagePath(pagekey);
+            Utilities.FS.WriteAllText(path, "");
+            if (!ExistingFiles.Contains(path)) 
+            {
+                ExistingFiles.Add(path);
+            }
         }
 
         public void SavePage(string pagekey) 
         {
-            var dict = GetPage(pagekey);
+            var page = GetPage(pagekey);
             var sb = new StringBuilder();
-            foreach (var item in dict) 
+            foreach (var item in page.Facts) 
             {
                 sb.AppendLine(GetFactDictionaryItemString(item));
             }
-            Utilities.FS.WriteAllText(GetPagePath(pagekey), sb.ToString());
+            if (SaveToFile)
+            {
+                Utilities.FS.WriteAllText(GetPagePath(pagekey), sb.ToString());
+            }
             sb.Clear();
         }
-        public FactDictionary LoadPage(string pagekey)
+        
+        public FactPage LoadPage(string pagekey)
         {
             Console.WriteLine("Loading " + pagekey);
 
-            var page = Utilities.FS.ReadAllText(GetPagePath(pagekey));
-            var dict = new FactDictionary();
-            var factitems = page.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var pagecontent = Utilities.FS.ReadAllText(GetPagePath(pagekey));
+            var page = new FactPage(pagekey);
+            var factitems = pagecontent.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var factitem in factitems)
             {
                 var kvp = GetFactDictionaryItem(factitem);
-                dict.AddKvp(kvp);
+                page.Facts.AddKvp(kvp);
             }
+            ManageLoadedFacts(page.Facts);
             if (maxdictnr < LoadedFactsOfPages.Count - 1)
             {
                 var pagekeytounload = LoadedFactsOfPages.FirstOrDefault().Key;
                 UnloadPage(pagekeytounload);
             }
-            LoadedFactsOfPages.Add(pagekey, dict);
-            return dict;
+            LoadedFactsOfPages.Add(new Utilities.KeyValue<string,FactPage>( pagekey, page));
+            return page;
         }
 
         public void UnloadPage(string pagekey) 
@@ -144,70 +277,118 @@ namespace LogicalModel.Models
             Console.WriteLine("Unloading " + pagekey);
             var page = GetPage(pagekey);
             SavePage(pagekey);
-            LoadedFactsOfPages.Remove(pagekey);
+            LoadedFactsOfPages.Remove(LoadedFactsOfPages.FirstOrDefault(i=>i.Key==pagekey));
+            
             FactsOfPages[pagekey] = null;
 
+            //FactsOfPages[pagekey].Facts.Unload();
         }
-        public KeyValuePair<int[],List<string>> GetFactDictionaryItem(string factkeystring) 
+
+        public void Unload(int percent) 
+        {
+            var nr = (percent *  LoadedFactsOfPages.Count)/100 ;
+            for (int i = 0; i < nr; i++) 
+            {
+                UnloadPage(LoadedFactsOfPages.FirstOrDefault().Key);
+            }
+        }
+        public KeyValuePair<int[],List<int>> GetFactDictionaryItem(string factkeystring) 
         {
          
-            var sp_pipe = new string[] { Literals.PipeSeparator };
-            var sp_coma = new string[] { Literals.Coma };
-            var parts = factkeystring.Split(sp_pipe, StringSplitOptions.None);
-            var keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
-            var intkeys = new int[keys.Length];
-
-            for (int i = 0; i < keys.Length; i++)
+            var sp_pipe =  Literals.PipeSeparator[0];
+            var sp_coma = Literals.Coma[0];
+            //var parts = factkeystring.Split(sp_pipe, StringSplitOptions.None);
+            //var keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+            var s_ix = 0;
+            List<string> keyparts = new List<string>(20);
+            List<string> values = new List<string>(20);
+            List<string> container= keyparts;
+            var diff=0;
+            var val="";
+            for (int i = 0; i < factkeystring.Length; i++) 
             {
-                intkeys[i] = Utilities.Converters.FastParse(keys[i]);
+                if (factkeystring[i] == sp_coma) 
+                {
+                    diff= i - s_ix;
+                    val = factkeystring.Substring(s_ix, diff).Trim();
+                    if (!String.IsNullOrEmpty(val))
+                    {
+                        container.Add(val);
+                    }
+                    s_ix = i + 1;
+                }
+                if (factkeystring[i] == sp_pipe)
+                {
+                    container = values;
+                }
+            }
+            //var parts = Utilities.Strings.FactSplit(factkeystring, Literals.PipeSeparator[0], 4);
+
+
+            //var keyparts = Utilities.Strings.FactSplit(parts[0], Literals.Coma[0], 1);
+            var intkeys = new int[keyparts.Count];
+
+            for (int i = 0; i < keyparts.Count; i++)
+            {
+                intkeys[i] = Utilities.Converters.FastParse(keyparts[i]);
             }
 
-            var values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
-            var cells = new List<string>(values);
-            var kvp = new KeyValuePair<int[], List<string>>(intkeys,cells);
+            //var values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i));
+            //var values = Utilities.Strings.FactSplit(parts[1],Literals.Coma[0], 1).Select(i => Utilities.Converters.FastParse(i));
+            //var cells = new List<int>(values.Select(i => Utilities.Converters.FastParse(i)));
+            var cells = new List<int>(values.Count);
+            cells.AddRange(values.Select(i => Utilities.Converters.FastParse(i)));
+            var kvp = new KeyValuePair<int[], List<int>>(intkeys,cells);
             return kvp;
         }
-        public string GetFactDictionaryItemString(KeyValuePair<int[], List<string>> kvp) 
+        public string GetFactDictionaryItemString(KeyValuePair<int[], List<int>> kvp) 
         {
             var sb = new StringBuilder();
             foreach (var keypart in kvp.Key) 
             {
                 sb.Append(keypart);
-                sb.Append(",");
+                sb.Append(Literals.Coma);
             }
-            sb.Append(" | ");
+            sb.Append(Literals.PipeSeparator);
             foreach (var cell in kvp.Value) 
             {
                 sb.Append(cell);
-                sb.Append(",");
+                sb.Append(Literals.Coma);
             }
             return sb.ToString();
         }
 
         public void Load() 
         {
+            Clear();
             var files = System.IO.Directory.GetFiles(DataFolder, "*.dat");
             foreach (var file in files) 
             {
-                var fn = Utilities.Strings.GetFileName(file);
+                var fn = Utilities.Strings.GetFileNameWithoutExtension(file);
                 FactsOfPages.Add(fn, null);
+                if (!ExistingFiles.Contains(file))
+                {
+                    ExistingFiles.Add(file);
+                }
             }
         }
 
         public void SaveAll()
         {
-            foreach (var pagekey in LoadedFactsOfPages.Keys) 
+            foreach (var pagekey in LoadedFactsOfPages) 
             {
-                SavePage(pagekey);
+                SavePage(pagekey.Key);
             }
         }
 
-        public IEnumerable<KeyValuePair<int[],List<string>>> AsEnumerable()
+        public IEnumerable<KeyValuePair<int[],List<int>>> AsEnumerable()
         {
-            foreach (string pagekey in FactsOfPages.Keys)
+            var keylist = FactsOfPages.Keys.ToList();
+            foreach (string pagekey in keylist)
             {
                 var page = GetPage(pagekey);
-                foreach (var item in page) 
+                var items = page.Facts.ToList();
+                foreach (var item in items) 
                 {
                     yield return item;
                 }
@@ -215,8 +396,15 @@ namespace LogicalModel.Models
             }
         }
 
-        
 
+
+
+        internal void Clear()
+        {
+            this.ExistingFiles.Clear();
+            this.FactsOfPages.Clear();
+            this.LoadedFactsOfPages.Clear();
+        }
     }
 
     public class testx 
@@ -255,8 +443,8 @@ namespace LogicalModel.Models
                     m.EnsureFact(fact);
                 }
                 f = m.GetFact(fact);
-                f.Value.Add("retek " + ix.ToString());
-                f.Value.Add("repa " + ix.ToString());
+                f.Value.Add( ix);
+                f.Value.Add( ix);
                 ix++;
             }
             m.SaveAll();

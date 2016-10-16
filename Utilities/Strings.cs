@@ -109,6 +109,24 @@ namespace Utilities
             }
             return filename;
         }
+        public static string GetFileNameWithoutExtension(string FilePath)
+        {
+            var filename = "";
+            if (!String.IsNullOrEmpty(FilePath))
+            {
+                if (FilePath.Contains("\\"))
+                {
+                    filename = FilePath.Substring(FilePath.LastIndexOf("\\") + 1);
+                }
+                if (FilePath.Contains("/"))
+                {
+                    filename = FilePath.Substring(FilePath.LastIndexOf("/") + 1);
+                }
+                var dot_ix = filename.LastIndexOf(".");
+                filename = filename.Remove(dot_ix);
+            }
+            return filename;
+        }
         public static string GetRelativePath(string referencePath, string absolutePath)
         {
             var lowerref = referencePath.ToLower();

@@ -132,7 +132,7 @@ namespace XBRLProcessor.Model
 
             if (rulefactIds.Count == 0)
             {
-                rulefactIds = Taxonomy.FactsIndex.Keys.ToList();
+                rulefactIds = Taxonomy.FactIndexEnumerable().ToList();
             }
 
             var sb = new StringBuilder();
@@ -264,7 +264,7 @@ namespace XBRLProcessor.Model
                     else
                     {
                         var firstfactid = firsttaxfact.FirstOrDefault();
-                        var firstfactstring = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[firstfactid]);
+                        var firstfactstring = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(firstfactid));
                         var firstfact = LogicalModel.Base.FactBase.GetFactFrom(firstfactstring);
 
                         if (firstfact.Concept != null

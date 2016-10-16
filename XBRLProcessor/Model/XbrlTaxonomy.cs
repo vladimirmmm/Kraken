@@ -135,19 +135,19 @@ namespace XBRLProcessor.Models
         public override void LoadFactDictionary()
         {
             Utilities.Logger.WriteLine("Load LoadFactDictionary");
-            FactsOfConcepts.Clear();
-            FactsOfDimensions.Clear();
-            FactsIndex = new Dictionary<int, int[]>();
-            FactKeyIndex = new Dictionary<int[], int>(10,new IntArrayEqualityComparer());
+            //FactsOfConcepts.Clear();
+            //FactsOfDimensions.Clear();
             var ix=-1;
             var unmappedfacts = 0;
-            foreach (var fact in this.GetFactsAsQuearyable())
+            FactsManager.Load();
+            FactsManager.SaveToFile = false;
+            foreach (var fact in this.FactsAsQuearyable())
             {
-                EnsureFactIndex(fact.Key);
-                LoadFactToFactsOfParts(fact.Key);
+                //EnsureFactIndex(fact.Key);
+                //LoadFactToFactsOfParts(fact.Key);
                 ix++;
                 //EnsureFactIndex(fact.Key);
-               
+                /*
                 var parts = fact.Key;
                 var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -167,7 +167,7 @@ namespace XBRLProcessor.Models
                     }
                     keylist2.Add(ix);
                 }
-
+                */
                 if (fact.Value.Count == 0) 
                 {
                     unmappedfacts++;
@@ -179,10 +179,10 @@ namespace XBRLProcessor.Models
             //    //key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
             //}
             Utilities.Logger.WriteLine(String.Format("Unmapped facts: {0}", unmappedfacts));
-            foreach (var key in FactsOfDimensions.Keys)
-            {
-                FactsOfDimensions[key].TrimExcess();
-            }
+            //foreach (var key in FactsOfDimensions.Keys)
+            //{
+            //    FactsOfDimensions[key].TrimExcess();
+            //}
         }
 
         public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
@@ -560,7 +560,11 @@ namespace XBRLProcessor.Models
                     var dimdomembers = memebrsofdomain[dimdomkey];
                     var int_dimdomkey = FactParts[dimdomkey];
                     var int_dimdommemberlist = dimdomembers.Select(i => FactParts[i]).ToList();
-                    MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdommemberlist);
+                    foreach (var memberkey in int_dimdommemberlist) 
+                    {
+                        MembersOfDimensionDomains.Add(memberkey, int_dimdomkey);
+                    }
+                    //MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdommemberlist);
                 }
           
                 fd.CounterFactParts = CounterFactParts;
@@ -577,22 +581,30 @@ namespace XBRLProcessor.Models
                 this.FactParts = fd.FactParts;
                 this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains;
             }
-            this.MembersOfDimensionDomainsIndex = this.MembersOfDimensionDomains.Keys.ToArray();
             //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
             //foreach (var item in dimensiondomainparts) 
             //{
 
             //}
             Logger.WriteLine("Load Dimensions completed");
-
+            AnalyzeMembers();
         }
         class FactDictionaries
         {
             public Dictionary<string, int> FactParts { get; set; }
             public Dictionary<int, string> CounterFactParts { get; set; }
-            public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
+            //public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
+            public Dictionary<int, int> MembersOfDimensionDomains { get; set; }
+
 
         }
+
+        public string AnalyzeMembers() 
+        {
+            var sb = new StringBuilder();
+            return sb.ToString();
+        }
+
         public override void LoadHierarchy()
         {
             Logger.WriteLine("Load Hierarchies");
@@ -1144,7 +1156,7 @@ namespace XBRLProcessor.Models
                 Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));
                 //Utilities.FS.WriteAllText(logicaltable.LayoutPath, logicaltable.LayoutRoot.ToHierarchyString(i => i.ID+"<"+i.FactString+">"));
                
-                logicaltable.LoadDefinitions();
+                logicaltable.LoadDefinitions2();
                 logicaltable.LoadLayout();
                 //var s = Utilities.Converters.ToJson(logicaltable);
 
@@ -1295,7 +1307,7 @@ namespace XBRLProcessor.Models
             ClearXmlObjects();
 
             this.Module.Clear();
-            this.Facts.Clear();
+            this.ClearFacts();
             this.ValidationRules.Clear();
             this.Tables.Clear();
             this.TaxonomyDocumentDictionary.Clear();
@@ -1305,13 +1317,13 @@ namespace XBRLProcessor.Models
             this.TaxonomyLabels.Clear();
             this.TaxonomyLabelDictionary.Clear();
             this.ValidationFunctionContainer = null;
-            this.FactsOfConcepts.Clear();
-            this.FactsOfDimensions.Clear();
+            //this.FactsOfConcepts.Clear();
+            //this.FactsOfDimensions.Clear();
             //this.FactsOfDimensionsD.Clear();
-            this.FactsIndex.Clear();
-            this.FactsLengths.Clear();
+            this.FactsManager.Clear();
+        
             this.MembersOfDimensionDomains.Clear();
-            this.FactKeyIndex.Clear();
+     
             this.TaxonomyDocuments.Clear();
             this.Cells.Clear();
             this.Concepts.Clear();

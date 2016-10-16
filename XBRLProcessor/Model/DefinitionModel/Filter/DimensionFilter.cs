@@ -152,7 +152,10 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                             {
                                 var mfbq = new FactBaseQuery();
                                 var memberdictfilter = tag + memberitem;
-                                if (taxonomy.FactsOfDimensions.ContainsKey(memberdictfilter))
+
+                                //FP if (taxonomy.FactsOfDimensions.ContainsKey(memberdictfilter))
+                                var ix = taxonomy.FactParts[memberdictfilter];
+                                if (taxonomy.FactsOfParts.ContainsKey(ix))
                                 {
                                     mfbq.DictFilters = memberdictfilter + ", ";
                                     subqueries.Add(mfbq);

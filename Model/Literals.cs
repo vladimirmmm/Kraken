@@ -11,7 +11,8 @@ namespace LogicalModel
         public const string FilingIndicator = "filingindicator";
         public const string Tab = "   ";
         public const string DynamicCode = "*";
-        public const string PipeSeparator = " | ";
+        public const string PipeSeparator = "|";
         public const string Coma = ",";
+        public const string NewLine = "\r\n";
     }
 }

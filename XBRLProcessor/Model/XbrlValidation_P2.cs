@@ -28,7 +28,7 @@ namespace XBRLProcessor.Model
                 foreach (var factid in factgroup)
                 {
                     var cellslist = new List<List<String>>();
-                    var factkey = Taxonomy.FactsIndex[factid];
+                    var factkey = Taxonomy.FactsManager.GetFactKey(factid);
                     var fact = FactBase.GetFactFrom(Taxonomy.GetFactStringKey(factkey));
                     if (Taxonomy.HasFact(factkey))
                     {
@@ -52,13 +52,16 @@ namespace XBRLProcessor.Model
                     else
                     {
 
-                        var s_facts = Taxonomy.GetFactsAsQuearyable().Select(i=>i.Key).AsEnumerable();
+                        var s_facts = Taxonomy.FactKeysAsEnumerable().Select(i=>i).AsEnumerable();
                         if (fact.Concept != null)
                         {
                             //s_facts = s_facts.Where(i => i.StartsWith(fact.Concept.Content));
-                            if (Taxonomy.FactsOfDimensions.ContainsKey(fact.Concept.Content))
+                            //if (Taxonomy.FactsOfDimensions.ContainsKey(fact.Concept.Content))
+                            var ix = Taxonomy.FactParts[fact.Concept.Content];
+                            if (Taxonomy.FactsOfParts.ContainsKey(ix))
                             {
-                                s_facts = Taxonomy.FactsOfDimensions[fact.Concept.Content].Select(i=> Taxonomy.FactsIndex[i]);
+                                s_facts = Taxonomy.FactsOfParts[ix].Select(
+                                    i => Taxonomy.FactsManager.GetFactKey(i));
                             }
                             else
                             {
@@ -236,7 +239,7 @@ namespace XBRLProcessor.Model
             {
                 var key = Taxonomy.GetFactIntKey(fact).ToArray();
                 //Taxonomy.Facts[key]
-                factids.Add(Taxonomy.FactKeyIndex[key]);
+                factids.Add(Taxonomy.FactsManager.GetFactIndex(key));
             }
             return facts.ToList();
         }
@@ -260,30 +263,41 @@ namespace XBRLProcessor.Model
         
         public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
         {
-            List<int> ids = null;
+            IEnumerable<int> ids = null;
 
 
             var rulefactquery = fbq;
             var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
-            var source = IdList == null ? Taxonomy.FactsIndex.Keys.ToList() : IdList.ToList();
+            var source = IdList == null ? Taxonomy.FactIndexEnumerable() : IdList;
 
             if (dimparts.Count > 0)
             {
                 ids = source;
-
-                foreach (var dim in dimparts)
+                var firstdimpartix = Taxonomy.FactParts[dimparts[0]];
+                ids = Taxonomy.FactsOfParts[firstdimpartix];
+                for (int i = 1; i < dimparts.Count; i++) 
                 {
-                    if (Taxonomy.FactsOfDimensions.ContainsKey(dim))
+                    var ix = Taxonomy.FactParts[dimparts[i]];
+                    if (Taxonomy.FactsOfParts.ContainsKey(ix))
                     {
-                        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfDimensions[dim], null).AsQueryable().ToList();
+                        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfParts[ix], null).AsQueryable().ToList();
                     }
                 }
+                    //foreach (var dim in dimparts)
+                    //{
+                    //    //FP if (Taxonomy.FactsOfDimensions.ContainsKey(dim))
+                    //    var ix = Taxonomy.FactParts[dim];
+                    //    if (Taxonomy.FactsOfParts.ContainsKey(ix))
+                    //    {
+                    //        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfParts[ix], null).AsQueryable().ToList();
+                    //    }
+                    //}
             }
             else
             {
-                return source;
+                return source.ToList();
             }
-            return ids;
+            return ids.ToList();
         }
         
         public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
@@ -292,7 +306,7 @@ namespace XBRLProcessor.Model
 
 
             var rulefactquery = fbq;
-            var source = IdList == null ? Taxonomy.FactsIndex.Keys.ToList() : IdList;
+            var source = IdList == null ? Taxonomy.FactIndexEnumerable().ToList() : IdList;
 
             var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
             ids = source;
@@ -306,9 +320,11 @@ namespace XBRLProcessor.Model
                 for (int i = 0; i < dimparts.Count; i++)
                 {
                     var dimkey = dimparts[i];
-                    if (Taxonomy.FactsOfDimensions.ContainsKey(dimkey))
+                    //FP if (Taxonomy.FactsOfDimensions.ContainsKey(dimkey))
+                    var ix = Taxonomy.FactParts[dimkey];
+                    if (Taxonomy.FactsOfParts.ContainsKey(ix))
                     {
-                        var dimbox = Taxonomy.FactsOfDimensions[dimkey];
+                        var dimbox = Taxonomy.FactsOfParts[ix];
                         if (dimbox.Count < mincount) 
                         {
                             mincount = dimbox.Count;
@@ -324,7 +340,9 @@ namespace XBRLProcessor.Model
                 }
                 //IEnumerable<int> dimidlist = Taxonomy.FactsOfDimensions[dimboxes[minix]];
                 IEnumerable<int> dimidlist = null;
-                var mindimset = Taxonomy.FactsOfDimensions[dimboxes[minix]];
+                //FP var mindimset = Taxonomy.FactsOfDimensions[dimboxes[minix]];
+                var dix = Taxonomy.FactParts[dimboxes[minix]];
+                var mindimset = Taxonomy.FactsOfParts[dix];
                 if (IdList.Count < mindimset.Count)
                 {
                     dimidlist = Utilities.Objects.IntersectSorted(IdList, mindimset, null);
@@ -340,7 +358,9 @@ namespace XBRLProcessor.Model
                 dimboxes.RemoveAt(minix);
                 for (int i = 0; i < dimboxes.Count; i++)
                 {
-                    var dimbox = Taxonomy.FactsOfDimensions[dimboxes[i]];
+                    //FP var dimbox = Taxonomy.FactsOfDimensions[dimboxes[i]];
+                    var dix2 = Taxonomy.FactParts[dimboxes[i]];
+                    var dimbox = Taxonomy.FactsOfParts[dix2];
                     //var dimidlistcount = i == 0 ? mincount : dimidlist.Count();
                     //if (dimidlistcount * 3 < dimbox.Count)
                     //{
@@ -408,7 +428,7 @@ namespace XBRLProcessor.Model
             var factlist = new List<String>();//ids.Count());
             foreach (var id in ids) 
             {
-                var key = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[id]);
+                var key = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(id));
                 factlist.Add(key);
             }
             return factlist;
@@ -419,7 +439,7 @@ namespace XBRLProcessor.Model
             var factlist = new List<KeyValue<string, int>>();//ids.Count());
             foreach (var id in ids)
             {
-                var key = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[id]);
+                var key = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(id));
                 factlist.Add(new KeyValue<string, int>(key, id));
             }
             return factlist;

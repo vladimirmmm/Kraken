@@ -122,7 +122,7 @@ namespace LogicalModel
             if (factstring.StartsWith("T:"))
             {
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
-                var key = Taxonomy.FactsIndex[id];
+                var key = Taxonomy.FactsManager.GetFactKey(id);
                 return key;
 
             }
@@ -141,7 +141,7 @@ namespace LogicalModel
             if (factstring.StartsWith("T:"))
             {
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
-                var key = Taxonomy.FactsIndex[id];
+                var key = Taxonomy.FactsManager.GetFactKey(id);
                 var stringkey = Taxonomy.GetFactStringKey(key);
                 if (FactDictionary.ContainsKey(stringkey))
                 {
@@ -169,10 +169,10 @@ namespace LogicalModel
             if (factstring.StartsWith("T:"))
             {
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
-                if (Taxonomy.FactsIndex.ContainsKey(id))
+                if (Taxonomy.FactsManager.Count < id)
                 {
                     var fact = new FactBase();
-                    var key = Taxonomy.FactsIndex[id];
+                    var key = Taxonomy.FactsManager.GetFactKey(id);
                     var stringkey = Taxonomy.GetFactStringKey(key);
                     fact.SetFromString(stringkey);
                     return fact;
