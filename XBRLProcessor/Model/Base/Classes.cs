@@ -18,6 +18,12 @@ namespace XBRLProcessor.Model.Base
         private string _Href = "";
         [JsonIgnore]
         public string Href { get { return _Href; } set { _Href = value; } }
+        [JsonIgnore]
+        public string XmlContent = "";
+        public virtual string ToXmlString()
+        {
+            return XmlContent;
+        }
     }
 
     public class Arc : Link
@@ -95,6 +101,7 @@ namespace XBRLProcessor.Model.Base
         public LogicalModel.Base.Element Element { get { return _Element; } }
 
         public static Func<string, LogicalModel.Base.Element> LocatorFunction = null;
+        public static Func<XBRLProcessor.Models.XbrlTaxonomyDocument,string, LogicalModel.Base.Element> LocatorFunction2 = null;
 
         public void Locate()
         {
@@ -104,6 +111,15 @@ namespace XBRLProcessor.Model.Base
                 _Element = LocatorFunction(key);
             }
  
+        }
+        public void Locate(XBRLProcessor.Models.XbrlTaxonomyDocument doc)
+        {
+            var key = String.Format("{0}:{1}", this.Namespace, this.ID);
+            if (LocatorFunction != null)
+            {
+                _Element = LocatorFunction2(doc,Href);
+            }
+
         }
     }
 
@@ -138,8 +154,15 @@ namespace XBRLProcessor.Model.Base
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
 
+        private string _NamespaceURI = "";
+        public string NamespaceURI { get { return _NamespaceURI; } set { _NamespaceURI = value; } }
+
         private string _TypedDomainRef = "";
         public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
+
+        private string _LinkRole = "";
+        public string LinkRole { get { return _LinkRole; } set { _LinkRole = value; } }
+
 
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }

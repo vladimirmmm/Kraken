@@ -1,5 +1,4 @@
-﻿using LogicalModel;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Xml.Schema;
 using Utilities;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
+using XBRLProcessor.Model.InstanceModel;
 
 namespace Model.InstanceModel
 {
@@ -20,7 +20,15 @@ namespace Model.InstanceModel
         public Link SchemaRef { get; set; }
 
 
-        private List<Context> _Contexts = new List<Context>();
+        private Dictionary<string, Context> _ContextDictionary = new Dictionary<string, Context>();
+        [JsonProperty]
+        public Dictionary<string, Context> ContextDictionary
+        {
+            get { return _ContextDictionary; }
+            set { _ContextDictionary = value; }
+        }
+
+        private List<Context> _Contexts = new List< Context>();
         [JsonProperty]
         public List<Context> Contexts
         {
@@ -34,6 +42,13 @@ namespace Model.InstanceModel
             get { return _XbrlFacts; }
             set { _XbrlFacts = value; }
         }
+
+        //private List<XbrlUnit> _XbrlFacts = new List<XbrlFact>();
+        //public List<XbrlFact> XbrlFacts
+        //{
+        //    get { return _XbrlFacts; }
+        //    set { _XbrlFacts = value; }
+        //}
 
         private List<FilingIndicator> _XbrlFilingIndicators = new List<FilingIndicator>();
         public List<FilingIndicator> XbrlFilingIndicators
@@ -65,6 +80,7 @@ namespace Model.InstanceModel
         {
             this.FullPath = filepath;
         }
+        
         public void LoadSimple()
         {
             var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
@@ -73,19 +89,76 @@ namespace Model.InstanceModel
             this.TaxonomyModuleReference = this.SchemaRef.Href;
 
         }
+
+        private void FixNamespaces() 
+        {
+            var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(XmlDocument);
+            var dimensionnamespaces = this.Taxonomy.DimensionItems.Select(i=>i.NamespaceURI).Distinct().ToList();
+            var domainnsdictionary = new Dictionary<string, string>();
+            foreach (var ct in this.Contexts) 
+            {
+                if (ct.Scenario != null)
+                {
+                    foreach (var dim in ct.Scenario.Dimensions)
+                    {
+                        var dparts = dim.DimensionItem.Split(':');
+                        var dimnsuri = Utilities.Xml.Namespaces[dparts[0]];
+                        var dimelement = Taxonomy.DimensionItems.FirstOrDefault(i => i.NamespaceURI == dimnsuri);
+                        dim.DimensionItem = string.Format("{0}:{1}", dimelement.Namespace, dparts[1]);
+
+                        if (dim.IsTyped)
+                        {
+                            var parts = dim.Domain.Split(':');
+
+                            var nsuri = Utilities.Xml.Namespaces[parts[0]];
+                            var tdecontainer = this.Taxonomy.TypedDimensions.FirstOrDefault(i => i.Value.FirstOrDefault(t => t.NamespaceURI == nsuri) != null);
+                            var tde = tdecontainer.Value.FirstOrDefault(t => t.NamespaceURI == nsuri);
+                            dim.Domain = string.Format("{0}:{1}", tde.Namespace, parts[1]);
+
+                        }
+                        else 
+                        {
+                            if (!domainnsdictionary.ContainsKey(dim.Domain)) { 
+                                var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
+                                domainnsdictionary.Add(dim.Domain, domainelement.Namespace);
+                            }
+                            dim.Domain = domainnsdictionary[dim.Domain];
+                        }
+
+                    }
+                }
+                ContextDictionary.Add(ct.ID, ct);
+            }
+            var conceptnslist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.Namespace).Distinct().ToList();
+            foreach (var conceptns in conceptnslist)
+            {
+
+            }
+        }
         public void LoadComplex() 
         {
+            var XbrlTaxonomy= (XBRLProcessor.Models.XbrlTaxonomy)this.Taxonomy;
             Clear();
-            var factnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.StartsWith(this.Taxonomy.ConceptNameSpace+":")).ToList();
-            foreach (var factnode in factnodes) 
+            var allnodes = Utilities.Xml.AllNodes(XmlDocument);
+            FixNamespaces();
+
+            var conceptnsurilist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.NamespaceURI).Distinct().ToList();
+            foreach (var conceptnsuri in conceptnsurilist)
             {
-                var item = new XbrlFact();
-                Mappings.CurrentMapping.Map<XbrlFact>(factnode, item);
-                this.XbrlFacts.Add(item);
+                var sampleconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Value.NamespaceURI == conceptnsuri);
+                var factnodes = allnodes.Where(i => i.NamespaceURI == conceptnsuri).ToList();
+                foreach (var factnode in factnodes)
+                {
+                    var item = new XbrlFact();
+                    Mappings.CurrentMapping.Map<XbrlFact>(factnode, item);
+                    var parts = item.Concept.Split(':');
+                    item.Concept = String.Format("{0}:{1}", sampleconcept.Value.Namespace, parts[1]);
+                    this.XbrlFacts.Add(item);
+                }
             }
 
             this.XbrlFilingIndicators.Clear();
-            var filingnodes = Utilities.Xml.AllNodes(XmlDocument).Where(i => i.Name.Equals("find:filingIndicator", StringComparison.OrdinalIgnoreCase)).ToList();
+            var filingnodes = allnodes.Where(i => i.Name.Equals("find:filingIndicator", StringComparison.OrdinalIgnoreCase)).ToList();
             foreach (var filingnode in filingnodes)
             {
                 var item = new FilingIndicator();
@@ -105,31 +178,55 @@ namespace Model.InstanceModel
         {
      
             this.TaxonomyModuleReference = this.SchemaRef.Href;
-            this.FilingIndicators = this.XbrlFilingIndicators.Select(i=>i.Value).ToList();
+            this.FilingIndicators = this.XbrlFilingIndicators.Select(i=> {
+                var find = new LogicalModel.FilingIndicator();
+                find.ID = i.Value;
+                find.Filed = i.Filed;
+                return find;
+            }).ToList();
+            var ix = 0;
             foreach (var xbrlfact in XbrlFacts) 
             {
-                var xbrlcontext = this.Contexts.FirstOrDefault(i => i.ID == xbrlfact.ContextRef);
-                var logicalfact = new InstanceFact();
+                var xbrlcontext = this.ContextDictionary[xbrlfact.ContextRef];
+                var logicalfact = new LogicalModel.InstanceFact();
+                logicalfact.IX = ix;
+                ix++;
                 logicalfact.UnitID = xbrlfact.UnitRef;
                 logicalfact.ContextID = xbrlfact.ContextRef;
+                logicalfact.ID = xbrlfact.ID;
                 logicalfact.Decimals = xbrlfact.Decimals;
                 logicalfact.Unit = this.Units.FirstOrDefault(i => i.ID == xbrlfact.UnitRef);
-                
+                if (xbrlcontext!=null){
+                    logicalfact.Entity = xbrlcontext.Entity;
+                    logicalfact.Period = xbrlcontext.Period;
+                }
                 var factstring = "";
                 factstring = String.Format("{0},",xbrlfact.Concept);
                 var factkey = factstring;
-                logicalfact.Concept = new Concept();
+  
+                logicalfact.Concept = new LogicalModel.Concept();
+               
                 logicalfact.Concept.Content = xbrlfact.Concept;
-                var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName);
-                foreach (var dimension in dimensions) 
+                //var conceptns = logicalfact.Concept.Namespace;
+                //var uri = Utilities.Xml.Namespaces[conceptns];
+                //var taxconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Value.NamespaceURI == uri && i.Value.Name == logicalfact.Concept.Name);
+                //logicalfact.Concept = taxconcept.Value;
+                if (xbrlcontext.Scenario != null)
                 {
-                    var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
-                    var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());
-                    factstring += dimitem;
-                    factkey += dimension.IsTyped ? dimitemforkey : dimitem;
+                    var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
+                    foreach (var dimension in dimensions)
+                    {
+                        var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
+           
+                        var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());         
+
+                        factstring += dimitem;
+                        factkey += dimension.IsTyped ? dimitemforkey : dimitem;
+                    }
                 }
                 logicalfact.SetFromString(factstring);
-                if (logicalfact.Concept == null) 
+
+                if (logicalfact.ContextID == "CT_560") 
                 {
                 }
                 //logicalfact.FactString = factstring;
@@ -139,7 +236,7 @@ namespace Model.InstanceModel
                 this.Facts.Add(logicalfact);
                 if (!this.FactDictionary.ContainsKey(logicalfact.FactKey))
                 {
-                    this.FactDictionary.Add(logicalfact.FactKey, new List<InstanceFact>() { logicalfact });
+                    this.FactDictionary.Add(logicalfact.FactKey, new List<LogicalModel.InstanceFact>() { logicalfact });
                 }
                 else 
                 {
@@ -151,11 +248,14 @@ namespace Model.InstanceModel
             var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));
             if (miconceptfact != null)
             {
-                var micontext = Contexts.FirstOrDefault(i => i.ID == miconceptfact.ContextID);
+                var micontext = ContextDictionary[miconceptfact.ContextID];
                 var miunit = Units.FirstOrDefault(i => i.ID == miconceptfact.UnitID);
-                var measurestring = miunit.Measure.Content.ToLower();
-                var taxunit = Taxonomy.Units.FirstOrDefault(i => i.Measure.Content.ToLower() == measurestring);
-                ReportingMonetaryUnit = taxunit;
+                if (miunit != null)
+                {
+                    var measurestring = miunit.Measure.Content.ToLower();
+                    var taxunit = Taxonomy.Units.FirstOrDefault(i => i.Measure.Content.ToLower() == measurestring);
+                    ReportingMonetaryUnit = taxunit;
+                }
             }
             var firstcontext = Contexts.FirstOrDefault();
             if (firstcontext != null)
@@ -166,7 +266,7 @@ namespace Model.InstanceModel
             }
 
             SetCells();
-
+            SetExtensions();
             SaveToJson();
         }
 
@@ -234,7 +334,7 @@ namespace Model.InstanceModel
 
         }
 
-        public override void SetTaxonomy(Taxonomy xbrlTaxonomy)
+        public override void SetTaxonomy(LogicalModel.Taxonomy xbrlTaxonomy)
         {
             base.SetTaxonomy(xbrlTaxonomy);
         }
@@ -250,42 +350,50 @@ namespace Model.InstanceModel
             SetFilingIndicators();
             SetInstanceFacts();
 
-            var templatecontent = System.IO.File.ReadAllText(TemplateFileName);
-            var xmlstring = templatecontent;
-            var sb_ns = new StringBuilder();
-            foreach (var ns in namespaces) 
+            if (Utilities.FS.FileExists(TemplateFileName))
             {
-                sb_ns.Append(String.Format("xmlns:{0}=\"{1}\" ", ns.Key, ns.Value));
-            }
-            xmlstring = xmlstring.Replace("#namespaces#", sb_ns.ToString());
-            xmlstring = xmlstring.Replace("#taxonomymodulereference#", this.SchemaRef.Href);
+                var templatecontent = System.IO.File.ReadAllText(TemplateFileName);
+                var xmlstring = templatecontent;
+                var sb_ns = new StringBuilder();
+                foreach (var ns in namespaces)
+                {
+                    sb_ns.Append(String.Format("xmlns:{0}=\"{1}\" ", ns.Key, ns.Value));
+                }
+                xmlstring = xmlstring.Replace("#namespaces#", sb_ns.ToString());
+                xmlstring = xmlstring.Replace("#taxonomymodulereference#", this.SchemaRef.Href);
 
-            var sb_xml = new StringBuilder();
-            foreach (var unit in Units) 
+                var sb_xml = new StringBuilder();
+                foreach (var unit in Units)
+                {
+                    sb_xml.AppendLine(unit.ToXmlString());
+
+                }
+
+                foreach (var context in Contexts)
+                {
+                    sb_xml.AppendLine(context.ToXmlString());
+
+                }
+                sb_xml.AppendLine("<find:fIndicators>");
+                foreach (var find in this.XbrlFilingIndicators)
+                {
+                    sb_xml.AppendLine(find.ToXmlString());
+                }
+                sb_xml.AppendLine("</find:fIndicators>");
+                foreach (var fact in Facts)
+                {
+                    sb_xml.AppendLine(fact.ToXmlString());
+
+                }
+
+                xmlstring = xmlstring.Replace("#content#", sb_xml.ToString());
+                Utilities.FS.WriteAllText(filepath, xmlstring);
+                Utilities.Logger.WriteLine(String.Format("Instance was saved as {0}", filepath));
+            }
+            else 
             {
-                sb_xml.AppendLine(unit.ToXmlString());
-
+                Logger.WriteLine("Error: " + "Template not found: " + TemplateFileName);
             }
-
-            foreach (var context in Contexts)
-            {
-                sb_xml.AppendLine(context.ToXmlString());
-
-            }
-            sb_xml.AppendLine("<find:fIndicators>");
-            foreach (var find in this.XbrlFilingIndicators)
-            {
-                sb_xml.AppendLine(find.ToXmlString());
-            }
-            sb_xml.AppendLine("</find:fIndicators>");
-            foreach (var fact in Facts) 
-            {
-                sb_xml.AppendLine(fact.ToXmlString());
-
-            }
-
-           xmlstring = xmlstring.Replace("#content#", sb_xml.ToString());
-           System.IO.File.WriteAllText(filepath, xmlstring);
         }
 
         protected Dictionary<String,String> GetNameSpaces() 
@@ -299,11 +407,11 @@ namespace Model.InstanceModel
                 foreach (var dim in fact.Dimensions) 
                 {
                     AddNamespace(GetNamespace(dim.DimensionItem), namespaces);
-                    AddNamespace(dim.Domain, namespaces);
+                    AddNamespace(GetNamespace(dim.Domain), namespaces);
+                    //AddNamespace(dim.Domain, namespaces);
                 }
 
             }
-            AddNamespace("find", namespaces);
             return namespaces;
         }
         
@@ -318,7 +426,7 @@ namespace Model.InstanceModel
        
         private string GetNamespace(string qname) 
         {
-            var ns="";
+            var ns=qname;
             if (qname.Contains(":")) 
             {
                 ns = qname.Remove(qname.IndexOf(":"));
@@ -330,11 +438,12 @@ namespace Model.InstanceModel
         {
             foreach (var fact in Facts) 
             {
-                var itemtype = fact.Concept.ItemType;
+                var concept = this.Taxonomy.Concepts.FirstOrDefault(i => i.Key == fact.Concept.Content);
+                var itemtype = concept.Value.ItemType;
                 var setting = Taxonomy.Module.UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itemtype);
                 if (!String.IsNullOrEmpty(setting.UnitID))
-                { 
-
+                {
+                    fact.Decimals = String.Format("{0}", setting.Decimals);
                 }
 
             }
@@ -354,7 +463,7 @@ namespace Model.InstanceModel
                 
                 if (!dict.ContainsKey(taxconcept.ItemType))
                 {
-                    Unit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
+                    LogicalModel.InstanceUnit unit = Taxonomy.Units.FirstOrDefault(i => i.ID == unitid);
                   
                     if (taxconcept.ItemType == "monetaryItemType") 
                     {
@@ -362,7 +471,7 @@ namespace Model.InstanceModel
                     }
                     if (unit != null)
                     {
-                        var xbrlunit = new Unit();
+                        var xbrlunit = new LogicalModel.InstanceUnit();
                         xbrlunit.ID = GetNewID(this.Units, "U_{0}");
                         xbrlunit.Measure = unit.Measure;
                         this.Units.Add(xbrlunit);
@@ -374,7 +483,7 @@ namespace Model.InstanceModel
                 {
                     fact.UnitID = dict[taxconcept.ItemType];
                 }
-                if (itemtypesetting.Type == TypeEnum.Numeric) 
+                if (itemtypesetting.Type == LogicalModel.TypeEnum.Numeric) 
                 {
                     fact.Decimals = String.Format("{0}", itemtypesetting.Decimals);
                 }
@@ -399,7 +508,7 @@ namespace Model.InstanceModel
                 fact.ContextID = dict[dimfact.FactString];
              
             }
-            var filingcontext = GetContext(new InstanceFact());
+            var filingcontext = GetContext(new LogicalModel.InstanceFact());
             filingcontext.ID = FilingIndicator.DefaultContextID;
             this.Contexts.Add(filingcontext);
         }
@@ -427,8 +536,9 @@ namespace Model.InstanceModel
                         
                         filingndicator.Value = find;
                         this.XbrlFilingIndicators.Add(filingndicator);
-                        
-                        this.FilingIndicators.Add(find);
+                        var logicalFind = new LogicalModel.FilingIndicator();
+                        logicalFind.ID = find;
+                        this.FilingIndicators.Add(logicalFind);
                        
                     }
                 }
@@ -436,7 +546,7 @@ namespace Model.InstanceModel
             //return finds.Select(i=>i.Key).ToList();
         }
         
-        protected string GetNewID(IEnumerable<LogicalModel.Base.Identifiable> items, string format)
+        protected string GetNewID(IEnumerable<BaseModel.Identifiable> items, string format)
         {
             var nr = items.Count();
             var newid = "";
@@ -453,7 +563,7 @@ namespace Model.InstanceModel
             return newid;
         }
 
-        private Context GetContext(InstanceFact fact) 
+        private Context GetContext(LogicalModel.InstanceFact fact) 
         {
             var contextcount = this.Contexts.Count;
             var contextid = String.Format("CT_{0}", contextcount + 1);

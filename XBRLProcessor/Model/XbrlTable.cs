@@ -13,6 +13,7 @@ using XBRLProcessor.Enums;
 using XBRLProcessor.Mapping;
 using XBRLProcessor.Model.Base;
 using XBRLProcessor.Model.DefinitionModel;
+using XBRLProcessor.Model.DefinitionModel.Filter;
 using XBRLProcessor.Model.DefinitionModel.Formula;
 using XBRLProcessor.Models;
 
@@ -101,8 +102,91 @@ namespace XBRLProcessor.Model
 
         public string FilingIndicator;
 
+        private List<LogicalModel.Base.QualifiedItem> GetMembers(DimensionMember FilterMember) 
+        {
+            var result = new List<Hierarchy<LogicalModel.Base.QualifiedItem>>();
+            var resultx = new List<LogicalModel.Base.QualifiedItem>();
+            var hierarchynode = Taxonomy.Hierarchies.FirstOrDefault(i => i.Item.Role == FilterMember.ArcRole);
+            var membernode = hierarchynode.FirstOrDefault(i => i.Item.FullName == FilterMember.QName.Content);
+            var axes = FilterMember.Axis.ToLower();
+            switch (axes)
+            {
+                case "ancestor":
+                    result = membernode.Parents();
+                    break;
+                case "ancestor-or-self":
+                    result = membernode.Parents();
+                    result.Add(membernode);
+                    break;
+                case "attribute":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+                case "child":
+                    result = membernode.Children;
+                    break;
+                case "descendant":
+                    result = membernode.Descendant();
+                    break;
+                case "descendant-or-self":
+                    result = membernode.All();
+                    break;
+                case "following":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "following-sibling":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "namespace":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "parent":
+                    result.Add(membernode.Parent);
+                    break;
+                case "preceding":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "preceding-sibling":
+                    throw new NotImplementedException("Dimension Filter Member axis " + axes + " is not implemented!");
+
+                case "self":
+                    result.Add(membernode);
+
+                    break;
+                default:
+                    Console.WriteLine("Default case");
+                    break;
+            }
+            resultx=result.Select(i=>i.Item).ToList();
+            return resultx;
+        }
+
+        protected Hierarchy<Link> GetXbrlRendering() 
+        {
+            var result = new Hierarchy<Link>();
+            foreach (var arc in Arcs) 
+            {
+                var from = Identifiables.FirstOrDefault(i => i.LabelID == arc.From);
+                var to = Identifiables.FirstOrDefault(i => i.LabelID == arc.To);
+                var harc = new Hierarchy<Link>(arc);
+                var hfrom = new Hierarchy<Link>(from);
+                var hto = new Hierarchy<Link>(to);
+                hfrom.AddChild(harc);
+                harc.AddChild(hto);
+                if (result.Item==null)
+                {
+                    result=hfrom;
+                }
+            }
+            while (result.Parent != null) 
+            {
+                result = result.Parent;
+            }
+            return result;
+        }
+
         public void LoadLayoutHierarchy(LogicalModel.Table logicaltable)
         {
+            Identifiables.Clear();
+            Arcs.Clear();
             Identifiables.AddRange(Tables);
             Identifiables.AddRange(BreakDowns);
             Identifiables.AddRange(RuleNodes);
@@ -122,10 +206,29 @@ namespace XBRLProcessor.Model
                 li.LabelID = identifiable.LabelID;
                 li.LoadLabel(Taxonomy);
 
+                var df = identifiable as DimensionFilter;
+                if (df != null) 
+                {
+                    li.Category = LogicalModel.LayoutItemCategory.Filter;
+
+                    var dfexp = df as ExplicitDimensionFilter;
+                    if (dfexp != null)
+                    {
+                        var member = dfexp.Members.FirstOrDefault();
+                        if (member != null)
+                        {
+                            li.Role = member.LinkRole;
+                            li.RoleAxis = member.Axis;
+
+                        }
+                    }
+                }
 
                 var rule = identifiable as RuleNode;
                 if (rule != null)
                 {
+                    li.Category = LogicalModel.LayoutItemCategory.Rule;
+
                     if (rule.Concept != null)
                     {
                         li.Concept = Mappings.ToLogical(rule.Concept); //rule.Concept.QName.Content;
@@ -168,7 +271,7 @@ namespace XBRLProcessor.Model
                 if (aspect != null)
                 {
 
-                    li.IsAspect = true;
+                    li.Category = LogicalModel.LayoutItemCategory.Aspect;
                     var logicaldimension = new LogicalModel.Dimension();
                     logicaldimension.DimensionItem = aspect.DimensionAspect.Content;
                     var hc = logicaltable.HyperCubes.FirstOrDefault(i => i.DimensionItems.Any(j => j.FullName == logicaldimension.DimensionItem));
@@ -177,15 +280,24 @@ namespace XBRLProcessor.Model
                         var dimitem = hc.DimensionItems.FirstOrDefault(i=>i.FullName==logicaldimension.DimensionItem);
                         if (dimitem!=null && dimitem.Domains.Count>0)
                         {
-                            logicaldimension.Domain = dimitem.Domains.FirstOrDefault().FullName;
+                            //logicaldimension.Domain = dimitem.Domains.FirstOrDefault().FullName;
+                            var domain = dimitem.Domains.FirstOrDefault();
+                            logicaldimension.Domain = LogicalModel.Taxonomy.IsTyped(domain.FullName) ? domain.FullName : domain.ID;
 
                         }
                     }
-
+                    logicaldimension.SetTyped();
                     li.Dimensions.Add(logicaldimension);
 
 
                 }
+                var breakdown = identifiable as BreakDown;
+
+                if (breakdown != null)
+                {
+                    li.Category = LogicalModel.LayoutItemCategory.BreakDown;
+                }
+
                 logicaltable.LayoutItems.Add(hi);
 
             }
@@ -223,9 +335,24 @@ namespace XBRLProcessor.Model
             logicaltable.ID = logicaltable.LayoutRoot.Item.ID;
             logicaltable.Name = logicaltable.LayoutRoot.Item.LabelContent;
             logicaltable.SetHtmlPath();
+            Utilities.FS.WriteAllText(logicaltable.LayoutPath, logicaltable.LayoutRoot.ToHierarchyString(GetLayoutString));
+            //var x = GetXbrlRendering();
+            //Utilities.FS.WriteAllText(logicaltable.FullHtmlPath.Replace(".html", "_layout.txt"), x.ToHierarchyString(GetLayoutString));
 
         }
-        
+        private string GetLayoutString(Link li)
+        {
+            var result = li.ToXmlString();
+            return result;
+        }
+        private string GetLayoutString(LogicalModel.LayoutItem li) 
+        {
+            var result = "";
+            var axis = String.IsNullOrEmpty(li.Axis) ? "" : li.Axis + " ";
+            var isabstract = li.IsAbstract ? "abstract " : "";
+            result = String.Format("{0}{1} <{2}> {3} code{4} >> {5}", axis, li.ID, li.Category, isabstract, li.LabelCode, li.FactString);
+            return result;
+        }
        
         public void LoadDefinitionHierarchy(LogicalModel.Table logicaltable)
         {
@@ -301,9 +428,16 @@ namespace XBRLProcessor.Model
                 foreach (var conceptnode in concepts) 
                 {
                     var logicalconcept = new LogicalModel.Concept();
-                    logicalconcept.Content = conceptnode.Item.Element.Key;
-                    logicalconcept.Name = conceptnode.Item.Element.Name;
-                    hypercube.Concepts.Add(logicalconcept);
+                    if (conceptnode.Item.Element != null)
+                    {
+                        logicalconcept.Content = conceptnode.Item.Element.Key;
+                        logicalconcept.Name = conceptnode.Item.Element.Name;
+                        hypercube.Concepts.Add(logicalconcept);
+                    }
+                    else 
+                    {
+                        Logger.WriteLine(String.Format("Concept Element not found for {0}!", conceptnode.Item.ID));
+                    }
 
                 }
 

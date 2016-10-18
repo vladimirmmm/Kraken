@@ -10,7 +10,7 @@ namespace XBRLProcessor.Literals
     {
         public static string[] Links = { "link:linkbaseRef", "link:roleRef", "arcroleRef", "link:loc", "link:arcroleRef" };
         public static string[] Imports = { "xs:import" };
-        public static string[] Labels = { "label:label", "xbrlle:label", "eg:label", "fn:label", "link:label", "xbrli:label", "xfi:label", "xbrldi:label", "xbrldt:label", "xl:label", "xlink:label", "xs:label", "xsi:label", "gen:label", "variable :label", "iso4217:label" };
+        public static string[] Labels = { "msg:message", "label:label", "xbrlle:label", "eg:label", "fn:label", "link:label", "xbrli:label", "xfi:label", "xbrldi:label", "xbrldt:label", "xl:label", "xlink:label", "xs:label", "xsi:label", "gen:label", "variable:label", "iso4217:label" };
         public static string[] TableContainers = { "xs:appinfo" };
         public static string[] SchemaElements = { "xs:element", "element" };
 
@@ -24,8 +24,9 @@ namespace XBRLProcessor.Literals
     }
     public class Roles 
     {
+        public static string[] FindRoles = { "http://www.eurofiling.info/xbrl/role/filing-indicator-code" };
         public static string[] LabelCodeRoles = { "http://www.eurofiling.info/xbrl/role/rc-code", "http://www.eba.europa.eu/xbrl/role/dpm-db-id" };
-        public static string[] LabelTextRoles = { "http://www.xbrl.org/2008/role/label", "http://www.xbrl.org/2003/role/label" };
+        public static string[] LabelTextRoles = { "http://www.xbrl.org/2008/role/label", "http://www.xbrl.org/2003/role/label", "http://www.xbrl.org/2010/role/message" };
 
     }
     public class Literal

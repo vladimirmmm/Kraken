@@ -29,11 +29,20 @@ namespace Utilities
 
         }
     }
+    
     public class Converters
     {
         private static CultureInfo dci = new CultureInfo("en-US");
-    
 
+        public static int FastParse(string str) 
+        {
+            int value = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                value = value * 10 + (str[i] - '0');
+            }
+            return value;
+        }
 
         public static String ToJson(object obj) 
         {
@@ -121,7 +130,7 @@ namespace Utilities
             CultureInfo ci = new CultureInfo("en-US");
             return String.Format(ci, format, dt);
         }
-        public static string DateTimeFormat = "yyyy-MM-dd hh:mm:ss";
+        public static string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
         public static DateTime StringToDateTime(String dt, string format)
         {
             DateTime result = DateTime.Now.AddYears(-200);
@@ -133,6 +142,12 @@ namespace Utilities
 
             }
             return result;
+        }
+        public static bool IsDate(String dt, string format)
+        {
+            DateTime result = DateTime.Now.AddYears(-200);
+            return DateTime.TryParseExact(dt, format, dci, DateTimeStyles.None, out result);
+           
         }
         //public static DateTime StringToDateTime(String dt, string format)
         //{
@@ -149,5 +164,10 @@ namespace Utilities
         //    return result;
         //}
 
+
+        public static bool IsInteger(string p)
+        {
+            return !String.IsNullOrEmpty(p) && p.All(char.IsDigit) ;
+        }
     }
 }

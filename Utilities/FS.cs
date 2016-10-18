@@ -60,7 +60,7 @@ namespace Utilities
 
         }
 
-        public static void DeleteFile(string filepath)
+        public static void DeleteFile(string filepath, bool logexception=true)
         {
             if (System.IO.File.Exists(filepath))
             {
@@ -70,7 +70,10 @@ namespace Utilities
                 }
                 catch (Exception ex) 
                 {
-                    Logger.WriteLine(String.Format("Can't delete file {0}! {1}",filepath, ex.Message));
+                    if (logexception)
+                    {
+                        Logger.WriteLine(String.Format("Can't delete file {0}! {1}", filepath, ex.Message));
+                    }
                 }
             }
         }
@@ -89,7 +92,27 @@ namespace Utilities
                 }
             }
         }
-
+        public static void Copy(string source, string target, bool logexception=false)
+        {
+            if (System.IO.File.Exists(source))
+            {
+                try
+                {
+                    System.IO.File.Copy(source, target, true);
+                }
+                catch (Exception ex)
+                {
+                    if (logexception)
+                    {
+                        Logger.WriteLine(String.Format("Can't copy file {0} to {1}! {2}", source, target, ex.Message));
+                    }
+                }
+            }
+            else 
+            {
+                Logger.WriteLine(String.Format("FS.Copy > File {0} does not exists!", source));
+            }
+        }
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overwrite)
         {
             // Get the subdirectories for the specified directory.
@@ -127,6 +150,8 @@ namespace Utilities
                 }
             }
         }
+
+
 
     }
 }

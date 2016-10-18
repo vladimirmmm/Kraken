@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,13 +9,14 @@ namespace LogicalModel
 {
     public class Label
     {
-        private static string labelprefix = "";
+        public static string labelprefix = "";
         public string _LocalID = "";
         public string _LabelID = "";
         public string _Content = "";
         public string _Code = "";
         public string _Lang = "";
         public string _FileName = "";
+        public string _Type = "";
 
         public static void SetLabelPrefix(string prefix) 
         {
@@ -28,7 +30,15 @@ namespace LogicalModel
         {
             get { return String.Format("{0} [{1}] {2}", _LabelID, _Code, _Content);  }
         }
-
+        [DefaultValue("")]
+        public string Type
+        {
+            get { return _Type; }
+            set
+            {
+                _Type = value;
+            }
+        }
         public string LocalID
         {
             get { return _LocalID; }
@@ -92,6 +102,16 @@ namespace LogicalModel
             l.FileName = fileid;
             l.Lang = Taxonomy.Lang;
             l.LocalID = localID;
+            return l.Key;
+        }
+
+        public static string GetKeyWithoutPrefix(string fileid, string localID)
+        {
+            var l = new Label();
+
+            l.FileName = fileid;
+            l.Lang = Taxonomy.Lang;
+            l.LocalID = localID.StartsWith(labelprefix) ? localID.Substring(labelprefix.Length) : localID;
             return l.Key;
         }
     }

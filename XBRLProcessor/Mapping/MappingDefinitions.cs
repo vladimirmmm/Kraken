@@ -1,5 +1,4 @@
-﻿using LogicalModel;
-using Model.DefinitionModel;
+﻿using Model.DefinitionModel;
 using Model.DefinitionModel.Formula;
 using Model.InstanceModel;
 using System;
@@ -13,6 +12,7 @@ using XBRLProcessor.Model.Base;
 using XBRLProcessor.Model.DefinitionModel;
 using XBRLProcessor.Model.DefinitionModel.Filter;
 using XBRLProcessor.Model.DefinitionModel.Formula;
+using XBRLProcessor.Model.InstanceModel;
 
 namespace XBRLProcessor.Mapping
 {
@@ -30,12 +30,13 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("nillable", (Element i) => i.Nullable),
                     Mappings.PropertyMap("model:isDefaultMember", (Element i) => i.IsDefaultMember),
                     Mappings.PropertyMap("xbrli:periodType", (Element i) => i.PeriodType),
-                    Mappings.PropertyMap("model:domain", (Element i) => i.Domain),
+                    Mappings.PropertyMap("*:domain", (Element i) => i.Domain),
                     Mappings.PropertyMap("model:hierarchy", (Element i) => i.Hierarchy),
                     Mappings.PropertyMap("model:fromDate", (Element i) => i.FromDate),
                     Mappings.PropertyMap("model:toDate", (Element i) => i.ToDate),
                     Mappings.PropertyMap("model:creationDate", (Element i) => i.CreationDate),
-                    Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef)
+                    Mappings.PropertyMap("xbrldt:typedDomainRef", (Element i) => i.TypedDomainRef),
+                    Mappings.PropertyMap("*:linkrole", (Element i) => i.LinkRole)
                 ),
                 Mappings.Map<XbrlUnit>("<unit>",
                     Mappings.PropertyMap("<unitId>", (XbrlUnit i) => i.UnitID),
@@ -49,16 +50,16 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("xlink:role", (Link i) => i.Role),
                     Mappings.PropertyMap("xlink:href", (Link i) => i.Href)
                 ),
-                Mappings.Map<Label>("<label>", 
-                    Mappings.PropertyMap("xlink:label", (Label i) => i.LabelID),
-                    Mappings.PropertyMap("@content", (Label i) => i.Content)
+                Mappings.Map<LogicalModel.Label>("<label>", 
+                    Mappings.PropertyMap("xlink:label", (LogicalModel.Label i) => i.LabelID),
+                    Mappings.PropertyMap("@content", (LogicalModel.Label i) => i.Content)
                 ),
                 Mappings.Map<XbrlIdentifiable>("<identifiable>", 
                     Mappings.PropertyMap("xlink:label", (XbrlIdentifiable i) => i.LabelID),
                     Mappings.PropertyMap("id", (XbrlIdentifiable i) => i.ID)
                 ),
-                Mappings.Map<LogicalModel.Base.Identifiable>("<identifiable>", 
-                    Mappings.PropertyMap("id", (LogicalModel.Base.Identifiable i) => i.ID)
+                Mappings.Map<BaseModel.Identifiable>("<identifiable>", 
+                    Mappings.PropertyMap("id", (BaseModel.Identifiable i) => i.ID)
                 ),
                 Mappings.Map<Arc>("<arc>", 
                     Mappings.PropertyMap("xlink:arcrole", (Arc i) => i.ArcRole),
@@ -97,8 +98,8 @@ namespace XBRLProcessor.Mapping
                 Mappings.Map<Member>("<formula:member>", 
                     Mappings.PropertyMap("<formula:qname>", (Member i) => i.QName)
                 ),
-                Mappings.Map<Concept>("<formula:concept>",
-                     Mappings.PropertyMap("<formula:qname>", (Concept i) => i.Content)
+                Mappings.Map<LogicalModel.Concept>("<formula:concept>",
+                     Mappings.PropertyMap("<formula:qname>", (LogicalModel.Concept i) => i.Content)
                 ),
 
                 Mappings.Map<QName>("<qname>", 
@@ -108,7 +109,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                 ),
 
-                  Mappings.Map<DimensionAspect>("<table:dimensionAspect>", 
+                Mappings.Map<DimensionAspect>("<table:dimensionAspect>", 
                     Mappings.PropertyMap("includeUnreportedValue", (DimensionAspect i) => i.IncludeUnreportedValue)
                 ),
 
@@ -236,54 +237,56 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<df:test>", (TypedDimensionFilter i) => i.Test)
                  ),
                  //Logical
-                 Mappings.Map<Dimension>("<xbrldi:explicitMember>",
-                    Mappings.PropertyMap("dimension", (Dimension i) => i.DimensionItem),
-                    Mappings.PropertyMap("@content", (Dimension i) => i.DomainAndMember)
+                 Mappings.Map<LogicalModel.Dimension>("<xbrldi:explicitMember>",
+                    Mappings.PropertyMap("dimension", (LogicalModel.Dimension i) => i.DimensionItem),
+                    Mappings.PropertyMap("@content", (LogicalModel.Dimension i) => i.DomainAndMember)
                  ),
-                Mappings.Map<Dimension>("<xbrldi:typedMember>",
-                    Mappings.PropertyMap("#true", (Dimension i) => i.IsTyped),
-                    Mappings.PropertyMap("dimension", (Dimension i) => i.DimensionItem),
-                    Mappings.PropertyMap("/@name", (Dimension i) => i.Domain),
-                    Mappings.PropertyMap("/@content", (Dimension i) => i.DomainMember)
+                Mappings.Map<LogicalModel.Dimension>("<xbrldi:typedMember>",
+                    Mappings.PropertyMap("#true", (LogicalModel.Dimension i) => i.IsTyped),
+                    Mappings.PropertyMap("dimension", (LogicalModel.Dimension i) => i.DimensionItem),
+                    Mappings.PropertyMap("/@name", (LogicalModel.Dimension i) => i.Domain),
+                    Mappings.PropertyMap("/@content", (LogicalModel.Dimension i) => i.DomainMember)
                  ),
                 Mappings.Map<LogicalModel.Base.QualifiedName>("<qname>", 
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                 ),
                  //Instance
-                Mappings.Map<LogicalModel.Base.QualifiedName>("<xbrli:measure>",
+                Mappings.Map<LogicalModel.Base.QualifiedName>("<*:measure>",
                     Mappings.PropertyMap("@content", (LogicalModel.Base.QualifiedName i) => i.Content)
                  ),
-                 Mappings.Map<Unit>("<xbrli:unit>",
-                    Mappings.PropertyMap("<xbrli:measure>", (Unit i) => i.Measure)
+                 Mappings.Map<LogicalModel.InstanceUnit>("<*:instanceunit>",
+                    Mappings.PropertyMap("<*:measure>", (LogicalModel.InstanceUnit i) => i.Measure)
                  ),
-                 Mappings.Map<Entity>("<xbrli:entity>",
-                    Mappings.PropertyMap("/scheme", (Entity i) => i.Scheme),
-                    Mappings.PropertyMap("/@content", (Entity i) => i.ID)
+                 Mappings.Map<LogicalModel.Entity>("<*:entity>",
+                    Mappings.PropertyMap("/scheme", (LogicalModel.Entity i) => i.Scheme),
+                    Mappings.PropertyMap("/@content", (LogicalModel.Entity i) => i.ID)
                  ),
-                 Mappings.Map<Period>("<xbrli:period>",
-                    Mappings.PropertyMap("<xbrli:instant>", (Period i) => i.Instant),
-                    Mappings.PropertyMap("<xbrli:forever>", (Period i) => i.Forever),
-                    Mappings.PropertyMap("<xbrli:startdate>", (Period i) => i.StartDate),
-                    Mappings.PropertyMap("<xbrli:enddate>", (Period i) => i.EndDate)
+                 Mappings.Map<LogicalModel.Period>("<*:period>",
+                    Mappings.PropertyMap("<*:instant>", (LogicalModel.Period i) => i.Instant),
+                    Mappings.PropertyMap("<*:forever>", (LogicalModel.Period i) => i.Forever),
+                    Mappings.PropertyMap("<*:startdate>", (LogicalModel.Period i) => i.StartDate),
+                    Mappings.PropertyMap("<*:enddate>", (LogicalModel.Period i) => i.EndDate)
                  ),
-                 Mappings.Map<Scenario>("<xbrli:scenario>",
+                 Mappings.Map<Scenario>("<*:scenario>",
                     Mappings.PropertyMap("<xbrldi:explicitMember>", (Scenario i) => i.Dimensions),
                     Mappings.PropertyMap("<xbrldi:typedMember>", (Scenario i) => i.Dimensions)
                  ),
                  Mappings.Map<FilingIndicator>("<find:filingIndicator>",
                     Mappings.PropertyMap("contextRef", (FilingIndicator i) => i.ContextID),
+                    Mappings.PropertyMap("find:filed", (FilingIndicator i) => i.Filed),
                     Mappings.PropertyMap("@content", (FilingIndicator i) => i.Value)
                  ),
-                 Mappings.Map<Context>("<xbrli:context>",
-                    Mappings.PropertyMap("<xbrli:entity>", (Context i) => i.Entity),
-                    Mappings.PropertyMap("<xbrli:period>", (Context i) => i.Period),
-                    Mappings.PropertyMap("<xbrli:scenario>", (Context i) => i.Scenario)
+                 Mappings.Map<Context>("<*:context>",
+                    Mappings.PropertyMap("<*:entity>", (Context i) => i.Entity),
+                    Mappings.PropertyMap("<*:period>", (Context i) => i.Period),
+                    Mappings.PropertyMap("<*:scenario>", (Context i) => i.Scenario)
                  ),
 
                  Mappings.Map<XbrlFact>("<XbrlFact>",
                     Mappings.PropertyMap("@name", (XbrlFact i) => i.Concept),
                     Mappings.PropertyMap("decimals", (XbrlFact i) => i.Decimals),
                     Mappings.PropertyMap("contextRef", (XbrlFact i) => i.ContextRef),
+                    Mappings.PropertyMap("id", (XbrlFact i) => i.ID),
                     Mappings.PropertyMap("unitRef", (XbrlFact i) => i.UnitRef),
                     Mappings.PropertyMap("@content", (XbrlFact i) => i.Value)
                  ),
@@ -295,8 +298,8 @@ namespace XBRLProcessor.Mapping
 
                  Mappings.Map<XbrlInstance>("<xbrli:xbrl>",
                     Mappings.PropertyMap("<link:schemaRef>", (XbrlInstance i) => i.SchemaRef),
-                    Mappings.PropertyMap("<xbrli:context>", (XbrlInstance i) => i.Contexts),
-                    Mappings.PropertyMap("<xbrli:unit>", (XbrlInstance i) => i.Units)
+                    Mappings.PropertyMap("<*:context>", (XbrlInstance i) => i.Contexts),
+                    Mappings.PropertyMap("<*:unit>", (XbrlInstance i) => i.Units)
                  ),
                  //End Instance
                 //hier
@@ -346,7 +349,9 @@ namespace XBRLProcessor.Mapping
             toitem.SubstitutionGroup = item.SubstitutionGroup;
             toitem.Type = item.Type;
             toitem.Namespace = item.Namespace;
+            toitem.NamespaceURI = item.NamespaceURI;
             toitem.TypedDomainRef = item.TypedDomainRef;
+            toitem.LinkRole = item.LinkRole;
             return toitem;
         }
 
@@ -368,9 +373,9 @@ namespace XBRLProcessor.Mapping
             return toitem;
         }
 
-        public static LogicalModel.Unit ToLogical(XbrlUnit item)
+        public static LogicalModel.InstanceUnit ToLogical(XbrlUnit item)
         {
-            var toitem = new LogicalModel.Unit();
+            var toitem = new LogicalModel.InstanceUnit();
             toitem.Measure = new LogicalModel.Base.QualifiedName(String.Format("{0}:{1}", item.BaseStandard, item.UnitID));
             toitem.ID = item.ID;
             toitem.Name = item.UnitName;
@@ -389,7 +394,7 @@ namespace XBRLProcessor.Mapping
                 var citem = item as ExplicitDimensionFilter;
                 foreach (var member in citem.Members) 
                 {
-                    var dimension = new Dimension();
+                    var dimension = new LogicalModel.Dimension();
                     dimension.DimensionItem = dimensionitem.QName.Content;
                     dimension.Domain = member.QName.Domain;
                     dimension.DomainMember = member.QName.Value;                     
@@ -398,7 +403,7 @@ namespace XBRLProcessor.Mapping
             }
             if (item is TypedDimensionFilter) 
             {
-                var dimension = new Dimension();
+                var dimension = new LogicalModel.Dimension();
                 dimension.DimensionItem = dimensionitem.QName.Content;
                 dimension.IsTyped = true;
                 toitem.Add(dimension);

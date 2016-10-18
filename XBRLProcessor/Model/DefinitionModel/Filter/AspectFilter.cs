@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicalModel.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,10 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     public class AspectFilter : Filter
     {
 
+        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class AspectCoverFilter : AspectFilter
     {

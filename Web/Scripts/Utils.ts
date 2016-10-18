@@ -1,85 +1,50 @@
 
-interface cbdelegate { (result: any): any; }
-interface Dictionary { [s: string]: Object; }
-interface F_Progress { (id: string): any; }
-interface F_ResultFormatter { (rawdata: any): any; }
 
-interface JQueryStatic {
-    formatDateTime(format: string, d: Date);
-    w8n(...any);
+var _Select = (CssSelector: string, from?: any): Element[]=> null;
+var _SelectFirst = (CssSelector: string, from?: any): Element=> null;
+var _Find = (element : Element, CssSelector: string): Element[]=> null;
+var _FindFirst = (element: Element, CssSelector: string): Element=> null;
+var _Parent = (element: Element, selector?: string): Element => null;
+var _Parents = (element: Element, selector?: string): Element[]=> [];
 
-}
-interface JQuery
-{
-    w8n(...any);
-    serializeObject(...any);
-    padding(direction: string): number;
-    pagination(total: any, options: any);
-    resizable(options?: any);
-    colResizable(options?: any);
-    resizableColumns(options?: any);
-}
+var _Children = (element: Element, CssSelector?: string): Element[]=> null;
+var _FirstChildren = (element: Element, CssSelector?: string): Element=> null;
 
-interface External {
-    Notify(obj: any)
-}
-function CreateMsg(category: string): General.Message {
-    var msg = new General.Message();
-    msg.Category = category;
-    return msg;
-}
-function CreateNotificationMsg(message: string): General.Message
-{
-    var msg = CreateMsg("notification");
-    msg.Data = message;
-    return msg
-}
-function CreateAjaxMsg(): General.Message {
-    var msg = CreateMsg("ajax");
-    return msg
-}
-function CreateErrorMsg(errormessage: string):General.Message
-{
-    var msg = CreateMsg("error");
-    msg.Error = errormessage;
-    return msg;
-}
-function ErrorHandler(errorMsg, url, lineNumber) {
-    var errortext = 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Error(errortext);
-    return true;
-}
-function ShowHideChild(selector: any,sender:any)
-{
-    $(selector).hide();
-    var $item = $(selector, $(sender).parent()).first();
-    $item.show();
-}
-function SetPivots()
-{
-    
-    $("#maintable").resizableColumns();
-    //$("#maintable").colResizable({
-    //    liveDrag: false,
-    //});
-    //$("#pivot").splitPane({
-    //    type: "v",
-    //    outline: true,
-    //    minLeft: 100, sizeLeft: 150, minRight: 100,
-    //    resizeToWidth: true,
-    //    cookie: "vsplitter",
-    //    accessKey: 'I'
-    //});
-    /*
-    $(".pivotitem").click(function () {
-        Activate($(this));
-    });
-    var iframe = $($("#tableframe")[0]["contentWindow"].document);
-    $(iframe).click(function () {
-        Activate($("#tableframe").parent());
-    });
-    */
-}
+var _AddEventHandler = (element: any, eventname: string, handler: Function) => { };
+var _RemoveEventHandler = (element: any, eventname: string, handler: Function) => { };
+var _RemoveEventHandlers = (element: any, eventname: string) => { };
+var _EnsureEventHandler = (element: any, eventname: string, handler: Function) => { };
+
+var _Attribute = (element: any, attributename: string, attributevalue?: string): string => "";
+var _RemoveAttribute = (target: any, attributename: string) => { };
+
+var _TagName = (element: any): string => "";
+var _Property = (element: any, propertyname: string): string => "";
+var _Value = (element: any, value?: string): string => "";
+var _Html = (element: any, html?: string): string => "";
+var _Text = (element: any, text?: string): string => "";
+
+var _Remove = (element: any) => { };
+var _Append = (target: Element, element: Element) => { };
+var _After = (target: Element, element: Element) => { };
+var _Before = (target: Element, element: Element) => { };
+
+
+var _HasClass = (element: any, classname: string): boolean => false;
+var _AddClass = (element: any, classname: string) => { };
+var _RemoveClass = (element: any, classname: string) => { };
+var _Css = (element: any, value: string) => { };
+var _Width = (element: any, value?: any) : number => -1;
+var _Height = (element: any, value?: any) : number => -1;
+
+var _Focus = (element: any) => { };
+var _Show = (element: any) => { };
+var _Center = (element: any) => { };
+var _Hide = (element: any) => { };
+var _IsVisible = (element: any):boolean => false;
+var _Clone = (element: Element):Element => null;
+
+
 
 var waitForFinalEvent = (function () {
     var timers = {};
@@ -124,11 +89,7 @@ function Activate(jitem: JQuery)
 
  
 }
-//Notify("typeof console " + typeof console);
-//if (typeof console === "undefined") {
 
-    window.onerror = ErrorHandler;
-//}
 
 
 
@@ -148,42 +109,6 @@ function GetFunctionBody(f: Function):string
     return result;
 }
 
-function Select(sender):any
-{
-    var $command = $(sender);
-    var sel = "selected";
-    var $commands = $command.parent().children();//a
-    $commands.removeClass(sel);
-    $command.addClass(sel);
-  
-    var selectfromlist = function (item: JQuery, items:JQuery) {
-        if (item.length > 0) {
-            items.removeClass(sel);
-            item.addClass(sel);
-        }
-    };
-
-    var $list = $command.parents(".list").first();
-    if ($list.length == 1) {
-        var tag: string = $list.prop("tagName");
-        tag = tag.toLowerCase();
-        var $listitem: JQuery = null;
-        var $listitems: JQuery = null;
-        if (tag == "ul") {
-            $listitem = $command.parents("li").first();
-            $listitems = $list.children();
-        }
-        if (tag == "table") {
-            $listitem = $command.parents("tr").first();
-            $listitems = $("tr", $list);
-
-        }
-        selectfromlist($listitem, $listitems);
-
-    }
-
-    return sender;
-}
 
 function GetReturnStatement(f: Function): string
 {
@@ -234,129 +159,9 @@ function ToObject(items: General.KeyValue[]): Object
     return obj;
 }
 
-module General {
-    export class KeyValue {
-        public Key: string = "";
-        public Value: any = null;
-    }
-
-    export class Message
-    {
-        public Id: string;
-        public Url: string;
-        public Category: string;
-        public Parameters: Object = {};
-        public ContentType: string;
-        public Error: string
-        public Data:string
-    }
-
-}
-
-interface RequestHandler
+function ToBool(item: string): boolean
 {
-    success: Function[];
-    error: Function[];
-    Id: string;
-    succeded: boolean;
-    /*
-    url: string;
-    contenttype: string;
-    */
-}
-
-class Waiter
-{
-    public Items: Object[] = [];
-    public Condition: Function = null;
-    public AllCompleted: Function = null;
-    private IsStarted: boolean = false;
-
-    constructor(Condition: Function, AllCompleted: Function)
-    {
-        this.AllCompleted = AllCompleted;
-        this.Condition = Condition;
-    }
-    public Check()
-    {
-        var me = this;
-        var result = true;
-        this.Items.forEach(function (Item) {
-            if (!me.Condition(Item))
-            {
-                result = false;
-            }
-        });
-        if (result && me.IsStarted)
-        {
-            me.Stop();
-            me.AllCompleted();
-            me.Items = [];
-
-        }
-    }
-    public WaitFor(Item:Object)
-    {
-        var me = this;
-        me.Items.push(Item);
-    }
-    public Start()
-    {
-        this.IsStarted = true;
-        this.Check();
-    }
-    public Stop() {
-        this.IsStarted = false;
-    }
-}
-
-var StopProgress: F_Progress = function (id: string) { return null; };
-var StartProgress: F_Progress = function (id: string) { return null; };
-var ResultFormatter: F_ResultFormatter = function (rawdata) { return rawdata };
-
-
-var requests: General.KeyValue[] = []; 
-try {
-    if (!IsNull(parent["requests"])){
-        requests = parent["requests"];
-    }
-}
-catch (err) {
-    
-}
-function ShowContent(selector: string, sender: any) {
-    var id = selector.replace("#", "");
-    var $activator = $(sender);// $("[activator-for=" + id + "]");
-    Select($activator);
-    var $content = $(selector);
-    var $parents = ($activator.length == 0 ? $content : $activator).parents(s_contentcontainer_selector);
-    var $parent = $parents.first();
-    $parent.children(s_content_selector).hide();
-    if ($parent.length > 0) {
-        var id = $parent.attr("id");
-        ShowContentByID("#" + id);
-    }
-    if ($content.length == 0) {
-        ShowError("ShowContent: " + selector + " has not items!");
-    }
-    $content.show();
-
-    return $activator;
-}
-function ShowContentByID(selector: string) {
-    var id = selector.replace("#", "");
-    var $activator = $("[activator-for=" + id + "]").first();
-    ShowContent(selector, $activator);
-    return $activator;
-}
-function ShowContentBySender(sender:any)
-{
-    var $activator = $(sender);
-    var targetselector = "#" + $activator.attr("activator-for");
-    ShowContent(targetselector, sender);
-   
-    return $activator;
-
+    return In(item.toLowerCase(), "true", "1");
 }
 function GetPart(data: any, startix: number, endix: number) {
     var part: any[] = [];
@@ -416,43 +221,26 @@ function GetLength(data: any) {
     }
     return 0;
 }
-function LoadPage($bindtarget: JQuery, $pager: JQuery, data: any, page: number, pagesize: number, events?: Object)
+
+function RemoveFrom(item: Object, items: any[])
 {
-    var me = this;
-    var startix = pagesize * page;
-    var endix = startix + pagesize;
-    var itemspart = GetPart(data, startix, endix);
-    var datalength = GetLength(data);
-    CallFunction(events, "onloading", itemspart);
-    BindX($bindtarget, itemspart);
-    CallFunction(events, "onloaded", itemspart);
-
-    if ($pager.length == 0 || 1 == 1) {
-        $pager.pagination(datalength,
-            {
-                items_per_page: pagesize,
-                current_page: page ? page : 0,
-                link_to: "",
-                prev_text: "Prev",
-                next_text: "Next",
-                ellipse_text: "...",
-                prev_show_always: true,
-                next_show_always: true,
-                callback: function (pageix) {
-                    CallFunction(events, "onpaging");
-                    LoadPage($bindtarget, $pager, data, pageix, pagesize, events);
-                    CallFunction(events, "onpaged");
-                    return false;
-                },
-            });
-    } else
-    {
-        //console.log("")
-    }
-
+    var ix = items.indexOf(item);
+    items.splice(ix, 1);
 }
 
-function CallFunction(eventcontainer: Object, eventname: string, args?: any[])
+function LastFrom(items: any[]): any
+{
+    var result = null;
+    if (items.length > 0)
+    {
+        result = items[items.length - 1];
+    }
+    return result;
+}
+
+
+
+function CallFunctionFrom(eventcontainer: Object, eventname: string, args?: any[])
 {
     if (!IsNull(eventcontainer))
     {
@@ -463,81 +251,35 @@ function CallFunction(eventcontainer: Object, eventname: string, args?: any[])
     }
 }
 
-function CallFunctionVariable(func: Function, args?: any[])
+function CallFunction(func: Function, args?: any[]):any
 {
     if (!IsNull(func) && IsFunction(func)) {
-        func(args);
+        return func.apply(this, args);
+
     }
     
 }
 
-function Notify(message: string) {
-    ShowNotification(message);
-}
-function ShowNotification(message: string) {
-    var msg = CreateNotificationMsg(message);
-    Communication_ToApp(msg);
-}
-function ShowError(message: string) {
-    var msg = CreateErrorMsg(message);
-    Communication_ToApp(msg);
-
-}
-function Communication_ToApp(message: General.Message)
-{
-    var strdata = JSON.stringify(message);
-    if ('Notify' in window.external) {
-        window.external.Notify(strdata);
-    } else {
-        console.log(strdata);
+function CallFunctionWithContext(context:any, func: Function, args?: any[]):any {
+    if (!IsNull(func) && IsFunction(func)) {
+        return func.apply(context, args);
     }
+    return null
 }
+
+
 function asyncFunc(func:Function) {
     setTimeout(function () {
        
         func();
     }, 10);
 }
-function Communication_Listener(data: string) {
-    //Notify("Communication_Listener_Start");
-    var message: General.Message = <General.Message>JSON.parse(data);
-    data = "";
 
-    //Notify("Communication_Listener Parsed");
-
-    data = null;
-    if (message.Category == "ajax") {
-        asyncFunc(() => {
-            //Notify("Calling AjaxResponse");
-            AjaxResponse(message);
-        });
-        //clearobject(message);
-        //AjaxResponse(message);
-    }
-    if (message.Category == "notfication")
-    {
-
-    }
-    if (message.Category == "error") {
-
-    }
-    if (message.Category == "action") {
-        if (message.Url.toLowerCase() == "instance")
-        {
-            app.instancecontainer.HandleAction(message);
-        }
-    }
-    if (message.Category == "debug") {
-        debugger;
-    }
-    //Notify("Communication_Listener_End");
-}
-
-function AjaxRequest(url: string, method: string, contenttype: string, parameters: Dictionary, success: Function, error: Function): RequestHandler {
+function AjaxRequest(url: string, method: string, contenttype: string, parameters: Object, success: Function, error: Function): RequestHandler {
 
     return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
 }
-
+/*
 function AjaxRequestComplexX(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
  
 
@@ -557,8 +299,8 @@ function AjaxRequestComplexX(url: string, method: string, contenttype: string, p
     return requesthandler;
 
 } 
-
-function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
+*/
+function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Object, success: [Function], error: [Function]): RequestHandler {
 
 
     var requestid = Guid();
@@ -575,11 +317,12 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
     msg.Parameters = parameters;
     msg.Id = requestid;
     msg.ContentType = contenttype;
+    StartProgress("ajax");
    
-    if ('Notify' in window.external) {
+    if (IsDesktop()) {
         Communication_ToApp(msg);
     } else {
-        Ajax("Instance/Index", "get",(<Dictionary>{ msg: msg }), AjaxResponse, contenttype);
+        Ajax("Instance/Index", method,(<Dictionary>{ msg: msg }), AjaxResponse, contenttype);
     }
     return requesthandler;
 } 
@@ -587,38 +330,41 @@ function AjaxRequestComplex(url: string, method: string, contenttype: string, pa
 function AjaxResponse(message: General.Message)
 {
     
+    StopProgress("ajax");
 
     var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == message.Id);
     if (request != null) {
         var requesthandler = <RequestHandler>request.Value;
-        var stringdata = message.Data;
-        message.Data = "";
-        var response = stringdata;
-        if (message.ContentType.indexOf("json") > -1) {
-            if (!IsNull(stringdata)) {
-                
-                
-                response = JSON.parse(stringdata);
-                stringdata = "";
-            }
-        }
 
-        var ix = requests.indexOf(request);
-        if (ix > -1) {
-            requests.splice(ix, 1);
-        }
-
-        if (IsNull(message.Error)) {
-            requesthandler.succeded = true;
-            requesthandler.success.forEach(function (func: Function) {
-                func(response, requesthandler);
-            });
-        }
-        else {
+        if (!IsNull(message.Error)) {
             requesthandler.error.forEach(function (func: Function) {
-                func(response);
+                func(message.Error);
             });
-            ShowError("Response Error: " + response);
+            ShowError("Response Error: " + message.Error);
+        } else {
+            var stringdata = message.Data;
+            message.Data = "";
+            var response = stringdata;
+            if (message.ContentType.indexOf("json") > -1) {
+                if (!IsNull(stringdata)) {
+
+
+                    response = JSON.parse(stringdata);
+                    stringdata = "";
+                }
+            }
+
+            var ix = requests.indexOf(request);
+            if (ix > -1) {
+                requests.splice(ix, 1);
+            }
+
+            if (IsNull(message.Error)) {
+                requesthandler.succeded = true;
+                requesthandler.success.forEach(function (func: Function) {
+                    func(response, requesthandler);
+                });
+            }
         }
         //clearobject(response);
     } else
@@ -626,7 +372,12 @@ function AjaxResponse(message: General.Message)
         ShowError("Request not found! " + message.Id);
     }
 }
-
+function GetHashPart(item:string)
+{
+    var hash_ix = item.indexOf("#");
+    item = hash_ix > -1 ? item.substring(hash_ix + 1) : "";
+    return item;
+}
 function clearobject(item: any)
 {
     if (typeof item == "string") {
@@ -638,56 +389,6 @@ function clearobject(item: any)
     }
 }
 
-function Ajax(url:string, method:string, parameters:Dictionary, generichandler:Function, contentType?:string) {
-    var result = {}; //new Engine.InfoContainer();
-    var _contentType = "text/html";
-    var _dataType = "";
-    var callback: cbdelegate = function (result: any) { return false; };
-    var S_Callback = "callback";
-    if (!IsNull(parameters) && parameters[S_Callback] instanceof Function) {
-        callback = <cbdelegate>parameters[S_Callback];
-    }
-    if (contentType == "json") {
-        _contentType = "application/json; charset=UTF-8";
-        _dataType = "json";
-    }
-    var params:Object = parameters;
-    if (method.toLowerCase() == "get") {
-        params = ToObjectX(parameters); //Clone(parameters);
-    }
-    if (method.toLowerCase() == "post") {
-        params = JSON.stringify(parameters);
-    }
-    StartProgress("ajax");
-    //_App.ProgressManager.StartProgress("ajax");
-    $.ajax({
-        url: GetBaseURL() + url,
-        contentType: _contentType,
-        dataType: _dataType,
-        type: method,
-        data: params,
-        cache: false,
-        success: function (data) {
-            StopProgress("ajax");
-            var Id = this.url.toString();
-            result = ResultFormatter(data);
-            console.log(Format("Request succeeded - {0}", Id));
-            generichandler(result);
-            callback(result);
-        },
-        error: function (exception) {
-            StopProgress("ajax");
-            var Id = this.url.toString();
-            var errorobj = GetErrorObj(exception, this.contentType)
-            var errormsg = Format("Request failed: {0}", errorobj.message);
-            //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
-            actioncenter.AddError(errormsg);
-            SetProperty(result, "Error", exception);
-            generichandler(result);
-
-        }
-    });
-}
 
 function GetErrorObj(exception, contenttype?:string) {
     var exceptiontext = "responseJSON" in exception ? exception["responseJSON"] : "";
@@ -736,7 +437,7 @@ function GetBaseURL() {
 
 /*Strings*/
 
-function TextBetween(text: string, begintag: string, endtag: string):string {
+function TextBetween(text: string, begintag: string, endtag: string, withtags?: boolean):string {
     var result = "";
     if (typeof text == "string") {
         var ixs = text.indexOf(begintag);
@@ -748,6 +449,10 @@ function TextBetween(text: string, begintag: string, endtag: string):string {
             }
         }
     }
+    if (withtags)
+    {
+        result = begintag + result + endtag;
+    }
     return result;
 };
 
@@ -757,8 +462,8 @@ function TextsBetween(text:string, begintag:string, endtag:string,withtags:boole
     {
         var item = TextBetween(text, begintag, endtag);
  
-        var fullitem = begintag + item + endtag;
         if (withtags) {
+            var fullitem = begintag + item + endtag;
             result.push(fullitem);
         } else
         {
@@ -769,16 +474,8 @@ function TextsBetween(text:string, begintag:string, endtag:string,withtags:boole
     }
     return result;
 };
-function Format(...any):string {
-    var args:any[] = Array.prototype.slice.call(arguments, 1);
-    if (args.length == 1)
-    {
-        if (IsArray(args[0]))
-        {
-            args = args[0];
-        }
-        //if 
-    }
+function FormatSimpleTest(...any): string {
+    var args = Array.prototype.slice.call(arguments, 1);
     var format = arguments[0];
     return format.replace(/{(\d+)}/g, function (match, number) {
         return typeof args[number] != 'undefined'
@@ -787,7 +484,75 @@ function Format(...any):string {
             ;
     });
 };
+function FormatSimple(format:string ,args:any[]): string {
+    return format.replace(/{(\d+)}/g, function (match, number) {
+        return typeof args[number] != 'undefined'
+            ? args[number]
+            : match
+            ;
+    });
+};
 
+function Format(...any):string {
+    var args:any[] = Array.prototype.slice.call(arguments, 1);
+    //if (args.length == 1)
+    //{
+    //    if (IsArray(args[0]))
+    //    {
+    //        args = args[0];
+    //    }
+    //    //if 
+    //}
+
+    var format = <string>arguments[0];
+    if (format.indexOf("d}") == -1 || format.indexOf("{{") == -1)
+    {
+        return FormatSimple(format, args);
+    }
+
+    format = Replace(format, "{{", "xF<w&");
+    format = Replace(format, "}}", "xF>w&");
+    var result = format;
+    var parts = TextsBetween(format, "{", "}", true);
+
+    parts.forEach(function (item, ix) {
+        var ix = -1;
+        var inner = item.substring(1, item.length - 1);
+        var partformat = "";
+        if (inner.indexOf(":") > -1) {
+            ix = Number(inner.substring(0, inner.indexOf(":")));
+            partformat = inner.substring(inner.indexOf(":") + 1);
+        } else {
+            ix = Number(inner);
+        }
+        var arg = args[ix]
+        if (!IsNull(format)) {
+            if (arg instanceof Date) {
+                arg = FormatDate(<Date>arg, partformat);
+            }
+            if (IsNumeric(arg) && (!(arg instanceof Date))) {
+                if (partformat.toLowerCase().indexOf("d") == 0) {
+                    var padnr = Number(partformat.substring(1));
+                    arg = pad(Number(arg), padnr, "0", 0);
+                }
+            }
+        }
+
+        result = Replace(result, item, arg);
+    });
+
+    return result;
+  
+};
+
+function IsNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+//string/number,length=2,char=0,0/false=Left-1/true=Right
+function pad(a, b, c, d) {
+    return a = (a || c || 0) + '', b = new Array((++b || 3) - a.length).join(c || 0), d ? a + b : b + a
+}
 function Property(item: any, property: string, value?: any):any
 {
     if (typeof value === "undefined" && !IsNull(item)) {
@@ -933,16 +698,16 @@ function ToHierarchy(items, idproperty, parentproperty, rootid) {
     return Children;
 };
 
-function ForAll(hierarchy: Object,childrenproperty:string, func:Function)
+function ForAll(hierarchy: Object,childrenproperty:string, func:Function, parent:Object=null, level:number=0)
 {
-    func(hierarchy);
+    func(hierarchy, parent, level);
     if (childrenproperty in hierarchy)
     {
         var children = hierarchy[childrenproperty];
         if (!IsNull(children) && IsArray(children))
         {
             (<any[]>children).forEach(function (item) {
-                ForAll(item, childrenproperty, func);
+                ForAll(item, childrenproperty, func, hierarchy, level+1);
             });
         }
     }
@@ -959,7 +724,8 @@ function Clone(obj:Object):Object {
 }
 
 function IsNull(item: any): boolean {
-    return item == 'undefined' || item == null || (typeof(item)=="string" && item == "");
+    //return item == 'undefined' || item == null || (typeof (item) == "string" && item == "");
+    return item === undefined || item == null || item === "";
 };
 
 function s4() {
@@ -987,7 +753,7 @@ function ToHtmlAttributeListString(obj:Object) {
     }
     return str;
 };
-
+/*
 function RenderHierarchy(obj: Object[], itemformatter?: Function) {
     var html = "";
     if (obj instanceof Array) {
@@ -1004,6 +770,29 @@ function RenderHierarchy(obj: Object[], itemformatter?: Function) {
     }
     return html;
 };
+*/
+function RenderHierarchy(obj: Object, itemformatter?: Function, level: number = 0) {
+    var html = "";
+    var children: any[] = obj["Children"];
+    children = IsNull(children) ? [] : children;
+    if (level > 0) {
+        html += "<li>";
+        html += itemformatter(obj);
+    }
+
+    if (children.length > 0) {
+        html += "<ul>";
+        children.forEach(function (item) {
+            html += RenderHierarchy(item, itemformatter, level + 1);
+        });
+        html += "</ul>";
+
+    }
+    if (level > 0) {
+        html += "</li>\n";
+    }
+    return html;
+};
 
 function HtmlToText(html: string): string {
     var tmp = document.createElement("DIV");
@@ -1016,13 +805,7 @@ function ToString(item: Object)
     return IsNull(item) ? "" : item.toString();
 }
 
-function HtmlEncode(value: string): string {
-    return $('<div/>').text(value).html();
-}
 
-function HtmlDecode(value: string): string {
-    return $('<div/>').html(value).text();
-}
 
 function Truncate(item: string, limit?: number) {
     var result = "";
@@ -1038,18 +821,7 @@ function Truncate(item: string, limit?: number) {
     return result;
 }
 
-function BindEvent(selector, events, handler) {
-    $(selector).unbind(events, handler).bind(events, handler);
-};
 
-function UnBindEvent(selector, events) {
-    $(selector).unbind(events);
-};
-
-function ShowHide(target) {
-    $(target).toggleClass("hidden");
-
-}
 /*End HTML*/
 
 /*DateTime*/
@@ -1065,11 +837,6 @@ function ToDate(item: string)
     return FormatDate(JsonToDate(item));
 }
 
-function FormatDate(d:Date, format?:string):string {
-    if (IsNull(format)) { format = "yy/mm/dd hh:ii:ss"; }
-    if (IsNull(d)) { return ""; }
-    return $.formatDateTime(format, d);
-}
 
 function ToNormalDate(item:string):string {
     return FormatDate(JsonToDate(item));
@@ -1087,32 +854,20 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 }
-
+/*
+HTMLElement.prototype.toString = function () {
+    var html = (<HTMLElement>this).outerHTML;
+    var result = "<" + TextBetween(html, "<", ">") + ">";
+    return result;
+}
+*/
 function Res(key: string, culture?: string): string {
     var res = key;
     res = resourcemanager.Get(key, culture);
     return res;
 }
 
-function Attribute(obj, name:string, value?:string):string {
-    if (arguments.length == 3) {
-        $(obj).attr(name, value);  
-    }
-    if (arguments.length == 2) {
-        return $(obj).attr(name);
-    }
-    return "";
-}
 
-function Content(obj, value?:string):string {
-    if (arguments.length == 2) {
-        $(obj).html(value);
-    }
-    if (arguments.length == 1) {
-        return $(obj).html();
-    }
-    return "";
-}
 /**End Proto/
 
 /*Expressions*/
@@ -1155,31 +910,7 @@ function Content(obj, value?:string):string {
 };
 /*End Expressions*/
 
-$.fn.serializeObject = function () {
-    var o = {};
-    var a = this.serializeArray();
-    //$.each(a, function () {
-    //    if (o[this.name] !== undefined) {
-    //        if (!o[this.name].push) {
-    //            o[this.name] = [o[this.name]];
-    //        }
-    //        o[this.name].push(this.value || '');
-    //    } else {
-    //        o[this.name] = this.value || '';
-    //    }
-    //});
-    //return o;
 
-    var paramObj = {};
-    $.each(a, function (_, kv) {
-        paramObj[kv.name] = kv.value;
-    });
-    return paramObj
-};
-
-function SerializeForm(selector): Dictionary {
-    return $(selector).serializeObject();
-}
 
 function FilesIntoUL(viewmodel) {
     var model = viewmodel.Items;
@@ -1198,67 +929,7 @@ function FilesIntoUL(viewmodel) {
     return html;
 
 }
-$.fn.extend({
-    padding: function (direction: string):number {
-        // calculate the values you need, using a switch statement
-        // or some other clever solution you figure out
 
-        // this now contains a wrapped set with the element you apply the 
-        // function on, and direction should be one of the four strings 'top', 
-        // 'right', 'left' or 'bottom'
-
-        // That means you could probably do something like (pseudo code):
-        var paddingvalue:string = this.css('padding-' + direction).trim();
-        var intPart = "";
-        var unit = paddingvalue.substring(paddingvalue.length-2);
-        intPart = paddingvalue.replace(unit, "");
-        //stest.substring(0, stest.lastIndexOf("px"))
-        //var intPart = this.css('padding-' + direction).rem();
-        //var unit = this.css('padding-' + direction).getUnit();
-
-        switch (unit) {
-            case 'px':
-                return Number(intPart);
-            case 'em':
-                return 0; //ConvertEmToPx(intPart)
-            default:
-            // Do whatever you feel good about as default action
-            // Just make sure you return a value on each code path
-        }
-    }
-});
-$.fn.extend({
-    editable: function () {
-        var that = this,
-            $edittextbox = $('<input type="text"></input>').css('min-width', that.width()),
-            submitChanges = function () {
-                that.html($edittextbox.val());
-                that.show();
-                that.trigger('editsubmit', [that.html()]);
-                $(document).unbind('click', submitChanges);
-                $edittextbox.detach();
-            },
-            tempVal;
-        $edittextbox.click(function (event) {
-            event.stopPropagation();
-        });
-
-        that.dblclick(function (e) {
-            tempVal = that.html();
-            $edittextbox.val(tempVal).insertBefore(that).bind('keypress', function (e) {
-                if ($(this).val() !== '') {
-                    var code = (e.keyCode ? e.keyCode : e.which);
-                    if (code == 13) {
-                        submitChanges();
-                    }
-                }
-            });
-            that.hide();
-            $(document).click(submitChanges);
-        });
-        return that;
-    }
-});
 
 
 function browserSupportsWebWorkers():boolean {
@@ -1266,200 +937,98 @@ function browserSupportsWebWorkers():boolean {
     return false;
 }
 
-module Engine
-{  
 
-    export class ActionCenter
-    {
-        private Selector: any = null;
-        private CurrentSelector: any = null;
-        private ListSelector: any = null;
-        private ActionBarSelector: any = null;
-        private class_Error: string = "n-error";
-        private class_Warning: string = "n-warning";
-        private class_Info: string = "n-info";
-        private class_Success: string = "n-success";
-        private format_Notification: string = "<div class=\"notification {1}\">{0}</div>";
-
-        public SetSelectors(selector:any, currentselector: any, listselector: any,actionbarselector:any)
-        {
-            this.Selector = selector;
-            this.CurrentSelector = currentselector;
-            this.ListSelector = listselector;
-            this.ActionBarSelector = actionbarselector;
-        }
-
-        public AddSuccess(content: string)
-        {
-            this.AddNotification(content, this.class_Success);
-        }
-        public AddInfo(content: string)
-        {
-            this.AddNotification(content, this.class_Info);
-        }
-        public AddWarning(content: string)
-        {
-            this.AddNotification(content, this.class_Warning);
-        }
-        public AddError(content: string)
-        {
-            this.AddNotification(content, this.class_Error);
-        }
-
-        public AddNotification(content: string, cssclass?:string)
-        {
-            content = Format(this.format_Notification, content, cssclass);
-            var lastmessage = $(this.CurrentSelector).html();
-            $(this.CurrentSelector).html(content);
-            $(this.ListSelector).prepend(lastmessage);
-            $(this.Selector).show();
-        }
-
-        public ClearAll()
-        {
-            this.ClearCurrent();
-            this.ClearList();
-            $(this.Selector).hide();
-            
-        }
-
-        public ClearCurrent()
-        {
-            $(this.CurrentSelector).html("");
-
-        }
-        public ClearList() {
-            $(this.ListSelector).html("");
-
-        }
-        public ToggleListVisibility() {
-            if ($(this.ListSelector).is(":visible")) {
-                $(this.ListSelector).hide();
-            }
-            else {
-                $(this.ListSelector).show();
-
-            }
-        }
-    }
-
-    export class UIManager
-    {
-        private duration: number = 200;
-        private min_width: number = 150;
-
-        private GetMaxWidth():number
-        {
-             var maxwidth = $("#main-content").width();
-             return maxwidth;
-        }
-
-        public ActivateList()
-        {
-
-                $("#ListController").parent().animate({ "max-width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-                $("#SaveController").parent().animate({ "width": this.min_width + "px" }, { duration: this.duration, queue: false });
-        }
-        public ActivateSave()
-        {
-            $("#ListController").parent().animate({ "max-width": this.min_width + "px" }, { duration: this.duration, queue: false });
-            $("#SaveController").parent().animate({ "width": (this.GetMaxWidth() - this.min_width) + "px" }, { duration: this.duration, queue: false });
-
-        }
-    }
-}
-
-class Editor
-{
-    public HtmlFormat: string = "";
-    public ValueGetter: Function = null;
-    public ValueSetter: Function = null;
-    public TargetValueGetter: Function = null;
-    public TargetValueSetter: Function = null;
-    public $Target: JQuery = null; 
-    public $Me: JQuery = null; 
-    public Current_Value: string;
-    public Original_Value: string;
-
-    static editclass: string = "editing";
-
-    constructor(HtmlFormat: string, ValueGetter: Function, ValueSetter: Function)
-    {
-        this.HtmlFormat = HtmlFormat;
-        this.ValueGetter = ValueGetter;
-        this.ValueSetter = ValueSetter;
-    }
-
-    public Save()
-    {
-        this.TargetValueSetter(this.ValueGetter(this.$Me));
-        this.$Target.removeClass(Editor.editclass);
-        this.$Me.remove();
-    }
-
-    public Load(Target: JQuery, TargetValueGetter: Function, TargetValueSetter: Function)
-    {
-        var me = this;
-        this.TargetValueGetter = TargetValueGetter;
-        this.TargetValueSetter = TargetValueSetter;
-        this.Original_Value = TargetValueGetter().trim();
-        this.$Me = $(Format(this.HtmlFormat, this.Original_Value));
-
-        //setting UI
-        var containerwidth = Target.width() - (Target.padding("left") + Target.padding("right"));
-        var containerheight = Target.height() - (Target.padding("top") + Target.padding("bottom"));
-        var containerfontfamily = Target.css('font-family');
-        var containerfontsize = Target.css('font-size');
-        var containerlineheight = Target.css('line-height');
-
-        this.$Me.width(containerwidth);
-        this.$Me.height(containerheight);
-        this.$Me.css('font-family', containerfontfamily);
-        this.$Me.css('font-size', containerfontsize);
-        this.$Me.css('line-height', containerlineheight);
-        //end setting UI
-        this.ValueSetter(this.$Me, this.Original_Value);
-
-        this.$Target = Target;
-        this.$Target.html('');
-        this.$Me.appendTo(this.$Target);
-        this.$Target.addClass(Editor.editclass);
-
-
-        this.$Me.blur(function () { me.Save(); });
-        this.$Me.keypress(function (e) {
-            if (e.which == 13) {
-                me.Save();
-            }
-        });
-
-        this.$Me.focus();
-    }
-}
+/*
 function MakeEditable2(cellselector)
 {
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
+        var target = <Element>this;
+        if (!_HasClass(target, Editor.editclass)) {
             var editor = new Editor('<input type="text" class="celleditor" value="" />',(i: JQuery) => i.val(), (i: JQuery, val: any) => i.val(val));
-            editor.Load($target,() => $target.html(),() => $target.html(editor.ValueGetter(editor.$Me)));
+            editor.Load(target,() => _Html(target), () => _Html(target, editor.ValueGetter(editor.$Me)));
         }
+
     });
 }
 
 function MakeEditable3(cellselector, optionObject) {
     $(cellselector).off("click");
     $(cellselector).click(function () {
-        var $target = $(this);
-        if (!$target.hasClass(Editor.editclass)) {
-  
+        var target = <Element>this;
+        if (!_HasClass(target, Editor.editclass)) {
             var editor = new Editor(Format('<select class="celleditor">{0}</select>', ToOptionList(optionObject, false)),(i: JQuery) => i.val(),(i: JQuery, val: any) => { i.val(val); });
-            editor.Load($target,() => $target.html(), () => $target.html(editor.ValueGetter(editor.$Me)));
+            editor.Load(target,() => _Html(target),() => _Html(target, editor.ValueGetter(editor.$Me)));
         }
     });
 }
-var testoptions = { "eba_GA:x1": "Africa", "eba_GA:x2": "EU", "eba_GA:x3": "USA sfsdg fsdfsfs"};
+*/
+function Editable(cellselector:any, editedcallback:Function)
+{
+    var targets = _Select(cellselector);
+    _AddEventHandler(targets, "click", function (event: any) {
+        var target = event.currentTarget;
+
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = new Editor('<input type="text" class="celleditor " value="" />',
+                (i: JQuery) => i.val(),
+                (i: JQuery, val: any) => i.val(val));
+
+            editor.Load(target,
+                () => _Html(target),
+                () => {
+                    var value = editor.ValueGetter(editor.$Me);
+                    _Html(target, value);
+                    editedcallback(target, value);
+                }
+                );
+        }
+    });
+}
+function GetDefaultEditor(target:Element):Editor
+{
+    var editor = new Editor('<input type="text" class="celleditor " value="" />',
+        (i: JQuery) => i.val(),
+        (i: JQuery, val: any) => i.val(val));
+    return editor;
+}
+
+function EditCell(cell: Element, editorAccessor: Function, editedcallback: Function)
+{
+
+    if (!_HasClass(cell, Editor.editclass)) {
+        var editor = editorAccessor(cell);
+
+        editor.Load(cell,
+            () => _Html(cell),
+            () => {
+                var value = editor.ValueGetter(editor.$Me);
+                _Html(cell, value);
+                editedcallback(cell, value);
+            }
+            );
+    }
+}
+
+function AssignEditor(targetsaccessor: Function, editorAccessor: Function, editedcallback: Function) {
+    var targets = targetsaccessor();
+    _AddEventHandler(targets, "click", function (event: any) {
+        var target = event.currentTarget;
+
+        if (!_HasClass(target, Editor.editclass)) {
+            var editor = editorAccessor(target);
+
+            editor.Load(target,
+                () => _Html(target),
+                () => {
+                    var value = editor.ValueGetter(editor.$Me);
+                    _Html(target, value);
+                    editedcallback(target, value);
+                }
+                );
+        }
+    });
+}
 
 function MakeEditable(cellselector)
 {
@@ -1528,7 +1097,8 @@ function ToOptionList(obj: Object, addemptyoption:boolean): string
     }
     return result;
 }
-function NormalizeFolderPath(folder:any):string
+
+function NormalizeFolderPath(folder: any): string
 {
     if (folder == null) { folder = ""; }
     if (folder.indexOf("~") == 0) { folder = folder.substring(1); }
@@ -1539,7 +1109,6 @@ function NormalizeFolderPath(folder:any):string
 
     return folder;
 }
-
 
 function SetCustomFields(fieldcontainerselector: any, targetinputselector:any): General.KeyValue[]
 {
@@ -1605,9 +1174,10 @@ function Split(text: string, delimeters: any, removeempty:boolean)
 
 function Access(obj, key) {
     if (key == "this") { return obj; }
-    return key.split(".").reduce(function (o, x) {
+    var result = key.split(".").reduce(function (o, x) {
         return (typeof o == "undefined" || o === null) ? o : o[x];
     }, obj);
+    return IsNull(result) ? "" : result;
 }
 
 function OuterHtml(item: JQuery): string
@@ -1616,115 +1186,25 @@ function OuterHtml(item: JQuery): string
     //return item.wrapAll('<div>').parent().html(); 
 }
 
-function Bind(target: any, data: any, parent?: any) {
-    var fBind = (target, data, parent?) => this.Bind.call(this, target, data, parent);
-    var NoCheck = [];
-    var targetitem = $(target);
-    var bindattribute = "binding";
-    var attributespecifier = "=>";
-    var jquerytargets = targetitem.find("*[" + bindattribute + "]");
-    var targets = [];
-    if (!IsNull($(target).attr(bindattribute))) { targets.push(target); }
-    jquerytargets.each(function (ix, item) {
-        targets.push(item);
-    });
-    //console.log(Format("Binding target: {0}", targets.length));
-    targets.forEach(function (item, ix) {
-        if (NoCheck.indexOf(item) == -1) {
-            var id = $(item).attr(bindattribute);
-            var targetattribute = "";
-            var formatString = "{0}";
-            var expr = id;
-            if (expr.indexOf(attributespecifier) > -1) {
-                var isplit = expr.split(attributespecifier);
-                if (isplit.length == 2) {
-                    targetattribute = isplit[0];
-                    expr = isplit[1];
 
-                }
-            }
-            var originalexpr = expr;
-            var expressions = [];
-            var i = 0;
-            for (var expression = TextBetween(expr, "{", "}"); !IsNull(expression); expression = TextBetween(expr, "{", "}")) {
-                expressions.push(expression);
-                expr = expr.replace("{" + expression + "}", "<<<" + i + ">>>");
-                i++;
-            }
-            expr = expr.replace(/<<</g, "{").replace(/>>>/g, "}");
-
-            if (expressions.length > 0) {
-                formatString = expr;//originalexpr.replace("{" + expr + "}", "{0}");
-            } else {
-                expressions.push(originalexpr);
-            }
-            var values = [];
-            expressions.forEach(function (expression) {
-                var val = null;
-                val = Access(data, expression);
-                if (typeof val == "string") {
-                    if (val.indexOf("/Date(") == 0) {
-                        val = ToDate(val);
-                    }
-                    else {
-                        val = val.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                    }
-                }
-                values.push(val)
-            });
-
-            var elementtemplate = $('[binding-type=template]', $(item)).first();
-            var newelementX = $(elementtemplate).clone(true, true);
-            newelementX.removeAttr("binding-type");
-
-            var firstvalue = values[0];
-            if (IsArray(firstvalue)) {
-
-                if (elementtemplate.length == 0) {
-                    console.log('no template found!');
-                }
-                $(item).empty();
-                elementtemplate.appendTo($(item));
-                var itemstoadd = [];
-                var bindattributeselector = "[" + bindattribute + "]";
-                firstvalue.forEach(function (childitem) {
-                 
-
-                    fBind(newelementX, childitem, firstvalue);
-                    itemstoadd.push(OuterHtml(newelementX));
-
-
-                });
-                //newelement.appendTo($(item));
-                $(item).append(itemstoadd.join('\n'));
-            } else {
-
-                if (IsNull(targetattribute)) {
-                    if (IsNull(elementtemplate) || elementtemplate.length == 0) {
-                        $(item).html(Format(formatString, values));
-                    }
-                }
-                else {
-                    $(item).attr(targetattribute, Format(formatString, values));
-
-                }
-
-            }
-        }
-    });
-}
 function Replace(text:string, texttoreplace:string, textwithreplace:string):string
 {
+    return text.split(texttoreplace).join(textwithreplace);
+}
+
+function Bind_Replace(text: string, texttoreplace: string, textwithreplace: string): string {
+    //return text.replace(Format("{0}", texttoreplace), textwithreplace);
+    return text.split(texttoreplace).join(textwithreplace);
     /*
-    var reg = new RegExp(texttoreplace, "g");
-    return text.replace(reg, textwithreplace);
-    */
+    if (IsNull(texttoreplace)) { return text; }
+
     var index = 0;
     do {
         text = text.replace(texttoreplace, textwithreplace);
     }
     while ((index = text.indexOf(texttoreplace, index + 1)) > -1);
     return text;
+    */
 }
 
 
@@ -1743,29 +1223,22 @@ function GetProperties(item: Object): General.KeyValue[]
     return properties;
 }
 
-
-var S_Bind_Start = "bind[";
-var S_Bind_End = "]";
-var s_list_selector: string = ".list";
-var s_listpager_selector: string = ".listpager";
-var s_listfilter_selector: string = ".listfilter";
-var s_sublist_selector: string = ".sublist";
-var s_sublistpager_selector: string = ".sublistpager";
-var s_detail_selector: string = ".detail";
-var s_parent_selector: string = ".parent";
-var s_contentcontainer_selector: string = ".contentcontainer";
-var s_content_selector: string = ".subcontent";
-
-
-
-var actioncenter = new Engine.ActionCenter();
-var uimanager = new Engine.UIManager();
-var resourcemanager: IResourceManager = { Get: function (key: string, culture?: string) { return key;}};
-interface IResourceManager
-{
-    Get(key: string, culture?: string): string;
+function GetPropertiesArray(item: Object): Object[] {
+    var properties: any[] = [];
+    for (var propertyName in item) {
+        if (item.hasOwnProperty(propertyName)) {
+            var propertyValue = item[propertyName];
+            properties.push(propertyValue)
+        }
+    }
+    return properties;
 }
-var activeItem = null;
+
+
+
+
+
+
 
 
 

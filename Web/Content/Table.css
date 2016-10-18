@@ -1,0 +1,903 @@
+﻿
+#LogWindow {
+    position: fixed;
+    width: 100%;
+    height: 200px;
+    background-color: white;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    border-top: solid 1px black;
+}  
+#contentlog {
+    overflow-y:auto;
+    height:100%;
+   
+    border:solid 1px black;
+
+}
+#resizable-helper {
+    padding:5px;
+}
+table {
+    border-collapse: collapse;
+    border: solid 1px black;
+}
+tr 
+{
+    /*border-bottom: solid 1px black;*/
+}
+.report th, td{
+    border-top:  solid 1px black;
+    border-left:  solid 1px black;
+    border-right:  solid 1px black;
+    /*border-bottom: solid 1px transparent;*/
+}
+tr.selected,
+tr.selected th,
+tr.selected td
+{
+    border: solid 1px red;
+
+}
+
+
+    table td {
+        vertical-align: top;
+        padding-right: 5px;
+        margin-right: 5px;
+    }
+    table.report {
+    
+
+    }
+table.report {
+    border:  solid 1px black;
+}
+table.report tbody th,
+table.report tbody td
+{
+    border:  solid 0px black;
+}
+table.report, table.report thead th.placeholder {
+    border-top:  solid 1px transparent;
+    border-bottom:  solid 1px black;
+    border-left:  solid 1px black;
+    border-right:  solid 1px black;
+
+}
+
+
+table.report tbody tr
+{
+    /*border: solid 1px transparent;*/
+}
+    th.pad {
+        border-left-width: 0px;
+        border-right-width: 0px;
+    }
+
+table.report tbody td.data {
+        text-align: right;
+        border-left:  solid 1px black;
+
+    }
+
+    td.data input[type=text] {
+        text-align: right;
+    }
+    table.report td.key    
+    {
+        background:#efdd7a;
+    }
+    table.report td.editing {
+            background:#ffffff;
+
+    }  
+    table.report td.data 
+    {
+        min-width:120px;
+
+        /*
+        max-width:120px;
+            */
+    }
+    table.report th.title 
+    {
+        min-width:300px;
+    }
+    table.report th.pad 
+    {
+        min-width:15px;
+    }
+    table.report tbody tr {
+        border-top:solid 1px transparent;
+        height:23px;
+    }
+    table.report tbody tr:nth-child(2n-1) {
+        background-color:#cecece;
+    }
+    table.report tbody tr:nth-child(2n-1) td.key{
+        background-color:#dcd6b8;
+    }
+    table.report tbody tr:nth-child(2n-1) td.editing {
+        background:#ffffff;
+    }
+table.report .selected {
+    color:black;
+}
+  
+
+body {
+    font-family: 'Segoe UI',Verdana;
+    font-size: 10pt;
+    margin: 0px;
+    height: 100%;
+}
+
+html {
+    height: 100%;
+}
+
+h1 {
+    margin-top:0px;
+    margin-bottom:0px;
+    font-size: 14pt;
+}
+h2 {
+    margin-top:0px;
+    margin-bottom:0px;
+    font-size: 12pt;
+}
+
+ul {
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 0px;
+    margin-top:0px;
+}
+
+    ul > li {
+        /*margin-left: 20px;*/
+    }
+
+#maintable {
+    table-layout: fixed;
+}
+
+    #maintable>thead>th {
+        position: relative;
+    }
+
+    #maintable>th, #maintable>td {
+        padding: 2px 5px;
+        /*text-align: left;*/
+        overflow: hidden;
+    }
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.blocked {
+    background: #808080;
+}
+
+
+
+
+[binding-type="template"] {
+    display: none;
+}
+
+#Contents > div {
+    background: #ffffff;
+}
+
+#factdetail {
+    /*
+    margin-left:500px;
+    position:absolute;
+    z-index: 1;
+    */
+    clear: both;
+}
+
+#FactFilter {
+    min-width: 600px;
+}
+
+#factcontainer {
+    /*
+    position:absolute;
+    max-height:600px;
+	overflow : auto;
+    */
+}
+
+#factlist {
+    margin-left: 0px;
+    z-index: 1;
+    max-width: 400px;
+}
+
+.highlight {
+    background: #00e600;
+}
+
+#Facts {
+}
+
+a, a:visited{
+    margin-right: 5px;
+    text-decoration:none;
+    color:#375990;
+}
+
+#pivot li {
+    /*clear: both;*/
+    border-bottom:solid 1px transparent;
+    border-top:solid 1px transparent;
+}
+
+.selected {
+
+}
+
+.selected a,.selected a:visited {
+    color:red;
+}
+li.selected {
+    border-bottom:solid 1px black;
+    border-top:solid 1px black;
+}
+li.selected a,li.selected a:visited {
+    color:#375990;
+}
+table.report tbody tr.selected,
+table.report tbody tr:nth-child(2n-1).selected {
+    /*background-color:#AAE;*/
+    border:solid 1px red;
+}
+
+    .selected .editing {
+        background: #ffffff;
+    }
+
+
+.haschild {
+    border-bottom-width: 0px;
+}
+.hasdata 
+{
+    font-weight:bold;
+}
+.empty {
+    font-weight:normal;
+
+}
+
+.pagination {
+    font-size: 80%;
+    clear: both;
+    display: block;
+    float: none;
+    min-height:31px;
+    margin:5px;
+}
+
+    .pagination a {
+        text-decoration: none;
+        border: solid 1px #AAE;
+        color: #15B;
+    }
+
+    .pagination a, .pagination span {
+        display: block;
+        float: left;
+        padding: 0.3em 0.5em;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        min-width: 1.1em;
+    }
+
+    .pagination .current {
+        background: #26B;
+        color: #fff;
+        border: solid 1px #AAE;
+    }
+
+        .pagination .current.prev, .pagination .current.next {
+            color: #999;
+            border-color: #999;
+            background: #fff;
+        }
+
+.hmax30 {
+    max-height: 20px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.trimmed {
+    margin: 5px;
+}
+
+
+
+    a.cellcount_0 {
+        color: red;
+    }
+
+    a:hover {
+        color: red;
+    }
+
+.dynamicdata {
+    min-height: 20pt;
+}
+th.dynamicdata {
+    width:120px;
+}
+
+.w_large {
+    width: 300px;
+}
+
+#pivot {
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+    /*display:none;*/
+}
+
+.pivotitem {
+    /*float:left;*/
+    /*position:relative;*/
+    /*background:#c1c1c1;
+    max-width:500px;*/
+    overflow: auto;
+    min-height: 200px;
+    max-height: 700px;
+    width: calc(100% - 20px);
+}
+
+iframe {
+    border: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    margin: 5px;
+}
+
+
+
+#Table {
+}
+
+#Contents {
+    /*right: 30%;*/
+    margin-right: 5px;
+}
+
+.split-pane-divider {
+    width: 5px;
+    background: #cecece;
+}
+
+.splitter1 {
+    right: 20%;
+}
+
+.splitter2 {
+    right: 50%;
+}
+
+#Table {
+}
+
+#Tables {
+}
+
+.hidden {
+    display: none;
+}
+
+#maintable {
+    width: 100%;
+    height: 100%;
+}
+
+    #maintable>td {
+        height: 100%;
+    }
+
+    #maintable>thead>tr>th {
+        height: 20px;
+    }
+
+.th1 {
+    width: 60%;
+}
+
+.th2 {
+   
+}
+#colgroup1 {
+   
+}
+col.narrow {
+     width: 350px;
+}
+col.wide {
+     width: 700px;
+}
+#colgroup2 {
+
+}
+#maintable th.menucell {
+    overflow:visible;
+}
+.colHeaders {
+    height:20px;
+}
+/*end splitter*/
+
+/*.rc-handle-container {
+    position: relative;
+}
+
+.rc-handle {
+    position: absolute;
+    width: 7px;
+    cursor: ew-resize;
+    margin-left: -3px;
+    z-index: 2;
+}
+
+table.rc-table-resizing {
+    cursor: ew-resize;
+}
+
+    table.rc-table-resizing thead,
+    table.rc-table-resizing thead > th,
+    table.rc-table-resizing thead > th > a {
+        cursor: ew-resize;
+    }*/
+
+table.noborder, table.noborder th, table.noborder td {
+    border: 0px solid black;
+}
+
+input, textarea {
+    margin-right: 5px;
+}
+
+    textarea.wide {
+    min-width:300px;
+    }
+
+
+.commands a {
+    padding-right:10px;
+    padding-left:10px;
+    margin-right:0px;
+    margin-left:0px;
+    border-right:none 0px;
+    border-left:none 0px;
+    text-decoration:none;
+    font-size:12pt;
+}
+.commands a.selected {
+    /*color:black;*/
+    font-weight:bold;
+    background-color:transparent;
+    /*
+
+*/
+    border-bottom:solid 2px white;
+}
+#MainCommands {
+    border-bottom:solid 1px black;
+
+}
+
+    #MainCommands a {
+    font-size:14pt;
+
+    }
+#MainCommands a.selected{
+/*
+    border-right:solid 1px black;
+    border-left:solid 1px black;
+    */
+}
+.detail, .filter 
+{
+    border:solid 1px black;
+}
+.sublist {
+    margin-right:5px;
+}
+.rule_1>a {
+    color:red;
+}
+.rule_2>a {
+    color:#988a3e;
+}
+
+/*
+    datepicker
+*/
+/*!
+ * jQuery UI Datepicker 1.10.3
+ * http://jqueryui.com
+ *
+ * Copyright 2013 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Datepicker#theming
+ */
+.ui-datepicker {
+	width: 17em;
+	padding: .2em .2em 0;
+	display: none;
+}
+.ui-datepicker .ui-datepicker-header {
+	position: relative;
+	padding: .2em 0;
+}
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next {
+	position: absolute;
+	top: 2px;
+	width: 1.8em;
+	height: 1.8em;
+}
+.ui-datepicker .ui-datepicker-prev-hover,
+.ui-datepicker .ui-datepicker-next-hover {
+	top: 1px;
+}
+.ui-datepicker .ui-datepicker-prev {
+	left: 2px;
+}
+.ui-datepicker .ui-datepicker-next {
+	right: 2px;
+}
+.ui-datepicker .ui-datepicker-prev-hover {
+	left: 1px;
+}
+.ui-datepicker .ui-datepicker-next-hover {
+	right: 1px;
+}
+.ui-datepicker .ui-datepicker-prev span,
+.ui-datepicker .ui-datepicker-next span {
+	display: block;
+	position: absolute;
+	left: 50%;
+	margin-left: -8px;
+	top: 50%;
+	margin-top: -8px;
+}
+.ui-datepicker .ui-datepicker-title {
+	margin: 0 2.3em;
+	line-height: 1.8em;
+	text-align: center;
+}
+.ui-datepicker .ui-datepicker-title select {
+	font-size: 1em;
+	margin: 1px 0;
+}
+.ui-datepicker select.ui-datepicker-month-year {
+	width: 100%;
+}
+.ui-datepicker select.ui-datepicker-month,
+.ui-datepicker select.ui-datepicker-year {
+	width: 49%;
+}
+.ui-datepicker table {
+	width: 100%;
+	font-size: .9em;
+	border-collapse: collapse;
+	margin: 0 0 .4em;
+}
+.ui-datepicker th {
+	padding: .7em .3em;
+	text-align: center;
+	font-weight: bold;
+	border: 0;
+}
+.ui-datepicker td {
+	border: 0;
+	padding: 1px;
+}
+.ui-datepicker td span,
+.ui-datepicker td a {
+	display: block;
+	padding: .2em;
+	text-align: right;
+	text-decoration: none;
+}
+.ui-datepicker .ui-datepicker-buttonpane {
+	background-image: none;
+	margin: .7em 0 0 0;
+	padding: 0 .2em;
+	border-left: 0;
+	border-right: 0;
+	border-bottom: 0;
+}
+.ui-datepicker .ui-datepicker-buttonpane button {
+	float: right;
+	margin: .5em .2em .4em;
+	cursor: pointer;
+	padding: .2em .6em .3em .6em;
+	width: auto;
+	overflow: visible;
+}
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+	float: left;
+}
+
+/* with multiple calendars */
+.ui-datepicker.ui-datepicker-multi {
+	width: auto;
+}
+.ui-datepicker-multi .ui-datepicker-group {
+	float: left;
+}
+.ui-datepicker-multi .ui-datepicker-group table {
+	width: 95%;
+	margin: 0 auto .4em;
+}
+.ui-datepicker-multi-2 .ui-datepicker-group {
+	width: 50%;
+}
+.ui-datepicker-multi-3 .ui-datepicker-group {
+	width: 33.3%;
+}
+.ui-datepicker-multi-4 .ui-datepicker-group {
+	width: 25%;
+}
+.ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
+.ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
+	border-left-width: 0;
+}
+.ui-datepicker-multi .ui-datepicker-buttonpane {
+	clear: left;
+}
+.ui-datepicker-row-break {
+	clear: both;
+	width: 100%;
+	font-size: 0;
+}
+
+/* RTL support */
+.ui-datepicker-rtl {
+	direction: rtl;
+}
+.ui-datepicker-rtl .ui-datepicker-prev {
+	right: 2px;
+	left: auto;
+}
+.ui-datepicker-rtl .ui-datepicker-next {
+	left: 2px;
+	right: auto;
+}
+.ui-datepicker-rtl .ui-datepicker-prev:hover {
+	right: 1px;
+	left: auto;
+}
+.ui-datepicker-rtl .ui-datepicker-next:hover {
+	left: 1px;
+	right: auto;
+}
+.ui-datepicker-rtl .ui-datepicker-buttonpane {
+	clear: right;
+}
+.ui-datepicker-rtl .ui-datepicker-buttonpane button {
+	float: left;
+}
+.ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
+.ui-datepicker-rtl .ui-datepicker-group {
+	float: right;
+}
+.ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
+.ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
+	border-right-width: 0;
+	border-left-width: 1px;
+}
+
+/*datepicker end*/
+.celleditor {
+    border: solid 1px black;
+    margin: 0px;
+    padding: 0px;
+    /*
+    left:0px;
+    top:0px;
+    */
+    position:relative;
+}
+input[type=text].celleditor {
+    border: solid 0px;
+    margin: 0px;
+    padding: 0px;
+    width:100%;
+}
+
+select.celleditor {
+    border: solid 0px red;
+    margin: 0px;
+    padding: 0px;
+    left:0px;
+    width:100%;
+   /* max-width:120px;*/
+    
+}
+
+#ReportContainer {
+    overflow-x:auto;
+    overflow-y:auto;
+    height:100%;
+}
+    #ReportContainer > textarea {
+        width:calc(100% - 20px);
+        height:calc(100% - 20px);
+    }
+#fileuploadcontainer {
+    z-index:-5;
+    position:absolute;
+    height:0px;
+}
+
+/*!
+ * jQuery UI Resizable 1.11.4
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+.ui-resizable {
+	position: relative;
+}
+.ui-resizable-handle {
+	position: absolute;
+	font-size: 0.1px;
+	display: block;
+	-ms-touch-action: none;
+	touch-action: none;
+    z-index:-1;
+}
+.ui-resizable-disabled .ui-resizable-handle,
+.ui-resizable-autohide .ui-resizable-handle {
+	display: none;
+}
+.ui-resizable-n {
+	cursor: n-resize;
+	height: 7px;
+	width: 100%;
+	top: -5px;
+	left: 0;
+}
+.ui-resizable-s {
+	cursor: s-resize;
+	height: 10px;
+	width: 100%;
+	bottom: -5px;
+	left: 0;
+}
+.ui-resizable-e {
+	cursor: e-resize;
+	width: 10px;
+	right: -5px;
+	top: 0;
+	height: 100%;
+}
+.ui-resizable-w {
+	cursor: w-resize;
+	width: 10px;
+	left: -5px;
+	top: 0;
+	height: 100%;
+}
+.ui-resizable-se {
+	cursor: se-resize;
+	width: 12px;
+	height: 12px;
+	right: 1px;
+	bottom: 1px;
+}
+.ui-resizable-sw {
+	cursor: sw-resize;
+	width: 9px;
+	height: 9px;
+	left: -5px;
+	bottom: -5px;
+}
+.ui-resizable-nw {
+	cursor: nw-resize;
+	width: 9px;
+	height: 9px;
+	left: -5px;
+	top: -5px;
+}
+.ui-resizable-ne {
+	cursor: ne-resize;
+	width: 9px;
+	height: 9px;
+	right: -5px;
+	top: -5px;
+}
+.tabdiv {
+     height:calc(100% - 40px);
+     overflow:auto;
+}
+.window 
+{
+    background:#ffffff;
+    border:solid 1px #808080;
+    padding:10px;
+}
+.centered {
+    position: absolute;
+    top: 50%;  /* position the top  edge of the element at the middle of the parent */
+    left: 50%; /* position the left edge of the element at the middle of the parent */
+
+    transform: translate(-50%, -50%); /* This is a shorthand of
+                                         translateX(-50%) and translateY(-50%) */
+ 
+}
+
+
+.mh500 {
+    max-height:500px;
+    overflow-y:auto;
+}
+.bordered {
+    border:solid 1px #000000;
+
+}
+.error {
+    color:#ff0000;
+}
+.window 
+{
+    float:left;
+    width:calc(50% - 10px);
+    min-height:200px; 
+}
+#LogWindow .window 
+{
+    height:100%;
+}
+
+.tabdiv > div {
+    height:100%;
+    overflow-y:auto;
+}
+div.absolutetabcontent {
+
+    position:absolute;
+    bottom:0px;
+    left:0px;
+    padding:5px;
+    background:#ffffff;
+    width:100%; /*calc(100% - 470px);*/
+    height:auto;
+
+
+}
+li{
+    margin-left: 20px;
+}
+.commands {
+    margin-left: 0px;
+
+}

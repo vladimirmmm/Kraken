@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,40 @@ namespace Utilities
     
     public class Strings
     {
+        public static void testc()
+        {
+            var str="sdgsdg,dfgs,sdg,";
+            var result = Strings.FactSplit(str, ',', 3);
+        }
+        public static List<string> FactSplit(string input,char splitter,int minlength=1)
+        {
+            var Result = new List<string>(20);
+            //foreach (var ch in input)
+            char ch;
+            int lastix = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                //ch = input[i];
+                if (input[i] == splitter)
+                {
+                    var word = input.Substring(lastix, i - lastix);
+                    if (!String.IsNullOrEmpty(word)) 
+                    {
+                        Result.Add(word);
+                        lastix = i + 1;
+                        i = i + minlength-1;
+                    }
+                 
+                }
+           
+            }
+            //if (Result.Count == 0) 
+            //{
+            //    Result.Add(input);
+            //}
+            return Result;
+        }
+
         public static string GetFolder(string FilePath)
         {
             if (!String.IsNullOrEmpty(FilePath))
@@ -74,6 +109,24 @@ namespace Utilities
             }
             return filename;
         }
+        public static string GetFileNameWithoutExtension(string FilePath)
+        {
+            var filename = "";
+            if (!String.IsNullOrEmpty(FilePath))
+            {
+                if (FilePath.Contains("\\"))
+                {
+                    filename = FilePath.Substring(FilePath.LastIndexOf("\\") + 1);
+                }
+                if (FilePath.Contains("/"))
+                {
+                    filename = FilePath.Substring(FilePath.LastIndexOf("/") + 1);
+                }
+                var dot_ix = filename.LastIndexOf(".");
+                filename = filename.Remove(dot_ix);
+            }
+            return filename;
+        }
         public static string GetRelativePath(string referencePath, string absolutePath)
         {
             var lowerref = referencePath.ToLower();
@@ -87,13 +140,29 @@ namespace Utilities
             }
             return absolutePath;
         }
+        public static string ResolveRelativePath(string referencePath, string relativePath,string localrootpath)
+        {
+            if (relativePath.StartsWith("http://") || relativePath.StartsWith("https://"))
+            {
+                return GetLocalPath(localrootpath, relativePath);
+            }
+            else 
+            {
+                return ResolveRelativePath(referencePath, relativePath);
+            }
+        }
         public static string ResolveRelativePath(string referencePath, string relativePath)
         {
+            if (relativePath.StartsWith("./")) { 
+                relativePath = relativePath.Substring(2); 
+            }
             var hashix = relativePath.IndexOf("#");
             if (hashix > -1)
             {
                 relativePath = relativePath.Remove(hashix);
             }
+         
+
             Uri uri = new Uri(Path.Combine(referencePath, relativePath));
             var path = "";
             if (uri.Scheme != "http")
@@ -110,8 +179,8 @@ namespace Utilities
         }
         public static bool IsRelativePath(string FilePath) 
         {
-            if ((!FilePath.Contains("\\") && !FilePath.Contains("/")) 
-                || FilePath.StartsWith(".."))
+            if ((!FilePath.Contains("\\") && !FilePath.Contains("/"))
+                || FilePath.StartsWith("..") || FilePath.StartsWith("."))
             {
                 return true;
             }
@@ -141,7 +210,7 @@ namespace Utilities
             {
                 sourcepath = sourcepath.Substring(w3index);
             }
-            if (!sourcepath.StartsWith(localrootfolder))
+            if (!sourcepath.StartsWith(localrootfolder.ToLower()))
             {
                 sourcepath = localrootfolder + sourcepath;
             }
@@ -179,7 +248,7 @@ namespace Utilities
                 }
                 else
                 {
-                    System.IO.File.Copy(sourcepath, localpath);
+                    Utilities.FS.Copy(sourcepath, localpath);
 
                 }
             }
@@ -357,10 +426,22 @@ namespace Utilities
             return true;
         }
 
-        public static string ArrayToString(string[] arr)
+        public static string ArrayToString(string[] arr, string delimiter=", ")
         {
             string rs = "";
-            var delimiter = ", ";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                rs += delimiter + arr[i];
+            }
+            if (rs.StartsWith(delimiter))
+            {
+                rs = rs.Substring(delimiter.Length);
+            }
+            return rs;
+        }
+        public static string ArrayToString<T>(T[] arr, string delimiter = ", ")
+        {
+            string rs = "";
             for (int i = 0; i < arr.Length; i++)
             {
                 rs += delimiter + arr[i];
@@ -373,6 +454,20 @@ namespace Utilities
         }
 
         public static string ArrayToString(decimal[] arr)
+        {
+            string rs = "";
+            var delimiter = ", ";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                rs += delimiter + arr[i].ToString();
+            }
+            if (rs.StartsWith(delimiter))
+            {
+                rs = rs.Substring(delimiter.Length);
+            }
+            return rs;
+        }
+        public static string ArrayToString(int[] arr)
         {
             string rs = "";
             var delimiter = ", ";
@@ -626,5 +721,47 @@ namespace Utilities
             }
             return name;
         }
+
+        public static string HtmlEncode(string text)
+        {
+            if (text == null)
+                return null;
+
+            StringBuilder sb = new StringBuilder(text.Length);
+
+            int len = text.Length;
+            for (int i = 0; i < len; i++)
+            {
+                switch (text[i])
+                {
+
+                    case '<':
+                        sb.Append("&lt;");
+                        break;
+                    case '>':
+                        sb.Append("&gt;");
+                        break;
+                    case '"':
+                        sb.Append("&quot;");
+                        break;
+                    case '&':
+                        sb.Append("&amp;");
+                        break;
+                    default:
+                        if (text[i] > 159)
+                        {
+                            // decimal numeric entity
+                            sb.Append("&#");
+                            sb.Append(((int)text[i]).ToString(CultureInfo.InvariantCulture));
+                            sb.Append(";");
+                        }
+                        else
+                            sb.Append(text[i]);
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+
     }
 }

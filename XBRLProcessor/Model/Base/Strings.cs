@@ -65,16 +65,16 @@ namespace XBRLProcessor.Model.StringEnums
 
     }
 
-    public class FilterAxis : StringEnum
-    {
-        public FilterAxis(int value, String name) : base(value, name) { }
+    //public class FilterAxis : StringEnum
+    //{
+    //    public FilterAxis(int value, String name) : base(value, name) { }
+    //    //TODO
+    //    public static readonly FilterAxis ChildOrSelf = new FilterAxis(0, "child-or-self");
+    //    public static readonly FilterAxis Child = new FilterAxis(0, "child");
+    //    public static readonly FilterAxis Descendant = new FilterAxis(0, "descendant");
+    //    public static readonly FilterAxis DescendantorSelf = new FilterAxis(0, "descendant-or-self");
 
-        public static readonly FilterAxis ChildOrSelf = new FilterAxis(0, "child-or-self");
-        public static readonly FilterAxis Child = new FilterAxis(0, "child");
-        public static readonly FilterAxis Descendant = new FilterAxis(0, "descendant");
-        public static readonly FilterAxis DescendantorSelf = new FilterAxis(0, "descendant-or-self");
-
-    }
+    //}
 
     public class FilterPeriod : StringEnum
     {
@@ -97,7 +97,6 @@ namespace XBRLProcessor.Model.StringEnums
 
     class typeloaderclass 
     {
-        public FilterAxis a1 = FilterAxis.Child;
         public FilterBalance a2 = FilterBalance.Credit;
         public FilterPeriod a3=FilterPeriod.Duration;
         public Axis a4 = Axis.Z;

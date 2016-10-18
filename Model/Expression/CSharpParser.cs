@@ -35,20 +35,33 @@ namespace LogicalModel.Expressions
 
 
             this.Syntax.Operators.AddItem(OperatorEnum.Unknown, " !!unknown!! ");
+
+            this.Syntax.Operators.AddItem(OperatorEnum.Cast, " as ");
             this.Syntax.Operators.AddItem(OperatorEnum.Addition, " + ");
             this.Syntax.Operators.AddItem(OperatorEnum.And, " & ");
             this.Syntax.Operators.AddItem(OperatorEnum.AndAlso, " && ");
             this.Syntax.Operators.AddItem(OperatorEnum.Division, " / ");
+
             this.Syntax.Operators.AddItem(OperatorEnum.Equals, " == ");
             this.Syntax.Operators.AddItem(OperatorEnum.GreaterOrEqual, " >= ");
             this.Syntax.Operators.AddItem(OperatorEnum.LessOrEqual, " <= ");
             this.Syntax.Operators.AddItem(OperatorEnum.Greater, " > ");
-            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, " / ");
             this.Syntax.Operators.AddItem(OperatorEnum.Less, " < ");
+            this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
+
+
+            this.Syntax.Operators.AddItem(OperatorEnum.VEquals, " == ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VGreaterOrEqual, " >= ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VLessOrEqual, " <= ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VGreater, " > ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VLess, " < ");
+            this.Syntax.Operators.AddItem(OperatorEnum.VNotEquals, "!=");
+
+
+            this.Syntax.Operators.AddItem(OperatorEnum.IntegerDivision, " / ");
             this.Syntax.Operators.AddItem(OperatorEnum.Modulo, " \\ ");
             this.Syntax.Operators.AddItem(OperatorEnum.Multiplication, " * ");
             this.Syntax.Operators.AddItem(OperatorEnum.Not, "!");
-            this.Syntax.Operators.AddItem(OperatorEnum.NotEquals, "!=");
             this.Syntax.Operators.AddItem(OperatorEnum.Or, " | ");
             this.Syntax.Operators.AddItem(OperatorEnum.OrAlso, " || ");
             this.Syntax.Operators.AddItem(OperatorEnum.Subtraction, " - ");
@@ -72,8 +85,22 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("iaf:abs", (Functions i) => i.IAF_abs(0));
             this.Syntax.AddFunction("iaf:sum", (Functions i) => i.IAF_sum(0));
             this.Syntax.AddFunction("iaf:max", (Functions i) => i.IAF_max(0));
+            this.Syntax.AddFunction("iaf:min", (Functions i) => i.IAF_min(0));
+
+            this.Syntax.AddFunction("xfi:fact-typed-dimension-value", (Functions i) => i.XFI_Fact_Typed_Dimension_Value(null, ""));
+            this.Syntax.AddFunction("xfi:fact-explicit-dimension-value", (Functions i) => i.XFI_Fact_Explicit_Dimension_Value(null, ""));
+            this.Syntax.AddFunction("xfi:period", (Functions i) => i.XFI_Period(null));
+            this.Syntax.AddFunction("xfi:period-instant", (Functions i) => i.XFI_Period_Instant(null));
+            this.Syntax.AddFunction("xfi:entity", (Functions i) => i.XFI_Entity(null));
+            this.Syntax.AddFunction("xfi:entity-identifier", (Functions i) => i.XFI_Entity_Identifier(null));
+            this.Syntax.AddFunction("count", (Functions i) => i.Count(null));
+
+
             this.Syntax.AddFunction("xs:qname", (Functions i) => i.XS_QName(""));
             this.Syntax.AddFunction("xs:string", (Functions i) => i.XS_String(""));
+            this.Syntax.AddFunction("xs:date", (Functions i) => i.XS_Date(""));
+            this.Syntax.AddFunction("qname", (Functions i) => i.QName("",""));
+            this.Syntax.AddFunction("string", (Functions i) => i.String(""));
             this.Syntax.AddFunction("xs:boolean", (Functions i) => i.XS_Boolean(""));
             this.Syntax.AddFunction("matches", (Functions i) => i.RegexpMatches("",""));
             this.Syntax.AddFunction("not", (Functions i) => i.not(true));
@@ -81,15 +108,29 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("exists", (Functions i) => i.Exists(null));
 
             this.Syntax.AddFunction("abs", (Functions i) => i.abs(0));
+            this.Syntax.AddFunction("floor", (Functions i) => i.floor(0));
+            this.Syntax.AddFunction("number", (Functions i) => LogicalModel.Validation.Functions.Number(""));
             this.Syntax.AddFunction("sum", (Functions i) => i.sum(0));
             this.Syntax.AddFunction("max", (Functions i) => i.max(0));
+
+            this.Syntax.AddFunction("concat", (Functions i) => string.Concat(new string[] { }));
+   
+            this.Syntax.AddFunction("day-from-dateTime", (Functions i) => i.Day(DateTime.Now));
+            this.Syntax.AddFunction("month-from-dateTime", (Functions i) => i.Month(DateTime.Now));
+            this.Syntax.AddFunction("year-from-dateTime", (Functions i) => i.Year(DateTime.Now));
+            this.Syntax.AddFunction("day-from-date", (Functions i) => i.Day(DateTime.Now));
+            this.Syntax.AddFunction("month-from-date", (Functions i) => i.Month(DateTime.Now));
+            this.Syntax.AddFunction("year-from-date", (Functions i) => i.Year(DateTime.Now));
+            this.Syntax.AddFunction("string-length", (Functions i) => i.StringLength(""));
+            this.Syntax.AddFunction("substring", (Functions i) => i.Substring("", 0, 0));
+            this.Syntax.AddFunction("translate", (Functions i) => i.Translate("", "", ""));
         }
 
         public override String Translate(Expression expr) 
         {
             if (typeof(Expression) == expr.GetType())
             {
-                if (expr.Operators.Count>0 && expr.Operators[0] == OperatorEnum.Equals && expr.SubExpressions[1] is FunctionExpression)
+                if (expr.SubExpressions.Count==2 && expr.Operators.Count > 0 && expr.Operators[0] == OperatorEnum.Equals && expr.SubExpressions[1] is FunctionExpression)
                 {
                     var functionexpression = expr.SubExpressions[1] as FunctionExpression;
                     if (String.IsNullOrEmpty(functionexpression.Name))
@@ -100,10 +141,13 @@ namespace LogicalModel.Expressions
 
                 if (expr.SubExpressions.Count == 0) 
                 {
-                    if (!expr.IsParameter && !expr.IsString) 
+                    if (!expr.IsParameter && !expr.IsString && Utilities.Strings.IsDigitsOnly(expr.StringValue, '.', '-')) 
                     {
                         //this is for decimal;
-                        
+                        //if (String.IsNullOrEmpty(expr.StringValue)) 
+                        //{ 
+
+                        //}
                         return expr.StringValue + "m";
                     }
                 }

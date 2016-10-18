@@ -1,0 +1,27 @@
+﻿<div class="listfilter">
+    <table class="filter noborder">
+        <tr>
+            <td>
+                <label>Filename: </label><br /><textarea class="wide" id="F_FileName"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterDocuments()" />
+                <input type="button" value="Search" onclick="app.taxonomycontainer.FilterDocuments()" />
+
+            </td>
+        </tr>
+
+    </table>
+</div>
+<div>
+    <div class="listpager pagination">
+    </div>
+    <ul class="list" binding-items="this">
+        <li binding-type="template">
+            <a href="$bind:#doc={LocalRelPath};$" title="$bind:{LocalRelPath}$">$bind:{FileName}$</a>
+        </li>
+    </ul>
+
+</div>

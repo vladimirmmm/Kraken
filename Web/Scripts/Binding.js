@@ -1,6 +1,9 @@
 var TemplateDictionary = [];
+var S_Bind_Start = "$bind:";
+var S_Bind_End = "$";
 var TemplateDictionaryItem = (function () {
     function TemplateDictionaryItem() {
+        //public Item: Element = null;
         this.Item = null;
         this.Template = null;
     }
@@ -19,14 +22,19 @@ var BindingTemplate = (function () {
         this.IsRecursive = false;
         this.PageSize = 0;
     }
-    BindingTemplate.prototype.Bind = function (data) {
+    BindingTemplate.prototype.Bind = function (data, level, maxlevel) {
+        if (level === void 0) { level = 0; }
+        if (maxlevel === void 0) { maxlevel = -1; }
         var result_html = "";
         var me = this;
-        console.log("binding " + data);
+        //console.log("binding " + data);
         result_html = BindLevel(this.Content, data);
         var children = me.Children;
         if (!IsNull(me.Parent) && me.Parent.IsRecursive) {
             children = [me.Parent];
+        }
+        if (level > maxlevel && maxlevel > -1) {
+            return "";
         }
         children.forEach(function (child) {
             var accessorexpr = child.AccessorExpression;
@@ -37,26 +45,26 @@ var BindingTemplate = (function () {
                 var childitems = "";
                 var hasdata = false;
                 var childfunc = function (item) {
-                    childitems += child.Bind(item);
+                    childitems += child.Bind(item, level + 1, maxlevel);
                     hasdata = true;
                 };
                 if (shouldenumerate) {
                     EnumerateObject(items, me, childfunc);
                     if (!hasdata) {
-                        childitems = Replace(childitems, "@X@", "");
+                        childitems = Bind_Replace(childitems, "@X@", "");
                     }
                     else {
                     }
                 }
                 else {
-                    childitems += child.Bind(items);
+                    childitems += child.Bind(items, level + 1, maxlevel);
                 }
                 if (result_html.indexOf(child.ID) > -1) {
-                    result_html = Replace(result_html, child.ID, childitems);
+                    result_html = Bind_Replace(result_html, child.ID, childitems);
                 }
                 if (result_html.indexOf("@X@") > -1) {
                     {
-                        result_html = Replace(result_html, "@X@", childitems);
+                        result_html = Bind_Replace(result_html, "@X@", childitems);
                     }
                 }
             }
@@ -92,9 +100,9 @@ function BindLevel(html, data) {
         subbindings.forEach(function (subbinding) {
             var subbindingexpression = subbinding.indexOf("{") > -1 ? TextBetween(subbinding, "{", "}") : subbinding;
             var dataitem = Access(data, subbindingexpression);
-            s_html = Replace(s_html, subbinding, dataitem);
+            s_html = Bind_Replace(s_html, subbinding, dataitem);
         });
-        result_html = Replace(result_html, binding, s_html);
+        result_html = Bind_Replace(result_html, binding, s_html);
     });
     return result_html;
 }
@@ -173,29 +181,47 @@ function GetBindingTemplate(target) {
     }
     return roottemplate;
 }
-function BindX(item, data) {
-    if (item.length == 0) {
-        ShowNotification("BindX: " + item.selector + " has no items!");
+function BindX(item, data, maxlevel) {
+    if (maxlevel === void 0) { maxlevel = -1; }
+    var jitem = $(item);
+    if (jitem.length == 0) {
+        ShowNotification("BindX: " + jitem.selector + " has no items!");
     }
     else {
         var bt = null;
-        var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == item[0]; });
+        var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == jitem[0]; });
         if (templatedictionaryitem == null) {
-            if (item.length > 0) {
-                bt = GetBindingTemplate(item);
+            if (jitem.length > 0) {
+                bt = GetBindingTemplate(jitem);
                 templatedictionaryitem = new TemplateDictionaryItem();
-                templatedictionaryitem.Item = item;
+                templatedictionaryitem.Item = jitem; //.clone()[0];
                 templatedictionaryitem.Template = bt;
                 TemplateDictionary.push(templatedictionaryitem);
             }
             else {
-                console.log(item.selector + " was not found! (BindX)");
+                console.log(jitem.selector + " was not found! (BindX)");
             }
         }
         else {
             bt = templatedictionaryitem.Template;
         }
-        item[0].innerHTML = bt.Bind(data);
+        _Html(jitem[0], bt.Bind(data, 0, maxlevel));
+        jitem.removeAttr("binding-type");
+    }
+}
+function GetBindingTemplateX(item) {
+    var jitem = $(item);
+    if (jitem.length == 0) {
+        Log("BindX: " + jitem.selector + " has no items!");
+        return null;
+    }
+    else {
+        var bt = null;
+        var templatedictionaryitem = TemplateDictionary.AsLinq().FirstOrDefault(function (i) { return i.Item[0] == jitem[0]; });
+        if (templatedictionaryitem != null) {
+            bt = templatedictionaryitem.Template;
+        }
+        return bt;
     }
 }
 //# sourceMappingURL=Binding.js.map

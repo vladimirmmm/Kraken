@@ -25,7 +25,7 @@ namespace LogicalModel
     {
    
     }
-    public class Taxonomy : DocumentCollection
+    public partial class Taxonomy : DocumentCollection
     {
 
         public new TaxonomyDocument EntryDocument 
@@ -33,7 +33,7 @@ namespace LogicalModel
             get { return (TaxonomyDocument)base.EntryDocument; }
             set { base.EntryDocument=value;}
         }
-        public string ConceptNameSpace = "";
+        //public string ConceptNameSpace = "";
         public string Prefix = "";
         public static string Lang = "en";
 
@@ -41,29 +41,65 @@ namespace LogicalModel
         public TaxonomyModule Module = new TaxonomyModule();
         public List<TaxonomyDocument> TaxonomyDocuments = new List<TaxonomyDocument>();
         public List<Label> TaxonomyLabels = new List<Label>();
-        public Dictionary<string, Concept> Concepts = new Dictionary<string,Concept>();
+        public Dictionary<string, Concept> Concepts = new Dictionary<string, Concept>();
+        public List<Element> DimensionItems = new List<Element>();
+        public List<Element> Domains = new List<Element>();
         public Dictionary<string, Label> TaxonomyLabelDictionary = new Dictionary<string, Label>();
+        public Dictionary<string, int> FactParts = new Dictionary<string, int>();
+        //public IndexDictionary FactsOfParts = new IndexDictionary();
+        public FactsPartsDictionary FactsOfParts = null;
+
+        public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
+        //public SortedDictionary<int, List<int>> MembersOfDimensionDomains = new SortedDictionary<int, List<int>>();
+        public Dictionary<int, int> MembersOfDimensionDomains = new Dictionary<int, int>();
+
+        public Dictionary<int, string> CellIndexDictionary = new Dictionary<int, string>();
 
         public List<Element> SchemaElements = new List<Element>();
 
         public List<Hierarchy<QualifiedItem>> Hierarchies = new List<Hierarchy<QualifiedItem>>();
 
-        public List<Unit> Units = new List<Unit>();
+        public List<InstanceUnit> Units = new List<InstanceUnit>();
 
         public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
+        /*
+       private Dictionary<int[], List<Int64>> _Facts = new Dictionary<int[], List<Int64>>(new Utilities.IntArrayEqualityComparer());
+       public Dictionary<int[], List<Int64>> Facts 
+       {
+           get { return _Facts; }
+           set { _Facts = value; }
+       }
+         */
 
-        private Dictionary<string, List<String>> _Facts = new Dictionary<string, List<String>>();
-        public Dictionary<string, List<String>> Facts 
-        {
-            get { return _Facts; }
-            set { _Facts = value; }
-        }
-        public Dictionary<string, List<String>> FactsOfConcepts = new Dictionary<string, List<string>>();
+       private Dictionary<int[], List<String>> _Facts = new Dictionary<int[], List<String>>(new Utilities.IntArrayEqualityComparer());
+       public Dictionary<int[], List<String>> Facts 
+       {
+           get { return _Facts; }
+           set { _Facts = value; }
+       }
+       
+        //public Dictionary<string, List<int[]>> FactsOfConcepts = new Dictionary<string, List<int[]>>();
+        //public Dictionary<string, List<int>> FactsOfDimensions = new Dictionary<string, List<int>>();
+        //public Dictionary<string, Dictionary<int, bool>> FactsOfDimensions = new Dictionary<string, Dictionary<int, bool>>();
+        //public Dictionary<string, HashSet<int>> FactsOfDimensions = new Dictionary<string, HashSet<int>>();
+        //public Dictionary<int, int[]> FactsIndex = new Dictionary<int, int[]>();
+        
+        //public List<int[]> FactsIndex = new List<int[]>();
+
+        //public Dictionary<int[], int> FactKeyIndex = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
+
+        //public List<int> FactsLengths = new List<int>();
    
         public Dictionary<string, List<String>> Cells = new Dictionary<string, List<String>>();
 
         private List<ValidationRule> _ValidationRules = new List<ValidationRule>();
         public List<ValidationRule> ValidationRules { get { return _ValidationRules; } set { _ValidationRules = value; } }
+
+        public IEnumerable<int> FactIndexEnumerable() 
+        {
+            return this.FactsManager.IndexesAsEnumerable();
+        }
+
 
         private List<SimpleValidationRule> _SimpleValidationRules = new List<SimpleValidationRule>();
         [JsonIgnore]
@@ -84,12 +120,15 @@ namespace LogicalModel
         }
 
         //public static Action<string> Console = null;
+        public Dictionary<string, List<string>> domdict = new Dictionary<string, List<string>>();
+
 
         public ValidationFunctionContainer ValidationFunctionContainer = null;
 
         public TaxHandler TableHandler = new TaxHandler();
         public TaxHandler LabelHandler = new TaxHandler();
         public TaxHandler ElementHandler = new TaxHandler();
+
 
         public string ModuleFolder { get; set; }
 
@@ -122,10 +161,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Test.txt"; }
         }
-
+        public static string StructureFileName = "Structure.json";
         public string TaxonomyStructurePath
         {
-            get { return ModuleFolder + "Structure.json"; }
+            get { return ModuleFolder + StructureFileName; }
         }
         public string TaxonomyFactsPath
         {
@@ -160,6 +199,10 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Module.json"; }
         }
+        public string TaxonomyCellIndexPath
+        {
+            get { return ModuleFolder + "CellIndex.json"; }
+        }
         public string TaxonomySchemaElementsPath
         {
             get { return ModuleFolder + "SchemaElements.json"; }
@@ -168,9 +211,25 @@ namespace LogicalModel
         //{
         //    get { return ModuleFolder + "Validations.json"; }
         //}
+        public string TaxonomyValidationFolder
+        {
+            get { return ModuleFolder + "Validations\\"; }
+        }
+        public string TaxonomyFactsFolder
+        {
+            get { return ModuleFolder + "Facts\\"; }
+        }
         public string TaxonomyValidationPathFormat
         {
             get { return ModuleFolder + "Validations\\Validations_{0}.json"; }
+        }
+        public string TaxonomyFactsPathFormat
+        {
+            get { return ModuleFolder + "Facts\\Facts_{0}.json"; }
+        }
+        public string TaxonomyFactDictionaryPath
+        {
+            get { return ModuleFolder + "Facts\\FactDictionary.json"; }
         }
         public string TaxonomySimpleValidationPath
         {
@@ -212,39 +271,55 @@ namespace LogicalModel
             this.TaxonomyDocuments.Clear();
             SourceTaxonomyPath = entrypath;
             LogicalModel.Table.LabelAccessor = FindLabel;
+            FactsOfParts=RelationDictionary.GetFactsOfParts(this);
+            FactsManager.FactsOfPages.Folder = () => this.TaxonomyFactsFolder;
+           // var path =
+            //FactsOfParts.AccessHashset = (key) => Utilities.FS.ReadAllText(this.TaxonomyFactsFolder + key.ToString() + ".ix");
+            //FactsOfParts.SaveHashSet = (key,str) => Utilities.FS.WriteAllText(this.TaxonomyFactsFolder + key.ToString() + ".ix",str);
         
         }
-
+        private LogicalModel.Label GetLabel(string key) 
+        {
+            var label = TaxonomyLabelDictionary[key];
+            if (String.IsNullOrEmpty(label.Code))
+            {
+                var ix = key.IndexOf("[");
+                var engkey = key.Remove(key.IndexOf("["), 4).Insert(ix, "[en]");
+                if (TaxonomyLabelDictionary.ContainsKey(engkey))
+                {
+                    var englabel = TaxonomyLabelDictionary[engkey];
+                    label.Code = englabel.Code;
+                }
+            }
+            return label;
+        }
         public LogicalModel.Label FindLabel(string key, bool log=true)
         {
             key = key.ToLower();
            
             if (TaxonomyLabelDictionary.ContainsKey(key))
             {
-                var label = TaxonomyLabelDictionary[key];
-                if (String.IsNullOrEmpty(label.Code)) 
-                {
-                    var ix = key.IndexOf("[");
-                    var engkey = key.Remove(key.IndexOf("["), 4).Insert(ix, "[en]");
-                    if (TaxonomyLabelDictionary.ContainsKey(engkey))
-                    {
-                        var englabel = TaxonomyLabelDictionary[engkey];
-                        label.Code = englabel.Code;
-                    }
-                }
-                return label;
+                return GetLabel(key);
             }
             else
             {
-                if (log)
+                key = key.Replace(LogicalModel.Label.labelprefix, "");
+                if (TaxonomyLabelDictionary.ContainsKey(key))
                 {
-                    //Logger.WriteLine(String.Format("Label {0} was not found!", key));
+                    return GetLabel(key);
+                }
+                else
+                {
+                    if (log)
+                    {
+                        //Logger.WriteLine(String.Format("Label {0} was not found!", key));
+                    }
                 }
             }
             return null;
         }
-        
-        public Dictionary<string, List<string>> TypedDimensions = new Dictionary<string, List<string>>();
+
+        public Dictionary<string, List<Element>> TypedDimensions = new Dictionary<string, List<Element>>();
         public virtual void LoadTypedDimensions() 
         {
             TypedDimensions.Clear();
@@ -253,16 +328,17 @@ namespace LogicalModel
             {
                 if (!TypedDimensions.ContainsKey(element.Namespace)) 
                 {
-                    TypedDimensions.Add(element.Namespace, new List<string>());
+                    TypedDimensions.Add(element.Namespace, new List<Element>());
                 }
-                TypedDimensions[element.Namespace].Add(element.Name);
+                TypedDimensions[element.Namespace].Add(element);
             }
         }
 
         public static bool IsTyped(string domain)
         {
             var result = false;
-            var ns = domain.Contains(":") ? new QualifiedName(domain).Namespace : domain;
+            var ix = domain.IndexOf(":", StringComparison.Ordinal);
+            var ns = ix > -1 ? domain.Remove(ix) : domain;
             if (TaxonomyEngine.CurrentEngine != null &&
                 TaxonomyEngine.CurrentEngine.CurrentTaxonomy != null &&
                 TaxonomyEngine.CurrentEngine.CurrentTaxonomy.TypedDimensions.ContainsKey(ns))
@@ -271,10 +347,468 @@ namespace LogicalModel
             }
             else 
             {
-                return Utilities.Strings.ContainsCount(":", domain) > 1;
+                return false;
+                //return Utilities.Strings.ContainsCount(":", domain) > 1;
             }
             return result;
         }
+
+
+        public int GetDimensionDomainPart(int factpartkey) 
+        {
+            //var maxKey = Array.BinarySearch(MembersOfDimensionDomainsIndex, factpartkey);
+            //var minix = maxKey >= 0 ? maxKey : ~maxKey - 1;
+            //return MembersOfDimensionDomainsIndex[minix];
+            return MembersOfDimensionDomains.ContainsKey(factpartkey) ? MembersOfDimensionDomains[factpartkey] : -1;
+            
+            //var keys = MembersOfDimensionDomains.Keys.ToList();
+            //for (int i =0;i<keys.Count;i++)
+            //{
+            //    if (factpartkey<keys[i])
+            //    {
+            //        return keys[i - 1];
+            //    }
+            //}
+            //return keys[keys.Count-1];
+        
+        }
+
+
+        public class FactFilter
+        {
+            public List<int> MemberFilters = new List<int>();
+            public List<List<int>> DomainFilterCombinations = new List<List<int>>();
+
+            public List<int> GetIndexes(FactsPartsDictionary factsofparts)
+            {
+                var memebrindexes = GetIndexes(MemberFilters, factsofparts);
+                var result =new List<int>();
+                var actions = new List<Action>();
+                var locker = new object();
+                foreach (var domainfilter in DomainFilterCombinations)
+                {
+                    actions.Add(() =>
+                    {
+                        var partialresult = GetIndexes(domainfilter, factsofparts);
+                        lock (locker)
+                        {
+                            result.AddRange(partialresult);
+                        }
+                    });
+                }
+             
+                Task.WaitAll(actions.Select(i => Task.Factory.StartNew(i)).ToArray());
+                return result;
+            }
+
+            public IEnumerable<int> GetIndexes(List<int> parts, FactsPartsDictionary factsofparts)
+            {
+                if (parts.Count == 0) { return new List<int>(); }
+                if (parts.Count == 1) { return factsofparts[parts[0]]; }
+                var first2 = parts.Take(2).ToList();
+                var remaining = parts.Skip(2).ToList();
+
+                var result = IntersectParts(first2[0], first2[1], factsofparts);
+                foreach (var part in remaining)
+                {
+                    result = Utilities.Objects.IntersectSorted(result, factsofparts[part], null);
+                }
+                return result;
+
+            }
+
+            private Dictionary<int[], IEnumerable<int>> InterSectCache = new Dictionary<int[], IEnumerable<int>>();
+            private int maxcount = 20;
+            private IEnumerable<int> IntersectParts(int part1, int part2, FactsPartsDictionary factsofparts)
+            {
+                var key = new int[] { part1, part2 };
+                if (InterSectCache.ContainsKey(key))
+                {
+                    return InterSectCache[key];
+                }
+                else
+                {
+                    var pool1 = factsofparts[part1];
+                    var pool2 = factsofparts[part2];
+                    var result = Utilities.Objects.IntersectSorted(pool1, pool2, null);
+                    InterSectCache.Add(key, result);
+                    return result;
+                }
+
+            }
+        }
+
+
+        public FactFilter GetFactPartPool(int[] fact, FactsPartsDictionary factsofparts) 
+        {
+            var filter = new FactFilter();
+            var domainkeys = fact.Where(i => this.MembersOfDimensionDomains.ContainsKey(i)).ToList();
+            var memberkeys = fact.Except(domainkeys).ToList();
+
+
+            var domainpool = new List<List<int>>();
+            foreach (var domainkey in domainkeys)
+            {
+                domainpool.Add(new List<int>() { -1, domainkey });
+            }
+
+            var domainparts = MathX.CartesianProduct(domainpool).ToList();
+            filter.MemberFilters.AddRange(memberkeys.OrderBy(i => factsofparts[i].Count));
+            foreach (var domainpart in domainparts) 
+            {
+
+                var domainpartpool = domainpart.Where(i => i != -1).OrderBy(i => factsofparts[i].Count).ToList();
+                filter.DomainFilterCombinations.Add(domainpartpool);
+       
+            }
+            return filter;
+        }
+
+        public List<int> FilterFacts(int[] key, FactsPartsDictionary factsofparts)
+        {
+            var filter = GetFactPartPool(key, factsofparts);
+            return filter.GetIndexes(factsofparts);
+
+        }
+
+        
+        public List<int[]> SearchFacts3(FactsPartsDictionary factsOfParts, int[] factkey)
+        {
+            var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts, null);
+            return resultfacts.Select(i => FactsManager.GetFactKey(i)).ToList();
+        }
+        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts, bool EnsureFactKeyLength)
+        {
+            var result = new List<int>();
+            var memberkeys = factkey.ToList();
+            var memberfactspool = new List<List<int>>();
+            foreach (var memberkey in memberkeys)
+            {
+                if (factsOfParts.ContainsKey(memberkey))
+                {
+                    memberfactspool.Add(factsOfParts[memberkey]);
+                }
+            }
+            var partcount = memberfactspool.Count;
+            memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
+            result = memberfactspool.FirstOrDefault();
+            if ( facts!=null && (result==null || result.Count > facts.Count)) 
+            {
+                result = facts;
+            }
+            for (int i = 1; i < memberfactspool.Count; i++)
+            {
+                result = Utilities.Objects.IntersectSorted(result, memberfactspool[i], null);
+            }
+            if (result == null)
+            {
+                result = new List<int>();
+            }
+            return result;
+        }
+        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts)
+        {
+            var result = new List<int>();
+            var domainkeys = factkey.Where(i => this.MembersOfDimensionDomains.ContainsKey(i) && this.MembersOfDimensionDomains[i] == i).ToList();
+            var memberkeys = factkey.Except(domainkeys).ToList();
+            var memberfactspool = new List<List<int>>();
+            foreach (var memberkey in memberkeys) 
+            {
+                if (factsOfParts.ContainsKey(memberkey))
+                {
+                    memberfactspool.Add(factsOfParts[memberkey]);
+                }
+            }
+            var partcount = memberfactspool.Count;
+            if (facts != null) 
+            {
+                memberfactspool.Add(facts);
+            }
+            memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
+            var memberresults = memberfactspool.FirstOrDefault();
+
+            for (int i = 1; i < memberfactspool.Count; i++)
+            {
+                    memberresults = Utilities.Objects.IntersectSorted(memberresults, memberfactspool[i], null);
+            }
+            if (memberresults == null) 
+            {
+                memberresults = new List<int>();
+            }
+            var memberresultsbycount = new Dictionary<int, List<int>>();
+            var lastkeylength = -1;
+            List<int> lastkeycontainer = null;
+            var keylength = 0;
+            int[] key = null;
+          
+                foreach (var item in memberresults)
+                {
+                    //key = FactsManager.GetFactKey(item);
+                    keylength = FactsManager.FactsOfPages.KeyCountOfIndex[item];// key.Length;
+                    if (lastkeylength != keylength)
+                    {
+                        if (!memberresultsbycount.ContainsKey(keylength))
+                        {
+                            var keycontainer = new List<int>();
+                            memberresultsbycount.Add(keylength, keycontainer);
+
+                        }
+                        lastkeylength = keylength;
+                        lastkeycontainer = memberresultsbycount[keylength];
+                    }
+                    lastkeycontainer.Add(item);
+
+                }
+            
+            //var memberresultscounts = memberresults.Select((i) => FactsManager.GetFactKey(i).Length).ToList();
+            //setting up the items for the combination
+            var vpool = new List<List<int>>();
+            foreach (var domainkey in domainkeys) 
+            {
+                vpool.Add(new List<int>() { -1, domainkey });
+            }
+            var combinations = MathX.CartesianProduct(vpool).ToList();
+            if (combinations.Count == 0)
+            {
+                result = memberresults.ToList();
+            }
+            else
+            {
+
+
+                var actions = new List<Action>();
+                var locker = new object();
+                var cc = combinations.Count;
+                var partialresults = new List<IEnumerable<int>>(cc);
+                partialresults.AddRange(combinations.Select(i => new List<int>()));
+                //getting the facts for each combination
+                for (int ix = 0; ix < cc; ix++)
+                {
+                    var combination = combinations[ix];
+                 
+                    actions.Add(() =>
+                    {
+                        var index = ix;
+                        var ccc = cc;
+                        var factpartpool = new List<int>();
+                        var factspool = new List<List<int>>();
+                        var i_domainkeys = combination.ToList();
+
+                        factpartpool.AddRange(i_domainkeys.Where(i => i != -1));
+                        foreach (var factpart in factpartpool)
+                        {
+                            if (factsOfParts.ContainsKey(factpart))
+                            {
+                                factspool.Add(factsOfParts[factpart]);
+                            }
+                        }
+                        var pcount = partcount + factspool.Count;
+
+
+
+                        //factspool.Add(memberresults.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList());
+                        //factspool.Add(memberresults.Where((int i,int index )=> {
+                        //    return memberresultscounts[index]==pcount;
+                        //}).ToList());
+                    
+                        factspool.Add(memberresultsbycount.ContainsKey(pcount) ? memberresultsbycount[pcount] : new List<int>());
+                      
+                        factspool = factspool.OrderBy(i => i.Count()).ToList();
+
+                        var partialresult = factspool.FirstOrDefault().AsEnumerable();
+
+                        for (int i = 1; i < factspool.Count; i++)
+                        {
+
+                            partialresult = Utilities.Objects.IntersectSorted(partialresult, factspool[i], null);
+
+                        }
+                        if (memberresults.Count == 0)
+                        {
+
+                            partialresult = partialresult.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList();
+
+                        }
+                        lock (locker) 
+                        {
+                            result.AddRange(partialresult);
+                        }
+
+                    });
+                }
+             
+                //foreach (var a in actions) 
+                //{
+                //    a();
+                //}
+                Task.WaitAll(actions.Select(i => Task.Factory.StartNew(i)).ToArray());
+                foreach (var partialresult in partialresults)
+                {
+                    result.AddRange(partialresult);
+                }
+            }
+            return result;
+        }
+      
+
+        public string GetFactIntStringKey(string key) 
+        {
+            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            foreach (var part in parts) 
+            {
+                sb.Append(this.FactParts[part] + ",");
+            }
+            return sb.ToString();
+        }
+        //public string GetFactIntStringKey(string key)
+        //{
+        //    var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+        //    var sb = new StringBuilder();
+        //    foreach (var part in parts)
+        //    {
+        //        sb.Append(this.FactParts[part] + ",");
+        //    }
+        //    return sb.ToString();
+        //}
+        private static char[] splitter = new char[] { ',' };
+        public List<int> GetFactIntKey(string key)
+        {
+            var intlist = new List<int>();
+            //var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //var parts = Utilities.Strings.FactSplit(key, ',', 8);
+            if (key.Contains(":"))
+            {
+                var parts = Utilities.Strings.FactSplit(key, ',', 8);
+
+                foreach (var part in parts)
+                {
+                    if (this.FactParts.ContainsKey(part))
+                    {
+                        intlist.Add(this.FactParts[part]);
+                    }
+                    else 
+                    {
+                        intlist.Add(-1);
+
+                    }
+
+                }
+            }
+            else 
+            {
+                var parts = key.Split(Taxonomy.splitter, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var part in parts)
+                {
+                    intlist.Add(Utilities.Converters.FastParse(part));
+                    //intlist.Add(int.Parse(part));
+
+                }
+            }
+            return intlist;
+        }
+
+        public List<string> GetFactKeyStringParts(IEnumerable<int> key) 
+        {
+            var parts =new List<string>();
+            foreach (var part in key)
+            {
+               parts.Add( this.CounterFactParts[part]);
+            }
+            return parts;
+        }
+        public string GetFactStringKeys(IEnumerable<int> indexes)
+        {
+            var keys = indexes.Select(i => FactsManager.GetFactKey(i));
+            return GetFactStringKeys(keys);
+        }
+        public string GetFactStringKeys(IEnumerable<int[]> keys) 
+        {
+            var sb = new StringBuilder();
+            foreach (var key in keys) 
+            {
+                sb.AppendLine(GetFactStringKey(key));
+            }
+            return sb.ToString();
+        }
+        public string GetFactStringKeyFromIntKey(IEnumerable<int> key)
+        {
+            var sb = new StringBuilder();
+            foreach (var part in key)
+            {
+                sb.Append(this.CounterFactParts[part] + ",");
+            }
+            return sb.ToString();
+        }
+
+        public string GetFactStringKeyFromIntKey(string key)
+        {
+            var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var sb = new StringBuilder();
+            foreach (var part in parts)
+            {
+                var intpart = int.Parse(part);
+                sb.Append(this.CounterFactParts[intpart] + ",");
+            }
+            return sb.ToString();
+        }
+        public string GetFactStringKeyFromStringKey(string key)
+        {
+            return GetFactStringKeyFromStringKey(key, this.FactParts);
+        }
+        public string GetFactStringKeyFromStringKey(string key, Dictionary<string,int> dict)
+        {
+            //var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = Utilities.Strings.FactSplit(key, ',', 8);
+            var sb = new StringBuilder();
+            foreach (var part in parts)
+            {
+                if (dict.ContainsKey(part))
+                {
+                    sb.Append(dict[part]);
+                    sb.Append(",");
+                }
+                else 
+                {
+                    sb.Append("-1,");
+
+                    //Logger.WriteLine(String.Format("FactPart {0} was not found! Key: {1}", part, key));
+                }
+            }
+            return sb.ToString();
+        }
+
+        public List<int> GetIDsFromStrings(List<string> parts) 
+        {
+            var idlist = new List<int>();
+            foreach (var part in parts) 
+            {
+                idlist.Add(FactParts[part]);
+            }
+            return idlist;
+        }
+
+    
+
+        public string GetFactStringKey(IEnumerable<int> idlist) 
+        {
+            var sb = new StringBuilder();
+
+            foreach (var id in idlist) 
+            {
+                if (CounterFactParts.ContainsKey(id))
+                {
+                    sb.Append(CounterFactParts[id] + ",");
+                }
+                else 
+                {
+                    sb.Append(" ,");
+                }
+            }
+            return sb.ToString();
+        }
+
 
         public virtual void LoadLabels()
         {
@@ -285,26 +819,16 @@ namespace LogicalModel
             {
 
                 LabelHandler.HandleTaxonomy(this);
-                Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
+                if (this.TaxonomyLabels.Count > 0)
+                {
+                    Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
+                }
+                else 
+                {
+                    Logger.WriteLine("No Labels Found");
 
-                //fixing labelcodes for non en languages
-                //foreach (var label in this.TaxonomyLabels)
-                //{
-                //    if (label.Lang == "en")
-                //    {
-                //        var engkey = label.Key.Replace("[en]", "[" + Lang + "]");
+                }
 
-                //        if (String.IsNullOrEmpty(label.Code))
-                //        {
-                //            var engkey = label.Key.Replace("[" + label.Lang + "]", "[en]");
-                //            var englabel = FindLabel(engkey, false);
-                //            if (englabel != null)
-                //            {
-                //                label.Code = englabel.Code;
-                //            }
-                //        }
-                //    }
-                //}
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyLabels);
                 Utilities.FS.WriteAllText(TaxonomyLabelPath, jsoncontent);
             }
@@ -332,47 +856,163 @@ namespace LogicalModel
             ManageUIFiles();
             //
 
-            if (!System.IO.File.Exists(TaxonomyFactsPath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            if (!Utilities.FS.FileExists(TaxonomyFactsPathFormat) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
-                foreach (var table in Tables)
-                {
-                    table.LoadDefinitions();
-                }
+                //if (this.Facts.Count == 0)
+                //{
+                    //foreach (var table in Tables)
+                    //{
+                    //    table.LoadDefinitions2();
+                    //}
+                //}
                 LoadCells();
 
                 this.LoadFactDictionary();
 
-                var jsoncontent = Utilities.Converters.ToJson(Facts);
-                Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
+                //var jsoncontent = Utilities.Converters.ToJson(Facts);
+                //Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
+                
+                //LogicalModel.Helpers.FileManager.SaveToJson(this.Facts, this.TaxonomyFactsPathFormat, 50000);
+                
+                
+                
+                //SerializeFacts(50000);
             }
             else
             {
 
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
-                this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
-
+                //var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
+                //this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
+                
+                
+                
+                //DeSerializeFacts();
+                
+                
+                
+                //this.Facts = new Dictionary<int[], List<string>>(2000000, new Utilities.IntArrayEqualityComparer());
+                //LogicalModel.Helpers.FileManager.SetFromJson(this.Facts, this.TaxonomyFactsPathFormat, DeserialzieFacts);
+                
+               
                 this.LoadFactDictionary();
 
                 LoadCells();
             }
             Logger.WriteLine("Load Facts completed");
         }
+        
+        public void DeSerializeFacts()
+        {
+            
+            var pathformat = TaxonomyFactsPathFormat;
+            var folder = Utilities.Strings.GetFolder(pathformat);
+            var filename = Utilities.Strings.GetFileName(pathformat);
+            var searchpattern = filename.Replace("{0}", "*");
+            var files = System.IO.Directory.GetFiles(folder, searchpattern).ToList();
+            var sp_pipe = new string[] { Literals.PipeSeparator };
+            var sp_coma = new string[] { Literals.Coma };
+            ClearFacts();
+            Facts = new Dictionary<int[], List<string>>(50000 * files.Count, new Utilities.IntArrayEqualityComparer());
+            //Facts = new Dictionary<int[], List<Int64>>(50000 * files.Count, new Utilities.IntArrayEqualityComparer());
+            foreach (var file in files)
+            {
+                var content = Utilities.FS.ReadAllText(file);
+                var items = content.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                content = null;
+                string[] parts = null;
+                string[] keys = null;
+                string[] values = null;
+                int[] intkeys = null;
+                List<string> cells = null;
+                foreach (var item in items) 
+                {
+                    parts = item.Split(sp_pipe, StringSplitOptions.None);
+                    keys = parts[0].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+                    intkeys = new int[keys.Length];
+   
+                    for (int i = 0; i < keys.Length;i++ )
+                    {
+                        intkeys[i] = Utilities.Converters.FastParse(keys[i]);
+                    }
+           
+                    values = parts[1].Split(sp_coma, StringSplitOptions.RemoveEmptyEntries);
+
+                    cells = new List<string>(values);
+                    Facts.Add(intkeys, cells);
+                }
+                items = null;
+            }
+        }
+        
+        public void SerializeFacts(int pagesize) 
+        {
+            /*
+            var ix = 1;
+            var sb = new StringBuilder();
+            int page = 0;
+            Action<StringBuilder,int> a = (StringBuilder i,int p) => {
+                Utilities.FS.WriteAllText(string.Format(TaxonomyFactsPathFormat, p), i.ToString());
+                sb.Clear();
+            };
+            foreach (var x in this.FactsAsEnumerable()) 
+            {
+                foreach(var id in x.Key)
+                {
+                    sb.Append(id + ",");
+                }
+                sb.Append(" | ");
+                foreach (var id in x.Value)
+                {
+
+                    sb.Append(id + ",");
+                }
+                sb.Append("\n");
+                ix++;
+                if (ix % pagesize == 0) 
+                {
+                    a(sb, page);
+                    page++;
+                }
+
+            }
+            a(sb, page);
+            var dictionarypath = TaxonomyFactDictionaryPath;
+            Utilities.FS.WriteAllText(dictionarypath, "");
+            var sb_dict = new StringBuilder();
+            foreach (var x in this.FactsAsEnumerable())
+            {
+                var fs = GetFactStringKeyFromIntKey(x.Key);
+                var item = String.Format("{0} [{1}]\n", fs, "@cells");
+                var cells = "";
+                foreach (var cell in x.Value) 
+                {
+                    cells += cell + ", ";
+                }
+                cells = cells.TrimEnd(',', ' ');
+                item = item.Replace("@cells", cells);
+                sb_dict.Append(item);
+            }
+            Utilities.FS.WriteAllText(dictionarypath, sb_dict.ToString());
+
+            Logger.WriteLine("Dictionary was created at " + dictionarypath);
+             */
+        }
 
         private void LoadCells()
         {
             Logger.WriteLine("Load Cells started");
             Cells.Clear();
-            foreach (var fact in Facts) 
-            {
-                var cells = fact.Value;
-                foreach (var cell in cells) 
-                {
-                    if (!Cells.ContainsKey(cell))
-                    {
-                        Cells.Add(cell, new List<string>() { fact.Key });
-                    }
-                }
-            }
+            //foreach (var fact in Facts) 
+            //{
+            //    var cells = fact.Value;
+            //    foreach (var cell in cells) 
+            //    {
+            //        if (!Cells.ContainsKey(cell))
+            //        {
+            //            Cells.Add(cell, new List<string>() { GetFactStringKeyFromIntKey(fact.Key) });
+            //        }
+            //    }
+            //}
             Logger.WriteLine("Load Cells completed");
 
         }
@@ -383,15 +1023,33 @@ namespace LogicalModel
             //refresh files
             ManageUIFiles();
             //
-
-            if (!System.IO.File.Exists(TaxonomyModulePath) || Settings.Current.ReloadFullTaxonomyButStructure)
+            var shouldload = !System.IO.File.Exists(TaxonomyModulePath) || Settings.Current.ReloadFullTaxonomyButStructure;
+            if (!shouldload)
             {
+                var jsoncontent = System.IO.File.ReadAllText(TaxonomyModulePath);
+                this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
+                foreach (var tablepath in Module.TablePaths)
+                {
+                    var fulltablepath = Utilities.Strings.ResolveRelativePath(this.TaxonomyLayoutFolder, tablepath);
+                    if (!Utilities.FS.FileExists(fulltablepath)) 
+                    {
+                        shouldload = true;
+                    }
+
+                }
+            }
+            if (shouldload)
+            {
+                this.Tables.Clear();
+
                 PopulateTableGroups();
                
                 LoadGeneral();
+
                 TableHandler.HandleTaxonomy(this);
 
                 var jsoncontent = Utilities.Converters.ToJson(Module);
+
                 PopulateValidationSets();
 
                 foreach (var Table in Tables)
@@ -401,14 +1059,28 @@ namespace LogicalModel
 
                 }
                 ClearTablesAfterLoad();
+                FactsManager.SaveAll();
+
+                FactsOfParts.Save();
                 Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent);
+                Utilities.FS.WriteAllText(TaxonomyCellIndexPath, Utilities.Converters.ToJson(this.CellIndexDictionary));
 
             }
             else
             {
-                var jsoncontent = System.IO.File.ReadAllText(TaxonomyModulePath);
+                var jsoncontent = Utilities.FS.ReadAllText(TaxonomyModulePath);
                 this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
+                this.Module.Taxonomy = this;
+                this.Module.Load();
+                var jsoncellix = Utilities.FS.ReadAllText(TaxonomyCellIndexPath);
+                this.CellIndexDictionary = Utilities.Converters.JsonTo<Dictionary<int, string>>(jsoncellix);
 
+                var jsoncontent2 = Utilities.Converters.ToJson(this.Module);
+                if (jsoncontent != jsoncontent2) 
+                {
+                    Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent2);
+                }
+                this.Tables.Clear();
                 foreach (var tablepath in Module.TablePaths)
                 {
                     var fulltablepath = Utilities.Strings.ResolveRelativePath(this.TaxonomyLayoutFolder, tablepath);
@@ -420,86 +1092,23 @@ namespace LogicalModel
                     this.Tables.Add(table);
                 }
 
-
+                FactsOfParts.Load();
             }
             Logger.WriteLine("Load Tables completed");
 
         }
         
-        public void ManageUIFile(string filename)
-        {
-            var devfolder = @"C:\My\Developement\XTree-M\XTree-M\Model\";
-            var taxpath = TaxonomyLayoutFolder + filename;
-            var devpath = devfolder + filename;
-            var buildpath = filename;
-            var finfo_dev = new System.IO.FileInfo(devpath);
-            var finfo_build = new System.IO.FileInfo(buildpath);
-
-            if (finfo_dev.LastWriteTime > finfo_build.LastWriteTime) 
-            {
-                System.IO.File.Copy(finfo_dev.FullName, finfo_build.FullName, true);
-                finfo_build = new System.IO.FileInfo(finfo_build.FullName);
-
-            }
-
-            if (!System.IO.File.Exists(taxpath))
-            {
-                Utilities.FS.EnsurePath(taxpath);
-                System.IO.File.Copy(finfo_build.FullName, taxpath, true);
-            }
-            else 
-            {
-                var finfo_tax = new System.IO.FileInfo(taxpath);
-                if (finfo_build.LastWriteTime > finfo_tax.LastWriteTime)
-                {
-                    System.IO.File.Copy(finfo_build.FullName, finfo_tax.FullName, true);
-                }
-            }
-
-
-        }
         
         public void ManageUIFiles() 
         {
-            if (!System.IO.Directory.Exists(TaxonomyLayoutFolder))
-            {
-                System.IO.Directory.CreateDirectory(TaxonomyLayoutFolder);
-            }
 
-            var scriptfiles = System.IO.Directory.GetFiles("Scripts");
-            foreach (var file in scriptfiles)
-            {
-                var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
-                ManageUIFile(filepath);
-            }
-            var layoutfiles = System.IO.Directory.GetFiles("Layout");
-            foreach (var file in layoutfiles)
-            {
-                var filepath = file.Substring(file.IndexOf("\\Scripts") + 1);
-                ManageUIFile(filepath);
-            }
-
-            ManageUIFile(@"Table.css");
-            ManageUIFile(@"UI.html");
          
         }
 
         public void TaxonomyToUI()
         {
      
-            //TaxFiles.Add(JsonFileToJsVarible(TaxonomyFactsPath, "", "tax_facts"));
-            /*
-             TaxFiles.Add(JsonFileToJsVarible(TaxonomyHierarchyPath, "", "tax_hierarchies"));
-             TaxFiles.Add(JsonFileToJsVarible(TaxonomyConceptPath, "", "tax_concepts"));
-         
-             var jsonsimplifiedvalidation = "";
-             if (this.SimpleValidationRules.Count > 0) 
-             {
-                 jsonsimplifiedvalidation = Utilities.Converters.ToJson(this.SimpleValidationRules);
-             }
-             TaxFiles.Add(JsonToJsVarible(jsonsimplifiedvalidation, "tax_validations"));
-             TaxFiles.Add(JsonFileToJsVarible(TaxonomyLabelPath, "", "tax_labels"));
-             */
+   
         }
 
         public string JsonFileToJsVarible(string path, string jsonvalue, string variablename, bool overwrite = false) 
@@ -611,17 +1220,18 @@ namespace LogicalModel
 
                 CodeDomProvider codeProvider = CodeDomProvider.CreateProvider("CSharp");
                 string Output = this.TaxonomyValidationDotNetLibPath;
-
+                string pdbfilename = Utilities.Strings.GetFileName(Output).Replace(".dll", ".pdb");
                 System.CodeDom.Compiler.CompilerParameters parameters = new CompilerParameters();
                 //Make sure we generate an EXE, not a DLL
                 parameters.GenerateExecutable = false;
                 parameters.OutputAssembly = this.TaxonomyValidationDotNetLibPath;
-                parameters.IncludeDebugInformation = true;
-                parameters.TempFiles = new TempFileCollection(".", true);
+                //parameters.IncludeDebugInformation = true;
+                parameters.TempFiles = new TempFileCollection(".", false);
                 var logicalmodelassembly = typeof(LogicalModel.Base.FactBase).Assembly;
                 var logicalreferences = logicalmodelassembly.GetReferencedAssemblies();
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 parameters.ReferencedAssemblies.Add(logicalmodelassembly.Location);
+                //parameters.CompilerOptions = " /pdb:" + pdbfilename;
 
                 foreach (var assemblyname in logicalreferences)
                 {
@@ -662,7 +1272,11 @@ namespace LogicalModel
 
             }
         }
-        
+
+        public virtual string GetDomainID(QualifiedName domain) 
+        {
+            return "";
+        }
 
         public virtual void LoadHierarchy() 
         {
@@ -680,7 +1294,28 @@ namespace LogicalModel
             {
                 if (System.IO.File.Exists(this.TaxonomyValidationDotNetLibPath))
                 {
-                    var assembly = Assembly.LoadFile(this.TaxonomyValidationDotNetLibPath);
+                    var dlltempfolder =TaxonomyEngine.LocalFolder+@"Temp\";
+                    Utilities.FS.EnsurePath(dlltempfolder);
+                    var templibs = System.IO.Directory.GetFiles(dlltempfolder, "*.dll", System.IO.SearchOption.AllDirectories);
+                    var temppdbs = System.IO.Directory.GetFiles(dlltempfolder, "*.pdb", System.IO.SearchOption.AllDirectories);
+                    var tempfiles = templibs.Concat(temppdbs);
+                    foreach (var tempfile in tempfiles) 
+                    {
+                        Utilities.FS.DeleteFile(tempfile, false);
+                    }
+                    var guid = Guid.NewGuid();
+                    var originalfolder = Utilities.Strings.GetFolder(this.TaxonomyValidationDotNetLibPath);
+                    var templibpath = this.TaxonomyValidationDotNetLibPath.Replace(".dll", String.Format("{0}.dll", guid));
+                    var pdbpath = this.TaxonomyValidationDotNetLibPath.Replace(".dll", ".pdb");
+                    var temppdbpath = templibpath.Replace(".dll", ".pdb");
+                    templibpath = templibpath.Replace(originalfolder, dlltempfolder);
+                    temppdbpath = temppdbpath.Replace(originalfolder, dlltempfolder);
+
+                    Utilities.FS.Copy(this.TaxonomyValidationDotNetLibPath, templibpath);
+                    Utilities.FS.Copy(pdbpath, temppdbpath);
+  
+
+                    var assembly = Assembly.LoadFile(templibpath);
                     var type = assembly.GetTypes().FirstOrDefault(i => i.BaseType == typeof(ValidationFunctionContainer));
                     if (type != null)
                     {
@@ -743,18 +1378,21 @@ namespace LogicalModel
             if (!System.IO.File.Exists(TaxonomyConceptPath) || Settings.Current.ReloadFullTaxonomyButStructure)
             {
 
-                var conceptelements = SchemaElements.Where(i => i.FileName == "met.xsd").ToList();
+                var conceptelements = SchemaElements.Where(i => i.FileName.EndsWith("met.xsd")).ToList();
                 foreach (var conceptelement in conceptelements) 
                 {
                     var concept = new Concept();
                     if (!String.IsNullOrEmpty(conceptelement.Domain))
                     {
                         concept.Domain = new QualifiedName();
+                        //GetDomainID(conceptelement);
+                        //if (conceptelement.Hierarchy)
                         concept.Domain.Content = conceptelement.Domain;
-                        concept.HierarchyRole = conceptelement.Hierarchy;
+                        concept.HierarchyRole = String.IsNullOrEmpty(conceptelement.Hierarchy) ? conceptelement.LinkRole : conceptelement.Hierarchy;
                     }
                     concept.Name = conceptelement.Name;
                     concept.Namespace = conceptelement.Namespace;
+                    concept.NamespaceURI = conceptelement.NamespaceURI;
                     concept.ItemType = conceptelement.Type.IndexOf(":") > -1 ? conceptelement.Type.Substring(conceptelement.Type.IndexOf(":") + 1) : conceptelement.Type;
 
                     this.Concepts.Add(concept.Content, concept);
@@ -787,26 +1425,6 @@ namespace LogicalModel
         {
 
         }
-        //public virtual void LoadTableGroups()
-        //{
-        //    Logger.WriteLine("Load TableGroups");
-
-        //    if (!System.IO.File.Exists(TaxonomyTableGroupPath) || Settings.Current.ReloadFullTaxonomyButStructure)
-        //    {
-        //        PopulateTableGroups();
-        //        var jsoncontent = Utilities.Converters.ToJson(this.Module.TableGroups);
-        //        Utilities.FS.WriteAllText(TaxonomyTableGroupPath, jsoncontent);
-        //    }
-        //    else
-        //    {
-
-        //        var jsoncontent = System.IO.File.ReadAllText(TaxonomyTableGroupPath);
-        //        this.Module.TableGroups = Utilities.Converters.JsonTo<List<TableGroup>>(jsoncontent);
-
-        //    }
-        //    Logger.WriteLine("Load TableGroups completed");
-        //}
-
 
         public virtual void LoadInstance(string filepath)
         {
@@ -835,9 +1453,147 @@ namespace LogicalModel
             }
         }
 
+        public virtual void Clear_Dimensions() 
+        {
+            this.FactParts.Clear();
+            this.CounterFactParts.Clear();
+            this.DimensionItems.Clear();
+            //this.FactsOfDimensions.Clear();
+
+            Utilities.FS.DeleteFile(this.TaxonomyDimensionPath);
+        }
+
         public virtual Instance GetNewInstance()
         {
             return new Instance();
+        }
+
+        public List<String> GetAllDimensions() 
+        {
+            var dimensions = new Dictionary<string,string>();
+            var factkeys = this.FactKeysAsEnumerable().Select(i => i).ToList();
+            foreach (var factkey in factkeys) 
+            {
+                var fact = new FactBase();
+                var str_factkey = GetFactStringKey(factkey);
+                fact.SetFromString(str_factkey);
+                foreach (var dimension in fact.Dimensions) 
+                {
+                    if (!dimensions.ContainsKey(dimension.DimensionItem)) 
+                    {
+                        var dim_text = GetLabelForDimensionItem(dimension.DimensionItem);
+                        var dom_text = GetLabelForDomain(dimension.Domain);
+                        var mem_text = GetLabelForMember(dimension.DomainAndMember);
+                        dimensions.Add(dimension.DimensionItem, String.Format("{0} = {1}", dimension.DimensionItem, dim_text));
+                    }
+                }
+            }
+            return dimensions.Select(i => i.Value).ToList();
+        }
+
+        public Label GetLabelForDimension(Dimension dimension) 
+        {
+            var l = new Label();
+            var sb = new StringBuilder();
+            sb.Append(String.Format("{0}: {1} | ", dimension.DimensionItem, GetLabelForDimensionItem(dimension.DimensionItem)));
+            sb.Append(String.Format("{0}: {1} | ", dimension.Domain, GetLabelForDimensionItem(dimension.Domain)));
+            sb.Append(String.Format("{0}: {1}", dimension.DomainAndMember, GetLabelForDimensionItem(dimension.DomainAndMember)));
+
+            l.Content = sb.ToString();
+            return l;
+        }
+        public Label GetLabelForDimensionDomainMember(Dimension dimension)
+        {
+            Label l = new Label();
+            if (dimension.IsTyped || String.IsNullOrEmpty(dimension.DomainMember))
+            {
+                l = GetLabelForDomain(dimension.Domain);
+            }
+            else
+            {
+                l = GetLabelForMember(dimension.DomainAndMember);
+
+            }
+            return l;
+        }
+        public Label GetLabelForDimensionItem(string dimensionitem)
+        {
+            var dimparts = dimensionitem.Split(":");
+
+            var ns = dimparts[0];
+            var name = dimparts[1];
+            var element = this.SchemaElements.FirstOrDefault(i => i.Namespace == ns && i.Name == name);
+            //if (element!=null)
+            var labelkey = Label.GetKey("dim", element.ID);
+            var label = this.FindLabel(labelkey);
+            var content = label != null ? label : new Label();
+            return content;
+        }
+        public virtual Element FindDimensionDomain(string dimensionitem) 
+        {
+            return null;
+        }
+        public List<String> GetMembersOf(string domain, List<string> exceptmembers) 
+        {
+            var dimensiondomainitems = SchemaElements.Where(i => i.Namespace == domain && i.Type == "nonnum:domainItemType").Select(i => i.Namespace + ":" + i.Name).Distinct().ToList();
+
+            dimensiondomainitems = dimensiondomainitems.Except(exceptmembers).ToList();
+            return dimensiondomainitems;
+        }
+        //public string GetDomainOfDimension(string item)
+        //{
+        //    if (item.Contains(":"))
+        //    {
+        //           var parts = item.Split(":");
+
+        //        var ns = parts[0];
+        //        var name = parts[1];
+        //        var staff = this.FactsOfDimensions.Where(i => i.Key.StartsWith(":" + name)).Select(i=>i.Key).ToList();
+        //        var domain = Utilities.Strings.TextBetween(staff.FirstOrDefault(), "]", ":");
+        //        return domain;
+        //    }
+        //    return "";
+        //}
+        public Element GetDomain(string item)
+        {
+            Element element = null;
+            if (item.Contains(":"))
+            {
+                var parts = item.Split(":");
+
+                var ns = parts[0];
+                var name = parts[1];
+                element = this.SchemaElements.FirstOrDefault(i => i.Namespace == ns && i.Name == name);
+            }
+            else
+            {
+                element = this.SchemaElements.FirstOrDefault(i => i.ID == item && i.Type == "model:explicitDomainType");
+            }
+            return element;
+        }
+
+        public Label GetLabelForDomain(string domain)
+        {
+            var element = GetDomain(domain);
+            var labelkey = Label.GetKey("dom", element.ID);
+            var label = this.FindLabel(labelkey);
+            var content = label != null ? label : new Label();
+            return content;
+        }
+
+        public Label GetLabelForMember(string domainandmember)
+        {
+            var dimparts = domainandmember.Split(new string[] { ":" }, StringSplitOptions.None);
+            if (dimparts.Length > 2) { return new Label(); }
+            var domain = dimparts[0];
+            var member = dimparts[1];
+            var domainelement = GetDomain(domain);
+            var memberelement = this.SchemaElements.FirstOrDefault(i => i.Name == member && i.Namespace == domain);
+
+            var labelkey = Label.GetKey(domainelement.Name, memberelement.ID);
+            var label = this.FindLabel(labelkey);
+            var content = label != null ? label : new Label();
+            return content;
         }
 
         #region Clear
@@ -850,6 +1606,7 @@ namespace LogicalModel
             Clear_Layout();
             Clear_Labels();
             Clear_SchemaElements();
+            Clear_Dimensions();
             Clear_Facts();
             Clear_Validations();
 
@@ -863,7 +1620,13 @@ namespace LogicalModel
         
         public void Clear_Facts()
         {
-            Utilities.FS.DeleteFile(TaxonomyFactsPath);
+            //Utilities.FS.DeleteFile(TaxonomyFactsPath);
+            var folder = Utilities.Strings.GetFolder(TaxonomyFactsPathFormat);
+            var files = System.IO.Directory.GetFiles(folder);
+            foreach (var file in files)
+            {
+                Utilities.FS.DeleteFile(file);
+            }
         }
        
         public void Clear_Structure() 
@@ -884,6 +1647,8 @@ namespace LogicalModel
         public void Clear_Tables()
         {
             Utilities.FS.DeleteFile(TaxonomyModulePath);
+            Clear_Layout();
+            Clear_Facts();
         }
 
         public void Clear_Layout()
@@ -903,6 +1668,8 @@ namespace LogicalModel
 
         public void Clear_Validations()
         {
+            this.ValidationFunctionContainer = null;
+            GC.Collect();
             var validationFolder = Utilities.Strings.GetFolder(TaxonomySimpleValidationPath);
             var valfiles = System.IO.Directory.GetFiles(validationFolder);
             foreach (var valfile in valfiles) 
@@ -912,5 +1679,11 @@ namespace LogicalModel
         }
         
         #endregion
+
+        public bool KeyContains(int[] p, string fs)
+        {
+            var factstring = GetFactStringKey(p);
+            return factstring.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>=0;
+        }
     }
 }

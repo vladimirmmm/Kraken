@@ -40,9 +40,20 @@ namespace BaseModel
             }
     
         }
+        public string _LocalFolder = "";
+    
         public string LocalFolder
         {
-            get { return Utilities.Strings.GetFolder(LocalPath); }
+         
+            //return Utilities.Strings.GetFolder(LocalPath);
+            get 
+            {
+                if (String.IsNullOrEmpty(_LocalFolder)) 
+                {
+                    _LocalFolder = Utilities.Strings.GetFolder(LocalPath);
+                }
+                return _LocalFolder; 
+            }
 
         }
 

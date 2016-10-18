@@ -8,17 +8,37 @@ namespace Utilities
 {
     public class MathX
     {
-        //static IEnumerable<IEnumerable<T>> CartesianProduct<T>(this IEnumerable<IEnumerable<T>> sequences)
+
         public static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
         {
             IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
-            return sequences.Aggregate(
+            var result = sequences.Aggregate(
                 emptyProduct,
                 (accumulator, sequence) =>
                     from accseq in accumulator
                     from item in sequence
                     select accseq.Concat(new[] { item })
                 );
+            if (result.Count() == 1 && result.FirstOrDefault().Count() == 0) 
+            {
+                result = new List<IEnumerable<T>>();
+            }
+            return result;
+        }
+
+        public static List<List<T>> CartesianProductList<T>(IEnumerable<IEnumerable<T>> sequences)
+        {
+            var result = new List<List<T>>();
+            var cr = CartesianProduct(sequences);
+            foreach (var item in cr) 
+            {
+                var itemlist = item.ToList();
+                if (itemlist.Count > 0)
+                {
+                    result.Add(itemlist);
+                }
+            }
+            return result;
         }
 
         private void test() 

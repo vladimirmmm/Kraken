@@ -1,4 +1,5 @@
-﻿using LogicalModel.Base;
+﻿using BaseModel;
+using LogicalModel.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;

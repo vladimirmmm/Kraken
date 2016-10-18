@@ -39,11 +39,13 @@ namespace Utilities
 
         public static void ClearDocument(XmlDocument document)
         {
-            if (NamespaceDictionary.ContainsKey(document)) 
+            if (document != null)
             {
-                NamespaceDictionary.Remove(document);
+                if (NamespaceDictionary.ContainsKey(document))
+                {
+                    NamespaceDictionary.Remove(document);
+                }
             }
-
         }
 
         private static Object DictionaryLocker = new Object();
@@ -218,15 +220,25 @@ namespace Utilities
         {
             var result = new List<XmlNode>();
             XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
-            if (XPath.Contains(":")) 
+  
+            var ix = XPath.IndexOf(":", StringComparison.Ordinal);
+            if (ix>-1) 
             {
                 var ns = XPath;
-                if (XPath.StartsWith("//"))
+                if (XPath.StartsWith("//", StringComparison.Ordinal))
                 {
                     ns = XPath.Substring(2);
                 }
-                ns = ns.Remove(ns.IndexOf(":"));
-                if (!manager.HasNamespace(ns)) 
+                ns = ns.Remove(ix);
+                var name = XPath.Substring(ix + 1);
+                if (ns == "*") 
+                {
+                    //XPath = "//*[local-name() = translate('" + name + "','abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')";
+                    //XPath = "*[translate(local-name(),'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='" + name.ToUpper() + "']";
+                    //XPath = "*[matches(local-name(),'" + name + "',i)]";
+                    XPath = "*[local-name()='" + name + "']";
+                }
+                if (!manager.HasNamespace(ns) && ns!="*") 
                 {
                     return result;
                     //return node.OwnerDocument.SelectNodes("xffgh");
@@ -259,7 +271,7 @@ namespace Utilities
                     ns = XPath.Substring(2);
                 }
                 ns = ns.Remove(ns.IndexOf(":"));
-                if (!manager.HasNamespace(ns))
+                if (!manager.HasNamespace(ns) )
                 {
                     return result;
                     //return node.OwnerDocument.SelectNodes("xffgh");

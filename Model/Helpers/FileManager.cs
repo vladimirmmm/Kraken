@@ -78,17 +78,17 @@ namespace LogicalModel.Helpers
 
         }
 
-        public static void SaveToJson<T>(IEnumerable<T> items, string pathformat, int itemsperpart=100) 
+        public static void SaveToJson<T>(IEnumerable<T> items, string pathformat, int itemsperpart=20) 
         {
             int pageCount = (items.Count() + itemsperpart - 1) / itemsperpart;
             for (int i = 0; i < pageCount; i++) 
             {
                 var startix = i * itemsperpart;
-
-                var json = Utilities.Converters.ToJson(items.Skip(startix).Take(itemsperpart));
+                var rules = items.Skip(startix).Take(itemsperpart).ToList();
+                var json = Utilities.Converters.ToJson(rules);
                 var filepath = String.Format(pathformat, i);
                 Utilities.FS.WriteAllText(filepath, json);
-      
+                json = null;
             }
         }
 
@@ -107,8 +107,37 @@ namespace LogicalModel.Helpers
                 items = Utilities.Converters.JsonTo<List<T>>(json);
                 foreach (var item in items) 
                 {
+                    if (item is KeyValuePair<int,List<string>>)
+                    {
+                        var kvp = (KeyValuePair<int, List<string>>)((Object)item) ;
+                        kvp.Value.Capacity = kvp.Value.Count;
+                    }
                     target.Add(item);
                 }
+            }
+        }
+
+        public static void SetFromJson<T>(ICollection<T> target, string pathformat, Func<String, ICollection<T>> Deserialize)
+        {
+            var folder = Utilities.Strings.GetFolder(pathformat);
+            var filename = Utilities.Strings.GetFileName(pathformat);
+            var searchpattern = filename.Replace("{0}", "*");
+            var files = System.IO.Directory.GetFiles(folder, searchpattern);
+            //target.Clear();
+            foreach (var file in files)
+            {
+
+                ICollection<T> items = null;
+                var json = System.IO.File.ReadAllText(file);
+                items = Deserialize(json);
+                //items = Utilities.Converters.JsonTo<List<T>>(json);
+                json = null;
+                //foreach (var item in items)
+                //{
+
+                //    //BeforeAdd(item);
+                //    target.Add(item);
+                //}
             }
         }
 

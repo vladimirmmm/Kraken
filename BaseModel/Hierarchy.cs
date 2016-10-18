@@ -59,7 +59,29 @@ namespace BaseModel
                 this.Children.Add(newchild);
             }
         }
-
+        public void AddChildren(List<TClass> items)
+        {
+            foreach (var item in items)
+            {
+                var hi = new Hierarchy<TClass>(item);
+                AddChild(hi);
+            }
+        }
+        public void AddChildren(List<Hierarchy<TClass>> items)
+        {
+            foreach (var item in items) 
+            {
+                AddChild(item);
+            }
+        }
+        public void AddChild(Hierarchy<TClass> item) 
+        {
+            if (item != this & item.FirstOrDefault(i=>i.Item==this.Item)==null)
+            {
+                this.Children.Add(item);
+                item.Parent = this;
+            }
+        }
         public int GetTotalChildCount(Hierarchy<TClass> item)
         {
             item = item == null ? this : item;
@@ -86,16 +108,16 @@ namespace BaseModel
             return count;
         }
 
-        public int GetLeafCount(Hierarchy<TClass> item, int level = 0)
+        public int GetLeafCount(Func<Hierarchy<TClass>, bool> filter, int level = 0)
         {
-            item = item == null ? this : item;
             var leafcount = 0;
-            foreach (var child in item.Children)
+            foreach (var child in this.Children)
             {
-                leafcount += GetLeafCount(child, level + 1);
+                leafcount += child.GetLeafCount(filter, level + 1);
 
             }
-            if (item.Children.Count == 0)
+           // if (this.Children.Count == 0)
+            if (!this.Children.Any(filter))
             {
                 return 1;
             }
@@ -181,37 +203,7 @@ namespace BaseModel
             Hierarchy<TClass> root = Items.FirstOrDefault();
             foreach (var arc in Arcs)
             {
-                /*
-                var parents = Items.Where(i => FromExpression(i, arc));
-                var children = Items.Where(i => ToExpression(i, arc));
-                var childtemplate = children.FirstOrDefault();
-
-                var nullchild = children.FirstOrDefault(i => i.Parent == null);
-                var child = childtemplate.Parent == null ? childtemplate :
-                    nullchild != null ? nullchild :
-                    new Hierarchy<TClass>(childtemplate);
-                if (parents.ToList().Count > 1 || children.ToList().Count > 1)
-                {
-             
-                }
-                foreach (var parent in parents)
-                {
-                    if (parent != null && child != null)
-                    {
-                        child.Parent = parent;
-                        OrderExpression(child, arc);
-                        parent.Children.Add(child);
-
-                    }
-                    else
-                    {
-                        //if (child != null)
-                        //{
-                        //    root = child;
-                        //}
-                    }
-                }
-                */
+               
                 var parents = Items.Where(i => FromExpression(i, arc));
                 var children = Items.Where(i => ToExpression(i, arc));
                 var child = children.FirstOrDefault();
@@ -255,13 +247,7 @@ namespace BaseModel
                 var parents = hierarchylist.Where(i => FromExpression(i, arc)).ToList();
                 var children = hierarchylist.Where(i => ToExpression(i, arc)).ToList();
                 var child = children.FirstOrDefault();
-                /*
-                var childtemplate = children.FirstOrDefault();
-                var nullchild = hierarchylist.FirstOrDefault(i => i.Parent == null);
-                var child = childtemplate.Parent == null ? childtemplate :
-                    nullchild != null ? nullchild :
-                    new Hierarchy<TClass>(childtemplate);
-                */
+            
                 if (parents.ToList().Count > 1 || children.ToList().Count > 1)
                 {
        
@@ -276,12 +262,6 @@ namespace BaseModel
 
                     }
                 }
-                //if (parents.Count == 0) 
-                //{
-                //    root = child;
-
-                //}
-                //root = hierarchylist.FirstOrDefault(i => i.Parent == null);
                
             }
             var roots = hierarchylist.Where(i => i.Parent == null).ToList();
@@ -309,13 +289,13 @@ namespace BaseModel
             return root;
         }
 
-        public int GetSubLevelCount(int level = 0)
+        public int GetSubLevelCount(Func<Hierarchy<TClass>, bool> filter, int level = 0)
         {
             var item = this;
             int max = level;
-            foreach (var child in item.Children)
+            foreach (var child in item.Children.Where(i=>filter(i)))
             {
-                var clevel = child.GetSubLevelCount( level + 1);
+                var clevel = child.GetSubLevelCount(filter, level + 1);
                 if (clevel > max)
                 {
                     max = clevel;
@@ -331,6 +311,17 @@ namespace BaseModel
             foreach (var child in this.Children)
             {
                 list.AddRange(child.All());
+            }
+            return list;
+        }
+
+        public List<Hierarchy<TClass>> Descendant()
+        {
+            var list = new List<Hierarchy<TClass>>();
+            foreach (var child in this.Children)
+            {
+                list.Add(child);
+                list.AddRange(child.Descendant());
             }
             return list;
         }
@@ -384,22 +375,22 @@ namespace BaseModel
         public string ToHierarchyString2(string tag = "")
         {
             var sb = new StringBuilder();
+         
+            sb.AppendLine(String.Format("{0}{1}", tag, this.Item));
             foreach (var child in this.Children)
             {
                 sb.Append(child.ToHierarchyString2(tag + "    "));
             }
-            sb.AppendLine(String.Format("{0}{1}", tag, this.Item));
-
             return sb.ToString();
         }
 
-        public List<Hierarchy<TClass>> ToHierarchy(bool childfirst=false)
+        public List<Hierarchy<TClass>> ToHierarchyList(bool childfirst=false)
         {
             var list = new List<Hierarchy<TClass>>();
             if (!childfirst) { list.Add(this); }
             foreach (var child in this.Children)
             {
-                list.AddRange(child.ToHierarchy(childfirst));
+                list.AddRange(child.ToHierarchyList(childfirst));
             }
             if (childfirst) { list.Add(this); }
 
@@ -445,9 +436,37 @@ namespace BaseModel
             return current;
         }
 
+        public List<Hierarchy<TClass>> Parents()
+        {
+            var parents = new List<Hierarchy<TClass>>();
+            var parent = this.Parent;
+            while (parent != null)
+            {
+                parents.Add(parent);
+                parent = parent.Parent;
+            }
+            return parents;
+        }
+
         public void Clear()
         {
+            foreach (var child in this.Children) 
+            {
+                child.Parent = null;
+            }
             this.Children.Clear();
+        }
+
+        public Hierarchy<TClass> Copy()
+        {
+            var result = new Hierarchy<TClass>();
+            result.Item = this.Item;
+  
+            foreach (var child in this.Children)
+            {
+                result.Children.Add(child.Copy());
+            }
+            return result;
         }
     }
 

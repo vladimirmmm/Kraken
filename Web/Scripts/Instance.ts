@@ -26,6 +26,11 @@
         private s_find_selector: string = "";
         private s_general_selector: string = "";
 
+        private ui_factdetail: Element = null;
+        private ui_vruledetail: Element = null;
+
+        private ValidationResultsServiceFunction: General.FunctionWithCallback = null;
+
         constructor() {
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_validation_selector = "#" + this.s_validation_id;
@@ -34,23 +39,23 @@
             this.s_general_selector = "#" + this.s_general_id;
         }
 
-        public Sel(selector: any): JQuery
+        public Sel(selector: any): Element
         {
             var me = this;
-            return $(selector, "#" + me.s_main_id);
+            return _SelectFirst(selector, _SelectFirst("#" + me.s_main_id));
         }
 
-        public SelFrom(parentselector: any, selector: any): JQuery {
+        public SelFrom(parentselector: any, selector: any): Element {
             var me = this;
-            return $(selector, me.Sel(parentselector));
+            return _SelectFirst(selector, me.Sel(parentselector));
         }
-        public SelFromFact(selector: any): JQuery {
+        public SelFromFact(selector: any): Element {
             var me = this;
-            return $(selector, me.Sel(me.s_fact_selector));
+            return _SelectFirst(selector, me.Sel(me.s_fact_selector));
         }
-        public SelFromValidation(selector: any): JQuery {
+        public SelFromValidation(selector: any): Element {
             var me = this;
-            return $(selector, me.Sel(me.s_validation_selector));
+            return _SelectFirst(selector, me.Sel(me.s_validation_selector));
         }
 
         public SetExternals() {
@@ -61,7 +66,17 @@
 
             me.LoadValidationResults(null);
 
-          
+            me.ValidationResultsServiceFunction = new General.FunctionWithCallback(
+                (fwc: General.FunctionWithCallback, args: any) => {
+                    var p = <Model.Dictionary<any>>args[0];
+                    AjaxRequest("Instance/Validation", "get", "json", p,
+                        function (data: DataResult) {
+                            if (!IsNull(data.Items)) {
+                                me.ValidationResults = <Model.ValidationRuleResult[]>data.Items;
+                                fwc.Callback(data);
+                            }
+                        }, null);
+                });
         }
 
         public HandleAction(msg: General.Message)
@@ -71,8 +86,10 @@
             if (action == "instancevalidated")
             {
                 me.LoadValidationResults(function () {
-                    var $activator = ShowContentByID("#"+me.s_validation_id);
-                    me.LoadContentToUI($activator);
+                    var item = "#" + me.s_validation_id;
+                    LoadTab("#MainContainer", "#InstanceContainer");
+                    LoadTab("#InstanceContainer", item);
+                    me.LoadContentToUIX(me.s_validation_id, null);
                 });
             }
         }
@@ -82,7 +99,7 @@
             var me = this;
             AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
                 me.ValidationResults = data;
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) { console.log(error); });
         }
 
@@ -91,19 +108,20 @@
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
                 me.LoadToUI();
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
 
             }, function (error) { console.log(error); });
         }
-
+   
         public LoadToUI()
         {
             var me = this;
-            S_Bind_End
-            me.Sel(s_detail_selector).hide();
-            //ShowContent("#" + me.s_fact_id, $("#TaxCommands"));
-           
-            ShowContentByID("#" + me.s_fact_id);
+            //me.Sel(s_detail_selector).hide();
+            //me.LoadTab("#MainContainer", "#InstanceContainer");
+            //me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
+
+            me.LoadContentToUIX(me.s_fact_id, null);
+            
             //ShowContentByID("#TaxonomyContainer");
 
             var facts: Model.FactBase[] = [];
@@ -129,6 +147,11 @@
                     }
                 }
             }
+
+            if (app.taxonomycontainer.Table != null)
+            {
+                app.taxonomycontainer.Table.Instance = me.Instance;
+            }
             me.FactsNr = this.Instance.Facts.length;
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
 
@@ -136,18 +159,25 @@
 
         public ClearFilterFacts()
         {
-            $("input[type=text]","#FactFilter ").val("");
-            $("textarea","#FactFilter ").val("");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "input[type=text]"), "");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "textarea"), "");
             this.FilterFacts();
         }
+
+        private GetFilterValue(selector: string): string {
+            var element = this.SelFromFact(s_listfilter_selector + " " + selector);
+            if (!IsNull(element)) {
+                return _Value(element).toLowerCase().trim();
+            }
+            return "";
+        }
+
         public FilterFacts()
         {
             var me = this;
-            var f_label: string = me.SelFromFact(s_listfilter_selector + " #F_Label").val().toLowerCase().trim();
-            var f_concept: string = me.SelFromFact(s_listfilter_selector + " #F_Concept").val().toLowerCase().trim();
-            var f_context: string = me.SelFromFact(s_listfilter_selector + " #F_Context").val().toLowerCase().trim();
-            var f_dimension: string = me.SelFromFact(s_listfilter_selector + " #F_Dimension").val().toLowerCase().trim();
-            var f_value: string = me.SelFromFact(s_listfilter_selector + " #F_Value").val().toLowerCase().trim();
+            var f_context: string = me.GetFilterValue("#F_Context");
+            var f_factstring: string = me.GetFilterValue("#F_FactString");
+            var f_value: string = me.GetFilterValue("#F_Value");
             var context_id = "";
             var context_xml = "";
             var query = me.Instance.Facts.AsLinq<Model.InstanceFact>();
@@ -160,12 +190,14 @@
                 query = query.Where(i=> i.ContextID.toLowerCase().indexOf(context_id) > -1);
 
             }
-            if (!IsNull(f_concept))
-            {
-                query = query.Where(i=> i.Concept.FullName.toLowerCase().indexOf(f_concept) > -1);
-            }
-            if (!IsNull(f_dimension)) {
-                query = query.Where(i=> i.FactString.toLowerCase().indexOf(f_dimension) > -1);
+
+            if (!IsNull(f_factstring)) {
+                var factparts = f_factstring.split(" ");
+                factparts.forEach(function (factpart, ix) {
+                    if (!IsNull(factpart)) {
+                        query = query.Where(i=> i.FactString.toLowerCase().indexOf(factpart) > -1);
+                    }
+                });
             }
             if (!IsNull(f_value)) {
                 query = query.Where(i=> i.Value.toLowerCase()==f_value);
@@ -175,10 +207,6 @@
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), query.ToArray(), 0, me.PageSize, eventhandlers);
         }
 
-
-
-
-
         public ShowFactDetails(factkey:string, factstring:string)
         {
             var me = this;
@@ -187,11 +215,38 @@
 
                 if (facts != null && facts.length > 0) {
 
-                    var fact = facts[0];
-                    Model.FactBase.LoadFromFactString(fact);
-                    var $factdetail = me.SelFromFact(s_detail_selector);
-                    BindX($factdetail, fact);
-                    $factdetail.show();
+                    var instancefact = facts.AsLinq<Model.InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
+                    Model.FactBase.LoadFromFactString(instancefact);
+                    var fullfactstring = Model.FactBase.GetFullFactString(instancefact);
+                    for (var i = 0; i < instancefact.Cells.length; i++){
+                        var cell = instancefact.Cells[i];
+
+                        var cellobj = new Model.Cell();
+                        cellobj.SetFromCellID(cell);
+                        var reportid = cellobj.Report;
+                        var dynmicdata = me.Instance.DynamicReportCells[reportid];
+                        if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || IsNull(cellobj.Extension))
+                        {
+                            var celldictionary = IsNull(dynmicdata) ? null : dynmicdata.CellOfFact;
+                            if (!IsNull(celldictionary)) {
+                                cellobj.SetFromCellID(celldictionary[instancefact.FactString]);
+
+                            }
+                        }
+        
+                        instancefact.Cells[i] = cellobj.CellID;
+
+                    };
+                    Model.FactBase.LoadFromFactString(instancefact);
+                    instancefact.Dimensions.forEach(function (dimension, ix) {
+                        SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
+                    });
+                    if (me.ui_factdetail == null) {
+                        me.ui_factdetail = me.SelFromFact(s_detail_selector);
+                    }
+                    BindX(me.ui_factdetail, instancefact);
+                    _Show(me.ui_factdetail);
+                    app.ShowOnBottomTab(me.ui_factdetail, "#tab_fact");
                 }
             }
 
@@ -200,8 +255,7 @@
         public CloseFactDetails()
         {
             var me = this;
-            var $factdetail = me.SelFromFact(s_detail_selector);
-            $factdetail.hide();
+            _Hide(me.ui_factdetail);
 
         }
 
@@ -227,7 +281,7 @@
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);
-                        TaxonomyContainer.SetValues(v);
+                        //TaxonomyContainer.SetValues(v);
 
                     }
 
@@ -245,35 +299,34 @@
             }
 
         }
+
         public LoadContentToUI(sender: any)
         {
-            var me = this;
-            ShowContentBySender(sender);
-            var target = $(sender).attr("activator-for");
+            var me = this;        
+            var target = GetHashPart(_Attribute(sender, "href"));
+
             me.LoadContentToUIX(target, sender);
         }
+
         public LoadContentToUIX(contentid: string, sender: any)
         {
             var me = this;
-            //var $command = $(sender);
-            //var $commands = $command.parent().children("a");
-            //$commands.removeClass("selected");
-            //$command.addClass("selected");
-
+            var eventhandlers = {};
             var text = $(sender).text();
+            _AddClass(_SelectFirst("#colgroup1"), "wide");
        
             if (contentid == "Instance")
             {
 
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") == -1){
-                var eventhandlers = { onpaging: () => { me.CloseFactDetails(); } };
+                eventhandlers = { onpaging: () => { me.CloseFactDetails(); } };
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize, eventhandlers);
 
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid")>-1) {
                 var invalidfacts = me.Instance.Facts.AsLinq<Model.InstanceFact>().Where(i=> i.Cells.length == 0).ToArray();
-                var eventhandlers = { onpaging: () => { me.CloseFactDetails(); } };
+                eventhandlers = { onpaging: () => { me.CloseFactDetails(); } };
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), invalidfacts, 0, me.PageSize, eventhandlers);
 
             }
@@ -284,9 +337,13 @@
 
             if (contentid == me.s_units_id) {
 
+                LoadPage(_SelectFirst(s_list_selector, me.s_unit_selector), _SelectFirst(s_listpager_selector, me.s_unit_selector),
+                    me.Instance.Units, 0, me.PageSize, eventhandlers);
+
             }
             if (contentid == me.s_find_id) {
-
+                LoadPage(_SelectFirst(s_list_selector, me.s_find_selector), _SelectFirst(s_listpager_selector, me.s_find_selector),
+                    me.Instance.FilingIndicators, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_general_id) {
                 BindX(me.Sel(me.s_general_selector), me.Instance);
@@ -296,29 +353,27 @@
 
         public ShowRuleDetail(ruleid: string)
         {
-            var showvaldetail = function () {
-                $valdetail.show();
-                var $rulecontainer = me.SelFromValidation(".validationrule_results_" + ruleid);
-                $rulecontainer.append($valdetail);
-                $valdetail.focus();
-            };
+     
             var me = this;
-            var previousruleid = me.SelFromValidation(s_parent_selector+" .rule").attr("rule-id");
-            var $valdetail = me.SelFromValidation(s_detail_selector);
-            if ($valdetail.is(':visible')) {
-                $valdetail.hide();
+            var previousruleid = _Attribute(me.SelFromValidation(s_parent_selector + " .rule"), "rule-id");
+            if (me.ui_vruledetail == null) {
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector);
             }
-            else {
-                if (ruleid == previousruleid) {
-                    showvaldetail();
-                }
+
+            if (ruleid == previousruleid) {
+                _Show(me.ui_vruledetail);
             }
             if (ruleid != previousruleid) {
                 var rule = this.ValidationErrors.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == ruleid);
 
-                BindX(me.SelFromValidation(s_parent_selector), rule);
-                LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
+                var parent = $(s_parent_selector, me.ui_vruledetail);
 
+                BindX(parent, rule);
+                var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
+                var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
+                //LoadPage(list, listpager, rule.Results, 0, 1);
+
+                LoadPageAsync(list, listpager, app.taxonomycontainer.ValidationResultServiceFunction, 0, 1, { ruleid: ruleid });
                 
 
                 $(".trimmed").click(function () {
@@ -330,15 +385,15 @@
                     }
                 });
 
-                showvaldetail();
+                _Show(me.ui_vruledetail);
+                app.ShowOnBottomTab(me.ui_vruledetail, "#tab_vrule");
             }
         }
 
         public CloseRuleDetail()
         {
             var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
+            _Hide(me.ui_vruledetail);
 
         }
 
@@ -347,7 +402,7 @@
        
         }
 
-
+        
     
 
     }

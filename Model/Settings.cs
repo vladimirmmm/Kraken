@@ -13,38 +13,48 @@ namespace LogicalModel
         Date,
         Boolean,
     }
-    public class Setting 
-    {
-        public SimpleType Type { get; set; }
-        public String Name { get; set; }
-        public String Value { get; set; }
+    //public class Setting 
+    //{
+    //    public SimpleType Type { get; set; }
+    //    public String Name { get; set; }
+    //    public String Value { get; set; }
 
-        public Setting() 
-        {
+    //    public Setting() 
+    //    {
 
-        }
-        public Setting(string Name)
-        {
-            this.Name = Name;
-            //this.Type=
-        }
+    //    }
+    //    public Setting(string Name)
+    //    {
+    //        this.Name = Name;
+    //        //this.Type=
+    //    }
         
-        public Setting(string Name,SimpleType Type)
-        {
-            this.Name = Name;
-            this.Type = Type;
-        }
+    //    public Setting(string Name,SimpleType Type)
+    //    {
+    //        this.Name = Name;
+    //        this.Type = Type;
+    //    }
 
-        public Setting(string Name, SimpleType Type,Object Value)
-        {
-            this.Name=Name;
-            this.Type = Type;
-            this.Value = String.Format("{0}", Value);
-        }
-    }
-    public class Settings : Dictionary<string, Setting>
+    //    public Setting(string Name, SimpleType Type,Object Value)
+    //    {
+    //        this.Name=Name;
+    //        this.Type = Type;
+    //        this.Value = String.Format("{0}", Value);
+    //    }
+    //}
+    public class Settings : Dictionary<string, string>
     {
         private static string FileName = "Settings.json";
+
+        public string GetJsonObj() 
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var item in this) 
+            {
+                dict.Add(item.Key, item.Value);
+            }
+            return Utilities.Converters.ToJson(dict);
+        }
 
         private static Settings _Current = null;
         public static Settings Current 
@@ -69,6 +79,7 @@ namespace LogicalModel
             {
                 settings = this;
             }
+   
             System.IO.File.WriteAllText(filepath, Utilities.Converters.ToJson(settings));
         }
 
@@ -85,11 +96,50 @@ namespace LogicalModel
             }
             if (!string.IsNullOrEmpty(json))
             {
-                _Current = Utilities.Converters.JsonTo<Settings>(json);
+                var settings = Utilities.Converters.JsonTo<Settings>(json);
+                var keys = _Current.Keys.ToList();
+                foreach (var key in keys) 
+                {
+                    if (settings.ContainsKey(key)) 
+                    {
+                        _Current[key] = settings[key];
+                    }
+                }
+                Save(null);
                 
             }
         }
+        public Settings()
+        {
+            AddSetting("ValidateOnInstanceLoaded",true);
+            AddSetting("ReloadTaxonomyOnInstanceLoaded", false);
+            AddSetting("ReloadFullTaxonomyButStructure", false);
+            AddSetting("ReloadFullTaxonomy", false);
+            AddSetting("ReDownloadFiles", false);
+            AddSetting("LoadValidationRules", true);
+            AddSetting("CheckValidationCells", false);
+            AddSetting("DebugLevel", 0);
+            AddSetting("AppMode", 0);
+        }
 
+        public void AddSetting(string name, object value) 
+        {
+            var valuetype = value == null ? typeof(string) : value.GetType();
+         
+            var strvalue = String.Format("{0}", value);
+
+            if (valuetype == typeof(Boolean)) 
+            {
+            }
+            if (valuetype == typeof(int))
+            {
+            }
+            if (valuetype == typeof(DateTime))
+            {
+                strvalue = Utilities.Converters.DateTimeToString((DateTime)value, Utilities.Converters.DateTimeFormat);
+            }
+            this.Add(name, strvalue);
+        }
         public Boolean ValidateOnInstanceLoaded 
         {
             get { return Boolean.Parse(GetValue("ValidateOnInstanceLoaded", SimpleType.Boolean, false)); }
@@ -115,6 +165,11 @@ namespace LogicalModel
             get { return Boolean.Parse(GetValue("ReDownloadFiles", SimpleType.Boolean, false)); }
             set { SetValue("ReDownloadFiles", value); }
         }
+        public Boolean LoadValidationRules
+        {
+            get { return Boolean.Parse(GetValue("LoadValidationRules", SimpleType.Boolean, false)); }
+            set { SetValue("LoadValidationRules", value); }
+        }
         public Boolean CheckValidationCells
         {
             get { return Boolean.Parse(GetValue("CheckValidationCells", SimpleType.Boolean, false)); }
@@ -131,32 +186,35 @@ namespace LogicalModel
             set { SetValue("AppMode", value); }
         }
 
-        private string GetValue(string key,SimpleType type,object DefaultValue) 
+        public string GetValue(string key,SimpleType type,object DefaultValue) 
         {
-            Setting setting = null;
+            string value = String.Format("{0}", DefaultValue);
             if (!this.ContainsKey(key))
             {
-                setting = new Setting(key, type, DefaultValue);
-                this.Add(key, setting);
+                this.Add(key, value);
             }
             else 
             {
-                setting = this[key];
+                value = this[key];
             }
-            return setting.Value;
+            if (type == SimpleType.Boolean) 
+            {
+                value = value.Trim().ToLower() == "true" || value.Trim().ToLower() == "1" ? "True" : "False";
+            }
+            return value;
         }
 
-        private void SetValue(string key, object Value)
+        public void SetValue(string key, object Value)
         {
-            Setting setting = null;
+            string value = String.Format("{0}", Value);
+
             if (!this.ContainsKey(key))
             {
-                setting = new Setting(key, SimpleType.String, Value);
-                this.Add(key, setting);
+
+                this.Add(key, value);
 
             }
-            setting = this[key];
-            setting.Value = String.Format("{0}", Value);
+            this[key] = value;
         }
     }
 

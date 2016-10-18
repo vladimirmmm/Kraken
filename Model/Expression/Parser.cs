@@ -31,7 +31,7 @@ namespace LogicalModel.Expressions
 
         public void AddFunction<TFunctionContainer>(String Name, System.Linq.Expressions.Expression<Func<TFunctionContainer, Object>> expr) where TFunctionContainer : class
         {
-            this.FunctionMap.Add(Name, "functions." + Utilities.Linq.GetMemberName<TFunctionContainer>(expr));
+            this.FunctionMap.Add(Name.ToLower(), "functions." + Utilities.Linq.GetMemberName<TFunctionContainer>(expr));
         }
 
         //public void AddFunction(String Name, System.Linq.Expressions.LambdaExpression expr)
@@ -87,8 +87,11 @@ namespace LogicalModel.Expressions
                     if (expression.SubExpressions.Count > 1)
                     {
                     }
-                    paramv = Translate(expression.SubExpressions.FirstOrDefault());
-                    sb.Append(paramv + delimiter);
+                    if (expression.SubExpressions.Count > 0)
+                    {
+                        paramv = Translate(expression.SubExpressions.FirstOrDefault());
+                        sb.Append(paramv + delimiter);
+                    }
                     handled = true;
                 }
 
@@ -206,6 +209,16 @@ namespace LogicalModel.Expressions
 
         public virtual BaseModel.Hier<String> GetTreeString(string expression)
         {
+            var thenelses = Utilities.Strings.TextsBetween(expression, Syntax.Then, Syntax.Else);
+            foreach (var thenelse in thenelses) 
+            {
+                var part = thenelse.Trim();
+                if (!part.StartsWith(Syntax.ExpressionContainer_Left)) 
+                {
+                    part = Syntax.ExpressionContainer_Left + part + Syntax.ExpressionContainer_Right;
+                    expression = expression.Replace(Syntax.Then + thenelse + Syntax.Else, Syntax.Then + part + Syntax.Else);
+                }
+            }
             var item = new BaseModel.Hier<String>();
             var leftexprcontainercount = 0;
             var rightexprcontainercount = 0;
@@ -304,6 +317,8 @@ namespace LogicalModel.Expressions
     {
         Unknown,
 
+        Cast,
+
         Addition,
         Subtraction,
         Multiplication,
@@ -317,6 +332,13 @@ namespace LogicalModel.Expressions
         Less,
         GreaterOrEqual,
         LessOrEqual,
+
+        VEquals,
+        VNotEquals,
+        VGreater,
+        VLess,
+        VGreaterOrEqual,
+        VLessOrEqual,
 
         Not,
         And,

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace XBRLProcessor.Model
 {
-    public class XbrlUnit:Identifiable
+    public class XbrlUnit:BaseModel.Identifiable
     {
         public string UnitID { get; set; }
         public string UnitName { get; set; }

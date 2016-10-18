@@ -19,11 +19,17 @@ namespace LogicalModel
         [JsonProperty]
         public String FactKey { get { return _FactKey; } set { _FactKey = value; } }
 
+        [JsonProperty]
         public string Decimals { get; set; }
 
         private String _Value = "";
         [JsonProperty]
         public String Value { get { return _Value; } set { _Value = value; } }
+
+        private int _IX = -1;
+        [JsonProperty]
+        public int IX { get { return _IX; } set { _IX = value; } }
+
 
         private List<String> _Cells = new List<string>();
         [JsonProperty]
@@ -35,7 +41,8 @@ namespace LogicalModel
                 if (String.IsNullOrEmpty(_Value)) { return 0; }
                 if (_Value.Length > 29 || !Utilities.Strings.IsDigitsOnly(_Value, '.', '-'))
                 {
-                    Logger.WriteLine(String.Format("Invalid Value Detected: {0}", _Value));
+                    var cells = Utilities.Strings.ArrayToString(Cells.ToArray());
+                    Logger.WriteLine(String.Format("Invalid Value Detected: {0} Cells: {1}", _Value, cells));
                 }
                 else 
                 {
@@ -49,11 +56,16 @@ namespace LogicalModel
         [JsonProperty]
         public String ContextID { get; set; }
 
+        [JsonProperty]
+        public String ID { get; set; }
+
+        [JsonProperty]
+        public Period Period { get; set; }
 
         [JsonProperty]
         public Entity Entity { get; set; }
         [JsonIgnore]
-        public Unit Unit { get; set; }
+        public InstanceUnit Unit { get; set; }
         [JsonProperty]
         public String UnitID { get; set; }
 
@@ -77,7 +89,7 @@ namespace LogicalModel
             {
                 unitref = String.Format("unitRef=\"{0}\"", UnitID);
             }
-            sb.AppendLine(String.Format("<{0} {2} contextRef=\"{3}\" {4}>{1}<{0}>",
+            sb.Append(String.Format(Literals.Tab +  "<{0} {2} contextRef=\"{3}\" {4}>{1}</{0}>",
                 this.Concept.Content, this.Value, decimals, ContextID, unitref));
 
             return sb.ToString();

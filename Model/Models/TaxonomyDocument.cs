@@ -31,6 +31,7 @@ namespace LogicalModel
             _FileName = Utilities.Strings.GetFileName(_LocalRelPath);
         }
 
+
         public override string GetEngineLocalFolder()
         {
             return TaxonomyEngine.LocalFolder;

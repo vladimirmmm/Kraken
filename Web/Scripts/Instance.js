@@ -21,6 +21,9 @@ var Control;
             this.s_unit_selector = "";
             this.s_find_selector = "";
             this.s_general_selector = "";
+            this.ui_factdetail = null;
+            this.ui_vruledetail = null;
+            this.ValidationResultsServiceFunction = null;
             this.s_fact_selector = "#" + this.s_fact_id;
             this.s_validation_selector = "#" + this.s_validation_id;
             this.s_unit_selector = "#" + this.s_units_id;
@@ -29,33 +32,44 @@ var Control;
         }
         InstanceContainer.prototype.Sel = function (selector) {
             var me = this;
-            return $(selector, "#" + me.s_main_id);
+            return _SelectFirst(selector, _SelectFirst("#" + me.s_main_id));
         };
         InstanceContainer.prototype.SelFrom = function (parentselector, selector) {
             var me = this;
-            return $(selector, me.Sel(parentselector));
+            return _SelectFirst(selector, me.Sel(parentselector));
         };
         InstanceContainer.prototype.SelFromFact = function (selector) {
             var me = this;
-            return $(selector, me.Sel(me.s_fact_selector));
+            return _SelectFirst(selector, me.Sel(me.s_fact_selector));
         };
         InstanceContainer.prototype.SelFromValidation = function (selector) {
             var me = this;
-            return $(selector, me.Sel(me.s_validation_selector));
+            return _SelectFirst(selector, me.Sel(me.s_validation_selector));
         };
         InstanceContainer.prototype.SetExternals = function () {
             var me = this;
             me.Taxonomy = app.taxonomycontainer.Taxonomy;
             me.LoadInstance(null);
             me.LoadValidationResults(null);
+            me.ValidationResultsServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
+                var p = args[0];
+                AjaxRequest("Instance/Validation", "get", "json", p, function (data) {
+                    if (!IsNull(data.Items)) {
+                        me.ValidationResults = data.Items;
+                        fwc.Callback(data);
+                    }
+                }, null);
+            });
         };
         InstanceContainer.prototype.HandleAction = function (msg) {
             var me = this;
             var action = msg.Data.toLowerCase();
             if (action == "instancevalidated") {
                 me.LoadValidationResults(function () {
-                    var $activator = ShowContentByID("#" + me.s_validation_id);
-                    me.LoadContentToUI($activator);
+                    var item = "#" + me.s_validation_id;
+                    LoadTab("#MainContainer", "#InstanceContainer");
+                    LoadTab("#InstanceContainer", item);
+                    me.LoadContentToUIX(me.s_validation_id, null);
                 });
             }
         };
@@ -63,7 +77,7 @@ var Control;
             var me = this;
             AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
                 me.ValidationResults = data;
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
             });
@@ -73,17 +87,17 @@ var Control;
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
                 me.LoadToUI();
-                CallFunctionVariable(onloaded);
+                CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
             });
         };
         InstanceContainer.prototype.LoadToUI = function () {
             var me = this;
-            S_Bind_End;
-            me.Sel(s_detail_selector).hide();
-            //ShowContent("#" + me.s_fact_id, $("#TaxCommands"));
-            ShowContentByID("#" + me.s_fact_id);
+            //me.Sel(s_detail_selector).hide();
+            //me.LoadTab("#MainContainer", "#InstanceContainer");
+            //me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
+            me.LoadContentToUIX(me.s_fact_id, null);
             //ShowContentByID("#TaxonomyContainer");
             var facts = [];
             var dict = this.Instance.FactDictionary;
@@ -105,21 +119,29 @@ var Control;
                     }
                 }
             }
+            if (app.taxonomycontainer.Table != null) {
+                app.taxonomycontainer.Table.Instance = me.Instance;
+            }
             me.FactsNr = this.Instance.Facts.length;
             LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize);
         };
         InstanceContainer.prototype.ClearFilterFacts = function () {
-            $("input[type=text]", "#FactFilter ").val("");
-            $("textarea", "#FactFilter ").val("");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "input[type=text]"), "");
+            _Value(this.SelFromFact(s_listfilter_selector + " " + "textarea"), "");
             this.FilterFacts();
+        };
+        InstanceContainer.prototype.GetFilterValue = function (selector) {
+            var element = this.SelFromFact(s_listfilter_selector + " " + selector);
+            if (!IsNull(element)) {
+                return _Value(element).toLowerCase().trim();
+            }
+            return "";
         };
         InstanceContainer.prototype.FilterFacts = function () {
             var me = this;
-            var f_label = me.SelFromFact(s_listfilter_selector + " #F_Label").val().toLowerCase().trim();
-            var f_concept = me.SelFromFact(s_listfilter_selector + " #F_Concept").val().toLowerCase().trim();
-            var f_context = me.SelFromFact(s_listfilter_selector + " #F_Context").val().toLowerCase().trim();
-            var f_dimension = me.SelFromFact(s_listfilter_selector + " #F_Dimension").val().toLowerCase().trim();
-            var f_value = me.SelFromFact(s_listfilter_selector + " #F_Value").val().toLowerCase().trim();
+            var f_context = me.GetFilterValue("#F_Context");
+            var f_factstring = me.GetFilterValue("#F_FactString");
+            var f_value = me.GetFilterValue("#F_Value");
             var context_id = "";
             var context_xml = "";
             var query = me.Instance.Facts.AsLinq();
@@ -129,11 +151,13 @@ var Control;
                 context_id = f_context;
                 query = query.Where(function (i) { return i.ContextID.toLowerCase().indexOf(context_id) > -1; });
             }
-            if (!IsNull(f_concept)) {
-                query = query.Where(function (i) { return i.Concept.FullName.toLowerCase().indexOf(f_concept) > -1; });
-            }
-            if (!IsNull(f_dimension)) {
-                query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(f_dimension) > -1; });
+            if (!IsNull(f_factstring)) {
+                var factparts = f_factstring.split(" ");
+                factparts.forEach(function (factpart, ix) {
+                    if (!IsNull(factpart)) {
+                        query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(factpart) > -1; });
+                    }
+                });
             }
             if (!IsNull(f_value)) {
                 query = query.Where(function (i) { return i.Value.toLowerCase() == f_value; });
@@ -148,18 +172,40 @@ var Control;
             if (!IsNull(me.Instance)) {
                 var facts = this.Instance.FactDictionary[factkey];
                 if (facts != null && facts.length > 0) {
-                    var fact = facts[0];
-                    Model.FactBase.LoadFromFactString(fact);
-                    var $factdetail = me.SelFromFact(s_detail_selector);
-                    BindX($factdetail, fact);
-                    $factdetail.show();
+                    var instancefact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
+                    Model.FactBase.LoadFromFactString(instancefact);
+                    var fullfactstring = Model.FactBase.GetFullFactString(instancefact);
+                    for (var i = 0; i < instancefact.Cells.length; i++) {
+                        var cell = instancefact.Cells[i];
+                        var cellobj = new Model.Cell();
+                        cellobj.SetFromCellID(cell);
+                        var reportid = cellobj.Report;
+                        var dynmicdata = me.Instance.DynamicReportCells[reportid];
+                        if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || IsNull(cellobj.Extension)) {
+                            var celldictionary = IsNull(dynmicdata) ? null : dynmicdata.CellOfFact;
+                            if (!IsNull(celldictionary)) {
+                                cellobj.SetFromCellID(celldictionary[instancefact.FactString]);
+                            }
+                        }
+                        instancefact.Cells[i] = cellobj.CellID;
+                    }
+                    ;
+                    Model.FactBase.LoadFromFactString(instancefact);
+                    instancefact.Dimensions.forEach(function (dimension, ix) {
+                        SetProperty(dimension, "DomainMemberFullName", Model.Dimension.DomainMemberFullName(dimension));
+                    });
+                    if (me.ui_factdetail == null) {
+                        me.ui_factdetail = me.SelFromFact(s_detail_selector);
+                    }
+                    BindX(me.ui_factdetail, instancefact);
+                    _Show(me.ui_factdetail);
+                    app.ShowOnBottomTab(me.ui_factdetail, "#tab_fact");
                 }
             }
         };
         InstanceContainer.prototype.CloseFactDetails = function () {
             var me = this;
-            var $factdetail = me.SelFromFact(s_detail_selector);
-            $factdetail.hide();
+            _Hide(me.ui_factdetail);
         };
         InstanceContainer.prototype.ShowValidationResults = function () {
             var me = this;
@@ -181,7 +227,6 @@ var Control;
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);
-                        Control.TaxonomyContainer.SetValues(v);
                     }
                 });
                 var eventhandlers = {
@@ -199,28 +244,25 @@ var Control;
         };
         InstanceContainer.prototype.LoadContentToUI = function (sender) {
             var me = this;
-            ShowContentBySender(sender);
-            var target = $(sender).attr("activator-for");
+            var target = GetHashPart(_Attribute(sender, "href"));
             me.LoadContentToUIX(target, sender);
         };
         InstanceContainer.prototype.LoadContentToUIX = function (contentid, sender) {
             var me = this;
-            //var $command = $(sender);
-            //var $commands = $command.parent().children("a");
-            //$commands.removeClass("selected");
-            //$command.addClass("selected");
+            var eventhandlers = {};
             var text = $(sender).text();
+            _AddClass(_SelectFirst("#colgroup1"), "wide");
             if (contentid == "Instance") {
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") == -1) {
-                var eventhandlers = { onpaging: function () {
+                eventhandlers = { onpaging: function () {
                     me.CloseFactDetails();
                 } };
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.Instance.Facts, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_fact_id && text.toLowerCase().indexOf("invalid") > -1) {
                 var invalidfacts = me.Instance.Facts.AsLinq().Where(function (i) { return i.Cells.length == 0; }).ToArray();
-                var eventhandlers = { onpaging: function () {
+                eventhandlers = { onpaging: function () {
                     me.CloseFactDetails();
                 } };
                 LoadPage(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), invalidfacts, 0, me.PageSize, eventhandlers);
@@ -229,35 +271,32 @@ var Control;
                 me.ShowValidationResults();
             }
             if (contentid == me.s_units_id) {
+                LoadPage(_SelectFirst(s_list_selector, me.s_unit_selector), _SelectFirst(s_listpager_selector, me.s_unit_selector), me.Instance.Units, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_find_id) {
+                LoadPage(_SelectFirst(s_list_selector, me.s_find_selector), _SelectFirst(s_listpager_selector, me.s_find_selector), me.Instance.FilingIndicators, 0, me.PageSize, eventhandlers);
             }
             if (contentid == me.s_general_id) {
                 BindX(me.Sel(me.s_general_selector), me.Instance);
             }
         };
         InstanceContainer.prototype.ShowRuleDetail = function (ruleid) {
-            var showvaldetail = function () {
-                $valdetail.show();
-                var $rulecontainer = me.SelFromValidation(".validationrule_results_" + ruleid);
-                $rulecontainer.append($valdetail);
-                $valdetail.focus();
-            };
             var me = this;
-            var previousruleid = me.SelFromValidation(s_parent_selector + " .rule").attr("rule-id");
-            var $valdetail = me.SelFromValidation(s_detail_selector);
-            if ($valdetail.is(':visible')) {
-                $valdetail.hide();
+            var previousruleid = _Attribute(me.SelFromValidation(s_parent_selector + " .rule"), "rule-id");
+            if (me.ui_vruledetail == null) {
+                me.ui_vruledetail = me.SelFromValidation(s_detail_selector);
             }
-            else {
-                if (ruleid == previousruleid) {
-                    showvaldetail();
-                }
+            if (ruleid == previousruleid) {
+                _Show(me.ui_vruledetail);
             }
             if (ruleid != previousruleid) {
                 var rule = this.ValidationErrors.AsLinq().FirstOrDefault(function (i) { return i.ID == ruleid; });
-                BindX(me.SelFromValidation(s_parent_selector), rule);
-                LoadPage(me.SelFromValidation(s_sublist_selector), me.SelFromValidation(s_sublistpager_selector), rule.Results, 0, 1);
+                var parent = $(s_parent_selector, me.ui_vruledetail);
+                BindX(parent, rule);
+                var list = _SelectFirst(s_sublist_selector, me.ui_vruledetail);
+                var listpager = _SelectFirst(s_sublistpager_selector, me.ui_vruledetail);
+                //LoadPage(list, listpager, rule.Results, 0, 1);
+                LoadPageAsync(list, listpager, app.taxonomycontainer.ValidationResultServiceFunction, 0, 1, { ruleid: ruleid });
                 $(".trimmed").click(function () {
                     if ($(this).hasClass("hmax30")) {
                         $(this).removeClass("hmax30");
@@ -266,13 +305,13 @@ var Control;
                         $(this).addClass("hmax30");
                     }
                 });
-                showvaldetail();
+                _Show(me.ui_vruledetail);
+                app.ShowOnBottomTab(me.ui_vruledetail, "#tab_vrule");
             }
         };
         InstanceContainer.prototype.CloseRuleDetail = function () {
             var me = this;
-            me.SelFromValidation(s_detail_selector).hide();
-            $(me.s_validation_selector).append(me.SelFromValidation(s_detail_selector));
+            _Hide(me.ui_vruledetail);
         };
         InstanceContainer.prototype.HashChanged = function () {
         };

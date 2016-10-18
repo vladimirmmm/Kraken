@@ -3,6 +3,7 @@ using LogicalModel.Base;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,17 @@ namespace LogicalModel
         private string _Column = "";
         [JsonProperty]
         public string Column { get { return _Column; } set { _Column = value; } }
+
+        private bool _IsKey = false;
+        [JsonProperty]
+        [DefaultValue(false)]
+        public bool IsKey { get { return _IsKey; } set { _IsKey = value; } }
+
+        private string _Role = "";
+        [JsonProperty]
+        [DefaultValue("")]
+        public string Role { get { return _Role; } set { _Role = value; } }
+
 
         public Hierarchy<LayoutItem> LayoutRow = null;
         public Hierarchy<LayoutItem> LayoutColumn = null;
@@ -77,21 +89,27 @@ namespace LogicalModel
         public string FactKey 
         {
             get {
-                //var sb = new StringBuilder();
-                //sb.AppendFormat("{0},", this.Concept);
-                //var dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
-                //foreach (var dim in dimensions)
-                //{
-                //    sb.AppendFormat("{0},", dim.DomainMemberFullName);
-                //}
-                //return sb.ToString();
                 return this.GetFactKey();
+            }
+        }
+        public int[] FactIntKey
+        {
+            get
+            {
+                int[] keys = new int[this.Dimensions.Count + 1];
+                keys[0] = this.Concept == null ? -2 : this.Concept.MapID;
+                for (int i = 0; i < this.Dimensions.Count;i++ )
+                {
+                    keys[i + 1] = this.Dimensions[i].MapID;
+                }
+                return keys;
             }
         }
         public Cell() 
         {
 
         }
+  
         public void SetFromCellID(string CellID)
         {
             var reportpart = CellID.Remove(CellID.IndexOf("<"));

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BaseModel;
+using LogicalModel;
+using LogicalModel.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,16 +10,34 @@ using XBRLProcessor.Model.Base;
 
 namespace XBRLProcessor.Model.DefinitionModel.Filter
 {
-    public class Filter : XbrlIdentifiable 
+    public abstract class Filter : XbrlIdentifiable 
     {
         //all but the filter if true else only the filter
         public bool Complement { get; set; }
 
+        public override string ToString()
+        {
+            return base.ToString() + (Complement ? " [C]" : "");
+        }
+
+
+        public abstract Func<string, bool> GetFunc(FactBaseQuery fbq);
+        public virtual List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level) 
+        {
+            var queries = new List<FactBaseQuery>();
+            return queries;
+        }
     }
-    public class OrFilter : Filter
+    public class FilterContainer : XbrlIdentifiable 
     {
+
     }
-    public class AndFilter : Filter
+    public class OrFilter : FilterContainer
     {
+   
+    }
+    public class AndFilter : FilterContainer
+    {
+   
     }
 }

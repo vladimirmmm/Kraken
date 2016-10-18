@@ -12,7 +12,7 @@ using XBRLProcessor.Models;
 
 namespace XBRLProcessor
 {
-    public partial class XbrlEngine: LogicalModel.TaxonomyEngine
+    public partial class XbrlEngine: TaxonomyEngine
     {
       
         public XbrlTaxonomy CurrentXbrlTaxonomy 
@@ -157,25 +157,33 @@ namespace XBRLProcessor
                 //LogicalModel.Settings.Current.ReloadFullTaxonomy = true;
                 //LogicalModel.Settings.Current.ReDownloadFiles= true;
                 ////End test
+                CurrentTaxonomy.FactsManager.maxdictnr = 1000;
+                CurrentTaxonomy.FactsManager.SaveToFile = true;
+                CurrentTaxonomy.FactsManager.DataFolder = CurrentTaxonomy.TaxonomyFactsFolder;
+                CurrentTaxonomy.FactsManager.ManageLoadedFacts = CurrentTaxonomy.ManageLoadedFacts;
                 CurrentTaxonomy.LoadAllReferences();
 
                 CheckMapping();
-
+                /*
                 var metdoc = CurrentXbrlTaxonomy.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "met.xsd");
                 CurrentTaxonomy.ConceptNameSpace = metdoc.TargetNamespacePrefix;
+                 * */
                 //CurrentTaxonomy.Prefix = CurrentTaxonomy.ConceptNameSpace.Remove(CurrentTaxonomy.ConceptNameSpace.LastIndexOf("_")) + "_";
 
                 CurrentTaxonomy.LoadLabels();
                 CurrentTaxonomy.LoadSchemaElements();
                 CurrentTaxonomy.LoadConcepts();
-                CurrentTaxonomy.LoadTables();
-                CurrentTaxonomy.LoadFacts();
+                CurrentTaxonomy.LoadDimensions();
                 CurrentTaxonomy.LoadHierarchy();
+                CurrentTaxonomy.LoadTables();
+                CurrentXbrlTaxonomy.ClearXmlObjects();
+                CurrentTaxonomy.LoadFacts();
+                //CurrentTaxonomy.LoadHierarchy();
                 CurrentTaxonomy.LoadUnits();
                 CurrentTaxonomy.LoadValidationFunctions();
 
+
                 CurrentXbrlTaxonomy.ClearXmlObjects();
-            
                 
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
@@ -214,6 +222,8 @@ namespace XBRLProcessor
             {
                 CurrentInstance.SetTaxonomy(CurrentTaxonomy);
                 CurrentXbrlInstance.LoadComplex();
+                Trigger_InstanceLoaded(filepath);
+
                 Logger.WriteLine("Loading Instance finished");
             };
             CurrentInstanceTaxonomyLoadFailed = (object o, TaxonomyEventArgs e) =>

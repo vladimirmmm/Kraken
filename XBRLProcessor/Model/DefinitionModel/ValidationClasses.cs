@@ -28,6 +28,11 @@ namespace XBRLProcessor.Model.DefinitionModel
         private string _FallbackValue = "";
         public string FallbackValue { get { return _FallbackValue; } set { _FallbackValue = value; } }
 
+        public override string ToString()
+        {
+            return base.ToString() + (BindAsSequence ? " [SEQ]" : "");
+        }
+
     }
     public class FactVariable : Variable 
     {

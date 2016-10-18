@@ -1,1 +1,32 @@
-﻿
+﻿<div id="EngineSettings" class="centered window hidden">
+    <form>
+        <ul id="SettingsList">
+            <li>
+                <input type="checkbox" name="ValidateOnInstanceLoaded" />
+                <label>ValidateOnInstanceLoaded</label>
+            </li>
+            <li>
+                <input type="checkbox" name="ReloadTaxonomyOnInstanceLoaded" />
+                <label>ReloadTaxonomyOnInstanceLoaded</label>
+            </li>
+            <li>
+                <input type="checkbox" name="ReloadFullTaxonomyButStructure" />
+                <label>ReloadFullTaxonomyButStructure</label>
+            </li>
+            <li>
+                <input type="checkbox" name="ReloadFullTaxonomy" />
+                <label>ReloadFullTaxonomy</label>
+            </li>
+            <li>
+                <input type="checkbox" name="ReDownloadFiles"/>
+                <label>ReDownloadFiles</label>
+            </li>
+            <li>
+                <input type="checkbox" name="CheckValidationCells" />
+                <label>CheckValidationCells</label>
+            </li>
+        </ul>
+        <input type="button" value="Save" onclick="app.Settings_Save(this)" />
+        <input type="button" value="Cancel" onclick="app.CloseWindow(this)" />
+    </form>
+</div>

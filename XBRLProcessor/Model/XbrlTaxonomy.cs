@@ -34,7 +34,14 @@ namespace XBRLProcessor.Models
                 _TaxonomyDocuments=value;
             }
         }
-
+        public void SetDocuments(List<LogicalModel.TaxonomyDocument> docs) 
+        {
+            docs.Clear();
+            foreach (var doc in _TaxonomyDocuments) 
+            {
+                docs.Add(doc);
+            }
+        }
         protected Dictionary<string, XbrlTaxonomyDocument> TaxonomyDocumentDictionary = new Dictionary<string, XbrlTaxonomyDocument>();
 
         public new XbrlTaxonomyDocument EntryDocument
@@ -51,18 +58,22 @@ namespace XBRLProcessor.Models
            
             this.AddTaxonomyDocument(EntryDocument);
 
+            Locator.LocatorFunction = Locate;
+            Locator.LocatorFunction2 = LocateIn;
+
             LabelHandler = new XmlNodeHandler(Tags.Labels, HandleLabel);
 
             TableHandler = new XmlNodeHandler(Tags.TableContainers, HandleTables);
 
             ElementHandler = new XmlNodeHandler(Tags.SchemaElements, HandleElements);
 
-            Locator.LocatorFunction = Locate;
+       
             LogicalModel.Label.SetLabelPrefix(Literal.LabelPrefix);
         }
         
         public bool AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
         {
+       
             if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalRelPath))
             {
                 this.TaxonomyDocumentDictionary.Add(document.LocalRelPath.ToLower(), document);
@@ -124,54 +135,79 @@ namespace XBRLProcessor.Models
 
         public override void LoadFactDictionary()
         {
-            FactsOfConcepts.Clear();
-            foreach (var fact in this.Facts)
+            Utilities.Logger.WriteLine("Load LoadFactDictionary");
+            //FactsOfConcepts.Clear();
+            //FactsOfDimensions.Clear();
+            var ix=-1;
+            var unmappedfacts = 0;
+            FactsManager.Load();
+            FactsManager.SaveToFile = false;
+            foreach (var fact in this.FactsAsQuearyable())
             {
-                //AddFactToDictionary(fact);
-                var conceptkey = fact.Key.Remove(fact.Key.IndexOf(","));
-                List<string> keylist = null;
-                if (!FactsOfConcepts.ContainsKey(conceptkey))
+                //EnsureFactIndex(fact.Key);
+                //LoadFactToFactsOfParts(fact.Key);
+                ix++;
+                //EnsureFactIndex(fact.Key);
+                /*
+                var parts = fact.Key;
+                var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int i = 0; i < keyparts.Count; i++)
                 {
-                    keylist = new List<string>();
-                    FactsOfConcepts.Add(conceptkey, keylist);
+                    var id = keyparts[i];
+
+                    HashSet<int> keylist2 = null;
+                    if (!FactsOfDimensions.ContainsKey(id))
+                    {
+                        keylist2 = new HashSet<int>();
+                        FactsOfDimensions.Add(id, keylist2);
+                    }
+                    else
+                    {
+                        keylist2 = FactsOfDimensions[id];
+                    }
+                    keylist2.Add(ix);
                 }
-                else 
+                */
+                if (fact.Value.Count == 0) 
                 {
-                    keylist = FactsOfConcepts[conceptkey];
+                    unmappedfacts++;
                 }
-                keylist.Add(fact.Key);
+             
             }
+            //foreach (var key in FactsOfParts)
+            //{
+            //    //key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();
+            //}
+            Utilities.Logger.WriteLine(String.Format("Unmapped facts: {0}", unmappedfacts));
+            //foreach (var key in FactsOfDimensions.Keys)
+            //{
+            //    FactsOfDimensions[key].TrimExcess();
+            //}
         }
-        
-        public string FindDimensionDomain(string dimensionitem) 
+
+        public override LogicalModel.Base.Element FindDimensionDomain(string dimensionitem)
         {
-            var domain = "";
-    
+            LogicalModel.Base.Element domain = null;
+
             LogicalModel.Base.Element se = null;
             if (!this.SchemaElementDictionary.ContainsKey(dimensionitem))
             {
-                var ebadimensionkey = "";
+
                 if (dimensionitem.Contains(":"))
                 {
                     var items = dimensionitem.Split(':');
-                    //TODOX
-                    //if (!items[1].StartsWith(Prefix))
-                    //{
-                    //    items[1] = Prefix + items[1];
-                    //}
-                    ebadimensionkey = String.Format("{0}:{1}", items[0], items[1]);
-                }
-                if (this.SchemaElementDictionary.ContainsKey(ebadimensionkey))
-                {
-                    se = this.SchemaElementDictionary[ebadimensionkey];
+                    var ns = items[0];
+                    var name = items[1];
+                    se =  this.SchemaElements.FirstOrDefault(i => i.Name == name && i.Namespace == ns);
                 }
             }
-            else 
+            else
             {
                 se = this.SchemaElementDictionary[dimensionitem];
 
             }
-            if (se!=null)
+            if (se != null)
             {
                 var domainref = se.TypedDomainRef;
                 var se_dim_doc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == se.Namespace);
@@ -182,9 +218,21 @@ namespace XBRLProcessor.Models
                 var se_domain_key = se_domain_doc.TargetNamespacePrefix + ":" + refid;
                 var se_domain = SchemaElementDictionary[se_domain_key];
                 //domain = se_domain.ID;
-                domain = String.Format("{0}:{1}",se_domain.Namespace, se_domain.Name);
+                domain = se_domain;
             }
             return domain;
+        }
+        
+        public string FindDimensionDomainString(string dimensionitem) 
+        {
+            var domain = FindDimensionDomain(dimensionitem);
+            var result = "";
+            if (domain != null)
+            {
+                result = String.Format("{0}:{1}", domain.Namespace, domain.Name);
+            }
+            return result;
+            
         }
         
         public XbrlTaxonomyDocument FindDocument(string localpath) 
@@ -208,7 +256,13 @@ namespace XBRLProcessor.Models
                 EntryDocument.LoadReferences();
 
                 var taxpath = SourceTaxonomyFolder + "tax.xsd";
-                EntryDocument.LoadTaxonomyDocument(taxpath);
+                try
+                {
+                    EntryDocument.LoadTaxonomyDocument(taxpath);
+                }
+                catch (Exception ex) 
+                {
+                }
                 //EntryDocument.ReferencedFiles
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyDocuments);
                 Utilities.FS.WriteAllText(TaxonomyStructurePath, jsoncontent);
@@ -219,6 +273,7 @@ namespace XBRLProcessor.Models
                 this.TaxonomyDocuments = Utilities.Converters.JsonTo<List<XbrlTaxonomyDocument>>(jsoncontent);
                 foreach (var doc in this.TaxonomyDocuments)
                 {
+                    
                     this.AddTaxonomyDocumentToDictionary(doc);
                 }
                 var existing_entry = this.FindDocument(EntryDocument.LocalRelPath);
@@ -240,6 +295,7 @@ namespace XBRLProcessor.Models
                 }
 
             }
+            SetDocuments(base.TaxonomyDocuments);
             Logger.WriteLine("Load References Completed");
 
         }
@@ -286,7 +342,7 @@ namespace XBRLProcessor.Models
             else
             {
                 var jsoncontent = System.IO.File.ReadAllText(TaxonomyUnitPath);
-                this.Units = Utilities.Converters.JsonTo<List<LogicalModel.Unit>>(jsoncontent);
+                this.Units = Utilities.Converters.JsonTo<List<LogicalModel.InstanceUnit>>(jsoncontent);
             }
 
             Logger.WriteLine("Load Units completed");
@@ -316,9 +372,241 @@ namespace XBRLProcessor.Models
                 this.Module.ID = modulelement.Name;
                 this.Module.Name = l != null ? l.Content : modulelement.Name;
                 this.Module.SchemaRef = this.SourceTaxonomyPath;
+                this.Module.LocalPath = this.EntryDocument.LocalPath;
 
             }
         }
+        public override void LoadDimensions()
+        {
+            Logger.WriteLine("Load Dimensions");
+            this.DimensionItems = SchemaElements.Where(i => i.SubstitutionGroup == "xbrldt:dimensionItem").ToList();         
+            this.Domains = SchemaElements.Where(i => i.Type == "model:explicitDomainType").ToList();
+
+            if (!System.IO.File.Exists(TaxonomyDimensionPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
+            {
+                var defdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("link:definitionLink")).ToList();
+                var domtodim_docs = new List<XbrlTaxonomyDocument>();
+                var memtodom_docs = new List<XbrlTaxonomyDocument>();
+
+                foreach (var defdoc in defdocs)
+                {
+                    var defarcs = Utilities.Xml.SelectNodes(defdoc.XmlDocument.DocumentElement, "//link:arcroleRef");
+                    var defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/dimension-domain");
+                    if (defarc != null)
+                    {
+                        domtodim_docs.Add(defdoc);
+                    }
+                    else
+                    {
+                        defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/domain-member");
+                        if (defarc != null)
+                        {
+                            memtodom_docs.Add(defdoc);
+                        }
+                    }
+                }
+                var domtodim = new Hierarchy<Locator>();
+                var mapping = Mappings.CurrentMapping.GetMapping(typeof(DefinitionLink));
+                var domtodimdefinitions = new List<DefinitionLink>();
+                var dimdict = new Dictionary<string, List<string>>();
+                domdict.Clear();
+
+                foreach (var doc in domtodim_docs)
+                {
+
+                    var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
+                    foreach (var deflink in deflinks)
+                    {
+                        if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                        {
+                            var dlink = mapping.Map<DefinitionLink>(deflink);
+                            // dlink.DefinitionArcs = dlink.DefinitionArcs.Where(i => i.RoleType == "dimension_domain").ToList();
+                            dlink.LoadHierarchy();
+                            var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
+                            if (roots.Count > 1)
+                            {
+                                var hroot = new Hierarchy<Locator>(new Locator());
+                                foreach (var root in roots)
+                                {
+                                    hroot.Children.Add(root);
+                                }
+                                dlink.DefinitionRoot = hroot;
+
+                            }
+                            foreach (var item in dlink.DefinitionRoot.Children)
+                            {
+                                var dimelement = this.DimensionItems.FirstOrDefault(i => i.ID == item.Item.ID);
+                                var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                                var children = item.Children.Where(i =>
+                                {
+                                    //i.Item.Locate();
+                                    return i.Item.RoleType == "dimension_domain";
+                                }).ToList();
+                                if (!dimdict.ContainsKey(key))
+                                {
+
+                                    dimdict.Add(key, new List<string>());
+                                }
+                                dimdict[key].AddRange(children.Select(i => i.Item.ID));
+
+                            }
+                            domtodimdefinitions.Add(dlink);
+                        }
+
+                    }
+                }
+                foreach (var dimelement in this.DimensionItems)
+                {
+                    if (!String.IsNullOrEmpty(dimelement.TypedDomainRef))
+                    {
+                        var doc = TaxonomyDocumentDictionary[dimelement.FileName];
+                        var domainelement = LocateIn(doc, dimelement.TypedDomainRef);
+                        var eldoc = TaxonomyDocumentDictionary[domainelement.FileName];
+                        var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                        if (!dimdict.ContainsKey(key))
+                        {
+                            dimdict.Add(key, new List<string>());
+                        }
+                        var typeddomain = String.Format("{0}:{1}", eldoc.TargetNamespacePrefix, domainelement.Name);
+                        dimdict[key].Add(typeddomain);
+                    }
+                }
+
+                var memtodomdefinitions = new List<DefinitionLink>();
+                foreach (var doc in memtodom_docs)
+                {
+
+                    var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
+                    foreach (var deflink in deflinks)
+                    {
+                        if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                        {
+                            var dlink = mapping.Map<DefinitionLink>(deflink);
+                            dlink.LoadHierarchy();
+                            var roots = dlink.DefinitionItems.Where(i => i.Parent == null).ToList();
+                            if (roots.Count > 1)
+                            {
+                                var hroot = new Hierarchy<Locator>(new Locator());
+                                foreach (var root in roots)
+                                {
+                                    hroot.Children.Add(root);
+                                }
+                                dlink.DefinitionRoot = hroot;
+
+                            }
+                            var domkey = dlink.DefinitionRoot.Item.ID;
+                            foreach (var item in dlink.DefinitionRoot.Children)
+                            {
+                                item.Item.Locate(doc);
+
+                                if (item.Item.Element != null)
+                                {
+                                    var key = item.Item.Element.Name;
+                                    if (!domdict.ContainsKey(domkey))
+                                    {
+                                        domdict.Add(domkey, new List<string>());
+                                    }
+                                    domdict[domkey].Add(key);
+                                }
+
+                            }
+
+                            memtodomdefinitions.Add(dlink);
+                        }
+
+                    }
+                }
+                var dimlist = new List<string>();
+                var memebrsofdomain = new Dictionary<string, List<string>>();
+                foreach (var dim in dimdict)
+                {
+                    foreach (var dom in dim.Value)
+                    {
+                        var dimdom = String.Format("[{0}]{1}", dim.Key, dom);
+
+                        memebrsofdomain.Add(dimdom,new List<string>(){});
+                        var dimdomkvp = memebrsofdomain[dimdom];
+                        if (domdict.ContainsKey(dom))
+                        {
+                            var dommembers = domdict[dom];
+                            foreach (var member in dommembers)
+                            {
+                                var dimdommem = String.Format("[{0}]{1}:{2}", dim.Key, dom, member);
+                                dimdomkvp.Add(dimdommem);
+                                dimlist.Add(dimdommem);
+                            }
+                        }
+                        dimlist.Add(dimdom);
+
+                    }
+
+                }
+                dimlist.AddRange(Concepts.Select(i => i.Key));
+
+                dimlist = dimlist.OrderBy(i => i, StringComparer.Ordinal).ToList();
+
+                var sb = new StringBuilder();
+                var ix = 0;
+                var fd = new FactDictionaries();
+
+                foreach (var dim in dimlist)
+                {
+                    //sb.AppendLine(dim);
+                    FactParts.Add(dim, ix);
+                    CounterFactParts.Add(ix, dim);
+                    ix++;
+                }
+                var keys = memebrsofdomain.Keys.OrderBy(i => i, StringComparer.InvariantCultureIgnoreCase);
+                foreach (var dimdomkey in keys) 
+                {
+                    var dimdomembers = memebrsofdomain[dimdomkey];
+                    var int_dimdomkey = FactParts[dimdomkey];
+                    var int_dimdommemberlist = dimdomembers.Select(i => FactParts[i]).ToList();
+                    foreach (var memberkey in int_dimdommemberlist) 
+                    {
+                        MembersOfDimensionDomains.Add(memberkey, int_dimdomkey);
+                    }
+                    MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdomkey);
+                }
+          
+                fd.CounterFactParts = CounterFactParts;
+                fd.FactParts = FactParts;
+                fd.MembersOfDimensionDomains = MembersOfDimensionDomains;
+                Utilities.FS.WriteAllText(this.TaxonomyDimensionPath, Utilities.Converters.ToJson(fd));
+
+            }
+            else
+            {
+                var fd = new FactDictionaries();
+                fd = Utilities.Converters.JsonTo<FactDictionaries>(Utilities.FS.ReadAllText(this.TaxonomyDimensionPath));
+                this.CounterFactParts = fd.CounterFactParts;
+                this.FactParts = fd.FactParts;
+                this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains;
+            }
+            //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
+            //foreach (var item in dimensiondomainparts) 
+            //{
+
+            //}
+            Logger.WriteLine("Load Dimensions completed");
+            AnalyzeMembers();
+        }
+        class FactDictionaries
+        {
+            public Dictionary<string, int> FactParts { get; set; }
+            public Dictionary<int, string> CounterFactParts { get; set; }
+            //public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
+            public Dictionary<int, int> MembersOfDimensionDomains { get; set; }
+
+
+        }
+
+        public string AnalyzeMembers() 
+        {
+            var sb = new StringBuilder();
+            return sb.ToString();
+        }
+
         public override void LoadHierarchy()
         {
             Logger.WriteLine("Load Hierarchies");
@@ -359,11 +647,7 @@ namespace XBRLProcessor.Models
                     var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == hier.Item.Namespace);
                     var foldername = Utilities.Strings.GetFolderName(nsdoc.LocalPath);
                     hier.Item.NamespaceFolder = foldername;
-                    //var hierchildrens = hier.All();
-                    //foreach (var hierchildren in hierchildrens) 
-                    //{
-                    //    hierchildren.Item.NamespaceFolder = foldername;
-                    //}
+             
                     var logicalhierarchy = hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem);
                     this.Hierarchies.Add(logicalhierarchy);
                 }
@@ -391,16 +675,19 @@ namespace XBRLProcessor.Models
             var filingindicatorsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.FileName == "find-params.xml");
             if (filingindicatorsdoc != null)
             {
-                var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, "//gen:link");
-                if (genlinknode != null)
+                if (filingindicatorsdoc.XmlDocument != null)
                 {
-                    foreach (XmlNode node in genlinknode) 
+                    var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, "//gen:link");
+                    if (genlinknode != null)
                     {
-                        if (node.Name.ToLower() == "variable:parameter") 
+                        foreach (XmlNode node in genlinknode)
                         {
-                            var select = Utilities.Xml.Attr(node, "select");
-                            var find = select.TextBetween("'", "'");
-                            filingindicators.Add(find);
+                            if (node.Name.ToLower() == "variable:parameter")
+                            {
+                                var select = Utilities.Xml.Attr(node, "select");
+                                var find = select.TextBetween("'", "'");
+                                filingindicators.Add(find);
+                            }
                         }
                     }
                 }
@@ -408,114 +695,91 @@ namespace XBRLProcessor.Models
             var tablegroups = this.SchemaElements.Where(i => i.Type == "model:tableGroupType");
 
             var predocpath = this.EntryDocument.LocalRelPath.Replace(".xsd","-pre.xml");
-            var predoc = this.TaxonomyDocumentDictionary[predocpath];
-            if (predoc != null) 
+            if (!this.TaxonomyDocumentDictionary.ContainsKey(predocpath))
             {
-                var genlinknode = Utilities.Xml.SelectSingleNode(predoc.XmlDocument.DocumentElement, "//gen:link");
-                if (genlinknode != null) 
+                Utilities.Logger.WriteLine("error: File " + predocpath + " was not found!");
+            }
+            else
+            {
+                var predoc = this.TaxonomyDocumentDictionary[predocpath];
+                if (predoc != null)
                 {
-                    var hier = new XbrlHierarchy<LogicalModel.Base.IdentifiablewithLabel>();
-                    hier.LoadFromXml(genlinknode);
-                    foreach (var h in hier.Items) 
+                    var genlinknode = Utilities.Xml.SelectSingleNode(predoc.XmlDocument.DocumentElement, "//gen:link");
+                    if (genlinknode != null)
                     {
-                        var folder = Utilities.Strings.GetFolderName(predoc.LocalFolder);
-                        var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef);
-                        folder = Utilities.Strings.GetFolderName(href);
-                        //folder = "tab";
-                        var labelid = h.LabelID;
-                        if (labelid.StartsWith("loc_"))
+                        var hier = new XbrlHierarchy<LogicalModel.Base.IdentifiablewithLabel>();
+                        hier.LoadFromXml(genlinknode);
+                        foreach (var h in hier.Items)
                         {
-                            labelid = labelid.Substring(4);
-                        }
-                        h.ID = labelid;
-                        var labelkey = LogicalModel.Label.GetKey(folder, labelid);
-                        var label = FindLabel(labelkey);
-                        if (label != null) 
-                        {
-                            h.Label = label;
-                        }
-                        if (label == null) 
-                        { 
-                        }
-                    }
-                    var root = hier.Items.FirstOrDefault();
-                    //hier.Items = hier.Items.Where(i => tablegroups.Any(j => j.ID == i.ID) || i == root).ToList();
-                    var hierarchy = hier.GetHierarchy();
-                    var leafs = hierarchy.GetLeafs();
-                    this.Module.TableGroups.Clear();
-                    //this.Module.TableGroups.Item = new LogicalModel.TableGroup();
-                    //this.Module.TableGroups.Item.ID = "Tables";
-                    //this.Module.TableGroups.Item.Label = new LogicalModel.Label();
-
-                    var tgs = hierarchy.Cast<LogicalModel.TableGroup>(i => {
-                
-                        var tgitem = new LogicalModel.TableGroup();
-                        tgitem.ID = i.ID;
-                        tgitem.LabelID = i.LabelID;
-                        tgitem.Label = i.Label;
-
-                        return tgitem;
-                    });
-
-                    var items = tgs.All();
-                    foreach (var item in items) 
-                    {
-                        if (item.Parent != null)
-                        {
-
-                            var parent = item.Parent.Item;
-                            var parentLabelID = parent.LabelID.ToLower();
-                            var parentLabelCode = parent.LabelCode.ToLower();
-                          
-                            var find = filingindicators.FirstOrDefault(i => parentLabelID.Contains(i.ToLower()));
-                            if (find == null)
+                            var folder = Utilities.Strings.GetFolderName(predoc.LocalFolder);
+                            var href = Utilities.Strings.ResolveRelativePath(predoc.LocalFolder, h.HRef, XbrlEngine.LocalFolder);
+                            folder = Utilities.Strings.GetFolderName(href);
+                            //folder = "tab";
+                            var labelid = h.LabelID;
+                            if (labelid.StartsWith("loc_"))
                             {
-                                find = filingindicators.FirstOrDefault(i => parentLabelCode.Contains(i.ToLower()));
-
+                                labelid = labelid.Substring(4);
                             }
-                            if (item.Children.Count == 0 && !tablegroups.Any(i => i.ID == item.Item.ID))
+                            h.ID = labelid;
+                            var labelkey = LogicalModel.Label.GetKey(folder, labelid);
+                            var label = FindLabel(labelkey);
+                            if (label != null)
                             {
-                                parent.TableIDs.Add(item.Item.ID);
-                                parent.FilingIndicator = find;
+                                h.Label = label;
                             }
-                            item.Item.FilingIndicator = find;
+                            if (label == null)
+                            {
+                            }
                         }
-                        if (item.Children.Count == 0) 
+                        var root = hier.Items.FirstOrDefault();
+                        var hierarchy = hier.GetHierarchy();
+                        var leafs = hierarchy.GetLeafs();
+                        this.Module.TableGroups.Clear();
+
+                        var tgs = hierarchy.Cast<LogicalModel.TableGroup>(i =>
                         {
-                            //item.Parent.Item.
+
+                            var tgitem = new LogicalModel.TableGroup();
+                            tgitem.ID = i.ID;
+                            tgitem.LabelID = i.LabelID;
+                            tgitem.Label = i.Label;
+
+                            return tgitem;
+                        });
+
+                        var items = tgs.All();
+                        foreach (var item in items)
+                        {
+                            if (item.Parent != null)
+                            {
+
+                                var parent = item.Parent.Item;
+                                var parentLabelID = parent.LabelID.ToLower();
+                                var parentLabelCode = parent.LabelCode.ToLower();
+
+                                var find = filingindicators.FirstOrDefault(i => parentLabelID.Contains(i.ToLower()));
+                                if (find == null)
+                                {
+                                    find = filingindicators.FirstOrDefault(i => parentLabelCode.Contains(i.ToLower()));
+
+                                }
+                                if (item.Children.Count == 0 && !tablegroups.Any(i => i.ID == item.Item.ID))
+                                {
+                                    parent.TableIDs.Add(item.Item.ID);
+                                    parent.FilingIndicator = find;
+                                }
+                                item.Item.FilingIndicator = find;
+                            }
+                            if (item.Children.Count == 0)
+                            {
+                                //item.Parent.Item.
+                            }
+
                         }
+                        this.Module.TableGroups = tgs;
+
 
                     }
-                    this.Module.TableGroups = tgs;
-                    //foreach (var leaf in leafs) 
-                    //{
-                    //    var parent = leaf.Parent.Item;
-                    //    var parentID = parent.LabelID.ToLower();
-                    //    var tableID= leaf.Item.ID;
-
-                    //    var tablegroup = this.Module.TableGroups.Where(i => i.Item.ID == parent.ID).FirstOrDefault();
-                    //    if (tablegroup == null) 
-                    //    {
-                    //        var tgitem = new LogicalModel.TableGroup();
-                    //        tablegroup = new Hierarchy<LogicalModel.TableGroup>(tgitem);
-                    //        tgitem.ID = parent.ID;
-                    //        tgitem.LabelID = parent.LabelID;
-                    //        tgitem.Label = parent.Label;
-                    //        var find = filingindicators.FirstOrDefault(i => parentID.Contains(i.ToLower()));
-                    //        if (find == null) 
-                    //        {
-                    //            find = filingindicators.FirstOrDefault(i => parent.LabelCode.Contains(i.ToLower()));
-
-                    //        }
-                    //        tgitem.FilingIndicator = find;
-                    //        this.Module.TableGroups.Children.Add(tablegroup);
-
-
-                    //    }
-                    //    tablegroup.TableIDs.Add(leaf.Item.ID);
-
-                    //}
-
                 }
             }
         }
@@ -534,20 +798,7 @@ namespace XBRLProcessor.Models
                     hier.LoadFromXml(genlinknode);
                     foreach (var h in hier.Items)
                     {
-                        //var folder = Utilities.Strings.GetFolderName(doc.LocalFolder);
-                        //folder = "tab";
-                        //var labelid = h.LabelID;
-                        //if (labelid.StartsWith("loc_"))
-                        //{
-                        //    labelid = labelid.Substring(4);
-                        //}
-                        //h.ID = labelid;
-                        //var labelkey = LogicalModel.Label.GetKey(folder, labelid);
-                        //var label = FindLabel(labelkey);
-                        //if (label != null)
-                        //{
-                        //    h.Label = label;
-                        //}
+  
                     }
                     var hierarchy = hier.GetHierarchy();
                     hierarchy.Item.ParentRole = "assertionset";
@@ -576,7 +827,15 @@ namespace XBRLProcessor.Models
                 }
             }
         }
-
+        private void MoveToFirst(string key, List<XbrlTaxonomyDocument> documents) 
+        {
+            var document = documents.FirstOrDefault(i => i.FileName.Contains(key));
+            if (document != null) 
+            {
+                documents.Remove(document);
+                documents.Insert(0, document);
+            }
+        }
         public override void LoadValidationFunctions()
         {
 
@@ -586,84 +845,109 @@ namespace XBRLProcessor.Models
             if (!Utilities.FS.FileExists(TaxonomyValidationPathFormat) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
                 //var validationdocuments = this.TaxonomyDocuments.Where(i => i.LocalFolder.EndsWith("\\val\\")).ToList();
-                var validationdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("va:valueAssertion")).ToList();
-
-                //
-                var validations = new List<XbrlValidation>();
-                var sb = new StringBuilder();
-                var parser = new XbrlFormulaParser();
-                var csparser = new CSharpParser();
-    
-                var expressionfile = this.ModuleFolder + "expressions.txt";
-                Utilities.FS.WriteAllText(TaxonomyTestPath, "");
-
-                foreach (var validdoc in validationdocuments)
+                if (LogicalModel.Settings.Current.LoadValidationRules)
                 {
-                    var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, "//gen:link");
-                    var validation = new XbrlValidation();
-                    validation.Taxonomy = this;
-                    Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
-                    validation.LoadValidationHierarchy();
-                    var assertions = new List<Hierarchy<XbrlIdentifiable>>();
-                    if (validation.ValidationRoot != null)
-                    {
-                        if (validation.ValidationRoot.Item is ValueAssertion)
-                        {
-                            assertions.Add(validation.ValidationRoot);
-                        }
-                        else
-                        {
-                            assertions.AddRange(validation.ValidationRoot.Children);
-                        }
-                        foreach (var assertion in assertions)
-                        {
+                    var validationdocuments = this.TaxonomyDocuments.Where(i => i.TagNames.Contains("va:valueAssertion")).ToList();
 
-                            var valueassertion = assertion.Item as ValueAssertion;
-                            if (valueassertion != null)
+                    //
+                    var validations = new List<XbrlValidation>();
+                    var sb = new StringBuilder();
+                    var parser = new XbrlFormulaParser();
+                    var csparser = new CSharpParser();
+
+                    var expressionfile = this.ModuleFolder + "expressions.txt";
+                    Utilities.FS.WriteAllText(TaxonomyTestPath, "");
+                    Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
+
+                    MoveToFirst("4025", validationdocuments);
+                    MoveToFirst("v3153", validationdocuments);
+                    MoveToFirst("3727", validationdocuments);
+                    MoveToFirst("3724", validationdocuments);
+                    MoveToFirst("1671", validationdocuments);
+
+
+
+                    foreach (var validdoc in validationdocuments)
+                    {
+                        var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, "//gen:link");
+                        var validation = new XbrlValidation();
+                        validation.Taxonomy = this;
+                        Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
+                        validation.LoadValidationHierarchy();
+                        var assertions = new List<Hierarchy<XbrlIdentifiable>>();
+                        if (validation.ValidationRoot != null)
+                        {
+                            if (validation.ValidationRoot.Item is ValueAssertion)
                             {
-                                var logicalrule = validation.GetLogicalRule(assertion);
-                                if (logicalrule.FunctionName.Contains("desprvbbkvbasis6"))
+                                assertions.Add(validation.ValidationRoot);
+                            }
+                            else
+                            {
+                                var valueassertions = validation.ValidationRoot.Children.Where(i => i.Item is ValueAssertion).ToList();
+                                assertions.AddRange(valueassertions);
+                            }
+                            foreach (var assertion in assertions)
+                            {
+
+                                var valueassertion = assertion.Item as ValueAssertion;
+
+
+                                if (valueassertion != null)
                                 {
+                                    // var logicalrule = validation.GetLogicalRule(assertion, validdoc);
+                                    var xasssertion = assertion.Copy();
+                                    //var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
+                                    var logicalrule = validation.GetLogicalRule(assertion, validdoc);
+
+                                    //var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
+
+                                    if (logicalrule.FunctionName.Contains("boiv78712w"))
+                                    {
+
+                                    }
+                                    validations.Add(validation);
+                                    logicalrule.RootExpression = parser.ParseExpression(valueassertion.Test);
+                                    var translated = csparser.GetFunction(logicalrule);
+                                    //clear the rule
+                                    logicalrule.RootExpression = null;
+
+                                    logicalrule.FunctionString = translated;
+                                    this.ValidationRules.Add(logicalrule);
+
+                                    var tree = parser.GetTreeString(valueassertion.Test);
+                                    sb.AppendLine(valueassertion.ID);
+                                    sb.AppendLine(valueassertion.Test);
+                                    sb.AppendLine(assertion.ToHierarchyString(i => i.ToString()));
+                                    logicalrule.ClearObjects();
 
                                 }
-                                validations.Add(validation);
-                                logicalrule.RootExpression = parser.ParseExpression(valueassertion.Test);
-                                var translated = csparser.GetFunction(logicalrule);
-                                //clear the rule
-                                logicalrule.RootExpression = null;
-
-                                logicalrule.FunctionString = translated;
-                                this.ValidationRules.Add(logicalrule);
-
-                                var tree = parser.GetTreeString(valueassertion.Test);
-                                sb.AppendLine(valueassertion.ID);
-                                sb.AppendLine(valueassertion.Test);
-                                sb.AppendLine(assertion.ToHierarchyString(i => i.ToString()));
-                                logicalrule.ClearObjects();
 
                             }
+                            validdoc.ClearDocument();
 
                         }
-                        validdoc.ClearDocument();
-                   
                     }
+
+                    this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID, StringComparer.Ordinal).ToList();
+
+                    if (!System.IO.File.Exists(expressionfile))
+                    {
+                        Utilities.FS.WriteAllText(expressionfile, sb.ToString());
+                    }
+                    ClearValidationObjects();
+
+                    LogicalModel.Helpers.FileManager.SaveToJson(this.ValidationRules, this.TaxonomyValidationPathFormat);
                 }
-
-                this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID).ToList();
-
-                if (!System.IO.File.Exists(expressionfile))
+                else 
                 {
-                    Utilities.FS.WriteAllText(expressionfile, sb.ToString());
+                    Logger.WriteLine("Loading Validation rules are disabled from Settings.");
                 }
-                ClearValidationObjects();
-     
-                LogicalModel.Helpers.FileManager.SaveToJson(this.ValidationRules,this.TaxonomyValidationPathFormat);
                 //var jsoncontent = Utilities.Converters.ToJson(this.ValidationRules);
                 //Utilities.FS.WriteAllText(this.TaxonomyValidationPath, jsoncontent);
                 //jsoncontent = null;
-             
+
             }
-            else 
+            else
             {
                 //var jsoncontent = System.IO.File.ReadAllText(this.TaxonomyValidationPath);
                 //this.ValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.ValidationRule>>(jsoncontent);
@@ -675,24 +959,28 @@ namespace XBRLProcessor.Models
                     this.SimpleValidationRules = Utilities.Converters.JsonTo<List<LogicalModel.Validation.SimpleValidationRule>>(jsoncontent2);
                     jsoncontent2 = null;
                 }
-                foreach (var rule in this.ValidationRules) 
+                foreach (var rule in this.ValidationRules)
                 {
                     rule.SetTaxonomy(this);
-                    foreach (var p in rule.Parameters) 
+                    foreach (var p in rule.Parameters)
                     {
-                        p.SetMyFactBase();
+                        //p.SetMyFactBase();
                         p.ClearObjects();
                     }
 
                     //var simplerule = this.SimpleValidationRules.FirstOrDefault(i => i.ID == rule.ID);
 
                 }
-                
-           
+
+
             }
 
             if (!System.IO.File.Exists(TaxonomySimpleValidationPath) || LogicalModel.Settings.Current.ReloadFullTaxonomyButStructure)
             {
+                var TaxonomyValidations = new LogicalModel.Validation.TaxonomyValidation(this);
+                var taxrules = TaxonomyValidations.GetValidationRules();
+                this.SimpleValidationRules.AddRange(taxrules);
+     
                 var jsoncontent = Utilities.Converters.ToJson(this.SimpleValidationRules);
                 Utilities.FS.WriteAllText(this.TaxonomySimpleValidationPath, jsoncontent);
             }
@@ -731,6 +1019,7 @@ namespace XBRLProcessor.Models
             {
                 FileID = FileID.Remove(FileID.IndexOf("-lab-") + 5);
             }
+   
             var newlabel = new LogicalModel.Label();
             newlabel.LabelID = labelid;
             newlabel.Lang = lang;
@@ -747,15 +1036,26 @@ namespace XBRLProcessor.Models
             else 
             {
             }
-            if (role.In(Roles.LabelCodeRoles))
+            var handled = false;
+       
+            if (!handled && role.In(Roles.LabelCodeRoles))
             {
                 label.Code = labeltext;
+                handled = true;
+
             }
-            if (role.In(Roles.LabelTextRoles))
+            if (!handled && role.In(Roles.LabelTextRoles))
             {
                 label.Content = labeltext;
-            }
+                handled = true;
 
+            }
+            if (!handled && role.In(Roles.FindRoles))
+            {
+                label.Type = LogicalModel.Literals.FilingIndicator;
+                label.Content = labeltext;
+                handled = true;
+            }
             return result;
         }
 
@@ -803,6 +1103,7 @@ namespace XBRLProcessor.Models
                 var definitionfilename = taxonomydocument.FileName.Replace(".xsd", Literal.DefinitionFileSuffix).ToLower();
 
                 table.XsdPath = taxonomydocument.LocalPath;
+    
                 logicaltable.FolderName = Utilities.Strings.GetFolderName(table.XsdPath);
 
                 var layoutdocument = taxonomydocument.References.FirstOrDefault(i => i.FileName.ToLower() == layoutfilename);
@@ -810,7 +1111,12 @@ namespace XBRLProcessor.Models
                 var definitiondocument = taxonomydocument.References.FirstOrDefault(i => i.FileName.ToLower() == definitionfilename);
                 table.DefinitionPath = definitiondocument.LocalPath;
 
+                logicaltable.XmlPathColection.Add(table.XsdPath);
+                logicaltable.XmlPathColection.Add(definitiondocument.LocalPath);
+                logicaltable.XmlPathColection.Add(layoutdocument.LocalPath);
+
                 MapDefinition(definitiondocument.XmlDocument.ChildNodes[0], table);
+                var definitionreferences = new Dictionary<string, XbrlTaxonomyDocument>();
 
                 foreach (var definitionlink in table.DefinitionLinks) 
                 {
@@ -825,7 +1131,17 @@ namespace XBRLProcessor.Models
                                 localhref = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, locator.Href);
                             }
                             var path = Utilities.Strings.ResolveRelativePath(definitiondocument.LocalFolder, localhref);
-                            var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
+                            XbrlTaxonomyDocument defdoc = null;
+                            if (!definitionreferences.ContainsKey(path))
+                            {
+                                defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
+                                definitionreferences.Add(path, defdoc);
+                            }
+                            else 
+                            {
+                                defdoc = definitionreferences[path];
+                            }
+                            //var defdoc = definitiondocument.References.FirstOrDefault(i => i.LocalPath == path);
                             locator.Namespace = defdoc.TargetNamespacePrefix; 
      
                         }
@@ -835,27 +1151,15 @@ namespace XBRLProcessor.Models
               
 
                 MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
-                if (definitiondocument.LocalPath.Contains("25.01.08.01")) 
-                {
-                }
+
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
-
-                var tablegroup = this.Module.TableGroups.FirstOrDefault(i => i.Item.TableIDs.Contains(logicaltable.ID));
-                if (tablegroup != null)
-                {
-                    logicaltable.FilingIndicator = tablegroup.Item.FilingIndicator;
-                }
-                else 
-                {
-
-                }
              
                 //for debug
                 Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));
                 //Utilities.FS.WriteAllText(logicaltable.LayoutPath, logicaltable.LayoutRoot.ToHierarchyString(i => i.ID+"<"+i.FactString+">"));
                
-                logicaltable.LoadDefinitions();
+                logicaltable.LoadDefinitions2();
                 logicaltable.LoadLayout();
                 //var s = Utilities.Converters.ToJson(logicaltable);
 
@@ -863,9 +1167,22 @@ namespace XBRLProcessor.Models
                 this.Tables.Add(logicaltable);
                 //this.TaxonomyTables.Add(table);
             }
-
+        
             return result;
 
+        }
+
+        public override string GetDomainID(LogicalModel.Base.QualifiedName domain)
+        {
+            var domainID = "";
+            var nsdoc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == domain.Namespace);
+            if (nsdoc != null)
+            {
+                var domainelement = this.SchemaElements.FirstOrDefault(i => i.FileName == nsdoc.LocalRelPath && i.Name == domain.Name);
+                domainID = domainelement.ID;
+            }
+
+            return domainID;
         }
 
         private LogicalModel.Base.Element Locate(string key) 
@@ -879,6 +1196,39 @@ namespace XBRLProcessor.Models
             {
                 
             }
+            return element;
+        }
+        private LogicalModel.Base.Element LocateIn(XbrlTaxonomyDocument doc, string href)
+        {
+            LogicalModel.Base.Element element = null;
+            var hashix = href.IndexOf("#");
+            var id = href.Substring(hashix + 1);
+            href = href.Remove(hashix);
+            var localrelpath = doc.LocalRelPath;
+       
+            if (!Utilities.Strings.IsRelativePath(href))
+            {
+                href = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, href);
+            }
+            var path = Utilities.Strings.ResolveRelativePath(doc.LocalFolder, href);
+            path = path.Replace(XbrlEngine.LocalFolder, "").ToLower();
+            if (TaxonomyDocumentDictionary.ContainsKey(path)) 
+            {
+                doc = TaxonomyDocumentDictionary[path];
+                var node = doc.XmlDocument.SelectSingleNode("//*[@id = '" + id + "']");
+                if (node != null) 
+                {
+                    var xbrlelement = Mappings.CurrentMapping.Map<Element>(node);
+                    if (xbrlelement != null)
+                    {
+                        element = Mappings.ToLogical(xbrlelement);
+                        element.FileName = doc.LocalRelPath;
+                    }
+                }
+            }
+
+
+            
             return element;
         }
         
@@ -910,16 +1260,18 @@ namespace XBRLProcessor.Models
             if (!String.IsNullOrEmpty(Utilities.Xml.Attr(node, Literals.Attributes.ID)))
             {
                 Mappings.CurrentMapping.Map(node, element);
-
+            
                 element.Namespace = taxonomydocument.TargetNamespacePrefix; // SetTargetNamespace(node.OwnerDocument);
-
+                element.NamespaceURI = taxonomydocument.TargetNamespace; // SetTargetNamespace(node.OwnerDocument);
+                //if (element.Namespace.Contains("typ"))
+                //{
+                //}
                 var logicalelement = Mappings.ToLogical(element);
-                logicalelement.FileName = taxonomydocument.FileName;
-                this.SchemaElements.Add(logicalelement);
-                if (logicalelement.Key.Contains("541")) 
-                {
 
-                }
+                logicalelement.FileName = taxonomydocument.LocalRelPath;
+          
+                this.SchemaElements.Add(logicalelement);
+           
                 this.SchemaElementDictionary.Add(logicalelement.Key, logicalelement);
             }
             else 
@@ -958,7 +1310,7 @@ namespace XBRLProcessor.Models
             ClearXmlObjects();
 
             this.Module.Clear();
-            this.Facts.Clear();
+            this.ClearFacts();
             this.ValidationRules.Clear();
             this.Tables.Clear();
             this.TaxonomyDocumentDictionary.Clear();
@@ -968,13 +1320,18 @@ namespace XBRLProcessor.Models
             this.TaxonomyLabels.Clear();
             this.TaxonomyLabelDictionary.Clear();
             this.ValidationFunctionContainer = null;
-            this.FactsOfConcepts.Clear();
+            //this.FactsOfConcepts.Clear();
+            //this.FactsOfDimensions.Clear();
+            //this.FactsOfDimensionsD.Clear();
+            this.FactsManager.Clear();
+        
+            this.MembersOfDimensionDomains.Clear();
+     
             this.TaxonomyDocuments.Clear();
             this.Cells.Clear();
             this.Concepts.Clear();
             this.Hierarchies.Clear();
             this.SimpleValidationRules.Clear();
-
             GC.Collect();
         }
 

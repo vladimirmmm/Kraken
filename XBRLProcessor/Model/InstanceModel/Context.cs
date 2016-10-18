@@ -1,4 +1,5 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using LogicalModel;
 using LogicalModel.Base;
 using Model.DefinitionModel;
 using Newtonsoft.Json;
@@ -20,11 +21,12 @@ namespace Model.InstanceModel
         public string ToXmlString() 
         {
             var sb = new StringBuilder();
-            sb.AppendLine(String.Format("<xbrli:context id=\"{0}\">", this.ID));
-            sb.AppendLine(Entity.ToXmlString());
-            sb.AppendLine(Period.ToXmlString());
-            sb.AppendLine(Scenario.ToXmlString());
-            sb.AppendLine("</xbrli:context>");
+            var tab = Literals.Tab;
+            sb.AppendLine(String.Format(tab + "<xbrli:context id=\"{0}\">", this.ID));
+            sb.AppendLine(Entity.ToXmlString(tab + tab));
+            sb.AppendLine(Period.ToXmlString(tab + tab));
+            sb.AppendLine(Scenario.ToXmlString(tab + tab));
+            sb.AppendLine(tab + "</xbrli:context>");
 
             return sb.ToString();
         }

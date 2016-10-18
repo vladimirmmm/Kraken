@@ -19,6 +19,7 @@ namespace LogicalModel
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public String SchemaRef { get; set; }
+        public String LocalPath { get; set; }
 
         private List<String> _TablePaths = new List<string>();
         public List<String> TablePaths 
@@ -26,7 +27,7 @@ namespace LogicalModel
             get { return _TablePaths; }
             set { _TablePaths = value; }
         }
-        private Hierarchy<TableGroup> _TableGroups = new Hierarchy<TableGroup>();
+        private Hierarchy<TableGroup> _TableGroups = new Hierarchy<TableGroup>(new TableGroup());
         public Hierarchy<TableGroup> TableGroups
         {
             get { return _TableGroups; }
@@ -62,7 +63,11 @@ namespace LogicalModel
                 {
                     itsetting.UnitID = unit.ID;
                 }
-                UserSettings.ItemTypeSettings.Add(itsetting);
+                var existing = UserSettings.ItemTypeSettings.FirstOrDefault(i => i.ItemType == itsetting.ItemType);
+                if (existing == null)
+                {
+                    UserSettings.ItemTypeSettings.Add(itsetting);
+                }
             }
         }
 

@@ -64,6 +64,7 @@
     <Compile Include="Model\XbrlUnit.cs" />
     <Compile Include="Model\XbrlValidation.cs" />
     <Compile Include="Model\XbrlValidation_P2.cs" />
+    <Compile Include="SchemaValidation.cs" />
     <Compile Include="XbrlEngine.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Helpers\XmlNodeHandlers.cs" />

@@ -2,7 +2,7 @@
     <table class="filter noborder">
         <tr>
             <td>
-                <label>Concept & Dimensions </label><br /><input type="text" id="F_Concept" />
+                <label>Concept & Dimensions </label><br /><input type="text" id="F_FactString" />
             </td>
 
             <td>
@@ -28,54 +28,56 @@
     </div>
     <ul class="list" binding-items="this">
         <li binding-type="template">
-            <a href="javascript:void(0)" class="bind[cellcount_{Cells.length}]" onclick="bind[Select(this); app.instancecontainer.ShowFactDetails('{FactKey}', '{FactString}')]">
-                <span>bind[<strong>{Concept.FullName}-{ContextID}:</strong> {Value}]></span>
+            <a href="javascript:void(0)" class="$bind:cellcount_{Cells.length}$" onclick="$bind: Select(this); app.instancecontainer.ShowFactDetails('{FactKey}', '{FactString}');$">
+                <span>$bind:<strong>{Concept.FullName}-{ContextID}:</strong> {Value}$</span>
             </a>
 
         </li>
     </ul>
 
 </div>
-<div class="detail">
+<div class="detail bordered hidden" binding-type="template">
+    <a href="javascript:void(0)" onclick="Toggle(this, 'attr:class', ['detail bordered', 'detail bordered absolutetabcontent']);">&nbsp;Minimize/Maximize</a>
 
     <table class="noborder">
         <tr>
             <td colspan="2">
-                <strong>FactString:</strong> <span title="bind[FactKey: {FactKey}]">bind[FactString]</span>
+                <strong>FactString:</strong> <span title="$bind:FactKey: {FactKey}$">$bind:FactString$</span>
                 <br />
-        
-  
+
+
             </td>
         </tr>
         <tr>
             <td>
-                <strong>Value:  <span>bind[Value]</span></strong>
+                <strong>Value:  <span>$bind:Value$</span></strong>
             </td>
             <td>
                 <ul id="celllist" binding-items="Cells">
                     <li binding-type="template">
-                        <a href="javascript:void(0)" onclick="bind[app.taxonomycontainer.NavigateTo('{this}')]">
-                            <span>bind[{this}]</span>
+                        <a href="javascript:void(0)" onclick="$bind: app.taxonomycontainer.NavigateTo('{this}'); $">
+                            <span>$bind:this$</span>
                         </a>
 
                     </li>
                 </ul>
             </td>
         </tr>
+
         <tr>
 
             <td>
                 <p>
-                    <strong>Context & Unit:</strong>  <span>bind[Context ID: {ContextID}; Unit ID: {UnitID}]</span>
+                    <strong>Xbrl Fact Attributes:</strong>  <span>$bind:ID: {ID}; Context ID: {ContextID}; Unit ID: {UnitID}; Decimals: {Decimals};$</span>
                 </p>
-         
+
             </td>
             <td>
                 <strong>Dimensions:</strong>
                 <table binding-items="Dimensions">
                     <tr binding-type="template">
                         <td>
-                            bind[{DomainMemberFullName}]
+                            $bind:{DomainMemberFullName}$
                         </td>
                         <td></td>
                     </tr>

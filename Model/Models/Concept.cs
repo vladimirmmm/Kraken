@@ -26,6 +26,11 @@ namespace LogicalModel
         [JsonProperty]
         public string ItemType { get; set; }
 
+        private String _NamespaceURI = "";
+        [JsonProperty]
+        public String NamespaceURI { get { return _NamespaceURI; } set { _NamespaceURI = value; } }
+
+        public int MapID = -1;
     }
 
     public class ConceptSetting : ItemTypeSetting
@@ -45,10 +50,7 @@ namespace LogicalModel
 
         public void Set(string itemtype, Taxonomy taxonomy)
         {
-            //var concepttosearch = concept.ToLower();
-            //var taxconcept = taxonomy.Concepts.FirstOrDefault(i => i.Content.ToLower() == concepttosearch);
-            //if (taxconcept == null) 
-            //{
+
             ItemType = itemtype;
             if (ItemType.In("integerItemType"))
             {

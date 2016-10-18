@@ -46,6 +46,18 @@ namespace Utilities
             }
             return true;
         }
+
+        public static bool IsAllTrue(this bool[] obj)
+        {
+            for (int i = 0; i < obj.Length; i++)
+            {
+                if (!obj[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     public static class StringExtensions

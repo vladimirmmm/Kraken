@@ -1,4 +1,5 @@
-﻿using LogicalModel.Base;
+﻿using BaseModel;
+using LogicalModel.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace LogicalModel
         public String Scheme { get; set; }
 
 
-        public string ToXmlString()
+        public string ToXmlString(string prefix)
         {
             /*
             <xbrli:entity>
@@ -20,9 +21,9 @@ namespace LogicalModel
 		    </xbrli:entity>
              */
             var sb = new StringBuilder();
-            sb.AppendLine("<xbrli:entity>");
-            sb.AppendLine(String.Format("<xbrli:identifier scheme=\"{0}>{1}</xbrli:identifier>", Scheme, ID));
-            sb.AppendLine("</xbrli:entity>");
+            sb.AppendLine(prefix + "<xbrli:entity>");
+            sb.AppendLine(prefix + String.Format("<xbrli:identifier scheme=\"{0}\">{1}</xbrli:identifier>", Scheme, ID));
+            sb.Append(prefix + "</xbrli:entity>");
 
             return sb.ToString();
         }

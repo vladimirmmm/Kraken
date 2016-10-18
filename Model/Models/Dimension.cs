@@ -12,7 +12,9 @@ namespace LogicalModel
         private String _DimensionItem = "";
         private String _Domain = "";
         private String _DomainMember = "";
-  
+
+        public int MapID = -1;
+        public int DomMapID = -1;
 
         public String DimensionItem
         {
@@ -58,7 +60,13 @@ namespace LogicalModel
                 }
             }
         }
-  
+        public string DimensionDomain 
+        {
+            get
+            {
+                return String.Format("[{0}]{1}", DimensionItem, Domain);
+            }
+        }
         public string DomainMemberFullName 
         {
             get 
@@ -89,18 +97,24 @@ namespace LogicalModel
         public string ToStringForKey() {
             return ToStringForKey("");
         }
-
-        public string ToStringForKey(string lastnamespace) 
+        public void SetTyped() 
         {
-            var item = "";
-            if (this.Domain.IndexOf(":")>-1) 
+            if (this.IsTyped) { return; }
+            var ix = this.Domain.IndexOf(":", StringComparison.Ordinal);
+            if (ix > -1)
             {
                 this.IsTyped = Taxonomy.IsTyped(this.Domain);
+                return;
             }
-            if (this.Domain.IndexOf(":") > -1 && !String.IsNullOrEmpty(this.DomainMember))
+            if (ix > -1 && !String.IsNullOrEmpty(this.DomainMember))
             {
                 this.IsTyped = true;
             }
+        }
+        public string ToStringForKey(string lastnamespace) 
+        {
+            var item = "";
+            SetTyped();
             //var dimensionitem = lastnamespace == "" ? this.DimensionItem : this.DimensionItem.Replace(lastnamespace, "*");
             var dimensionitem = this.DimensionItem;
 
@@ -129,7 +143,7 @@ namespace LogicalModel
             return false;
         }
 
-        public bool IsDefaultMemeber 
+        public bool IsDefaultMember 
         {
             get { return DomainMember == "x0"; }
         }
@@ -139,6 +153,31 @@ namespace LogicalModel
             return this.DomainMemberFullName.GetHashCode();
         }
 
+        public static void SetDimensions(BaseModel.Hierarchy<LayoutItem> item)
+        {
+            var current = item.Parent;
+            while (current != null)
+            {
+                MergeDimensions(item.Item.Dimensions, current.Item.Dimensions);
+                if (item.Item.Concept == null) 
+                {
+                    item.Item.Concept = current.Item.Concept;
+                }
+                //if (current.Item.Concept == null || current.Item.Concept.Content == item.Item.Concept.Content)
+                //{
+                //}
+
+                current = current.Parent;
+            }
+            item.Item.Dimensions = item.Item.Dimensions.Where(i => !i.IsDefaultMember).ToList();
+        }
+        public static void SetDimensions(List<BaseModel.Hierarchy<LayoutItem>> items)
+        {
+            foreach (var item in items)
+            {
+                SetDimensions(item);
+            }
+        }
         public static void MergeDimensions(List<Dimension> target, List<Dimension> items)
         {
             foreach (var item in items)
@@ -151,13 +190,27 @@ namespace LogicalModel
             }
         }
 
-        public string ToXmlString()
+        public static List<Dimension> GetDimensions(List<Dimension> target, List<Dimension> items)
+        {
+            var dimensions = new List<Dimension>();
+            foreach (var item in items)
+            {
+                var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
+                if (existing != null)
+                {
+                    dimensions.Add(existing);
+                }
+            }
+            return dimensions;
+        }
+
+        public string ToXmlString(string prefix)
         {
             var sb = new StringBuilder();
             if (!this.IsTyped)
             {
                 //<xbrldi:explicitMember dimension="eba_dim:LIQ">eba_LQ:x72</xbrldi:explicitMember>
-                sb.AppendLine(String.Format("<xbrldi:explicitMember dimension=\"{0}\">{1}:{2}</xbrldi:explicitMember>",
+                sb.AppendLine(prefix + String.Format("<xbrldi:explicitMember dimension=\"{0}\">{1}:{2}</xbrldi:explicitMember>",
                     this.DimensionItemFullName, this.Domain, this.DomainMember));
             }
             else 
@@ -165,7 +218,7 @@ namespace LogicalModel
                 /*   <xbrldi:typedMember dimension="eba_dim:INC">
                         <eba_typ:CC>LEI-E57ODZWZ7FF32TWEFA76</eba_typ:CC>
                       </xbrldi:typedMember>*/
-                sb.AppendLine(String.Format("<xbrldi:typedMember dimension=\"{0}\"><{1}>{2}</{1}></xbrldi:typedMember>",
+                sb.AppendLine(prefix + String.Format("<xbrldi:typedMember dimension=\"{0}\"><{1}>{2}</{1}></xbrldi:typedMember>",
                  this.DimensionItemFullName, this.Domain, this.DomainMember));
             }
             return sb.ToString();

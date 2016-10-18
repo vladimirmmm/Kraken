@@ -1,7 +1,9 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using LogicalModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +11,200 @@ using Utilities;
 
 namespace LogicalModel.Base
 {
- 
+    public class IndexDictionaryCollection : Dictionary<int, IndexDictionary2>
+    {
+        public Func<int, int> DomainIndexAccessor = (i) => -1;
+
+        public HashSet<int> GetFacts(int key)
+        {
+            if (!this.ContainsKey(key))
+            {
+                var domainkey = DomainIndexAccessor(key);
+                if (this.ContainsKey(domainkey))
+                {
+                    IndexDictionary2 item = base[domainkey];
+                    return item.ContainsKey(key) ? item[key] : new HashSet<int>();
+
+                }
+                return new HashSet<int>();
+            }
+            else
+            {
+                var itemx = new HashSet<int>();
+                foreach (var id in base[key])
+                {
+                    itemx.UnionWith(id.Value);
+                }
+                return itemx;
+            }
+
+
+        }
+    }
+    public class IndexDictionary2 : Dictionary<int, HashSet<int>> 
+    {
+        int maxitemnr = 0;
+
+        public IndexDictionary2() { }
+        public IndexDictionary2(int maxnr) 
+        {
+            this.maxitemnr = maxnr;
+        }
+        List<int> loaded = new List<int>();
+        public Func<int, string> AccessHashset = (i) => "";
+        public Action<int,string> SaveHashSet = (k,s) => { };
+        public void Add(int key, int value) 
+        {
+            if (!this.ContainsKey(key)) 
+            {
+                this.Add(key, new HashSet<int>());
+                LoadKey(key);
+            }
+            this[key].Add(value);
+        }
+        public void LoadKey(int key)
+        {
+            loaded.Add(key);
+            if (loaded.Count > maxitemnr && maxitemnr!=0)
+            {
+                Unload(loaded.FirstOrDefault());
+            }
+        }
+        public new HashSet<int> this[int key]
+        {
+            get
+            {
+                if (base[key] == null) 
+                {
+                    Console.WriteLine("IndexDictionary Loading " + key);
+
+                    var str = AccessHashset(key);
+                    var items = str.Split(new string[] { Literals.NewLine  },StringSplitOptions.RemoveEmptyEntries);
+                    var h = new HashSet<int>();
+                    foreach (var item in items) 
+                    {
+                        h.Add(Utilities.Converters.FastParse(item));
+                    }
+                    base[key] = h;
+                    LoadKey(key);
+                  
+                }
+                return base[key];
+            }
+            set 
+            {
+                base[key] = value;
+            }
+        }
+
+        public void Unload(int key) 
+        {
+            Console.WriteLine("IndexDictionary Unloading " + key);
+            var sb = new StringBuilder();
+            foreach (int item in this[key]) 
+            {
+                sb.AppendLine(item.ToString());
+            }
+            SaveHashSet(key, sb.ToString());
+            loaded.Remove(key);
+            this[key] = null;
+
+        }
+
+    }
+
+    public class FactDictionary : Dictionary<int[], List<int>>
+    {
+        public FactDictionary(IEqualityComparer<int[]> comparer)
+            : base(comparer)
+        {
+
+        }
+        public void AddKvp(KeyValuePair<int[], List<int>> kvp)
+        {
+            if (!this.ContainsKey(kvp.Key))
+            {
+                AddItem(kvp.Key, kvp.Value);
+            }
+        }
+        public void AddItem(int[] key, List<int> value)
+        {
+            if (!this.ContainsKey(key))
+            {
+                this.Add(key, value);
+            }
+        }
+
+
+        public void LoadValues(Func<int[],List<int>> loader)
+        {
+            foreach(var key in this.Keys)
+            {
+                this[key]=loader(key);
+            }
+
+        }
+
+        public void Unload() 
+        {
+            foreach (var key in this.Keys)
+            {
+                this[key] = null;
+            }
+            IsLoaded = false;
+        }
+
+        private bool _IsLoaded = false;
+        public bool IsLoaded { get; set; }
+    }
+
+    public class FactDictionary2 : Dictionary<int, List<int>>
+    {
+        public FactDictionary2()
+            : base()
+        {
+
+        }
+        public void AddKvp(KeyValuePair<int, List<int>> kvp)
+        {
+            if (!this.ContainsKey(kvp.Key))
+            {
+                AddItem(kvp.Key, kvp.Value);
+            }
+        }
+        public void AddItem(int key, List<int> value)
+        {
+            if (!this.ContainsKey(key))
+            {
+                this.Add(key, value);
+            }
+        }
+
+
+        public void LoadValues(Func<int, List<int>> loader)
+        {
+            foreach (var key in this.Keys)
+            {
+                this[key] = loader(key);
+            }
+
+        }
+
+        public void Unload()
+        {
+            foreach (var key in this.Keys)
+            {
+                this[key] = null;
+            }
+            IsLoaded = false;
+        }
+
+        private bool _IsLoaded = false;
+        public bool IsLoaded { get; set; }
+    }
+
+
+
     public class QualifiedItem : QualifiedName, ILabeled 
     {
         private Label _Label = null;
@@ -77,7 +272,231 @@ namespace LogicalModel.Base
             }
         }
     }
+    public class FactFilter 
+    {
+        public Boolean Positive = true;
+        public string Representation = "";
+        public Func<string,int[], bool> Filter = (keystring,key) => true;
+        public int Level = 0; 
+        //0 - dimensiondomian
+        //1 - dimensiondomainmember
 
+        public FactFilter() 
+        {
+      
+        }
+
+        public FactFilter(Boolean Positive, string Representation, int Level, Func<string, int[], bool> Filter)
+        {
+            this.Positive = Positive;
+            this.Representation = Representation;
+            this.Level = Level;
+            this.Filter = Filter;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("[{1}] {0}{2}", Positive ? "" : "!", Level, Representation);
+        }
+    }
+    public class FactBaseQuery2
+    {
+        public List<FactBaseQuery2> ChildQueries = new List<FactBaseQuery2>();
+        public List<FactFilter> Filters = new List<FactFilter>();
+        public Func<string,int[], bool> _Filter = (s,k) => true;
+
+        public Func<string, int[], bool> GetFilter() 
+        {
+            Func<string, int[], bool> filter = null;
+            var filters = new List<FactFilter>();
+            if (ChildQueries.Count > 0)
+            {
+                var results = new List<KeyValue<string, int>>();
+                foreach (var childquery in ChildQueries)
+                {
+                    filters.AddRange(childquery.Filters);
+                }
+            }
+            return filter;
+        }
+
+        public Boolean Filter(string factstring, int[] factintkey) 
+        {
+            var result = true;
+            result = _Filter(factstring, factintkey);
+            return result;
+        }
+
+        public List<String> ToList(IQueryable<String> queryable)
+        {
+            return queryable.Where(i => Filter(i,new int[]{})).ToList();
+        }
+        public List<int> ToIndexList(IQueryable<int> queryable)
+        {
+            int[] keys =new int[]{};
+            return queryable.Where(i => Filter("", keys)).ToList();
+        }
+        public List<int[]> ToIntKeyList(IQueryable<int[]> queryable)
+        {
+            return queryable.Where(i => Filter("", i)).ToList();
+        }
+
+    }
+    public class FactBaseQuery 
+    {
+        public string FalseFilters = "";
+        public string TrueFilters = "";
+        public string DictFilters = "";
+        public List<int> DictFilterIndexes = new List<int>();
+        public List<int> NegativeDictFilterIndexes = new List<int>();
+        public Func<string, bool> Filter = (s) => true;
+ 
+        public List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
+        public bool HasDictFilter(string dictfilter) 
+        {
+            if (DictFilters.Contains(dictfilter)) 
+            {
+                return true;
+            }
+            foreach (var q in ChildQueries) 
+            {
+                if (q.HasDictFilter(dictfilter)) 
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public List<String> ToList(IQueryable<String> queryable) 
+        {
+            return queryable.Where(i => Filter(i)).ToList();
+        }
+
+
+        public List<string> GetDimensions()
+        {
+            var filterparts = new List<string>();
+            if (ChildQueries.Count > 0)
+            {
+                var commonchildfilters = new List<string>();
+
+                var isfilteradded = false;
+                foreach (var childquery in ChildQueries)
+                {
+                    var dimensions = childquery.GetDimensions();
+                    if (!isfilteradded)
+                    {
+                        isfilteradded = true;
+                        commonchildfilters.AddRange(dimensions);
+                    }
+                    else
+                    {
+                        commonchildfilters = commonchildfilters.Intersect(dimensions).ToList();
+                    }
+                }
+                filterparts.AddRange(commonchildfilters);
+            }
+
+            filterparts.AddRange(DictFilters.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries));
+            
+
+            //var conceptfilterparts = filterparts.Where(i => i.IndexOf("]") == -1).ToList();
+            //var dimparts = filterparts.Where(i => i.IndexOf("]") > -1).ToList();
+            return filterparts.ToList();
+
+        }
+
+        public IEnumerable<String> ToQueryable(IEnumerable<String> queryable)
+        {
+            var result = queryable.Where(i => Filter(i));
+            if (ChildQueries.Count > 0)
+            {
+                var items = new List<string>();
+                foreach (var childquery in ChildQueries) 
+                {
+                    items.AddRange(childquery.ToQueryable(result));
+                }
+                return items;
+            }
+            return result;
+        }
+        
+        public List<KeyValue<string, int>> ToList(List<KeyValue<string, int>> queryable)
+        {
+            //var mainitems = new List<KeyValue<string, int>>();
+            var items = new List<KeyValue<string, int>>();
+
+            var queryablecount = queryable.Count();
+            var sb = new StringBuilder();
+            for (int i = 0; i < queryablecount; i++) 
+            {
+                var str = queryable[i].Key;
+
+                if (Filter(str))
+                {
+                    items.Add(queryable[i]);
+                }
+                else 
+                {
+                    var intkey = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.FactsManager.GetFactKey(queryable[i].Value);
+                    var x = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.GetFactStringKey(intkey);
+                    sb.AppendLine(x);
+                }
+            
+            }
+            if (items.Count == 0)
+            {
+
+            }
+            if (ChildQueries.Count > 0)
+            {
+                var results = new List<KeyValue<string, int>>(); 
+                foreach (var childquery in ChildQueries)
+                {
+                    results.AddRange(childquery.ToList(items));
+                }
+                return results;
+            }
+            return items;
+        }
+
+        public List<int> ToList(Taxonomy taxonomy, List<int> facts)
+        {
+
+            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts,false);  
+            foreach (var negativeindex in NegativeDictFilterIndexes)
+            {
+                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
+                {
+                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
+                }
+            }
+            if (ChildQueries.Count > 0)
+            {
+                var result = new List<int>();
+
+                foreach (var childquery in ChildQueries)
+                {
+                    result.AddRange(childquery.ToList(taxonomy, items));
+                }
+                return result;
+            }
+
+            return items;
+        }
+        
+        public override string ToString()
+        {
+            var thisstr = String.Format("DictFilters: {0}\n FalseFilters: {2}\n TrueFilters: {1}\n", DictFilters, TrueFilters, FalseFilters);
+            var sb = new StringBuilder();
+            sb.Append(thisstr);
+            foreach (var child in ChildQueries) 
+            {
+                sb.Append(">" + child.ToString());
+            }
+            return sb.ToString();
+        }
+    }
     public class FactBase 
     {
 
@@ -107,10 +526,24 @@ namespace LogicalModel.Base
                 SetFromString(value);
             }
         }
+        public static FactBase GetFactFrom(string factstring)
+        {
+            var fact = new FactBase();
+            fact.FactString = factstring;
+            return fact;
+        }
+        public static void MergeFact(FactBase target, FactBase source)
+        {
+            if (target.Concept == null) 
+            {
+                target.Concept = source.Concept;
+            }
+            Dimension.MergeDimensions(target.Dimensions, source.Dimensions);
+        }
         
         public void SetFactString()
         {
-            Dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+            Dimensions = Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal).ToList();
             _FactString = "";
         }
         
@@ -149,11 +582,12 @@ namespace LogicalModel.Base
                 {
                     sb.Append(Concept + ",");
                 }
-                var lastdimns = "";
+                //var lastdimns = "";
                 foreach (var dimension in Dimensions)
                 {
                     var dimstr = dimension.ToStringForKey().Trim();
-                    sb.Append(Format(dimstr, ref lastdimns) + ",");
+                    sb.Append(dimstr + ",");
+                    //sb.Append(Format(dimstr, ref lastdimns) + ",");
                 }
                 _FactKey = sb.ToString();
                 //ClearObjects();
@@ -184,14 +618,139 @@ namespace LogicalModel.Base
             }
             else
             {
-                item = item.Replace(dimns, "*");
+                //item = item.Replace(dimns, "*");
 
             }
             return item;
 
         }
+        public void SetFromStringStable(string item)
+        {
+            this.Dimensions.Clear();
+            this.Concept = null;
+            var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //var parts = Utilities.Strings.FactSplit(item, ',', 8);
+            var toskip = 0;
+            if (parts.Length > 0)
+            {
+                if (parts[0].IndexOf("[") == -1)
+                {
+                    toskip = 1;
+                    var concept = new Concept();
+                    concept.Content = parts[0];
+                    this.Concept = concept;
+                }
+            }
+            var dimparts = parts.Skip(toskip).ToList();
+            foreach (var dimpart in dimparts)
+            {
+                var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
+                var domainpart = dimpart.Substring(dimitem.Length + 2);
 
-        public void SetFromString(string item) 
+                var domain = domainpart;
+                var member = "";
+                var dim = new Dimension();
+
+                if (domainpart.Contains(":"))
+                {
+                    var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    switch (domainparts.Length)
+                    {
+                        case 2:
+                            dim.IsTyped = Taxonomy.IsTyped(domain);
+                            if (dim.IsTyped)
+                            {
+                                domain = domainpart;
+                            }
+                            else
+                            {
+                                domain = domainparts[0];
+                                member = domainparts[1];
+                            }
+                            break;
+                        case 3:
+                            domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                            member = domainparts[2];
+                            dim.IsTyped = true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+                dim.DimensionItem = dimitem;
+                dim.Domain = domain;
+                dim.DomainMember = member;
+                this.Dimensions.Add(dim);
+            }
+            this._FactString = item;
+            this._FactKey = "";
+        }
+        public void SetFromString(string item)
+        {
+            this.Dimensions.Clear();
+            this.Concept = null;
+            //var parts = item.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = Utilities.Strings.FactSplit(item, ',', 8);
+            var toskip = 0;
+            if (parts.Count > 0)
+            {
+                if (parts[0].IndexOf("[") == -1)
+                {
+                    toskip = 1;
+                    var concept = new Concept();
+                    concept.Content = parts[0];
+                    this.Concept = concept;
+                }
+            }
+            var dimparts = parts.Skip(toskip).ToList();
+            foreach (var dimpart in dimparts)
+            {
+                var dimitem = Utilities.Strings.TextBetween(dimpart, "[", "]");
+                var domainpart = dimpart.Substring(dimitem.Length + 2);
+
+                var domain = domainpart;
+                var member = "";
+                var dim = new Dimension();
+
+                if (domainpart.Contains(":"))
+                {
+                    var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                    switch (domainparts.Length)
+                    {
+                        case 2:
+                            dim.IsTyped = Taxonomy.IsTyped(domain);
+                            if (dim.IsTyped)
+                            {
+                                domain = domainpart;
+                            }
+                            else
+                            {
+                                domain = domainparts[0];
+                                member = domainparts[1];
+                            }
+                            break;
+                        case 3:
+                            domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                            member = domainparts[2];
+                            dim.IsTyped = true;
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                }
+                dim.DimensionItem = dimitem;
+                dim.Domain = domain;
+                dim.DomainMember = member;
+                this.Dimensions.Add(dim);
+            }
+            this._FactString = item;
+            this._FactKey = "";
+        }
+
+
+        public void SetFromStringOld(string item) 
         {
             this.Dimensions.Clear();
             this.Concept = null;
@@ -230,29 +789,28 @@ namespace LogicalModel.Base
                 if (domainpart.Contains(":"))
                 {
                     var domainparts = domainpart.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (domainparts.Length == 2)
-                    {
-                        if (Taxonomy.IsTyped(domainpart))
-                        {
-                            domain = domainpart;
-
-                        }
-                        else
-                        {
-                            domain = domainparts[0];
-                            member = domainparts[1];
-
-                        }
-                        dim.IsTyped = Taxonomy.IsTyped(domain);
-
-                   
+                    switch (domainparts.Length){
+                        case 2:
+                            dim.IsTyped = Taxonomy.IsTyped(domain);
+                            if (dim.IsTyped)
+                            {
+                                domain = domainpart;
+                            }
+                            else 
+                            {
+                                domain = domainparts[0];
+                                member = domainparts[1];
+                            }
+                            break;
+                        case 3:
+                            domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
+                            member = domainparts[2];
+                            dim.IsTyped = true;
+                            break;
+                        default:
+                            break;
                     }
-                    if (domainparts.Length == 3)
-                    {
-                        domain = String.Format("{0}:{1}", domainparts[0], domainparts[1]);
-                        member = domainparts[2];
-                        dim.IsTyped = true;
-                    }
+                
                 }
                 dim.DimensionItem = dimitem;
                 dim.Domain = domain;
@@ -274,7 +832,14 @@ namespace LogicalModel.Base
             }
             return false;
         }
-      
+        
+        public void SetTyped() 
+        {
+            foreach (var dim in Dimensions) {
+                dim.SetTyped();
+            }
+        }
+        
         public override string ToString()
         {
             return GetFactString();
@@ -306,7 +871,7 @@ namespace LogicalModel.Base
             get { return GetFullFacts(); } 
            // set { _Facts = value; } 
         }
-
+        public Func<FactBase, bool> Not = (f) => false;
         public void SetFacts(List<FactBase> facts) 
         {
             _Facts = facts;
@@ -340,7 +905,7 @@ namespace LogicalModel.Base
                 {
                     newfact.Concept = Concept;
                 }
-                newfact.Dimensions = newfact.Dimensions.OrderBy(i => i.DomainMemberFullName).ToList();
+                newfact.Dimensions = newfact.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal).ToList();
             }
             return newfacts;
         }
@@ -373,12 +938,7 @@ namespace LogicalModel.Base
         }
     }
 
-    public class Identifiable
-    {
-        private string _ID = "";
-        public string ID { get { return _ID; } set { _ID = value; } }
 
-    }
 
     public class Link
     {
@@ -454,18 +1014,26 @@ namespace LogicalModel.Base
 
 
         private string _Domain = "";
+        [DefaultValue("")]
         public string Domain { get { return _Domain; } set { _Domain = value; } }
 
         private string _Hierarchy = "";
+        [DefaultValue("")]
         public string Hierarchy { get { return _Hierarchy; } set { _Hierarchy = value; } }
 
 
         private string _Namespace = "";
         public string Namespace { get { return _Namespace; } set { _Namespace = value; } }
 
+        private string _NamespaceURI = "";
+        public string NamespaceURI { get { return _NamespaceURI; } set { _NamespaceURI = value; } }
+
         private string _TypedDomainRef = "";
         public string TypedDomainRef { get { return _TypedDomainRef; } set { _TypedDomainRef = value; } }
 
+        private string _LinkRole = "";
+        [DefaultValue("")]
+        public string LinkRole { get { return _LinkRole; } set { _LinkRole = value; } }
 
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
@@ -477,7 +1045,10 @@ namespace LogicalModel.Base
         private string _FileName = "";
         public string FileName { get { return _FileName; } set { _FileName = value; } }
 
-
+        public override string ToString()
+        {
+            return String.Format("{0} - {1}", this.GetType().Name, this.ID);
+        }
     }
     [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
     public class QualifiedName:Identifiable

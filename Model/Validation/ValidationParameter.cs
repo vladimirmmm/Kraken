@@ -26,39 +26,38 @@ namespace LogicalModel.Validation
     {
         public string Name { get; set; }
         public string RuleID = null;
-        private Dictionary<string, FactGroup> _FactGroups = new Dictionary<string, FactGroup>();
-        public Dictionary<string, FactGroup> FactGroups
+
+        private List<List<int>> _TaxFacts = new List<List<int>>();
+        public List<List<int>> TaxFacts
         {
-            get { return _FactGroups; }
+            get { return _TaxFacts; }
             set
             {
-                _FactGroups = value;
+                _TaxFacts = value;
 
-            }
-        }
-
-        public void SetMyFactBase()
-        {
-            foreach (var key in FactGroups.Keys) 
-            {
-                var fg = FactGroups[key];
-                fg.SetFromString(key);
             }
         }
 
         private string _FallBackValue ="0";
         [DefaultValue("0")]
-        public string FallBackValue { get { return _FallBackValue; } set { _FallBackValue = value; } }
+        public string FallBackValue
+        {
+            get { return _FallBackValue; }
+            set
+            {
+                if (value != "non")
+                {
+                    _FallBackValue = value;
+                }
+            }
+        }
         private TypeEnum _Type = TypeEnum.String;
         public TypeEnum Type { get { return _Type; } set { _Type = value; } }
         public bool BindAsSequence { get; set; }
 
         public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
-        public InstanceFact[] Facts
-        {
-            get { return CurrentFacts.ToArray();  }
-        }
+
         public InstanceFact FirstFact 
         {
             get 
@@ -94,9 +93,8 @@ namespace LogicalModel.Validation
                 return typestring;
             }
         }
-        
         private string _StringValue = "";
-        [JsonIgnore]
+        //[JsonIgnore]
         public string StringValue
         {
             get
@@ -106,29 +104,30 @@ namespace LogicalModel.Validation
             set { _StringValue = value; }
 
         }
+        public string OriginalStringValue { get { return _StringValue; } }
 
         [JsonIgnore]
         public bool BooleanValue
         {
             get
             {
-                return StringValue=="true";
+                return Utilities.ObjectExtensions.In(StringValue,"true","1");
             }
 
         }
 
         public decimal DecimalValue
         {
-            get { return decimal.Parse(this.StringValue); }
+            get { return LogicalModel.Validation.Functions.Number(this.StringValue); }
+        }
+        public DateTime DateValue
+        {
+            get { return Utilities.Converters.StringToDateTime(this.StringValue,Utilities.Converters.DateTimeFormat); }
         }
 
         public string[] StringValues = new string[] { };
         public decimal[] DecimalValues = new decimal[] { };
         
-        //public ValidationParameter()
-        //{
-         
-        //}
 
         public ValidationParameter(string name, string ruleID)
         {
@@ -187,14 +186,7 @@ namespace LogicalModel.Validation
 
         public void ClearObjects()
         {
-            foreach (var fg in FactGroups.Values) 
-            {
-                fg.ClearObjects();
-                foreach (var fact in fg.Facts) 
-                {
-                    fact.ClearObjects();
-                }
-            }
+
         }
         public override bool Equals(object obj)
         {
@@ -204,7 +196,37 @@ namespace LogicalModel.Validation
             }
             return base.Equals(obj);
         }
-   
+
+        #region boolean
+
+        public static bool operator |(ValidationParameter lhs, bool rhs)
+        {
+            return lhs.BooleanValue | rhs;
+        }
+        public static bool operator |(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.BooleanValue | rhs.BooleanValue;
+        }
+        public static bool operator |(bool lhs, ValidationParameter rhs)
+        {
+            return lhs | rhs.BooleanValue;
+        }
+
+        public static bool operator &(ValidationParameter lhs, bool rhs)
+        {
+            return lhs.BooleanValue & rhs;
+        }
+        public static bool operator &(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.BooleanValue & rhs.BooleanValue;
+        }
+        public static bool operator &(bool lhs, ValidationParameter rhs)
+        {
+            return lhs & rhs.BooleanValue;
+        }
+
+        #endregion
+
         public static bool operator ==(ValidationParameter lhs, decimal rhs)
         {
             return Equals(lhs.DecimalValue, rhs);
@@ -222,7 +244,7 @@ namespace LogicalModel.Validation
             return !Equals(lhs, rhs.DecimalValue);
         }
 
-        
+        //> <
         public static bool operator >=(ValidationParameter lhs, decimal rhs)
         {
             return lhs.DecimalValue>= rhs;
@@ -240,7 +262,7 @@ namespace LogicalModel.Validation
             return lhs <= rhs.DecimalValue;
         }
 
-
+       
         public static bool operator >(ValidationParameter lhs, decimal rhs)
         {
             return lhs.DecimalValue>rhs;
@@ -257,7 +279,7 @@ namespace LogicalModel.Validation
         {
             return lhs< rhs.DecimalValue;
         }
-
+        //+ -
         public static decimal operator +(ValidationParameter lhs, decimal rhs)
         {
             return lhs.DecimalValue + rhs;
@@ -275,7 +297,34 @@ namespace LogicalModel.Validation
             return lhs - rhs.DecimalValue;
         }
 
+        //* /
+        public static decimal operator *(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue * rhs;
+        }
+        public static decimal operator /(ValidationParameter lhs, decimal rhs)
+        {
+            return lhs.DecimalValue / rhs;
+        }
+        public static decimal operator *(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs * rhs.DecimalValue;
+        }
+        public static decimal operator /(decimal lhs, ValidationParameter rhs)
+        {
+            return lhs / rhs.DecimalValue;
+        }
 
+        public static decimal operator *(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.DecimalValue * rhs.DecimalValue;
+        }
+        public static decimal operator /(ValidationParameter lhs, ValidationParameter rhs)
+        {
+            return lhs.DecimalValue / rhs.DecimalValue;
+        }
+
+        //== !=
         public static bool operator ==(ValidationParameter lhs, bool rhs)
         {
             return Equals(lhs.BooleanValue, rhs);
@@ -330,13 +379,14 @@ namespace LogicalModel.Validation
         }
 
 
-
+        // >= <=
         public static bool operator >=(ValidationParameter lhs, ValidationParameter rhs)
         {
             //return !Equals(lhs.DecimalValue, rhs.DecimalValue) || !Equals(lhs.Treshold, rhs.Treshold);
             if (lhs.Type == rhs.Type) 
             {
-                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue >= rhs.DecimalValue; }      
+                if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue >= rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue >= rhs.DateValue; }      
             }
             return false;
         }
@@ -345,6 +395,7 @@ namespace LogicalModel.Validation
             if (lhs.Type == rhs.Type)
             {
                 if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue <= rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue <= rhs.DateValue; }
             }
             return false;
         }
@@ -353,6 +404,7 @@ namespace LogicalModel.Validation
             if (lhs.Type == rhs.Type)
             {
                 if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue > rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue > rhs.DateValue; }
             }
             return false;
         }
@@ -361,6 +413,7 @@ namespace LogicalModel.Validation
             if (lhs.Type == rhs.Type)
             {
                 if (lhs.Type == TypeEnum.Numeric) { return lhs.DecimalValue < rhs.DecimalValue; }
+                if (lhs.Type == TypeEnum.Date) { return lhs.DateValue < rhs.DateValue; }
             }
             return false;
         }
