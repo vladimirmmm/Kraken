@@ -9,6 +9,25 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
+    public struct FactLookupValue2
+    {
+        //public int Index = -1;
+        //public List<int> CellIndexes = new List<int>();
+
+        //public FactLookupValue2() 
+        //{
+
+        //}
+        //public FactLookupValue2(int index)
+        //{
+        //    this.Index = index;
+        //}
+        //public FactLookupValue2(int index, List<int> cellIndexes)
+        //{
+        //    this.Index = index;
+        //    this.CellIndexes = cellIndexes;
+        //}
+    }
     public class FactLookupValue 
     {
         public int Index = -1;
@@ -39,6 +58,7 @@ namespace LogicalModel
     public class FactDictionaryCollection : LogicalModel.Models.IFactDictionary
     {
         public List<FactDictionary3> Pages = new List<FactDictionary3>();
+        public Dictionary<int, int> KeyCountOfIndex = new Dictionary<int, int>();
         public FactDictionary3 LastPage = null;
         public List<int> LoadedPages = new List<int>();
         public Func<string> Folder = () => @"C:\Users\vladimir.balacescu\Desktop\f\";
@@ -46,7 +66,7 @@ namespace LogicalModel
         public string FileNameFormat = Tag+"{0}.dat";
         public string FileNamePattern = Tag+"*.dat";
         public int NrItemsPerPage=500000;
-        public int NrLoadedPages = 5;
+        public int NrLoadedPages = 0;
         public FactDictionaryCollection() 
         {
 
@@ -95,6 +115,7 @@ namespace LogicalModel
             page.ID = this.Pages.Count;
             page.NrMaxItems = this.NrItemsPerPage;
             page.IndexStartAt = page.ID * page.NrMaxItems;
+            page.IndexEndAt = page.IndexStartAt + page.NrMaxItems;
             this.Pages.Add(page);
             this.LoadedPages.Add(page.ID);
             LastPage = page;
@@ -113,13 +134,16 @@ namespace LogicalModel
             var lines = System.IO.File.ReadAllLines(filepath);
             foreach (var line in lines)
             {
-                page.Save(line);
+                var kv = page.Save(line);
+                KeyCountOfIndex.Add(kv.Key, kv.Value.Length);
             }
+            page.IsDirty = false;
             if (NrLoadedPages!=0 && LoadedPages.Count > NrLoadedPages )
             {
                 Unload(0);
             }
             LoadedPages.Add(page.ID);
+            LastPage = page;
         
 
         }
@@ -205,12 +229,18 @@ namespace LogicalModel
         }
         public int[] Key(int index)
         {
-            if (LastPage.ContainsIndex(index)) 
+            if (index >= LastPage.IndexStartAt && index < LastPage.IndexEndAt) 
             {
                 return LastPage.Key(index);
+
             }
+            //if (LastPage.ContainsIndex(index)) 
+            //{
+            //    return LastPage.Key(index);
+            //}
             int pid = index / NrItemsPerPage;
-            return this.Pages[pid].Key(index);
+            LastPage = this.Pages[pid];
+            return LastPage.Key(index);
         
         }
 
@@ -318,12 +348,12 @@ namespace LogicalModel
             }
         }
 
-        public void Save(int[] key)
+        public int Save(int[] key)
         {
-            Save(key, new List<int>());
+            return Save(key, new List<int>(1));
         }
 
-        public void Save(int[] key, List<int> value)
+        public int Save(int[] key, List<int> value)
         {
             var lastpage = Pages.LastOrDefault();
             if (lastpage == null)
@@ -341,7 +371,9 @@ namespace LogicalModel
                 Unload(0);
 
             }
-            lastpage.Save(key, value);
+            var ix = lastpage.Save(key, value);
+            KeyCountOfIndex.Add(ix, key.Length);
+            return ix;
         }
         public void Unload(int ix)
         {
@@ -393,6 +425,7 @@ namespace LogicalModel
                 Unload(page);
             }
             this.Pages.Clear();
+            KeyCountOfIndex.Clear();
 
         }
 
@@ -406,6 +439,7 @@ namespace LogicalModel
         public int ID = 0;
         public int NrMaxItems = -1;
         public int IndexStartAt = 0;
+        public int IndexEndAt = 0;
         protected Dictionary<int[], FactLookupValue> a = new Dictionary<int[], FactLookupValue>(new Utilities.IntArrayEqualityComparer());
         protected Dictionary<int,int[]> b = new Dictionary<int,int[]>();
         public bool IsDirty = false;
@@ -437,8 +471,9 @@ namespace LogicalModel
                 return b.Values;
             }
         }
-        public void Save(string content)
+        public Utilities.KeyValue<int,int[]> Save(string content)
         {
+            var kv = new Utilities.KeyValue<int, int[]>();
             var sp_pipe = Literals.PipeSeparator[0];
             var sp_coma = Literals.Coma[0];
             var s_ix = 0;
@@ -487,9 +522,12 @@ namespace LogicalModel
             var cells = new List<int>(values.Count);
             cells.AddRange(values.Select(i => Utilities.Converters.FastParse(i)));
             Save(intkeys, index, cells);
+            kv.Key = index;
+            kv.Value = intkeys;
             //var kvp = new KeyValuePair<int, List<int>>(intkeys[0], cells);
             //return kvp;
             _IsLoaded = true;
+            return kv;
         }
         public string Content() 
         {
@@ -518,28 +556,32 @@ namespace LogicalModel
             }
             return sb.ToString();
         }
-        public void Save(int[] key)
+        public int Save(int[] key)
         {
-            Save(key, -1, new List<int>());
+            return Save(key, -1, new List<int>());
         }
-        public void Save(int[] key, List<int> value)
+        public int Save(int[] key, List<int> value)
         {
-            Save(key, -1, value);
+            return Save(key, -1, value);
         }
-        public void Save(int[] key, int index, List<int> value) 
+        public int Save(int[] key, int index, List<int> value) 
         {
+            int ix = -1;
             if (!a.ContainsKey(key))
             {
                 var flv= new FactLookupValue(index == -1 ? (NrMaxItems * this.ID) + a.Count : index, value);
                 a.Add(key, flv);
                 b.Add(flv.Index, key);
                 _IsLoaded = true;
+                ix = flv.Index;
             }
             else 
             {
                 a[key].CellIndexes=value;
+                ix = a[key].Index;
             }
             IsDirty = true;
+            return ix;
         }
         public int GetPageIndex(int ix) 
         {
@@ -699,13 +741,13 @@ namespace LogicalModel
             throw new NotImplementedException();
         }
     }
-    public class FactsPartsDictionary : SharedDictionary<int, HashSet<int>> 
+    public class FactsPartsDictionary : SharedDictionary<int, List<int>> 
     {
         public void AddIfNotExists(int key, int index) 
         {
             if (!this.ContainsKey(key)) 
             {
-                this.Add(key, new HashSet<int>());
+                this.Add(key, new List<int>());
             }
             this[key].Add(index);
         }
@@ -716,9 +758,12 @@ namespace LogicalModel
             {
                 if (!target.ContainsKey(item.Key)) 
                 {
-                    target.Add(item.Key, new HashSet<int>());
+                    target.Add(item.Key, new List<int>());
                 }
-                target[item.Key].UnionWith(this[item.Key]);
+                target[item.Key].AddRange(this[item.Key]);
+             
+                target[item.Key] = target[item.Key].Distinct().ToList();
+                target[item.Key].TrimExcess();
                 this[item.Key].Clear();
             }
         }
@@ -787,11 +832,13 @@ namespace LogicalModel
         {
             var instance = new FactsPartsDictionary();
             instance.DeSerializeItems = (lines) => {
-                var values = new HashSet<int>();
+                var values = new List<int>();
                 foreach (var line in lines) 
                 {
                     values.Add(Utilities.Converters.FastParse(line));
                 }
+                values.TrimExcess();
+
                 return values;
             };
             instance.SerializeItem = (itemcontainer) =>
@@ -891,7 +938,8 @@ namespace LogicalModel
         public void Save(TKey key)
         {
             var sb = SerializeItem(this[key]);
-            System.IO.File.WriteAllText(GetFilePath(key), sb.ToString());
+
+            Utilities.FS.WriteAllText(GetFilePath(key), sb.ToString());
 
         }
         public void UnLoad(bool save=true) 
@@ -928,6 +976,24 @@ namespace LogicalModel
     public class textx 
     {
         private int totlitems = 8000000;
+
+        public void test9()
+        {
+            var dict = new Dictionary<int[], List<int>>();
+            var dict2 = new Dictionary<int, int[]>();
+            var dict3 = new List<int[]>();
+            for (int i = 0; i < totlitems; i++)
+            {
+                var keys = new int[12];
+                for (int j = 0; j < keys.Length; j++)
+                {
+                    keys[j] = i % (j + 1);
+                }
+                dict.Add(keys, new List<int>(1) { i });
+                //dict2.Add(i, keys);
+                dict3.Add(keys);
+            }
+        }
         public void test0()
         {
             var dict = new SortedList<int[], List<int>>(new Utilities.IntArrayComparer());

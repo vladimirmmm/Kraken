@@ -36,6 +36,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             if (!Complement)
             {
                 fbq.DictFilters = fbq.DictFilters + String.Format("{0}, ", Concept.QName.Content);
+
                 functions.Add((s) =>
                 {
             
@@ -60,15 +61,46 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             return f;
         }
-
-        public override List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level = 0)
+        public List<FactBaseQuery> GetQueries2(Taxonomy taxonomy, int level = 0)
         {
             var queries = new List<FactBaseQuery>();
             var query = new FactBaseQuery();
+
             var ff = GetFunc(query);
             var originalfilter = query.Filter;
             query.Filter = null;
             query.Filter = (s) => originalfilter(s) && ff(s);
+
+
+            queries.Add(query);
+            return queries;
+        }
+        public override List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level = 0)
+        {
+            var queries = new List<FactBaseQuery>();
+            var query = new FactBaseQuery();
+            var factparts = taxonomy.FactParts;
+            var factsofparts = taxonomy.FactsOfParts;
+
+
+      
+            var tag = Concept.QName.Content;
+            if (!Complement)
+            {
+                query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.DictFilterIndexes.Add(factparts[tag]);
+                }
+            }
+            else 
+            {
+                query.FalseFilters = query.DictFilters + String.Format("{0} ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.NegativeDictFilterIndexes.Add(factparts[tag]);
+                }
+            }
             queries.Add(query);
             return queries;
         }

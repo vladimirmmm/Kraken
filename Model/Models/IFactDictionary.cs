@@ -11,8 +11,8 @@ namespace LogicalModel.Models
         System.Collections.Generic.KeyValuePair<int[], FactLookupValue> GetItem(int[] key);
         int[] Key(int index);
         IEnumerable<int[]> Keys { get; }
-        void Save(int[] key);
-        void Save(int[] key, System.Collections.Generic.List<int> value);
+        int Save(int[] key);
+        int Save(int[] key, System.Collections.Generic.List<int> value);
         System.Collections.Generic.List<int> this[int index] { get; }
         System.Collections.Generic.List<int> this[int[] key] { get; }
     }

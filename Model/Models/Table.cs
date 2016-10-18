@@ -471,7 +471,6 @@ namespace LogicalModel
                     childslices.Remove(conceptslicechild);
           
 
-                    intkeys.Add(conceptslicechild);
 
                     var dimkeyparts = new List<int>();
                     for (int i = 0; i < childslices.Count; i++)
@@ -481,30 +480,27 @@ namespace LogicalModel
 
 
                     }
+                    var key = new int[dimkeyparts.Count + 1];
+                    //intkeys.Add(conceptslicechild);
+                    key[0] = conceptslicechild;
                     dimkeyparts.Sort();
                     //dimkeyparts = dimkeyparts.OrderBy(i => i, StringComparer.Ordinal);
-
-                    foreach (var dimkeypart in dimkeyparts)
+                    for (int i = 0; i < dimkeyparts.Count; i++) 
                     {
-                        //performance
-
-                        intkeys.Add(dimkeypart);
-
+                        key[i + 1] = dimkeyparts[i];
                     }
-
-                    var newkey = intkeys;
-                    var newkeyarray = newkey.ToArray();
-                    if (!this.Taxonomy.HasFact(newkey))
+          
+                    if (!this.Taxonomy.HasFact(key))
                     {
 
-                        this.Taxonomy.AddFactKey(newkey);
-                        this.AddFactKey(newkeyarray);
+                        this.Taxonomy.AddFactKey(key);
+                        this.AddFactKey(key);
 
                     }
                     //this.Taxonomy.EnsureFactIndex(newkeyarray);
 
-                    FactList.Add(newkeyarray);
-                    FactindexList.Add(Taxonomy.FactsManager.GetFactIndex(newkeyarray));
+                    FactList.Add(key);
+                    FactindexList.Add(Taxonomy.FactsManager.GetFactIndex(key));
 
                     //sb_fact.AppendLine();
                 }
@@ -522,9 +518,9 @@ namespace LogicalModel
 
         public void AddFactKey(int[] key) 
         {
+            var factix = this.Taxonomy.FactsManager.GetFactIndex(key);
             foreach (var part in key)
             {
-                var factix = this.Taxonomy.FactsManager.GetFactIndex(key);
                 var dimensiondomainpart = this.Taxonomy.GetDimensionDomainPart(part);
                 if (dimensiondomainpart != -1)
                 {
@@ -825,7 +821,7 @@ namespace LogicalModel
                                     {
                                         //List<int[]> results = new List<int[]>();
                                         List<int> results = new List<int>();
-                                        results = this.Taxonomy.SearchFactsGetIndex3( factintkey, this.FactsOfParts);
+                                        results = this.Taxonomy.SearchFactsGetIndex3( factintkey, this.FactsOfParts,null);
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var result in results)
                                         {

@@ -474,15 +474,44 @@ namespace LogicalModel
         
         public List<int[]> SearchFacts3(FactsPartsDictionary factsOfParts, int[] factkey)
         {
-            var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts);
+            var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts, null);
             return resultfacts.Select(i => FactsManager.GetFactKey(i)).ToList();
         }
-        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts)
+        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts, bool EnsureFactKeyLength)
         {
             var result = new List<int>();
-            var domainkeys = factkey.Where(i => this.MembersOfDimensionDomains.ContainsKey(i)).ToList();
+            var memberkeys = factkey.ToList();
+            var memberfactspool = new List<List<int>>();
+            foreach (var memberkey in memberkeys)
+            {
+                if (factsOfParts.ContainsKey(memberkey))
+                {
+                    memberfactspool.Add(factsOfParts[memberkey]);
+                }
+            }
+            var partcount = memberfactspool.Count;
+            memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
+            result = memberfactspool.FirstOrDefault();
+            if ( facts!=null && (result==null || result.Count > facts.Count)) 
+            {
+                result = facts;
+            }
+            for (int i = 1; i < memberfactspool.Count; i++)
+            {
+                result = Utilities.Objects.IntersectSorted(result, memberfactspool[i], null);
+            }
+            if (result == null)
+            {
+                result = new List<int>();
+            }
+            return result;
+        }
+        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts)
+        {
+            var result = new List<int>();
+            var domainkeys = factkey.Where(i => this.MembersOfDimensionDomains.ContainsKey(i) && this.MembersOfDimensionDomains[i] == i).ToList();
             var memberkeys = factkey.Except(domainkeys).ToList();
-            var memberfactspool = new List<IEnumerable<int>>();
+            var memberfactspool = new List<List<int>>();
             foreach (var memberkey in memberkeys) 
             {
                 if (factsOfParts.ContainsKey(memberkey))
@@ -491,26 +520,47 @@ namespace LogicalModel
                 }
             }
             var partcount = memberfactspool.Count;
-
+            if (facts != null) 
+            {
+                memberfactspool.Add(facts);
+            }
             memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
             var memberresults = memberfactspool.FirstOrDefault();
 
             for (int i = 1; i < memberfactspool.Count; i++)
             {
-                if (memberfactspool[i].GetType() == typeof(HashSet<int>))
-                {
-                    memberresults = Utilities.Objects.IntersectSorted(memberresults, (HashSet<int>)memberfactspool[i], null);
-                }
-                else
-                {
                     memberresults = Utilities.Objects.IntersectSorted(memberresults, memberfactspool[i], null);
-
-                }
             }
             if (memberresults == null) 
             {
                 memberresults = new List<int>();
             }
+            var memberresultsbycount = new Dictionary<int, List<int>>();
+            var lastkeylength = -1;
+            List<int> lastkeycontainer = null;
+            var keylength = 0;
+            int[] key = null;
+          
+                foreach (var item in memberresults)
+                {
+                    //key = FactsManager.GetFactKey(item);
+                    keylength = FactsManager.FactsOfPages.KeyCountOfIndex[item];// key.Length;
+                    if (lastkeylength != keylength)
+                    {
+                        if (!memberresultsbycount.ContainsKey(keylength))
+                        {
+                            var keycontainer = new List<int>();
+                            memberresultsbycount.Add(keylength, keycontainer);
+
+                        }
+                        lastkeylength = keylength;
+                        lastkeycontainer = memberresultsbycount[keylength];
+                    }
+                    lastkeycontainer.Add(item);
+
+                }
+            
+            //var memberresultscounts = memberresults.Select((i) => FactsManager.GetFactKey(i).Length).ToList();
             //setting up the items for the combination
             var vpool = new List<List<int>>();
             foreach (var domainkey in domainkeys) 
@@ -518,73 +568,85 @@ namespace LogicalModel
                 vpool.Add(new List<int>() { -1, domainkey });
             }
             var combinations = MathX.CartesianProduct(vpool).ToList();
-            if (combinations.Count == 0) 
+            if (combinations.Count == 0)
             {
                 result = memberresults.ToList();
             }
-            var actions = new List<Action>();
-            var locker = new object();
-            //getting the facts for each combination
-            foreach (var combination in combinations)
+            else
             {
-                actions.Add(() =>
+
+
+                var actions = new List<Action>();
+                var locker = new object();
+                var cc = combinations.Count;
+                var partialresults = new List<IEnumerable<int>>(cc);
+                partialresults.AddRange(combinations.Select(i => new List<int>()));
+                //getting the facts for each combination
+                for (int ix = 0; ix < cc; ix++)
                 {
-                    var factpartpool = new List<int>();
-                    var factspool = new List<IEnumerable<int>>();
-                    var i_domainkeys = combination.ToList();
+                    var combination = combinations[ix];
+                 
+                    actions.Add(() =>
+                    {
+                        var index = ix;
+                        var ccc = cc;
+                        var factpartpool = new List<int>();
+                        var factspool = new List<List<int>>();
+                        var i_domainkeys = combination.ToList();
+
+                        factpartpool.AddRange(i_domainkeys.Where(i => i != -1));
+                        foreach (var factpart in factpartpool)
+                        {
+                            if (factsOfParts.ContainsKey(factpart))
+                            {
+                                factspool.Add(factsOfParts[factpart]);
+                            }
+                        }
+                        var pcount = partcount + factspool.Count;
+
+
+
+                        //factspool.Add(memberresults.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList());
+                        //factspool.Add(memberresults.Where((int i,int index )=> {
+                        //    return memberresultscounts[index]==pcount;
+                        //}).ToList());
                     
-                    factpartpool.AddRange(i_domainkeys.Where(i => i != -1));
-                    foreach (var factpart in factpartpool)
-                    {
-                        if (factsOfParts.ContainsKey(factpart))
+                        factspool.Add(memberresultsbycount.ContainsKey(pcount) ? memberresultsbycount[pcount] : new List<int>());
+                      
+                        factspool = factspool.OrderBy(i => i.Count()).ToList();
+
+                        var partialresult = factspool.FirstOrDefault().AsEnumerable();
+
+                        for (int i = 1; i < factspool.Count; i++)
                         {
-                            factspool.Add(factsOfParts[factpart]);
-                        }
-                    }
-                    var pcount = partcount + factspool.Count;
 
-
-
-                    factspool.Add(memberresults.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList());
-                   
-                    factspool = factspool.OrderBy(i => i.Count()).ToList();
-
-                    var partialresult = factspool.FirstOrDefault().AsEnumerable();
-
-                    for (int i = 1; i < factspool.Count; i++)
-                    {
-                        var type = factspool[i].GetType();
-                        var intersected = false;
-                        if (!intersected && type == typeof(HashSet<int>))
-                        {
-                            partialresult = Utilities.Objects.IntersectSorted(partialresult, (HashSet<int>)factspool[i], null);
-                            intersected = true;
-                        }
-                        if (!intersected && type == typeof(HashSetList))
-                        {
-                            var x = Utilities.Objects.IntersectSorted(partialresult, ((HashSetList)factspool[i]).Value, null);
-                            partialresult = x;
-                            intersected = true;
-
-                        }
-                        if (!intersected)
-                        {
                             partialresult = Utilities.Objects.IntersectSorted(partialresult, factspool[i], null);
 
                         }
-                    }
-                    partialresult = partialresult.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList();
-                    lock (locker)
-                    {
-                        result.AddRange(partialresult);
-                    }
-                });
+                        if (memberresults.Count == 0)
+                        {
+
+                            partialresult = partialresult.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList();
+
+                        }
+                        lock (locker) 
+                        {
+                            result.AddRange(partialresult);
+                        }
+
+                    });
+                }
+             
+                //foreach (var a in actions) 
+                //{
+                //    a();
+                //}
+                Task.WaitAll(actions.Select(i => Task.Factory.StartNew(i)).ToArray());
+                foreach (var partialresult in partialresults)
+                {
+                    result.AddRange(partialresult);
+                }
             }
-            //foreach (var a in actions) 
-            //{
-            //    a();
-            //}
-            Task.WaitAll(actions.Select(i => Task.Factory.StartNew(i)).ToArray());
             return result;
         }
       

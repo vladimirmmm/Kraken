@@ -157,10 +157,7 @@ namespace XBRLProcessor.Model
                 }
 
             }
-            if (rootquerypool.Count == 108)
-            {
 
-            }
             var rootqueries = CombineQueries(rootquerypool.ToArray());
 
             var allqueries = rootqueries;
@@ -283,15 +280,7 @@ namespace XBRLProcessor.Model
                         ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfParts[ix], null).AsQueryable().ToList();
                     }
                 }
-                    //foreach (var dim in dimparts)
-                    //{
-                    //    //FP if (Taxonomy.FactsOfDimensions.ContainsKey(dim))
-                    //    var ix = Taxonomy.FactParts[dim];
-                    //    if (Taxonomy.FactsOfParts.ContainsKey(ix))
-                    //    {
-                    //        ids = Utilities.Objects.IntersectSorted(ids, Taxonomy.FactsOfParts[ix], null).AsQueryable().ToList();
-                    //    }
-                    //}
+      
             }
             else
             {
@@ -498,6 +487,8 @@ namespace XBRLProcessor.Model
             target.TrueFilters = target.TrueFilters + source.TrueFilters ;
             target.FalseFilters = target.FalseFilters + source.FalseFilters;
             target.DictFilters = target.DictFilters + source.DictFilters;
+            target.DictFilterIndexes.AddRange(source.DictFilterIndexes);
+            target.NegativeDictFilterIndexes.AddRange(source.NegativeDictFilterIndexes);
             target.ChildQueries = source.ChildQueries;
             var originalfilter = target.Filter;
             target.Filter = null;

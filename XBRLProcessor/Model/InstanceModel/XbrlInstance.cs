@@ -94,7 +94,7 @@ namespace Model.InstanceModel
         {
             var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(XmlDocument);
             var dimensionnamespaces = this.Taxonomy.DimensionItems.Select(i=>i.NamespaceURI).Distinct().ToList();
-
+            var domainnsdictionary = new Dictionary<string, string>();
             foreach (var ct in this.Contexts) 
             {
                 if (ct.Scenario != null)
@@ -118,8 +118,11 @@ namespace Model.InstanceModel
                         }
                         else 
                         {
-                            var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
-                            dim.Domain = domainelement.Namespace;
+                            if (!domainnsdictionary.ContainsKey(dim.Domain)) { 
+                                var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
+                                domainnsdictionary.Add(dim.Domain, domainelement.Namespace);
+                            }
+                            dim.Domain = domainnsdictionary[dim.Domain];
                         }
 
                     }

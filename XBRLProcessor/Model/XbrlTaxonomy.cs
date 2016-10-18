@@ -73,6 +73,7 @@ namespace XBRLProcessor.Models
         
         public bool AddTaxonomyDocumentToDictionary(XbrlTaxonomyDocument document)
         {
+       
             if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalRelPath))
             {
                 this.TaxonomyDocumentDictionary.Add(document.LocalRelPath.ToLower(), document);
@@ -272,6 +273,7 @@ namespace XBRLProcessor.Models
                 this.TaxonomyDocuments = Utilities.Converters.JsonTo<List<XbrlTaxonomyDocument>>(jsoncontent);
                 foreach (var doc in this.TaxonomyDocuments)
                 {
+                    
                     this.AddTaxonomyDocumentToDictionary(doc);
                 }
                 var existing_entry = this.FindDocument(EntryDocument.LocalRelPath);
@@ -564,7 +566,7 @@ namespace XBRLProcessor.Models
                     {
                         MembersOfDimensionDomains.Add(memberkey, int_dimdomkey);
                     }
-                    //MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdommemberlist);
+                    MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdomkey);
                 }
           
                 fd.CounterFactParts = CounterFactParts;
@@ -894,7 +896,8 @@ namespace XBRLProcessor.Models
                                 {
                                     // var logicalrule = validation.GetLogicalRule(assertion, validdoc);
                                     var xasssertion = assertion.Copy();
-                                    var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
+                                    //var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
+                                    var logicalrule = validation.GetLogicalRule(assertion, validdoc);
 
                                     //var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
 
@@ -1164,7 +1167,7 @@ namespace XBRLProcessor.Models
                 this.Tables.Add(logicaltable);
                 //this.TaxonomyTables.Add(table);
             }
-
+        
             return result;
 
         }

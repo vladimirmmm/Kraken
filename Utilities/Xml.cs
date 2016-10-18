@@ -220,11 +220,12 @@ namespace Utilities
         {
             var result = new List<XmlNode>();
             XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
-            var ix = XPath.IndexOf(":");
+  
+            var ix = XPath.IndexOf(":", StringComparison.Ordinal);
             if (ix>-1) 
             {
                 var ns = XPath;
-                if (XPath.StartsWith("//"))
+                if (XPath.StartsWith("//", StringComparison.Ordinal))
                 {
                     ns = XPath.Substring(2);
                 }
@@ -233,7 +234,9 @@ namespace Utilities
                 if (ns == "*") 
                 {
                     //XPath = "//*[local-name() = translate('" + name + "','abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')";
-                    XPath = "*[translate(local-name(),'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='"+name.ToUpper()+"']";
+                    //XPath = "*[translate(local-name(),'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='" + name.ToUpper() + "']";
+                    //XPath = "*[matches(local-name(),'" + name + "',i)]";
+                    XPath = "*[local-name()='" + name + "']";
                 }
                 if (!manager.HasNamespace(ns) && ns!="*") 
                 {

@@ -240,9 +240,60 @@ namespace Utilities
             //results.TrimExcess();
             return results;
         }
-        public static List<T> IntersectSorted<T>( List<T> sequence1, List<T> sequence2, IComparer<T> comparer)
+        //public static List<T> IntersectSorted<T>( List<T> sequence1, List<T> sequence2, IComparer<T> comparer)
+        //{
+        //    return IntersectSorted(sequence1.AsEnumerable(), sequence2.AsEnumerable(), comparer).ToList();
+        //}
+        private static bool IsContinous(List<int> items)
         {
-            return IntersectSorted(sequence1.AsEnumerable(), sequence2.AsEnumerable(), comparer).ToList();
+            if (items[items.Count - 1] - items[0] == items.Count - 1) 
+            {
+                return true;
+            }
+            return false;
+        }
+        private static bool IsTheSame(List<int> items1, List<int> items2)
+        {
+            if (items1.Count != items2.Count) { return false; }
+            if (items1.Count == 0) { return false; }
+            if (items1[0]==items2[0])
+            {
+                return IsContinous(items1) && IsContinous(items2);
+            }
+            return false;
+        }
+        public static List<int> IntersectSorted(List<int> sequence1, List<int> sequence2, IComparer<int> comparer)
+        {
+        
+            if (IsTheSame(sequence1, sequence2)) { 
+                return sequence1;
+            }
+            var smaller = sequence1.Count < sequence2.Count ? sequence1 : sequence2;
+            var bigger = smaller == sequence1 ? sequence2 : sequence1;
+            List<int> r = new List<int>(smaller.Count);
+
+            if (smaller.Count*10 < bigger.Count)
+            {
+                var secix = 0;
+                var seccount = bigger.Count;
+                foreach (var item in smaller)
+                {
+                    var ix = bigger.BinarySearch(secix, seccount, item, null);
+                    if (ix >= 0)
+                    {
+                        r.Add(item);
+                        secix = ix;
+                        seccount = bigger.Count - secix;
+                    }
+                }
+            }
+            else 
+            {
+                return IntersectSorted((IEnumerable<int>)smaller, (IEnumerable<int>)bigger, null).ToList();
+            }
+            
+            //r.TrimExcess();
+            return r;
         }
         public static List<T> IntersectSorted<T>(IEnumerable<T> sequence1, List<HashSet<T>> sequence2, IComparer<T> comparer)
         {
