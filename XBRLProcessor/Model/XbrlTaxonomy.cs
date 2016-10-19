@@ -865,7 +865,7 @@ namespace XBRLProcessor.Models
                     MoveToFirst("3724", validationdocuments);
                     MoveToFirst("1671", validationdocuments);
 
-
+                    validationdocuments = validationdocuments.OrderBy(i => i.FileName).ToList();
 
                     foreach (var validdoc in validationdocuments)
                     {

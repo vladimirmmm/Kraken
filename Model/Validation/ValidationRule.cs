@@ -205,6 +205,12 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().TaxFacts;
+            var aregroupsok = Parameters.Select(i => i.TaxFacts.Count).Distinct().Count() == 1;
+            if (!aregroupsok) 
+            {
+                Utilities.Logger.WriteLine(String.Format("Rule {0} has factgroup problems", this.ID));
+                return results;
+            }
             if (this.ID.Contains("de_sprv_vcrs_0030"))
             {
 
@@ -244,7 +250,7 @@ namespace LogicalModel.Validation
                     {
                         //set the cells
                         itemfactids.AddRange(facts);
-                        //itemfacts.AddRange(facts.Select(f => Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[f])));
+                        itemfacts.AddRange(facts.Select(f => Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(f))));
                         foreach (var tax_fact in itemfactids)
                         {
                             var cellist = new List<string>();
@@ -271,11 +277,10 @@ namespace LogicalModel.Validation
                         {
                             if (facts.Count == 1)
                             {
-                                //var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsIndex[facts.FirstOrDefault()]);
-                                //itemfacts.Add(fact);
-                                var fact = facts.FirstOrDefault();
-                                var factkey = Taxonomy.FactsManager.GetFactKey(fact);
-                                itemfactids.Add(fact);
+                                var factkey = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(facts.FirstOrDefault()));
+                                itemfacts.Add(factkey);
+                                var factid = facts.FirstOrDefault();
+                                itemfactids.Add(factid);
                                 //set the cells
                                 var cells = new List<String>();
                                 sp.Cells.Add(cells); ;
@@ -288,7 +293,7 @@ namespace LogicalModel.Validation
                         }
                     }
 
-                    //sp.Facts.AddRange(itemfacts);
+                    sp.Facts.AddRange(itemfacts);
                     sp.FactIDs.AddRange(itemfactids.Select(f => String.Format("T:{0}", f)));
                     //p.FactIDs.Add(String.Format("I:{0}", fact.IX));
                     //

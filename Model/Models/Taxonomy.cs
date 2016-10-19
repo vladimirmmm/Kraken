@@ -490,12 +490,17 @@ namespace LogicalModel
                 }
             }
             var partcount = memberfactspool.Count;
+            if (facts!=null)
+            {
+                memberfactspool.Add(facts);
+
+            }
             memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
             result = memberfactspool.FirstOrDefault();
-            if ( facts!=null && (result==null || result.Count > facts.Count)) 
-            {
-                result = facts;
-            }
+            //if ( facts!=null && (result==null || result.Count > facts.Count)) 
+            //{
+            //    result = facts;
+            //}
             for (int i = 1; i < memberfactspool.Count; i++)
             {
                 result = Utilities.Objects.IntersectSorted(result, memberfactspool[i], null);
@@ -723,12 +728,36 @@ namespace LogicalModel
             var keys = indexes.Select(i => FactsManager.GetFactKey(i));
             return GetFactStringKeys(keys);
         }
+        public string GetFactStringKeys(IEnumerable<IEnumerable<int>> group)
+        {
+            var sb = new StringBuilder();
+            foreach (var indexes in group)
+            {
+                var keys = indexes.Select(i => FactsManager.GetFactKey(i));
+                sb.AppendLine(GetFactStringKeys(keys));
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
         public string GetFactStringKeys(IEnumerable<int[]> keys) 
         {
             var sb = new StringBuilder();
             foreach (var key in keys) 
             {
                 sb.AppendLine(GetFactStringKey(key));
+            }
+            return sb.ToString();
+        }
+        public string GetFactStringKeys(IEnumerable<IEnumerable<int[]>> group)
+        {
+            var sb = new StringBuilder();
+            foreach (var keys in group)
+            {
+                foreach (var key in keys)
+                {
+                    sb.AppendLine(GetFactStringKey(key));
+                }
+                sb.AppendLine();
             }
             return sb.ToString();
         }

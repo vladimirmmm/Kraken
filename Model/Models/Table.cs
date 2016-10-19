@@ -200,7 +200,7 @@ namespace LogicalModel
             var children = item.Children.Where(i => i.Item.IsStructural).ToList();
             if (children.Count == 0)
             {
-                var rowspan = sublevelcount > 0 ? String.Format("rowspan=\"{0}\"", sublevelcount+1) : "";
+                var rowspan = sublevelcount > 0 ? String.Format("rowspan=\"{0}\"", sublevelcount) : "";
                 item.Item.RowSpan = rowspan;
             }
             foreach (var child in children) 
@@ -458,7 +458,11 @@ namespace LogicalModel
             var slices = new List<IEnumerable<int>>();
             var sb_fact = new StringBuilder();
             //FactKeys.Clear();
+            if (this.ID.Contains("02")) 
+            {
 
+            }
+           //
             foreach (var hypercube in HyperCubes)
             {
                 var cubeslices = GetCubeSlices2(hypercube);
@@ -476,7 +480,10 @@ namespace LogicalModel
                     for (int i = 0; i < childslices.Count; i++)
                     {
                         var slicechild = childslices[i];
-                        dimkeyparts.Add(slicechild);
+                        if (slicechild != -2)
+                        {
+                            dimkeyparts.Add(slicechild);
+                        }
 
 
                     }
@@ -489,7 +496,7 @@ namespace LogicalModel
                     {
                         key[i + 1] = dimkeyparts[i];
                     }
-          
+                
                     if (!this.Taxonomy.HasFact(key))
                     {
 
@@ -497,6 +504,12 @@ namespace LogicalModel
                         this.AddFactKey(key);
 
                     }
+                    //var ckey = Taxonomy.GetFactIntKey("eba_met:mi213,[eba_dim:APR]eba_AP:x42,[eba_dim:BAS]eba_BA:x9,[eba_dim:EXC]eba_EC:x27,[eba_dim:MCY]eba_MC:x198,[eba_dim:PRP]eba_PL:x11,[eba_dim:TRI]eba_TR:x2,").ToArray();
+                    //var eq = new IntArrayEqualityComparer();
+                    //if (eq.Equals(key, ckey))
+                    //{
+
+                    //}
                     //this.Taxonomy.EnsureFactIndex(newkeyarray);
 
                     FactList.Add(key);
@@ -509,7 +522,11 @@ namespace LogicalModel
             //var factpath = HtmlPath.Replace(".html", "-facts.txt");
             //var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
             //Utilities.FS.WriteAllText(FactPath, sb_fact.ToString());
+            //if (this.ID.Contains("07"))
+            //{
+            //    var six = this.FactList.Where(i => i.Length == 6);
 
+            //}
             //var jsonfacts = Utilities.Converters.ToJson(this.FactList);
             System.IO.File.WriteAllText(FactsPath, sb_fact.ToString());
             sb_fact.Clear();
@@ -634,7 +651,10 @@ namespace LogicalModel
             Y_Axis.Clear();
             Z_Axis.Clear();
 
+            if (this.ID.Contains("02")) 
+            {
 
+            }
   
             var lrstr = Utilities.Converters.ToJson(LayoutRoot);
             var lr = Utilities.Converters.JsonTo<Hierarchy<LayoutItem>>(lrstr);
@@ -995,7 +1015,7 @@ namespace LogicalModel
                 sb.AppendLine("<tr>");
                 if (lvl.Key == 0)
                 {
-                    sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", rowlevelnr + 1, collevelnr + 1, rowsnode.Item.LabelContent));
+                    sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", rowlevelnr + 1, collevelnr+1, rowsnode.Item.LabelContent));
 
                 }
       
@@ -1155,8 +1175,13 @@ namespace LogicalModel
             var domains = cube.DimensionItems.Select(i => i.Domains.FirstOrDefault()).ToList();
             foreach (var domain in domains)
             {
-                cubelist.Add(domain.DomainMembers.Where(i=>!i.IsDefaultMember).Select(i =>
+                //.Where(i=>!i.IsDefaultMember)
+                cubelist.Add(domain.DomainMembers.Select(i =>
                 {
+                    if (i.IsDefaultMember) 
+                    {
+                        return -2;
+                    }
                     var dimitem = String.Format("[{0}]{1}", i.Domain.DimensionItem.FullName, i.FullName);
                     return Taxonomy.FactParts[dimitem];
                 }).ToList());

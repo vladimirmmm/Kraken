@@ -288,6 +288,10 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                             {
                                 query.DictFilterIndexes.Add(factparts[tag]);
                             }
+                            else 
+                            {
+
+                            }
                             query.Filter = (s) =>
                             {
                                 var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
@@ -313,17 +317,22 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         {
             var queries = new List<FactBaseQuery>();
             var query = new FactBaseQuery();
+            var factparts = taxonomy.FactParts;
             queries.Add(query);
             var typeddomain = taxonomy.FindDimensionDomain(this.Dimension.QName.Content);
      
            // var td = taxonomy.TypedDimensions.FirstOrDefault(i => i.Key.EndsWith(":" + this.Dimension.QName.Value));
             var domainpart = typeddomain.Namespace + ":" + typeddomain.Name;
-            var tag = String.Format("[{0}:{1}]{2},", this.Dimension.QName.Domain, this.Dimension.QName.Value, domainpart);
+            var tag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, domainpart);
             if (!Complement)
             {
                 //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
 
-                query.TrueFilters = query.TrueFilters + String.Format("{0} ", tag);
+                query.TrueFilters = query.TrueFilters + String.Format("{0}, ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.DictFilterIndexes.Add(factparts[tag]);
+                }
                 query.Filter = (string s) =>
                 {
                     var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
@@ -340,6 +349,10 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
 
                 query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.NegativeDictFilterIndexes.Add(factparts[tag]);
+                }
                 query.Filter = (s) =>
                 {
                     var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;

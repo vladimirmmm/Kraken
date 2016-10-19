@@ -187,7 +187,10 @@ namespace XBRLProcessor.Model
                 var bsize = 500;
                 var isnonsequenced = !parameter.BindAsSequence;
                 var parameterfactdict = new HashSet<int>(parameterfacts);
-               
+                if (mergedqueries.Count == 0) 
+                {
+                    mergedqueries.Add(new LogicalModel.Base.FactBaseQuery());
+                }
                 foreach (var fbq in mergedqueries)
                 {
 
@@ -372,15 +375,29 @@ namespace XBRLProcessor.Model
             {
                 tmp_rule.Remove(fv);
             }
+            if (valueassertion.ID.Contains("0390"))
+            {
+            }
             var rulefactqueries = GetFactQuery(tmp_rule);
             var rulefactIds = new List<int>();
             var rulebasequery = GetRuleQuery(tmp_rule).FirstOrDefault();
             var rbds = new List<string>();
+            bool RuleHasDictFilter = false; 
             if (rulebasequery != null)
             {
-        
+                RuleHasDictFilter = rulebasequery.DictFilterIndexes.Count > 0;
                 rulefactIds.AddRange(rulebasequery.ToList(Taxonomy,null));
 
+            }
+            var additionalfacts = new List<int>();
+            foreach (var rulefactquery in rulefactqueries) 
+            {
+                var factindexes = rulefactquery.ToList(Taxonomy, rulebasequery == null ? null : rulefactIds);
+                additionalfacts.AddRange(factindexes);
+            }
+            if (additionalfacts.Count > 0) 
+            {
+                rulefactIds = additionalfacts;
             }
 
             var sb = new StringBuilder();
@@ -391,9 +408,7 @@ namespace XBRLProcessor.Model
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
             //
-            if (valueassertion.ID.Contains("0647"))
-            {
-            }
+          
 
             foreach (var fv in factvariables)
             {
@@ -401,7 +416,7 @@ namespace XBRLProcessor.Model
                 var parameterfactqueries = GetFactQuery(fv, 1);
 
                 var parameterfactbasequery = GetRuleQuery(fv).FirstOrDefault();
-                var parameterfacts = parameterfactbasequery == null ? rulefactIds.ToList() : parameterfactbasequery.ToList(Taxonomy, rulefactIds);
+                var parameterfacts = parameterfactbasequery == null ? rulefactIds.ToList() : parameterfactbasequery.ToList(Taxonomy, RuleHasDictFilter ? rulefactIds : null);
     
                 var parameterfactquery = new LogicalModel.Base.FactBaseQuery();
                 foreach (var pfbq in parameterfactqueries)
@@ -418,7 +433,8 @@ namespace XBRLProcessor.Model
                 var mergedqueries = new List<LogicalModel.Base.FactBaseQuery>();
                 if (parameter.BindAsSequence)
                 {
-                    mergedqueries = CombineQueries(rulefactqueries, new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery });
+                    //mergedqueries = CombineQueries(rulefactqueries, new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery });
+                    mergedqueries = new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery };
 
                 }
                 else
@@ -427,7 +443,12 @@ namespace XBRLProcessor.Model
                     {
                         //Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has multiple queries, but it is not sequenced.", logicalrule.ID, parameter.Name));
                     }
-                    mergedqueries = CombineQueries(rulefactqueries, parameterfactqueries);
+                    //mergedqueries = CombineQueries(rulefactqueries, parameterfactqueries);
+                    mergedqueries = parameterfactqueries;
+                }
+                if (mergedqueries.Count == 0)
+                {
+                    mergedqueries.Add(new LogicalModel.Base.FactBaseQuery());
                 }
                 //TODO
                 var multiplefactsfornonseqparameter = 0;
@@ -541,6 +562,8 @@ namespace XBRLProcessor.Model
 
             //remove invalid facts
             var firstparameter = logicalrule.Parameters.FirstOrDefault();
+            //var xx = Taxonomy.GetFactStringKeys(firstparameter.TaxFacts);
+
             var taxfactstoremove = new List<int>();
             for (int i = 0; i < firstparameter.TaxFacts.Count; i++)
             {
