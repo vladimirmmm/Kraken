@@ -1,0 +1,11 @@
+{
+  "ValidateOnInstanceLoaded": "True",
+  "ReloadTaxonomyOnInstanceLoaded": "False",
+  "ReloadFullTaxonomyButStructure": "False",
+  "ReloadFullTaxonomy": "False",
+  "ReDownloadFiles": "False",
+  "LoadValidationRules": "True",
+  "CheckValidationCells": "False",
+  "DebugLevel": "0",
+  "AppMode": "0"
+}
