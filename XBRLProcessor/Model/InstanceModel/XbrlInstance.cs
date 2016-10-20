@@ -20,22 +20,30 @@ namespace Model.InstanceModel
         public Link SchemaRef { get; set; }
 
 
-        private Dictionary<string, Context> _ContextDictionary = new Dictionary<string, Context>();
-        [JsonProperty]
-        public Dictionary<string, Context> ContextDictionary
-        {
-            get { return _ContextDictionary; }
-            set { _ContextDictionary = value; }
-        }
+        //private Dictionary<string, Context> _ContextDictionary = new Dictionary<string, Context>();
+        //[JsonProperty]
+        //public Dictionary<string, Context> ContextDictionary
+        //{
+        //    get { return _ContextDictionary; }
+        //    set { _ContextDictionary = value; }
+        //}
 
-        private List<Context> _Contexts = new List< Context>();
+        //private List<Context> _Contexts = new List< Context>();
+        //[JsonProperty]
+        //public List<Context> Contexts
+        //{
+        //    get { return _Contexts; }
+        //    set { _Contexts = value; }
+        //}
+
+        private ContextContainer _Contexts = new ContextContainer();
         [JsonProperty]
-        public List<Context> Contexts
+        public ContextContainer Contexts
         {
             get { return _Contexts; }
             set { _Contexts = value; }
         }
-      
+
         private List<XbrlFact> _XbrlFacts = new List<XbrlFact>();
         public List<XbrlFact> XbrlFacts
         {
@@ -86,62 +94,68 @@ namespace Model.InstanceModel
             var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
 
             Mappings.CurrentMapping.Map<XbrlInstance>(xbrlnode, this);
+            var cmap = Mappings.CurrentMapping.MappingCollection.FirstOrDefault(i => i.ClassType == typeof(Context));
+            var contextxpath = Utilities.Strings.TextBetween(cmap.XmlSelector, "<", ">");
+            var contextndoes = Utilities.Xml.SelectChildNodes(xbrlnode, contextxpath);
+            xbrlnode = null;
+            var ctcontainer = this.Contexts;
+
+            foreach (var cnode in contextndoes) 
+            {
+               Context ct = new Context();
+               ct = cmap.Map(cnode,ct);
+               ctcontainer.Add(ct);
+            }
             this.TaxonomyModuleReference = this.SchemaRef.Href;
 
         }
-
-        private void FixNamespaces() 
+        private void FixContextNamespaces(LogicalModel.InstanceContext ct, XmlNamespaceManager nsm, Dictionary<string, string> domainnsdictionary, List<string> dimensionnamespaces)
         {
-            var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(XmlDocument);
-            var dimensionnamespaces = this.Taxonomy.DimensionItems.Select(i=>i.NamespaceURI).Distinct().ToList();
-            var domainnsdictionary = new Dictionary<string, string>();
-            foreach (var ct in this.Contexts) 
+
+
+            foreach (var dim in ct.FactParts)
             {
-                if (ct.Scenario != null)
+                var dparts = dim.DimensionItem.Split(':');
+                var dimnsuri = Utilities.Xml.Namespaces[dparts[0]];
+                var dimelement = Taxonomy.DimensionItems.FirstOrDefault(i => i.NamespaceURI == dimnsuri);
+                dim.DimensionItem = string.Format("{0}:{1}", dimelement.Namespace, dparts[1]);
+
+                if (dim.IsTyped)
                 {
-                    foreach (var dim in ct.Scenario.Dimensions)
-                    {
-                        var dparts = dim.DimensionItem.Split(':');
-                        var dimnsuri = Utilities.Xml.Namespaces[dparts[0]];
-                        var dimelement = Taxonomy.DimensionItems.FirstOrDefault(i => i.NamespaceURI == dimnsuri);
-                        dim.DimensionItem = string.Format("{0}:{1}", dimelement.Namespace, dparts[1]);
+                    var parts = dim.Domain.Split(':');
 
-                        if (dim.IsTyped)
-                        {
-                            var parts = dim.Domain.Split(':');
+                    var nsuri = Utilities.Xml.Namespaces[parts[0]];
+                    var tdecontainer = this.Taxonomy.TypedDimensions.FirstOrDefault(i => i.Value.FirstOrDefault(t => t.NamespaceURI == nsuri) != null);
+                    var tde = tdecontainer.Value.FirstOrDefault(t => t.NamespaceURI == nsuri);
+                    dim.Domain = string.Format("{0}:{1}", tde.Namespace, parts[1]);
 
-                            var nsuri = Utilities.Xml.Namespaces[parts[0]];
-                            var tdecontainer = this.Taxonomy.TypedDimensions.FirstOrDefault(i => i.Value.FirstOrDefault(t => t.NamespaceURI == nsuri) != null);
-                            var tde = tdecontainer.Value.FirstOrDefault(t => t.NamespaceURI == nsuri);
-                            dim.Domain = string.Format("{0}:{1}", tde.Namespace, parts[1]);
-
-                        }
-                        else 
-                        {
-                            if (!domainnsdictionary.ContainsKey(dim.Domain)) { 
-                                var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
-                                domainnsdictionary.Add(dim.Domain, domainelement.Namespace);
-                            }
-                            dim.Domain = domainnsdictionary[dim.Domain];
-                        }
-
-                    }
                 }
-                ContextDictionary.Add(ct.ID, ct);
-            }
-            var conceptnslist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.Namespace).Distinct().ToList();
-            foreach (var conceptns in conceptnslist)
-            {
+                else
+                {
+                    if (!domainnsdictionary.ContainsKey(dim.Domain))
+                    {
+                        var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
+                        domainnsdictionary.Add(dim.Domain, domainelement.Namespace);
+                    }
+                    dim.Domain = domainnsdictionary[dim.Domain];
+                }
 
             }
+
         }
+      
         public void LoadComplex() 
         {
             var XbrlTaxonomy= (XBRLProcessor.Models.XbrlTaxonomy)this.Taxonomy;
             Clear();
             var allnodes = Utilities.Xml.AllNodes(XmlDocument);
-            FixNamespaces();
-
+            var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(XmlDocument);
+            var dimensionnamespaces = this.Taxonomy.DimensionItems.Select(i => i.NamespaceURI).Distinct().ToList();
+            var domainnsdictionary = new Dictionary<string, string>();
+            foreach (var ct in Contexts.Items.Values) 
+            {
+                FixContextNamespaces(ct, nsm, domainnsdictionary, dimensionnamespaces);
+            }
             var conceptnsurilist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.NamespaceURI).Distinct().ToList();
             foreach (var conceptnsuri in conceptnsurilist)
             {
@@ -187,7 +201,7 @@ namespace Model.InstanceModel
             var ix = 0;
             foreach (var xbrlfact in XbrlFacts) 
             {
-                var xbrlcontext = this.ContextDictionary[xbrlfact.ContextRef];
+                var xbrlcontext = this.Contexts.Items[xbrlfact.ContextRef];
                 var logicalfact = new LogicalModel.InstanceFact();
                 logicalfact.IX = ix;
                 ix++;
@@ -211,12 +225,12 @@ namespace Model.InstanceModel
                 //var uri = Utilities.Xml.Namespaces[conceptns];
                 //var taxconcept = Taxonomy.Concepts.FirstOrDefault(i => i.Value.NamespaceURI == uri && i.Value.Name == logicalfact.Concept.Name);
                 //logicalfact.Concept = taxconcept.Value;
-                if (xbrlcontext.Scenario != null)
+                if (xbrlcontext.FactParts != null)
                 {
-                    var dimensions = xbrlcontext.Scenario.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
+                    var dimensions = xbrlcontext.FactParts.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
                     foreach (var dimension in dimensions)
                     {
-                        var dimitem = String.Format("{0},", dimension.DomainMemberFullName.Trim());
+                        var dimitem = String.Format("{0},", dimension);
            
                         var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());         
 
@@ -226,9 +240,6 @@ namespace Model.InstanceModel
                 }
                 logicalfact.SetFromString(factstring);
 
-                if (logicalfact.ContextID == "CT_560") 
-                {
-                }
                 //logicalfact.FactString = factstring;
                 logicalfact.FactKey = logicalfact.GetFactKey();
                 logicalfact.FactString = logicalfact.GetFactString();
@@ -248,7 +259,7 @@ namespace Model.InstanceModel
             var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));
             if (miconceptfact != null)
             {
-                var micontext = ContextDictionary[miconceptfact.ContextID];
+                var micontext = Contexts.Items[miconceptfact.ContextID];
                 var miunit = Units.FirstOrDefault(i => i.ID == miconceptfact.UnitID);
                 if (miunit != null)
                 {
@@ -257,9 +268,9 @@ namespace Model.InstanceModel
                     ReportingMonetaryUnit = taxunit;
                 }
             }
-            var firstcontext = Contexts.FirstOrDefault();
-            if (firstcontext != null)
+            if (Contexts.Items.Count>0)
             {
+                var firstcontext = Contexts.Items.Values.FirstOrDefault();
                 this.Entity = firstcontext.Entity;
                 this.ReportingDate = firstcontext.Period.Instant;
                 this.ReportingPeriod = firstcontext.Period;
@@ -369,7 +380,7 @@ namespace Model.InstanceModel
 
                 }
 
-                foreach (var context in Contexts)
+                foreach (var context in Contexts.Items.Values)
                 {
                     sb_xml.AppendLine(context.ToXmlString());
 
@@ -565,7 +576,7 @@ namespace Model.InstanceModel
 
         private Context GetContext(LogicalModel.InstanceFact fact) 
         {
-            var contextcount = this.Contexts.Count;
+            var contextcount = this.Contexts.Items.Count;
             var contextid = String.Format("CT_{0}", contextcount + 1);
 
             Context ct = null;

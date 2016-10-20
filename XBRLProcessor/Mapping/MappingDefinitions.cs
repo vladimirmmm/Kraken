@@ -298,7 +298,7 @@ namespace XBRLProcessor.Mapping
 
                  Mappings.Map<XbrlInstance>("<xbrli:xbrl>",
                     Mappings.PropertyMap("<link:schemaRef>", (XbrlInstance i) => i.SchemaRef),
-                    Mappings.PropertyMap("<*:context>", (XbrlInstance i) => i.Contexts),
+                    //Mappings.PropertyMap("<*:context>", (XbrlInstance i) => i.Contexts),
                     Mappings.PropertyMap("<*:unit>", (XbrlInstance i) => i.Units)
                  ),
                  //End Instance

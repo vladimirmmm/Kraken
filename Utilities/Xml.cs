@@ -26,7 +26,8 @@ namespace Utilities
             return doc.GetElementsByTagName("*").Cast<XmlNode>().ToList();
         }
 
-        public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
+        public static Dictionary<string, XmlNamespaceManager> NamespaceDictionary = new Dictionary<string, XmlNamespaceManager>();
+        //public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
         public static Dictionary<String, String> Namespaces = new Dictionary<String,String>();
 
         public static void ClearNamespaceCache() 
@@ -41,9 +42,9 @@ namespace Utilities
         {
             if (document != null)
             {
-                if (NamespaceDictionary.ContainsKey(document))
+                if (NamespaceDictionary.ContainsKey(document.BaseURI))
                 {
-                    NamespaceDictionary.Remove(document);
+                    NamespaceDictionary.Remove(document.BaseURI);
                 }
             }
         }
@@ -53,16 +54,16 @@ namespace Utilities
         {
             XmlNamespaceManager manager = null;
 
-            if (!NamespaceDictionary.ContainsKey(doc))
+            if (!NamespaceDictionary.ContainsKey(doc.BaseURI))
             {
                 lock (DictionaryLocker)
                 {
-                    if (!NamespaceDictionary.ContainsKey(doc))
+                    if (!NamespaceDictionary.ContainsKey(doc.BaseURI))
                     {
                         manager = new XmlNamespaceManager(doc.NameTable);
                         manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
                         //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
-                        var linkbasenode = doc.DocumentElement;
+                        //var linkbasenode = doc.DocumentElement;
                         var content = XmlToString(doc);
                         var nss = Utilities.Strings.TextsBetween(content, "xmlns:", "\" ");
                         foreach (var ns in nss) 
@@ -76,68 +77,63 @@ namespace Utilities
                                 Namespaces.Add(name, uri);
                             }
                         }
-                        string s = doc.DocumentElement.GetNamespaceOfPrefix("");
+                 
+                        //string s = doc.DocumentElement.GetNamespaceOfPrefix("");
+                        string s = doc.GetNamespaceOfPrefix("");
                         manager.AddNamespace("ns", s);
                         //manager.AsQueryable().
-                        NamespaceDictionary.Add(doc, manager);
+                        NamespaceDictionary.Add(doc.BaseURI, manager);
                     }
                 }
             }
             else
             {
-                manager = NamespaceDictionary[doc];
-            }
-            return manager;
-        }
-        public static XmlNamespaceManager GetTaxonomyNamespaceManagerx(XmlDocument doc)
-        {
-            XmlNamespaceManager manager = null;
-            
-            if (!NamespaceDictionary.ContainsKey(doc))
-            {
-                lock (DictionaryLocker)
-                {
-                    if (!NamespaceDictionary.ContainsKey(doc))
-                    {
-                        manager = new XmlNamespaceManager(doc.NameTable);
-                        manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
-                        //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
-                        var linkbasenode = doc.DocumentElement;
-
-                        //var namespaces = doc.SelectNodes("/*/namespace::*[name()='']");
-                        var hasnamespace = false;
-
-
-                        foreach (XmlAttribute attr in linkbasenode.Attributes)
-                        {
-                            if (attr.Prefix.ToLower() == "xmlns")
-                            {
-                                manager.AddNamespace(attr.LocalName, attr.Value);
-                                hasnamespace = true;
-                            }
-                        }
-                        if (!hasnamespace && linkbasenode.ChildNodes.Count>0)
-                        {
-                            foreach (XmlAttribute attr in linkbasenode.ChildNodes[0].Attributes)
-                            {
-                                if (attr.Prefix.ToLower() == "xmlns")
-                                {
-                                    manager.AddNamespace(attr.LocalName, attr.Value);
-                                    hasnamespace = true;
-                                }
-                            }
-                        }
-                        NamespaceDictionary.Add(doc, manager);
-                    }
-                }
-            }
-            else 
-            {
-                manager = NamespaceDictionary[doc];
+                manager = NamespaceDictionary[doc.BaseURI];
             }
             return manager;
         }
 
+        //public static XmlNamespaceManager GetTaxonomyNamespaceManager2(XmlDocument doc)
+        //{
+        //    XmlNamespaceManager manager = null;
+
+        //    if (!NamespaceDictionary.ContainsKey(doc))
+        //    {
+        //        lock (DictionaryLocker)
+        //        {
+        //            if (!NamespaceDictionary.ContainsKey(doc))
+        //            {
+        //                manager = new XmlNamespaceManager(doc.NameTable);
+        //                manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
+        //                //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
+        //                var linkbasenode = doc.DocumentElement;
+        //                var content = XmlToString(doc);
+        //                var nss = Utilities.Strings.TextsBetween(content, "xmlns:", "\" ");
+        //                foreach (var ns in nss)
+        //                {
+        //                    var parts = ns.Split(new string[] { "=", " ", "\"" }, StringSplitOptions.RemoveEmptyEntries);
+        //                    var name = parts[0].Trim();
+        //                    var uri = parts[1].Trim();
+        //                    manager.AddNamespace(name, uri);
+        //                    if (!Namespaces.ContainsKey(name))
+        //                    {
+        //                        Namespaces.Add(name, uri);
+        //                    }
+        //                }
+        //                string s = doc.DocumentElement.GetNamespaceOfPrefix("");
+        //                manager.AddNamespace("ns", s);
+        //                //manager.AsQueryable().
+        //                NamespaceDictionary.Add(doc, manager);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        manager = NamespaceDictionary[doc];
+        //    }
+        //    return manager;
+        //}
+     
         public static XmlDocument GetXmlDocumentFromString(string xml)
         {
             var doc = new XmlDocument();

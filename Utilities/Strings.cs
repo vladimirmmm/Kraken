@@ -301,11 +301,11 @@ namespace Utilities
             return result.ToArray();
         }
 
-        public static string TextBetween(String text, string begintag, string endtag)
+        public static string TextBetween(String text, string begintag, string endtag, int startindex=0)
         {
             if (!String.IsNullOrEmpty(text))
             {
-                int i1 = text.IndexOf(begintag, StringComparison.Ordinal);
+                int i1 = text.IndexOf(begintag, startindex, StringComparison.Ordinal);
                 if (i1 > -1)
                 {
                     i1 = i1 + begintag.Length;
@@ -323,11 +323,13 @@ namespace Utilities
         {
             List<string> StringList = new List<string>();
             string cs = "";
-            while (Text.Contains(BeginTag) & Text.Contains(EndTag))
+            var six = 0;
+            while (Text.IndexOf(BeginTag,six)>-1 & Text.IndexOf(EndTag,six)>-1)
             {
-                cs = TextBetween(Text, BeginTag, EndTag);
-                Text = RemoveString(Text, BeginTag + cs + EndTag);
+                cs = TextBetween(Text, BeginTag, EndTag, six);
+                //Text = RemoveString(Text, BeginTag + cs + EndTag);
                 StringList.Add(cs);
+                six = Text.IndexOf(BeginTag, six, StringComparison.Ordinal) + BeginTag.Length;
             }
             return StringList;
         }

@@ -11,6 +11,12 @@ using Utilities;
 
 namespace LogicalModel
 {
+    public class IstanceFactPart 
+    {
+        public int _ID = -1;
+        public int ID {get{return _ID;} set{_ID=value;}}
+        public String Member { get; set;}
+    }
     [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
     public class InstanceFact : FactBase //, IValueWithTreshold
     {
@@ -30,6 +36,8 @@ namespace LogicalModel
         [JsonProperty]
         public int IX { get { return _IX; } set { _IX = value; } }
 
+        private List<IstanceFactPart> _Parts = new List<IstanceFactPart>();
+        public List<IstanceFactPart> Parts { get { return _Parts; } set { _Parts=value; } }
 
         private List<String> _Cells = new List<string>();
         [JsonProperty]

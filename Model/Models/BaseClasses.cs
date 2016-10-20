@@ -1137,5 +1137,17 @@ namespace LogicalModel.Base
         }
     }
 
-
+    public class testy 
+    {
+        public void test ()
+        {
+            var s1 ="retek";
+            var s2 ="retek";
+            var l1 = new List<string>();
+            l1.Add(s1);
+            l1.Add(s2);
+            s1 = "xfg";
+            s2 = "ppf";
+        }
+    }
 }

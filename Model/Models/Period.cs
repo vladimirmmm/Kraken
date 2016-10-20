@@ -34,5 +34,13 @@ namespace LogicalModel
             }
             return sb.ToString();
         }
+
+        public string ID
+        {
+            get
+            {
+                return String.Format("{0}|{1}|{2}", String.Format("{0:yyyy-MM-dd}", StartDate), String.Format("{0:yyyy-MM-dd}", Instant), String.Format("{0:yyyy-MM-dd}", EndDate));
+            }
+        }
     }
 }
