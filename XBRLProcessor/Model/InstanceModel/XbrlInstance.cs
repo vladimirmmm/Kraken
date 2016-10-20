@@ -147,7 +147,7 @@ namespace Model.InstanceModel
         public void LoadComplex() 
         {
             var XbrlTaxonomy= (XBRLProcessor.Models.XbrlTaxonomy)this.Taxonomy;
-            Clear();
+            Clear(); 
             var allnodes = Utilities.Xml.AllNodes(XmlDocument);
             var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(XmlDocument);
             var dimensionnamespaces = this.Taxonomy.DimensionItems.Select(i => i.NamespaceURI).Distinct().ToList();
