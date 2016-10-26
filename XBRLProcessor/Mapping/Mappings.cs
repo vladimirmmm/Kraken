@@ -47,6 +47,7 @@ namespace XBRLProcessor.Mapping
         }
 
         public List<ClassMapping> MappingCollection = new List<ClassMapping>();
+        public Dictionary<string, ClassMapping> MappingDictionary = new Dictionary<string, ClassMapping>();
 
         public T Map<T>(XmlNode node, T target) where T : class
         {
@@ -166,15 +167,18 @@ namespace XBRLProcessor.Mapping
             { 
             }
 
-            nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == identifier);
+            //nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == identifier);
+            nodemapping = MappingDictionary.ContainsKey(identifier) ? MappingDictionary[identifier] : null;
             if (nodemapping == null)
             {
 
-                nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == localidentifier);
+                //nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == localidentifier);
+                nodemapping = MappingDictionary.ContainsKey(localidentifier) ? MappingDictionary[localidentifier] : null;
                 if (nodemapping == null)
                 {
-                    nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == namespaceinvariantidentifier);
-             
+                    //nodemapping = MappingCollection.FirstOrDefault(i => i.XmlSelector == namespaceinvariantidentifier);
+                    nodemapping = MappingDictionary.ContainsKey(namespaceinvariantidentifier) ? MappingDictionary[namespaceinvariantidentifier] : null;
+
                 }
             }
         
@@ -203,6 +207,7 @@ namespace XBRLProcessor.Mapping
     {
         public Type ClassType = null;
         public String XmlSelector = "";
+        public XPathContainer XPathContainer = new XPathContainer();
 
         protected XmlNamespaceManager manager = null;
         XmlDocument currentdoc = null;
@@ -290,12 +295,14 @@ namespace XBRLProcessor.Mapping
         public ClassMapping(string XmlSelector) 
         {
             this.XmlSelector = XmlSelector;
+            this.XPathContainer = Utilities.Xml.GetXPath(XmlSelector);
             this.ClassType = typeof(TClass);
         }
 
         public ClassMapping(string XmlSelector, List<PropertyMapping<TClass>> PropertyMappings)
         {
             this.XmlSelector = XmlSelector;
+            this.XPathContainer = Utilities.Xml.GetXPath(XmlSelector);
             this.ClassType = typeof(TClass);
             this.OwnPropertyMappings = PropertyMappings.Select(i => (PropertyMapping)i).ToList();
         }
@@ -356,6 +363,7 @@ namespace XBRLProcessor.Mapping
         public PropertyMapping(string XmlSelector, Expression<Func<TClass, PropertyType>> PropertyAccessor)
         {
             this.XmlSelector = XmlSelector;
+            this.XPathContainer = Utilities.Xml.GetXPath(XmlSelector);
             this.PropertyAccessor = PropertyAccessor;
             this.Getter = PropertyAccessor.Compile();
             this.Setter = GetSetter(PropertyAccessor);
@@ -411,22 +419,12 @@ namespace XBRLProcessor.Mapping
             Object value = null;
             var tagname = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
 
-            //if (XmlSelector.Contains("df:typedDimension"))
-            //{
-            //    var c = Utilities.Xml.SelectChildNodes(node, tagname).Count;
-            //    if (c > 0) 
-            //    {
 
-            //    }
-            //}
  
             if (!String.IsNullOrEmpty(tagname) && IsComplexType)
             {
-                if (tagname.Contains("context")) 
-                { 
-
-                }
-                foreach (XmlNode childnode in Utilities.Xml.SelectChildNodes(node,tagname))
+ 
+                foreach (XmlNode childnode in Utilities.Xml.SelectChildNodes(node,XPathContainer))
                 {
                     //var mapping = Mappings.CurrentMapping.GetMapping(childnode, null);
                     var mapping = Mappings.CurrentMapping.GetMapping(childnode, this.EnumerableType);
@@ -459,10 +457,11 @@ namespace XBRLProcessor.Mapping
                 if (!String.IsNullOrEmpty(tagname) && !IsComplexType)
                 {
                     //var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
-                    var childnode = Utilities.Xml.SelectChildNode(node, tagname);
+                    var childnode = Utilities.Xml.SelectChildNode(node, XPathContainer);
                     if (childnode == null && tagname.IndexOf(":")==-1)
                     {
-                        childnode = Utilities.Xml.SelectChildNode(node, String.Format("ns:{0}",tagname));
+                        var xpath =Utilities.Xml.GetXPath(String.Format("ns:{0}",tagname));
+                        childnode = Utilities.Xml.SelectChildNode(node, xpath);
                     }
                     if (childnode != null)
                     {

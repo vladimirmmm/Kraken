@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
+    [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
     public class Dimension
     {
         public Boolean IsTyped { get; set; }
@@ -13,8 +15,13 @@ namespace LogicalModel
         private String _Domain = "";
         private String _DomainMember = "";
 
-        public int MapID = -1;
-        public int DomMapID = -1;
+        private int _MapID = -1;
+        private int _DomMapID = -1;
+
+        [JsonProperty]
+        public int MapID { get { return _MapID; } set { _MapID = value; } }
+        [JsonIgnore]
+        public int DomMapID { get { return _DomMapID; } set { _DomMapID = value; } }
 
         public String DimensionItem
         {

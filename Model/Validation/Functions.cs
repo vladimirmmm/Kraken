@@ -113,7 +113,7 @@ namespace LogicalModel.Validation
       
         public Functions() 
         {
-
+   
 
         }
        

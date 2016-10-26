@@ -3,6 +3,10 @@
     export interface Dictionary<T> {
         [key: string]: T;
     }
+
+    //export interface Dictionary<TKey,TValue> {
+    //    [key: TKey]: TValue;
+    //}
     export interface KeyValuePair<K,V> {
         Key: K;
         Value: V;
@@ -712,6 +716,7 @@
         public ToDate: Date;
         public SchemaRef: string;
         public LocalPath: string;
+        public FactParts: Dictionary<number>;
 
     }
     export class TaxonomyProperties {

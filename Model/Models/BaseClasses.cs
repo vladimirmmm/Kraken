@@ -526,6 +526,7 @@ namespace LogicalModel.Base
                 SetFromString(value);
             }
         }
+        
         public static FactBase GetFactFrom(string factstring)
         {
             var fact = new FactBase();

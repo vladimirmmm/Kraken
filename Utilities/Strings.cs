@@ -324,7 +324,7 @@ namespace Utilities
             List<string> StringList = new List<string>();
             string cs = "";
             var six = 0;
-            while (Text.IndexOf(BeginTag,six)>-1 & Text.IndexOf(EndTag,six)>-1)
+            while (Text.IndexOf(BeginTag, six, StringComparison.Ordinal) > -1 & Text.IndexOf(EndTag, six, StringComparison.Ordinal) > -1)
             {
                 cs = TextBetween(Text, BeginTag, EndTag, six);
                 //Text = RemoveString(Text, BeginTag + cs + EndTag);
@@ -765,5 +765,19 @@ namespace Utilities
             return sb.ToString();
         }
 
+
+        public static string EnumerableToString<T>(List<T> items, string delimiter = ", ")
+        {
+            string rs = "";
+            for (int i = 0; i < items.Count; i++)
+            {
+                rs += delimiter + items[i];
+            }
+            if (rs.StartsWith(delimiter))
+            {
+                rs = rs.Substring(delimiter.Length);
+            }
+            return rs;
+        }
     }
 }

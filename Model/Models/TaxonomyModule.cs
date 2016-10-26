@@ -39,8 +39,13 @@ namespace LogicalModel
             get { return _GeneralProperties; }
             set { _GeneralProperties = value; }
         }
-  
 
+        private Dictionary<string, int> _FactParts = new Dictionary<string, int>();
+        public Dictionary<string, int> FactParts
+        {
+            get { return _FactParts; }
+            set { _FactParts = value; }
+        }
         private TaxonomySettings _UserSettings = new TaxonomySettings();
         public TaxonomySettings UserSettings
         {

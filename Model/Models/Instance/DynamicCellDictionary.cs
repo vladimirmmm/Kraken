@@ -31,12 +31,12 @@ namespace LogicalModel.Models
             set { _ColDictionary = value; }
         }
 
-        private Dictionary<string, string> _CellOfFact = new Dictionary<string, string>();
-        public Dictionary<string, string> CellOfFact
-        {
-            get { return _CellOfFact; }
-            set { _CellOfFact = value; }
-        }
+        //private Dictionary<string, string> _CellOfFact = new Dictionary<string, string>();
+        //public Dictionary<string, string> CellOfFact
+        //{
+        //    get { return _CellOfFact; }
+        //    set { _CellOfFact = value; }
+        //}
 
         private Hierarchy<LayoutItem> _Extensions = null;
         public Hierarchy<LayoutItem> Extensions
@@ -50,13 +50,14 @@ namespace LogicalModel.Models
 
         }
 
-        public Cell AddCells(Cell cell,FactBase fact, Table table) 
+        public Cell AddCells(Cell cell,InstanceFact fact, Table table) 
         {
             var dynamiccell=new Cell();
             dynamiccell.Report = cell.Report;
             dynamiccell.Extension = cell.Extension;
             dynamiccell.Row = cell.Row;
             dynamiccell.Column = cell.Column;
+
             if (cell.Extension == Literals.DynamicCode) 
             {
                 var ext = table.Extensions.Children.FirstOrDefault();
@@ -95,7 +96,8 @@ namespace LogicalModel.Models
             if (dynamiccell.CellID != cell.CellID)
             {
                 //var cellfactstring = fact.FactString;
-                if (CellOfFact.ContainsKey(fact.FactString))
+                //if (CellOfFact.ContainsKey(fact.FactString))
+                if (1 == 2)
                 {
                     //var existing = CellOfFact[fact.FactString];
 
@@ -107,67 +109,9 @@ namespace LogicalModel.Models
                 }
                 else
                 {
-                    CellOfFact.Add(fact.FactString, dynamiccell.CellID);
-                }
-            }
-            return dynamiccell;
-        }
-
-        public Cell AddCells_Old(Cell cell, FactBase fact, Table table)
-        {
-            var dynamiccell = new Cell();
-            dynamiccell.Report = cell.Report;
-            dynamiccell.Extension = cell.Extension;
-            dynamiccell.Row = cell.Row;
-            dynamiccell.Column = cell.Column;
-            if (cell.Extension == Literals.DynamicCode)
-            {
-                var ext = table.Extensions.Children.FirstOrDefault();
-                var typeddimensions = ext.Item.Dimensions.Where(i => i.IsTyped).ToList();
-                var axistypeddimensions = Dimension.GetDimensions(fact.Dimensions, typeddimensions);
-                var typedfactstring = GetTypedFactString(axistypeddimensions);
-
-                if (!ExtDictionary.ContainsKey(typedfactstring))
-                {
-                    var extnr = String.Format("{0}", ExtDictionary.Count + 1);
-                    ExtDictionary.Add(typedfactstring, extnr);
-                }
-                dynamiccell.Extension = ExtDictionary[typedfactstring];
-
-
-            }
-            if (string.IsNullOrEmpty(cell.Row))
-            {
-                // var cell = table.Rows
-
-                var row = table.Rows.FirstOrDefault(i => i.Item.LabelCode == cell.Row);
-                var typeddimensions = row.Item.Dimensions.Where(i => i.IsTyped).ToList();
-                var axistypeddimensions = Dimension.GetDimensions(fact.Dimensions, typeddimensions);
-                var typedfactstring = GetTypedFactString(axistypeddimensions);
-
-                if (!RowDictionary.ContainsKey(typedfactstring))
-                {
-                    var rownr = String.Format("{0}", RowDictionary.Count + 1);
-                    RowDictionary.Add(typedfactstring, rownr);
-                }
-                dynamiccell.Row = RowDictionary[typedfactstring];
-
-            }
-            if (dynamiccell.CellID != cell.CellID)
-            {
-                //var cellfactstring = fact.FactString;
-                if (CellOfFact.ContainsKey(fact.FactString))
-                {
-                    //var existing = CellOfFact[fact.FactString];
-
-                    var existingfacts = TaxonomyEngine.CurrentEngine.CurrentInstance.FactDictionary[fact.GetFactKey()];
-                    var existingfact = existingfacts.FirstOrDefault(i => i.FactString == fact.FactString);
-                    var msg = String.Format("Fact {0} already exist >> {1}!", fact, existingfact);
-                    Utilities.Logger.WriteLine(msg);
-                }
-                else
-                {
-                    CellOfFact.Add(fact.FactString, dynamiccell.CellID);
+                    //var item = this.Instance.FactDictionary[fact.FactIntkeys];
+                    fact.Cells.Add(dynamiccell.CellID);
+                    //CellOfFact.Add(fact.FactString, dynamiccell.CellID);
                 }
             }
             return dynamiccell;

@@ -14,6 +14,11 @@ namespace LogicalModel.Validation
     {
         public Dictionary<String, Func<List<ValidationParameter>, bool>> FunctionDictionary = new Dictionary<string, Func<List<ValidationParameter>, bool>>();
         public Functions functions = new Functions();
+
+        public void AddInstance(Instance instance) 
+        {
+            functions.Instance = instance;
+        }
     }
     public class ConceptValidationRule : SimpleValidationRule 
     {
@@ -472,6 +477,7 @@ namespace LogicalModel.Validation
                                     var inst_ix = instfact == null ? -1 : instfact.IX;
                                     p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
                                     var newfact = FactBase.GetFactFrom(newfactstring);
+
                                     if (Taxonomy.HasFact(fact))
                                     {
                                         var cellist = new List<string>();

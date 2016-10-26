@@ -105,7 +105,7 @@ namespace LogicalModel
 
         public override string ToString()
         {
-            return String.Format("{3} {0} - [{1}] {2} {4}", ID, Label == null ? LabelID : LabelCode, Label == null ? LabelID : LabelContent, Category.ToString("G"), FactString);
+            return String.Format("{3} {0} - [{1}] {2} {4}", ID, String.IsNullOrEmpty(LabelCode) ? LabelID : LabelCode, String.IsNullOrEmpty(LabelContent) ? LabelID : LabelContent, Category.ToString("G"), FactString);
         }
 
         private string _FactString = "";

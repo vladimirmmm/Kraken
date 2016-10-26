@@ -654,8 +654,27 @@ namespace LogicalModel
             }
             return result;
         }
-      
+        public int GetMapID(String part)
+        {
+            if (!this.FactParts.ContainsKey(part))
+            {
+                var msg = String.Format("Can't find FactPart {0}", part);
+                Utilities.Logger.WriteLine(msg);
+            }
+            return this.FactParts[part];
+        }
 
+        public void SetMapID(Dimension dimension)
+        {
+            dimension.MapID = GetMapID(dimension.DomainMemberFullName);
+            dimension.DomMapID = GetMapID(dimension.DimensionDomain);
+        }
+
+        public void SetMapID(Concept concept)
+        {
+            concept.MapID = GetMapID(concept.Content);
+        }
+        
         public string GetFactIntStringKey(string key) 
         {
             var parts = key.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
@@ -1077,6 +1096,8 @@ namespace LogicalModel
 
                 TableHandler.HandleTaxonomy(this);
 
+                Module.FactParts = this.FactParts;
+
                 var jsoncontent = Utilities.Converters.ToJson(Module);
 
                 PopulateValidationSets();
@@ -1350,6 +1371,7 @@ namespace LogicalModel
                     {
                         ValidationFunctionContainer vfc = (ValidationFunctionContainer)Activator.CreateInstance(type);
                         this.ValidationFunctionContainer = vfc;
+                        this.ValidationFunctionContainer.AddInstance(TaxonomyEngine.CurrentEngine.CurrentInstance);
                     }
                     else
                     {

@@ -3,8 +3,10 @@
         public Taxonomy: Model.Taxonomy = new Model.Taxonomy();
         public Table: UI.Table = new UI.Table();
         public ValidationRules: Model.ValidationRule[] = [];
-
+       
         public ConceptValues: Model.ConceptLookUp[] = [];
+        public FactParts: Model.Dictionary<number> = {};
+        public CounterFactParts: Model.Dictionary<string> = {};
 
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
         public CurrentFacts: Model.KeyValuePair<string, string[]>[] = [];
@@ -139,8 +141,15 @@
             me.Table.Taxonomy = me.Taxonomy;
             AjaxRequest("Taxonomy/Get", "get", "json", null, function (data) {
                 me.Taxonomy.Module = data;
-                BindX($("#TaxonomyInfo"), me.Taxonomy.Module)
-                BindX($("#TaxonomyGeneral"), me.Taxonomy.Module)
+                var m = me.Taxonomy.Module;
+                BindX($("#TaxonomyInfo"), m);
+                BindX($("#TaxonomyGeneral"), m);
+                GetProperties(me.FactParts).forEach(
+                    (item, ix) => {
+                        me.FactParts[item.Key] = item.Value;
+                        me.CounterFactParts[item.Value] = item.Key;
+                    });
+                m.FactParts = null;
             }, function (error) { console.log(error); });
 
             AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {

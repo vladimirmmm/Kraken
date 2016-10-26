@@ -9,7 +9,7 @@ namespace BaseModel
     public class Identifiable
     {
         private string _ID = "";
-        public string ID { get { return _ID; } set { _ID = value; } }
+        public virtual string ID { get { return _ID; } set { _ID = value; } }
 
     }
 }

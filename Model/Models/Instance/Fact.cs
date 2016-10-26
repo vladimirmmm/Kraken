@@ -3,6 +3,7 @@ using LogicalModel.Validation;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -17,15 +18,24 @@ namespace LogicalModel
         public int ID {get{return _ID;} set{_ID=value;}}
         public String Member { get; set;}
     }
-    [JsonObject(MemberSerialization=MemberSerialization.OptIn)]
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class InstanceFact : FactBase //, IValueWithTreshold
     {
 
         private String _FactKey = "";
-        [JsonProperty]
+        [JsonIgnore]
         public String FactKey { get { return _FactKey; } set { _FactKey = value; } }
+        
+        private string _FactStringX = null;
+        [JsonIgnore]
+        public override string FactString { get { return _FactStringX; } set { _FactStringX = value; } }
+
+        private string _FactIntkeys = "";
+        [JsonIgnore]
+        public string FactIntkeys { get { return _FactIntkeys; } set { _FactIntkeys = value; } }
 
         [JsonProperty]
+        [DefaultValue("")]
         public string Decimals { get; set; }
 
         private String _Value = "";
@@ -67,13 +77,13 @@ namespace LogicalModel
         [JsonProperty]
         public String ID { get; set; }
 
-        [JsonProperty]
-        public Period Period { get; set; }
+        //[JsonProperty]
+        //public Period Period { get; set; }
 
-        [JsonProperty]
-        public Entity Entity { get; set; }
-        [JsonIgnore]
-        public InstanceUnit Unit { get; set; }
+        //[JsonProperty]
+        //public Entity Entity { get; set; }
+        //[JsonIgnore]
+        //public InstanceUnit Unit { get; set; }
         [JsonProperty]
         public String UnitID { get; set; }
 

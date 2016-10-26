@@ -9,7 +9,7 @@ namespace LogicalModel.Validation
 {
     public partial class Functions
     {
-
+        public Instance Instance = null;
 
         public static decimal FactTreshold(InstanceFact fact) 
         {
@@ -159,27 +159,6 @@ namespace LogicalModel.Validation
             return v_a.DecimalValue >= v_b.DecimalValue - (v_a.Treshold + v_b.Treshold);
         }
 
-        //Tresholds
-        //public bool N_Equals_Treshold(decimal a, decimal b)
-        //{
-        //    return a == b;
-        //}
-        //public bool N_Less_Treshold(decimal a, decimal b)
-        //{
-        //    return a < b;
-        //}
-        //public bool N_LessEqual_Treshold(decimal a, decimal b)
-        //{
-        //    return a <= b;
-        //}
-        //public bool N_Greater_Treshold(decimal a, decimal b)
-        //{
-        //    return a > b;
-        //}
-        //public bool N_GreaterEqual_Treshold(decimal a, decimal b)
-        //{
-        //    return a >= b;
-        //}
 
         public ValueWithTreshold IAF_N_Subtract(Object a, Object b)
         {
@@ -236,24 +215,7 @@ namespace LogicalModel.Validation
             result.DecimalValue = result.DecimalValue;
             return result;
         }
-        //public decimal N_Unary_Plus(decimal a)
-        //{
-        //    return a;
-        //}
-        //public string XS_QName(String a)
-        //{
-        //    return a;
-        //}
 
-        //public bool not(bool a)
-        //{
-        //    return !a;
-        //}
-
-        //public bool empty(object a)
-        //{
-        //    return a == null;
-        //}
         public int Count(ValidationParameter a) 
         {
             return a.CurrentFacts.Count;
@@ -261,7 +223,10 @@ namespace LogicalModel.Validation
         public Period XFI_Period(ValidationParameter a)
         {
             var fact = a.CurrentFacts.FirstOrDefault();
-            return fact.Period;
+            var ct = Instance.Contexts.Items[fact.ContextID];
+
+            return Instance.Contexts.Periods[ct.PeriodID];
+            //return null;
         }
         public DateTime? XFI_Period_Instant(Period p) 
         {
@@ -270,8 +235,12 @@ namespace LogicalModel.Validation
         public Entity XFI_Entity(ValidationParameter a) 
         {
             var fact = a.CurrentFacts.FirstOrDefault();
+            var ct = Instance.Contexts.Items[fact.ContextID];
 
-            return fact.Entity;
+            return Instance.Contexts.Entitites[ct.EntityID];
+            //return fact.Entity;
+            //return null;
+
         }
         public string XFI_Entity_Identifier(Entity e) 
         {

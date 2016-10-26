@@ -30,6 +30,15 @@ namespace LogicalModel
             get { return _HtmlPath; }
             set { _HtmlPath = value; }
         }
+
+        private ContextContainer _Contexts = new ContextContainer();
+        [JsonProperty]
+        public ContextContainer Contexts
+        {
+            get { return _Contexts; }
+            set { _Contexts = value; }
+        }
+
         private List<InstanceUnit> _Units = new List<InstanceUnit>();
         [JsonProperty]
         public List<InstanceUnit> Units
@@ -77,6 +86,13 @@ namespace LogicalModel
             set { _DynamicReportCells = value; }
         }
 
+        private Dictionary<string, int> _FactParts = new Dictionary<string, int>();
+        [JsonProperty]
+        public Dictionary<string, int> FactParts { get { return _FactParts; } set { _FactParts = value; } }
+        
+        private Dictionary<int, List<int>> _TypedFactMembers = new Dictionary<int, List<int>>();
+        [JsonProperty]
+        public Dictionary<int, List<int>> TypedFactMembers { get { return _TypedFactMembers; } set { _TypedFactMembers = value; } }
 
         public void CreateHtml() 
         {
@@ -108,6 +124,43 @@ namespace LogicalModel
             }
             return -1;
         }
+        public int[] GetFactIntKey(List<string> instancefactparts) 
+        {
+            var result = new List<int>();
+            foreach (var part in instancefactparts) 
+            {
+                var id = GetPartID(part);
+                result.Add(id);
+            }
+            return result.ToArray();
+        }
+
+        public int[] GetFactIntKey(string instancefactpartsstr)
+        {
+            var result = new List<int>();
+            var instancefactparts = instancefactpartsstr.Split(new string[] { Literals.Coma }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var part in instancefactparts)
+            {
+                var id = GetPartID(part);
+                result.Add(id);
+            }
+            return result.ToArray();
+        }
+
+        public int GetPartID(string part) 
+        {
+            var id = this.Taxonomy.FactParts.ContainsKey(part) ?
+                    this.Taxonomy.FactParts[part] :
+                    this.FactParts.ContainsKey(part) ?
+                    this.FactParts[part] :
+                    -1;
+            if (id == -1) 
+            {
+
+            }
+            return id;
+        }
+
         public int[] GetFactKeyByIdString(string factstring) 
         {
             if (factstring.StartsWith("I:"))
@@ -392,7 +445,9 @@ namespace LogicalModel
                 if (this.Taxonomy.HasFact(fact.FactKey))
                 {
                     fact.Cells = this.Taxonomy.GetCellsOfFact(fact.FactKey);
-                    foreach (var cell in fact.Cells)
+                    var Cells = fact.Cells.ToList();
+                    fact.Cells.Clear();
+                    foreach (var cell in Cells)
                     {
                 
 
@@ -440,8 +495,15 @@ namespace LogicalModel
                 table.InstanceFactsCount = reportdict[key];
             }
         }
+        public string GetDynamicCellID(string cellID, FactBase fact)
+        {
+            var intkeys = this.GetFactIntKey(fact.FactString);
+            var intkeystr = Utilities.Strings.ArrayToString(intkeys);
+            var instfact = this.FactDictionary[intkeystr].FirstOrDefault();
+            return GetDynamicCellID(cellID, instfact);
 
-        public string GetDynamicCellID(string cellID, FactBase fact) 
+        }
+        public string GetDynamicCellID(string cellID, InstanceFact fact) 
         {
             var dynamiccellID = cellID;
 
@@ -455,17 +517,21 @@ namespace LogicalModel
                 var dynamicdata = DynamicReportCells[reportid];
                 if (dynamicdata != null)
                 {
-                    if (dynamicdata.CellOfFact.ContainsKey(fact.FactString))
+                    //if (dynamicdata.CellOfFact.ContainsKey(fact.FactString))
+                    //{
+                    //    var cellid = dynamicdata.CellOfFact[fact.FactString];
+                    //    cellobj.SetFromCellID(cellid);
+
+                    //}
+                    if (this.FactDictionary.ContainsKey(fact.FactIntkeys))
                     {
-                        var cellid = dynamicdata.CellOfFact[fact.FactString];
+                        var ifact = this.FactDictionary[fact.FactIntkeys].FirstOrDefault();
+                        var cells = ifact.Cells;
+                        var cellid = cells.FirstOrDefault();
                         cellobj.SetFromCellID(cellid);
 
                     }
-                    else 
-                    {
-                        //Logger.WriteLine("No Cell found for " + fact.FactString);
-
-                    }
+              
                 }
                 else 
                 {
@@ -544,5 +610,7 @@ namespace LogicalModel
             }
             SaveToJson();
         }
+
+
     }
 }

@@ -6,6 +6,8 @@ var Control;
             this.Table = new UI.Table();
             this.ValidationRules = [];
             this.ConceptValues = [];
+            this.FactParts = {};
+            this.CounterFactParts = {};
             this.TableStructure = null;
             this.CurrentFacts = [];
             this.CurrentValidationResults = [];
@@ -117,8 +119,14 @@ var Control;
             me.Table.Taxonomy = me.Taxonomy;
             AjaxRequest("Taxonomy/Get", "get", "json", null, function (data) {
                 me.Taxonomy.Module = data;
-                BindX($("#TaxonomyInfo"), me.Taxonomy.Module);
-                BindX($("#TaxonomyGeneral"), me.Taxonomy.Module);
+                var m = me.Taxonomy.Module;
+                BindX($("#TaxonomyInfo"), m);
+                BindX($("#TaxonomyGeneral"), m);
+                GetProperties(me.FactParts).forEach(function (item, ix) {
+                    me.FactParts[item.Key] = item.Value;
+                    me.CounterFactParts[item.Value] = item.Key;
+                });
+                m.FactParts = null;
             }, function (error) {
                 console.log(error);
             });

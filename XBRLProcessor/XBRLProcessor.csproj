@@ -55,7 +55,7 @@
     <Compile Include="Model\DefinitionModel\Formula\DimensionAspect.cs" />
     <Compile Include="Model\DefinitionModel\Hier.cs" />
     <Compile Include="Model\DefinitionModel\ValidationClasses.cs" />
-    <Compile Include="Model\InstanceModel\Context.cs" />
+    <Compile Include="Model\InstanceModel\XbrlContext.cs" />
     <Compile Include="Model\InstanceModel\XbrlFact.cs" />
     <Compile Include="Model\InstanceModel\FilingIndicator.cs" />
     <Compile Include="Model\InstanceModel\Scenario.cs" />

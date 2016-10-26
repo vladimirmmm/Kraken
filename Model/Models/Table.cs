@@ -200,7 +200,7 @@ namespace LogicalModel
             var children = item.Children.Where(i => i.Item.IsStructural).ToList();
             if (children.Count == 0)
             {
-                var rowspan = sublevelcount > 0 ? String.Format("rowspan=\"{0}\"", sublevelcount) : "";
+                var rowspan = sublevelcount > 0 ? String.Format("rowspan=\"{0}\"", sublevelcount+1) : "";
                 item.Item.RowSpan = rowspan;
             }
             foreach (var child in children) 
@@ -624,22 +624,15 @@ namespace LogicalModel
             {
                 if (item.Concept != null)
                 {
-                    if (!this.Taxonomy.FactParts.ContainsKey(item.Concept.Content))
-                    {
-                        var msg = String.Format("Cant find FactPart {0} at Table {1}!", item.Concept.Content, this.ID);
-                        Utilities.Logger.WriteLine(msg);
-                    }
-                    item.Concept.MapID = this.Taxonomy.FactParts[item.Concept.Content];
+                    //item.Concept.MapID = this.Taxonomy.FactParts[item.Concept.Content];
+                    this.Taxonomy.SetMapID(item.Concept);
                 }
                 foreach (var dimension in item.Dimensions) 
                 {
-                    if (!this.Taxonomy.FactParts.ContainsKey(dimension.DomainMemberFullName))
-                    {
-                        var msg = String.Format("Cant find FactPart {0} at Table {1}!", dimension.DomainMemberFullName, this.ID);
-                        Utilities.Logger.WriteLine(msg);
-                    }
-                    dimension.MapID = this.Taxonomy.FactParts[dimension.DomainMemberFullName];
-                    dimension.DomMapID = this.Taxonomy.FactParts[dimension.DimensionDomain];
+               
+                    this.Taxonomy.SetMapID(dimension);
+                    //dimension.MapID = this.Taxonomy.FactParts[dimension.DomainMemberFullName];
+                    //dimension.DomMapID = this.Taxonomy.FactParts[dimension.DimensionDomain];
                 }
             }
         }
@@ -678,6 +671,7 @@ namespace LogicalModel
             TableHelpers.ProjectNodes(columnsnode);
             TableHelpers.ProjectNodes(extensionnode);
 
+            columnsnode.SetParents();
             sbe.AppendLine(TableHelpers.GetStateOfNodes(LayoutRoot, "Step 3"));
             //fix here
             FixLayoutItem(columnsnode,null);
@@ -910,17 +904,17 @@ namespace LogicalModel
             sbe.AppendLine("Extenstions");
             foreach (var item in Extensions.Children) 
             {
-                sbe.AppendLine("    " + item.Item.GetFactString());
+                sbe.AppendLine("    " + item.Item.ToString());
             }
             sbe.AppendLine("Rows");
             foreach (var item in Rows)
             {
-                sbe.AppendLine("    " + item.Item.GetFactString());
+                sbe.AppendLine("    " + item.Item.ToString());
             }
             sbe.AppendLine("Columns");
             foreach (var item in Columns)
             {
-                sbe.AppendLine("    " + item.Item.GetFactString());
+                sbe.AppendLine("    " + item.Item.ToString());
             }
             if (!String.IsNullOrEmpty(firstunmappedfact)) 
             {
@@ -933,6 +927,9 @@ namespace LogicalModel
             FactsOfParts.Clear();
             FactList.Clear();
             FactindexList.Clear();
+
+            System.IO.File.WriteAllText(LayoutPath.Replace(".txt",".sbe.dat"), sbe.ToString());
+
 
             CreateHtmlLayout();
             this.LayoutRoot = lr;
@@ -1015,7 +1012,7 @@ namespace LogicalModel
                 sb.AppendLine("<tr>");
                 if (lvl.Key == 0)
                 {
-                    sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", rowlevelnr + 1, collevelnr+1, rowsnode.Item.LabelContent));
+                    sb.AppendLine(String.Format("<th id=\"Extension\" colspan=\"{0}\" rowspan=\"{1}\">{2}</th>", rowlevelnr + 1, collevelnr + 1, rowsnode.Item.LabelContent));
 
                 }
       

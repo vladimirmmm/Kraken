@@ -59,6 +59,7 @@
     <Compile Include="Models\FactKeyManager.cs" />
     <Compile Include="Models\IFactDictionary.cs" />
     <Compile Include="Models\Indexes.cs" />
+    <Compile Include="Models\Instance\Context.cs" />
     <Compile Include="Models\Instance\DynamicCellDictionary.cs" />
     <Compile Include="Models\Instance\Fact.cs">
       <SubType>Code</SubType>
