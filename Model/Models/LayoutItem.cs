@@ -100,7 +100,7 @@ namespace LogicalModel
 
         private List<Dimension> _Dimensions = new List<Dimension>();
         public List<Dimension> Dimensions { get { return _Dimensions; } set { _Dimensions = value; } }
-        
+         
         public Concept Concept { get; set; }
 
         public override string ToString()
