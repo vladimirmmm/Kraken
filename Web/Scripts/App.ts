@@ -134,6 +134,7 @@ module Applications
 
 
         }
+
         public ShowAbout(lid: string) {
             var me = this;
             var aboutcontainer = _SelectFirst("#AppAbout");
@@ -147,6 +148,7 @@ module Applications
 
             },null);
         }
+
         public CloseWindow(element: Element)
         {
             var control = _Parent(element, ".window");
@@ -262,9 +264,11 @@ module Applications
         public Load()
         {
             var me = this;
-         
+            me.taxonomycontainer.Table.GetFactFor = (a, b) => { return me.instancecontainer.GetFactFor(a, b); };
             me.taxonomycontainer.SetExternals();
-            me.instancecontainer.SetExternals();
+            me.taxonomycontainer.OnLoaded = () => {
+                me.instancecontainer.SetExternals();
+            }
         }
     }
 } 

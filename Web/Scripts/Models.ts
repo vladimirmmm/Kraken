@@ -578,24 +578,15 @@
         public TaxonomyModuleReference: string;
         public FullPath: string;
         public FactDictionary: Dictionary<InstanceFact[]> = null;
+  
+        public FactParts: Model.Dictionary<number> = {};
+        public CounterFactParts: Model.Dictionary<string> = {};
+
         public FactIDDictionary: Dictionary<InstanceFact> = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
         public DynamicReportCells: Dictionary<DynamicCellDictionary> = {};
 
-        public static GetFactFor(me:Instance, cellfact: FactBase, cellid: string): InstanceFact
-        {
-            var facts: InstanceFact[] = [];
-            var fact: InstanceFact = null;
-            var factkey = FactBase.GetFactKey(cellfact);
-            var factstring = cellfact.FactString;
-            if (factkey in me.FactDictionary) {
-                facts = me.FactDictionary[factkey];
-                if (facts.length > 0) {
-                    fact = facts.AsLinq<InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
-                }
-            } 
-            return fact;
-        }
+       
 
         public static SaveFact(instance:Instance, fact: InstanceFact) {
             var me = this;
@@ -701,6 +692,9 @@
         public Facts: Dictionary<string[]> = {};
         public FactList: General.KeyValue[] = [];
         public Module: TaxonomyModule = null;
+
+        public FactParts: Model.Dictionary<number> = {};
+        public CounterFactParts: Model.Dictionary<string> = {};
 
         public Concepts: Model.Concept[] = [];
         public Hierarchies: Model.Hierarchy<Model.QualifiedItem> = null;

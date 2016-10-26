@@ -583,23 +583,12 @@ var Model;
             this.Units = [];
             this.FilingIndicators = [];
             this.FactDictionary = null;
+            this.FactParts = {};
+            this.CounterFactParts = {};
             this.FactIDDictionary = null;
             this.DynamicCellDictionary = {};
             this.DynamicReportCells = {};
         }
-        Instance.GetFactFor = function (me, cellfact, cellid) {
-            var facts = [];
-            var fact = null;
-            var factkey = FactBase.GetFactKey(cellfact);
-            var factstring = cellfact.FactString;
-            if (factkey in me.FactDictionary) {
-                facts = me.FactDictionary[factkey];
-                if (facts.length > 0) {
-                    fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
-                }
-            }
-            return fact;
-        };
         Instance.SaveFact = function (instance, fact) {
             var me = this;
             var existingfact = null;
@@ -691,6 +680,8 @@ var Model;
             this.Facts = {};
             this.FactList = [];
             this.Module = null;
+            this.FactParts = {};
+            this.CounterFactParts = {};
             this.Concepts = [];
             this.Hierarchies = null;
             this.TaxonomyDocuments = [];

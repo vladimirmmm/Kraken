@@ -6,8 +6,6 @@ var Control;
             this.Table = new UI.Table();
             this.ValidationRules = [];
             this.ConceptValues = [];
-            this.FactParts = {};
-            this.CounterFactParts = {};
             this.TableStructure = null;
             this.CurrentFacts = [];
             this.CurrentValidationResults = [];
@@ -37,6 +35,8 @@ var Control;
             this.ui_vruledetail = null;
             this.FactServiceFunction = null;
             this.ValidationResultServiceFunction = null;
+            this.OnLoaded = function () {
+            };
             this.s_concept_selector = "#" + this.s_concept_id;
             this.s_hierarchy_selector = "#" + this.s_hierarchy_id;
             this.s_fact_selector = "#" + this.s_fact_id;
@@ -122,11 +122,12 @@ var Control;
                 var m = me.Taxonomy.Module;
                 BindX($("#TaxonomyInfo"), m);
                 BindX($("#TaxonomyGeneral"), m);
-                GetProperties(me.FactParts).forEach(function (item, ix) {
-                    me.FactParts[item.Key] = item.Value;
-                    me.CounterFactParts[item.Value] = item.Key;
+                GetProperties(m.FactParts).forEach(function (item, ix) {
+                    me.Taxonomy.FactParts[item.Key] = item.Value;
+                    me.Taxonomy.CounterFactParts[item.Value] = item.Key;
                 });
                 m.FactParts = null;
+                me.OnLoaded();
             }, function (error) {
                 console.log(error);
             });

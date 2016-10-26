@@ -27,6 +27,7 @@ var UI;
             this.Current_ReportID = "";
             this.IsInstanceLoaded = false;
             this.changes = {};
+            this.GetFactFor = function (a, b) { return null; };
         }
         Table.prototype.LoadTable = function (reportid) {
             var me = this;
@@ -185,7 +186,7 @@ var UI;
                     Model.FactBase.Merge(cellfb, me.CurrentExtension, true);
                     factstring = cellfb.GetFactString();
                     if (!IsNull(factstring)) {
-                        var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell_layoutid);
+                        var fact = me.GetFactFor(cellfb, cell_layoutid);
                         if (!IsNull(fact)) {
                             _Html(cellelement, fact.Value);
                             c++;

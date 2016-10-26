@@ -5,8 +5,7 @@
         public ValidationRules: Model.ValidationRule[] = [];
        
         public ConceptValues: Model.ConceptLookUp[] = [];
-        public FactParts: Model.Dictionary<number> = {};
-        public CounterFactParts: Model.Dictionary<string> = {};
+
 
         public TableStructure: Model.Hierarchy<Model.TableInfo> = null;
         public CurrentFacts: Model.KeyValuePair<string, string[]>[] = [];
@@ -134,7 +133,7 @@
 
             return _SelectFirst(selector, me.Sel(me.s_validation_selector));
         }
-
+        public OnLoaded = ()=> {};
         public SetExternals() {
             var me = this;
             me.SetHeight();
@@ -144,12 +143,13 @@
                 var m = me.Taxonomy.Module;
                 BindX($("#TaxonomyInfo"), m);
                 BindX($("#TaxonomyGeneral"), m);
-                GetProperties(me.FactParts).forEach(
+                GetProperties(m.FactParts).forEach(
                     (item, ix) => {
-                        me.FactParts[item.Key] = item.Value;
-                        me.CounterFactParts[item.Value] = item.Key;
+                        me.Taxonomy.FactParts[item.Key] = item.Value;
+                        me.Taxonomy.CounterFactParts[item.Value] = item.Key;
                     });
                 m.FactParts = null;
+                me.OnLoaded();
             }, function (error) { console.log(error); });
 
             AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {

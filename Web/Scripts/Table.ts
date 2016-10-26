@@ -214,6 +214,7 @@ module UI {
             
             _Attribute(extensionscell,"title", li.FactString);
         }
+        public GetFactFor = (a, b) => null;
 
         public LoadInstance(instance: Model.Instance) {
             var me = this;
@@ -250,7 +251,8 @@ module UI {
                     factstring = cellfb.GetFactString();
           
                     if (!IsNull(factstring)) {
-                        var fact = Model.Instance.GetFactFor(me.Instance, cellfb, cell_layoutid);
+                      
+                        var fact = me.GetFactFor(cellfb, cell_layoutid);
                         if (!IsNull(fact))
                         {
                             _Html(cellelement, fact.Value);

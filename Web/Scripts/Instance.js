@@ -92,6 +92,74 @@ var Control;
                 console.log(error);
             });
         };
+        InstanceContainer.prototype.GetFactKeyFromFactString = function (factstring) {
+            var me = this;
+            var result = [];
+            var parts = factstring.split(',');
+            parts.forEach(function (part) {
+                var val = me.GetFactPartKeyFromString(part);
+                if (!IsNull(val)) {
+                    result.push(val);
+                }
+            });
+            return result;
+        };
+        InstanceContainer.prototype.GetFactKeyFromFact = function (fact) {
+            var me = this;
+            var result = [];
+            result.push(me.GetFactPartKeyFromString(fact.Concept.Content));
+            fact.Dimensions.forEach(function (dimension) {
+                result.push(me.GetFactPartKeyFromString(dimension.DomainMember));
+            });
+            return result;
+        };
+        InstanceContainer.prototype.GetFactKeyFromString = function (parts) {
+            var me = this;
+            var result = [];
+            parts.forEach(function (part) {
+                result.push(me.GetFactPartKeyFromString(part));
+            });
+            return result;
+        };
+        InstanceContainer.prototype.GetFactStringFromKey = function (parts) {
+            var me = this;
+            var result = [];
+            parts.forEach(function (part) {
+                result.push(me.GetFactPartFromKey(part));
+            });
+            return result;
+        };
+        InstanceContainer.prototype.GetFactPartKeyFromString = function (part) {
+            var me = this;
+            var strpart = me.Taxonomy.FactParts[part];
+            if (IsNull(strpart)) {
+                strpart = me.Instance.FactParts[part];
+            }
+            return strpart;
+        };
+        InstanceContainer.prototype.GetFactPartFromKey = function (part) {
+            var me = this;
+            var strpart = me.Taxonomy.CounterFactParts[part];
+            if (IsNull(strpart)) {
+                strpart = me.Instance.CounterFactParts[part];
+            }
+            return strpart;
+        };
+        InstanceContainer.prototype.GetFactFor = function (cellfact, cellid) {
+            var me = this;
+            var facts = [];
+            var fact = null;
+            var factintkey = me.GetFactKeyFromFactString(cellfact.FactString).join();
+            var factkey = Model.FactBase.GetFactKey(cellfact);
+            var factstring = cellfact.FactString;
+            if (factintkey in me.Instance.FactDictionary) {
+                facts = me.Instance.FactDictionary[factintkey];
+                if (facts.length > 0) {
+                    fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
+                }
+            }
+            return fact;
+        };
         InstanceContainer.prototype.LoadToUI = function () {
             var me = this;
             //me.Sel(s_detail_selector).hide();
@@ -104,17 +172,27 @@ var Control;
             if (IsNull(this.Instance.Facts)) {
                 this.Instance.Facts = [];
             }
+            me.Instance.CounterFactParts = {};
+            GetProperties(me.Instance.FactParts).forEach(function (item, ix) {
+                me.Instance.CounterFactParts[item.Value] = item.Key;
+            });
             for (var key in dict) {
                 if (dict.hasOwnProperty(key)) {
                     var factlist = dict[key];
                     for (var i = 0; i < factlist.length; i++) {
                         var fact = factlist[i];
-                        var parts = fact.FactString.split(',');
-                        if (parts.length > 0) {
-                            var conceptstring = parts[0].indexOf("[") == -1 ? parts[0] : "";
-                            fact.Concept = new Model.Concept();
-                            fact.Concept.FullName = conceptstring;
-                        }
+                        fact.FactString = "";
+                        var parts = key.split(',');
+                        parts.forEach(function (part, ix) {
+                            var strpart = me.GetFactPartFromKey(part);
+                            if (ix == 0) {
+                                var conceptstring = strpart.indexOf("[") == -1 ? strpart : "";
+                                fact.Concept = new Model.Concept();
+                                fact.Concept.FullName = conceptstring;
+                            }
+                            fact.FactString += strpart + ",";
+                        });
+                        fact.FactKey = key;
                         this.Instance.Facts.push(fact);
                     }
                 }
