@@ -501,7 +501,7 @@ var Control;
             tmpfact.FactString = factstring;
             Model.FactBase.LoadFromFactString(tmpfact);
             var factkey = Model.FactBase.GetFactKey(tmpfact);
-            var facts = app.instancecontainer.Instance.FactDictionary[factkey];
+            var facts = app.instancecontainer.Instance.FactDictionary.GetFactsByStringKey(factkey);
             if (!IsNull(facts) && facts.length > 0) {
                 var fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
                 if (IsNull(fact)) {

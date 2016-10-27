@@ -58,9 +58,10 @@ namespace LogicalModel
 
         public List<ValidationRuleResult> ValidationRuleResults = new List<ValidationRuleResult>();
 
-        private Dictionary<string, List<InstanceFact>> _FactDictionary = new Dictionary<string, List<InstanceFact>>();
+        private InstanceFactDictionary _FactDictionary = new InstanceFactDictionary();
         [JsonProperty]
-        public Dictionary<string, List<InstanceFact>> FactDictionary { get { return _FactDictionary; } set { _FactDictionary = value; } }
+        [JsonConverter(typeof(InstanceDictionaryConverter))]
+        public InstanceFactDictionary FactDictionary { get { return _FactDictionary; } set { _FactDictionary = value; } }
 
         private List<FilingIndicator> _FilingIndicators = new List<FilingIndicator>();
         [JsonProperty]
@@ -89,7 +90,10 @@ namespace LogicalModel
         private Dictionary<string, int> _FactParts = new Dictionary<string, int>();
         [JsonProperty]
         public Dictionary<string, int> FactParts { get { return _FactParts; } set { _FactParts = value; } }
-        
+
+        protected Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
+
+
         private Dictionary<int, List<int>> _TypedFactMembers = new Dictionary<int, List<int>>();
         [JsonProperty]
         public Dictionary<int, List<int>> TypedFactMembers { get { return _TypedFactMembers; } set { _TypedFactMembers = value; } }
@@ -105,16 +109,42 @@ namespace LogicalModel
             Utilities.FS.WriteAllText(HtmlPath, htmlbuilder.ToString());
         }
 
-        public List<InstanceFact> GetFacts(string key) 
+        public List<InstanceFact> GetFactsByTaxKey(string stringkey) 
         {
             var facts = new List<InstanceFact>();
-            if (this.FactDictionary.ContainsKey(key)) 
+            var intkey = Taxonomy.GetFactIntKey(stringkey).ToArray();
+            return GetFactsByTaxKey(intkey);
+    
+        }
+
+        public List<InstanceFact> GetFactsByTaxKey(int[] key)
+        {
+            var facts = new List<InstanceFact>();
+            if (this.FactDictionary.FactsByTaxonomyKey.ContainsKey(key))
             {
-                facts.AddRange(FactDictionary[key]);
+                var indexes = this.FactDictionary.FactsByTaxonomyKey[key];
+                facts.AddRange(indexes.Select(i => this.FactDictionary.FactsByIndex[i]));
             }
             return facts;
         }
+        public List<InstanceFact> GetFactsByInstKey(string stringkey)
+        {
+            var facts = new List<InstanceFact>();
+            var intkey = Taxonomy.GetFactIntKey(stringkey).ToArray();
+            return GetFactsByInstKey(intkey);
 
+        }
+
+        public List<InstanceFact> GetFactsByInstKey(int[] key)
+        {
+            var facts = new List<InstanceFact>();
+            if (this.FactDictionary.FactsByInstanceKey.ContainsKey(key))
+            {
+                var ix = this.FactDictionary.FactsByInstanceKey[key];
+                facts.Add(this.FactDictionary.FactsByIndex[ix]);
+            }
+            return facts;
+        }
         public int GetFactIndex(string factstring) 
         {
             var fact = this.Facts.FirstOrDefault(i => i.FactString == factstring);
@@ -160,6 +190,19 @@ namespace LogicalModel
             }
             return id;
         }
+        public string GetPartString(int part)
+        {
+            var id = this.Taxonomy.CounterFactParts.ContainsKey(part) ?
+                    this.Taxonomy.CounterFactParts[part] :
+                    this.CounterFactParts.ContainsKey(part) ?
+                    this.CounterFactParts[part] :
+                    "";
+            if (id == "")
+            {
+
+            }
+            return id;
+        }
 
         public int[] GetFactKeyByIdString(string factstring) 
         {
@@ -196,12 +239,13 @@ namespace LogicalModel
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
                 var key = Taxonomy.FactsManager.GetFactKey(id);
                 var stringkey = Taxonomy.GetFactStringKey(key);
-                if (FactDictionary.ContainsKey(stringkey))
+                if (FactDictionary.FactsByTaxonomyKey.ContainsKey(key))
                 {
-                    var facts = FactDictionary[stringkey];
+                    var facts = FactDictionary.FactsByTaxonomyKey[key];
                     if (facts.Count == 1)
                     {
-                        return facts.FirstOrDefault();
+                        var ix = facts.FirstOrDefault();
+                        return FactDictionary.FactsByIndex[ix];
                     }
                 }
 
@@ -222,7 +266,7 @@ namespace LogicalModel
             if (factstring.StartsWith("T:"))
             {
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
-                if (Taxonomy.FactsManager.Count < id)
+                if (Taxonomy.FactsManager.Count > id)
                 {
                     var fact = new FactBase();
                     var key = Taxonomy.FactsManager.GetFactKey(id);
@@ -278,9 +322,9 @@ namespace LogicalModel
                 {
 
                 }
-                if (this.Taxonomy.HasFact(fact.FactKey))
+                if (this.Taxonomy.HasFact(fact.TaxonomyKey))
                 {
-                    var cellvalues = this.Taxonomy.GetCellsOfFact(fact.FactKey);
+                    var cellvalues = this.Taxonomy.GetCellsOfFact(fact.TaxonomyKey);
                     var cells ="";
                     foreach(var cellvalue in cellvalues)
                     {
@@ -442,9 +486,9 @@ namespace LogicalModel
             var reportdict = new Dictionary<string, int>();
             foreach (var fact in this.Facts)
             {
-                if (this.Taxonomy.HasFact(fact.FactKey))
+                if (this.Taxonomy.HasFact(fact.TaxonomyKey))
                 {
-                    fact.Cells = this.Taxonomy.GetCellsOfFact(fact.FactKey);
+                    fact.Cells = this.Taxonomy.GetCellsOfFact(fact.TaxonomyKey);
                     var Cells = fact.Cells.ToList();
                     fact.Cells.Clear();
                     foreach (var cell in Cells)
@@ -456,7 +500,7 @@ namespace LogicalModel
 
                         if (!DynamicReportCells.ContainsKey(cellobj.Report)) 
                         {
-                            DynamicReportCells.Add(cellobj.Report, new DynamicCellDictionary());
+                            DynamicReportCells.Add(cellobj.Report, new DynamicCellDictionary(this));
                         }
                         var dynamiccellsofreport = DynamicReportCells[cellobj.Report];
                         var table = Taxonomy.Tables.FirstOrDefault(i=>i.ID==cellobj.Report);
@@ -495,13 +539,44 @@ namespace LogicalModel
                 table.InstanceFactsCount = reportdict[key];
             }
         }
+
+        public List<int> GetTypedPartDomainIds(InstanceFact fact) 
+        {
+            var result = new List<int>();
+            for (int i = 0; i < fact.TaxonomyKey.Length; i++) 
+            {
+                if (TypedFactMembers.ContainsKey(fact.TaxonomyKey[i])) 
+                {
+                    result.Add(fact.TaxonomyKey[i]);
+                }
+            }
+            return result;
+        }
+        public List<int> GetTypedPartIds(InstanceFact fact)
+        {
+            var result = new List<int>();
+            for (int i = 0; i < fact.TaxonomyKey.Length; i++)
+            {
+                if (TypedFactMembers.ContainsKey(fact.TaxonomyKey[i]))
+                {
+                    result.Add(fact.InstanceKey[i]);
+                }
+            }
+            return result;
+        }
         public string GetDynamicCellID(string cellID, FactBase fact)
         {
             var intkeys = this.GetFactIntKey(fact.FactString);
-            var intkeystr = Utilities.Strings.ArrayToString(intkeys);
-            var instfact = this.FactDictionary[intkeystr].FirstOrDefault();
-            return GetDynamicCellID(cellID, instfact);
-
+            if (this.FactDictionary.FactsByInstanceKey.ContainsKey(intkeys))
+            {
+                var ix = this.FactDictionary.FactsByInstanceKey[intkeys];
+                var instfact = this.FactDictionary.FactsByIndex[ix];
+                return GetDynamicCellID(cellID, instfact);
+            }
+            else 
+            {
+            }
+            return cellID;
         }
         public string GetDynamicCellID(string cellID, InstanceFact fact) 
         {
@@ -523,9 +598,10 @@ namespace LogicalModel
                     //    cellobj.SetFromCellID(cellid);
 
                     //}
-                    if (this.FactDictionary.ContainsKey(fact.FactIntkeys))
+                    if (this.FactDictionary.FactsByInstanceKey.ContainsKey(fact.InstanceKey))
                     {
-                        var ifact = this.FactDictionary[fact.FactIntkeys].FirstOrDefault();
+                        var ifactix = this.FactDictionary.FactsByInstanceKey[fact.InstanceKey];
+                        var ifact = this.FactDictionary.FactsByIndex[ifactix];
                         var cells = ifact.Cells;
                         var cellid = cells.FirstOrDefault();
                         cellobj.SetFromCellID(cellid);
@@ -584,22 +660,15 @@ namespace LogicalModel
             {
                 fact.SetFromString(fact.FactString);
                 InstanceFact factitem = null;
-                if (FactDictionary.ContainsKey(fact.FactKey))
+                var intkeys = this.GetFactIntKey(fact.FactString);
+                if (FactDictionary.FactsByInstanceKey.ContainsKey(intkeys))
                 {
-                    var factsforkey = FactDictionary[fact.FactKey];
+                    var factsforkey = FactDictionary.FactsByInstanceKey[intkeys];
 
-                    if (factsforkey.Count == 1)
-                    {
-                        factitem = factsforkey.FirstOrDefault();
-                    }
-                    if (factsforkey.Count > 1)
-                    {
-                        factitem = factsforkey.FirstOrDefault(i => i.FactString == fact.FactString);
-                    }
                 }
                 if (factitem == null)
                 {
-                    FactDictionary.Add(fact.FactKey, new List<InstanceFact>() { fact });
+                    FactDictionary.AddFact(fact);
                     Facts.Add(fact);
                     factitem = fact;
                 }
@@ -612,5 +681,16 @@ namespace LogicalModel
         }
 
 
+
+        public string GetFactStringKey(int[] key)
+        {
+            var sb = new StringBuilder();
+            foreach (var part in key) 
+            {
+                sb.Append(this.GetPartString(part));
+                sb.Append(",");
+            }
+            return sb.ToString();
+        }
     }
 }

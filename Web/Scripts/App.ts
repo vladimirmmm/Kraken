@@ -268,6 +268,7 @@ module Applications
             me.taxonomycontainer.SetExternals();
             me.taxonomycontainer.OnLoaded = () => {
                 me.instancecontainer.SetExternals();
+
             }
         }
     }

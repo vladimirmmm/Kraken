@@ -86,11 +86,22 @@ var Control;
             var me = this;
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
+                var instdata = data;
+                var ifd = new Model.InstanceFactDictionary();
+                ifd.FactsByIndex = instdata.FactDictionary.FactsByIndex;
+                ifd.FactsByInstanceKey = instdata.FactDictionary.FactsByInstanceKey;
+                ifd.FactsByTaxonomyKey = instdata.FactDictionary.FactsByTaxonomyKey;
+                ifd.GetIntKey = function (s) { return me.GetFactKeyStringFromFactString(s); };
+                me.Instance.FactDictionary = ifd;
                 me.LoadToUI();
                 CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
             });
+        };
+        InstanceContainer.prototype.GetFactKeyStringFromFactString = function (factstring) {
+            var keys = this.GetFactKeyFromFactString(factstring);
+            return keys.join();
         };
         InstanceContainer.prototype.GetFactKeyFromFactString = function (factstring) {
             var me = this;
@@ -152,8 +163,8 @@ var Control;
             var factintkey = me.GetFactKeyFromFactString(cellfact.FactString).join();
             var factkey = Model.FactBase.GetFactKey(cellfact);
             var factstring = cellfact.FactString;
-            if (factintkey in me.Instance.FactDictionary) {
-                facts = me.Instance.FactDictionary[factintkey];
+            if (me.Instance.FactDictionary.ContainsKey(factintkey)) {
+                facts = me.Instance.FactDictionary.GetFacts(factintkey);
                 if (facts.length > 0) {
                     fact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
                 }
@@ -168,9 +179,9 @@ var Control;
             me.LoadContentToUIX(me.s_fact_id, null);
             //ShowContentByID("#TaxonomyContainer");
             var facts = [];
-            var dict = this.Instance.FactDictionary;
-            if (IsNull(this.Instance.Facts)) {
-                this.Instance.Facts = [];
+            var dict = me.Instance.FactDictionary.FactsByInstanceKey;
+            if (IsNull(me.Instance.Facts)) {
+                me.Instance.Facts = [];
             }
             me.Instance.CounterFactParts = {};
             GetProperties(me.Instance.FactParts).forEach(function (item, ix) {
@@ -178,7 +189,7 @@ var Control;
             });
             for (var key in dict) {
                 if (dict.hasOwnProperty(key)) {
-                    var factlist = dict[key];
+                    var factlist = me.Instance.FactDictionary.GetFacts(key);
                     for (var i = 0; i < factlist.length; i++) {
                         var fact = factlist[i];
                         fact.FactString = "";
@@ -248,7 +259,7 @@ var Control;
         InstanceContainer.prototype.ShowFactDetails = function (factkey, factstring) {
             var me = this;
             if (!IsNull(me.Instance)) {
-                var facts = this.Instance.FactDictionary[factkey];
+                var facts = this.Instance.FactDictionary.GetFacts(factkey);
                 if (facts != null && facts.length > 0) {
                     var instancefact = facts.AsLinq().FirstOrDefault(function (i) { return i.FactString == factstring; });
                     Model.FactBase.LoadFromFactString(instancefact);

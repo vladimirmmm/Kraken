@@ -577,6 +577,49 @@ var Model;
         return DynamicCellDictionary;
     })();
     Model.DynamicCellDictionary = DynamicCellDictionary;
+    var InstanceFactDictionary = (function () {
+        function InstanceFactDictionary() {
+            this.FactsByIndex = {};
+            this.FactsByTaxonomyKey = {};
+            this.FactsByInstanceKey = {};
+            this.GetIntKey = function (s) { return ""; };
+        }
+        InstanceFactDictionary.prototype.ContainsStringKey = function (stringkey) {
+            var key = this.GetIntKey(stringkey);
+            return this.ContainsKey(key);
+        };
+        InstanceFactDictionary.prototype.ContainsKey = function (key) {
+            return key in this.FactsByTaxonomyKey ? true : key in this.FactsByInstanceKey;
+        };
+        InstanceFactDictionary.prototype.GetFactsByStringKey = function (stringkey) {
+            var key = this.GetIntKey(stringkey);
+            return this.GetFacts(key);
+        };
+        InstanceFactDictionary.prototype.GetFacts = function (key) {
+            var me = this;
+            var result = [];
+            if (key in me.FactsByTaxonomyKey) {
+                var ixs = me.FactsByTaxonomyKey[key];
+                var factlist = ixs.AsLinq().Select(function (i) { return me.FactsByIndex[i]; }).ToArray();
+                return factlist;
+            }
+            else {
+                if (key in me.FactsByInstanceKey) {
+                    var ix = me.FactsByInstanceKey[key];
+                    return [me.FactsByIndex[ix]];
+                }
+            }
+            return result;
+        };
+        InstanceFactDictionary.prototype.AddFact = function (fact) {
+            var me = this;
+            var ix = Object.keys(me.FactsByIndex).length;
+            fact.FactID = ix;
+            me.FactsByIndex[ix] = fact;
+        };
+        return InstanceFactDictionary;
+    })();
+    Model.InstanceFactDictionary = InstanceFactDictionary;
     var Instance = (function () {
         function Instance() {
             this.Facts = [];
@@ -593,11 +636,11 @@ var Model;
             var me = this;
             var existingfact = null;
             var factkey = FactBase.GetFactKey(fact);
-            var existingfacts = instance.FactDictionary[factkey];
+            var existingfacts = instance.FactDictionary.GetFactsByStringKey(factkey);
             if (IsNull(existingfacts)) {
                 existingfact = fact;
-                instance.FactDictionary[factkey] = [existingfact];
-                existingfacts = instance.FactDictionary[factkey];
+                instance.FactDictionary.AddFact(existingfact);
+                existingfacts = instance.FactDictionary.GetFactsByStringKey[factkey];
             }
             else {
                 if (existingfacts.length == 0) {

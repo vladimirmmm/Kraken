@@ -30,9 +30,13 @@ namespace LogicalModel
         [JsonIgnore]
         public override string FactString { get { return _FactStringX; } set { _FactStringX = value; } }
 
-        private string _FactIntkeys = "";
+        private int[] _InstanceKey = new int[0];
         [JsonIgnore]
-        public string FactIntkeys { get { return _FactIntkeys; } set { _FactIntkeys = value; } }
+        public int[] InstanceKey { get { return _InstanceKey; } set { _InstanceKey = value; } }
+
+        private int[] _TaxonomyKey = new int[0];
+        [JsonIgnore]
+        public int[] TaxonomyKey { get { return _TaxonomyKey; } set { _TaxonomyKey = value; } }
 
         [JsonProperty]
         [DefaultValue("")]

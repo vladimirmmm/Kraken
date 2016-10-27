@@ -567,6 +567,57 @@
         public CellOfFact: Dictionary<string> = {};
         public Extensions: Hierarchy<LayoutItem> = null;
     }
+    export class InstanceFactDictionary
+    {
+      
+        public FactsByIndex: Dictionary<InstanceFact> = {};
+        public FactsByTaxonomyKey: Dictionary<number[]> = {};
+        public FactsByInstanceKey: Dictionary<number> = {};
+
+        public GetIntKey = (s: string) => "";
+
+        public ContainsStringKey(stringkey: string): boolean {
+            var key = this.GetIntKey(stringkey);
+            return this.ContainsKey(key);
+        }
+        public ContainsKey(key: string): boolean {
+            return key in this.FactsByTaxonomyKey ? true : key in this.FactsByInstanceKey;
+     
+        }
+        public GetFactsByStringKey(stringkey: string): InstanceFact[]
+        {
+            var key = this.GetIntKey(stringkey);
+            return this.GetFacts(key);
+        }
+        public GetFacts(key: string):InstanceFact[]
+        {
+            var me = this;
+            var result: InstanceFact[] = [];
+            if (key in me.FactsByTaxonomyKey) {
+                var ixs = me.FactsByTaxonomyKey[key];
+                var factlist: InstanceFact[] = ixs.AsLinq<number>().Select(i=> me.FactsByIndex[i]).ToArray();
+                return factlist;
+            }
+            else
+            {
+                if (key in me.FactsByInstanceKey)
+                {
+                    var ix = me.FactsByInstanceKey[key];
+                    return [me.FactsByIndex[ix]];
+
+                }
+            }
+            return result;
+        }
+
+        public AddFact(fact: InstanceFact)
+        {
+            var me = this;
+            var ix = Object.keys(me.FactsByIndex).length;
+            fact.FactID = ix;
+            me.FactsByIndex[ix] = fact;
+        }
+    }
     export class Instance
     {
         public Facts: InstanceFact[] = [];
@@ -577,7 +628,7 @@
         public Entity: Entity;
         public TaxonomyModuleReference: string;
         public FullPath: string;
-        public FactDictionary: Dictionary<InstanceFact[]> = null;
+        public FactDictionary: InstanceFactDictionary = null;
   
         public FactParts: Model.Dictionary<number> = {};
         public CounterFactParts: Model.Dictionary<string> = {};
@@ -593,11 +644,12 @@
 
             var existingfact: InstanceFact = null;
             var factkey = FactBase.GetFactKey(fact);
-            var existingfacts = instance.FactDictionary[factkey];
+
+            var existingfacts = instance.FactDictionary.GetFactsByStringKey(factkey);
             if (IsNull(existingfacts)) {
                 existingfact = fact;
-                instance.FactDictionary[factkey] = [existingfact];
-                existingfacts = instance.FactDictionary[factkey];
+                instance.FactDictionary.AddFact(existingfact);
+                existingfacts = instance.FactDictionary.GetFactsByStringKey[factkey];
             }
             else {
 

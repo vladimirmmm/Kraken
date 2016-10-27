@@ -180,7 +180,7 @@ namespace LogicalModel.Validation
                 var factkey = fact.GetFactKey();
                 if (instance.FactDictionary.ContainsKey(factkey))
                 {
-                    var item = instance.FactDictionary[factkey].FirstOrDefault();
+                    var item = instance.FactDictionary.GetFact(factkey);
                     values.Add(item.Value);
                 }
             }
@@ -195,7 +195,7 @@ namespace LogicalModel.Validation
                 var factkey = fact.GetFactKey();
                 if (instance.FactDictionary.ContainsKey(factkey))
                 {
-                    var item = instance.FactDictionary[factkey];
+                    var item = instance.FactDictionary.GetFacts(factkey);
                     values.AddRange(item);
                 }
             }
@@ -316,7 +316,7 @@ namespace LogicalModel.Validation
             var facts = new List<InstanceFact>();
             if (instance.FactDictionary.ContainsKey(factstring)) 
             {
-                facts = instance.FactDictionary[factstring];
+                facts = instance.FactDictionary.GetFacts(factstring);
                 if (facts.Count == 1) {
                     return facts[0];
                 }
@@ -337,7 +337,7 @@ namespace LogicalModel.Validation
                 var factkey = factbase.GetFactKey();
                 if (instance.FactDictionary.ContainsKey(factkey))
                 {
-                    facts = instance.FactDictionary[factkey].ToList();
+                    facts = instance.FactDictionary.GetFacts(factkey);
                     foreach (var fact in facts)
                     {
                         if (fact.FactString == factstring)
@@ -423,32 +423,47 @@ namespace LogicalModel.Validation
                            ))).ToList();
                     var resultfactgroup = result.FactGroup;
 
+                    //instance.TypedFactMembers.ContainsKey()
+
                     foreach (var firstfact in facts)
                     {
-                        var instancefacts = instance.GetFacts(firstfact.GetFactKey());
+                        var instancefacts = instance.GetFactsByTaxKey(firstfact.GetFactKey());
                         var typestoreplace = new Dictionary<string, string>();
+                        var typestoreplaceids = new Dictionary<int, int>();
                         if (instancefacts.Count > 0)
                         {
                             resultstoremove.Add(result);
-                            var typedfacts = instancefacts[0].Dimensions.Where(i => i.IsTyped).Select(i => i.ToStringForKey());
-                            foreach (var typedfact in typedfacts)
+                            var typedids = instance.GetTypedPartDomainIds(instancefacts[0]);
+                            foreach (var typedid in typedids)
                             {
-                                var key = typedfact.Substring(typedfact.IndexOf(":"));
-                                typestoreplace.Add(key, "");
+                                typestoreplaceids.Add(typedid, -2);
                             }
+                            //var typedfacts = instancefacts[0].Dimensions.Where(i => i.IsTyped).Select(i => i.ToStringForKey());
+                            //foreach (var typedfact in typedfacts)
+                            //{
+                            //    var key = typedfact.Substring(typedfact.IndexOf(":"));
+                            //    typestoreplace.Add(key, "");
+                            //}
 
                         }
                         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         for (int i = 0; i < instancefacts.Count; i++)
                         {
                             var instancefact = instancefacts[i];
-                            var typedimensions = instancefact.Dimensions.Where(d => d.IsTyped).ToList();
-                            foreach (var tdim in typedimensions)
+                            var facttypedids = instance.GetTypedPartIds(instancefact);
+                            var tix=0;
+                            var tkeys = typestoreplaceids.Keys.ToList();
+                            foreach (var tid in tkeys)
                             {
-                                var key = tdim.ToStringForKey();
-                                key = key.Substring(key.IndexOf(":"));
-                                typestoreplace[key] = tdim.DomainMemberFullName.Substring(tdim.DomainMemberFullName.IndexOf(":"));
+                                typestoreplaceids[tid] = facttypedids[tix];
+                                tix++;
                             }
+                            //foreach (var tdim in typedimensions)
+                            //{
+                            //    var key = tdim.ToStringForKey();
+                            //    key = key.Substring(key.IndexOf(":"));
+                            //    typestoreplace[key] = tdim.DomainMemberFullName.Substring(tdim.DomainMemberFullName.IndexOf(":"));
+                            //}
 
                             var dynamicresult = new ValidationRuleResult();
                             resultstoadd.Add(dynamicresult);
@@ -465,28 +480,34 @@ namespace LogicalModel.Validation
                                 {
 
                                     var factid = Utilities.Converters.FastParse(p.FactIDs[f_ix].Substring(2));
-                                    var fact = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(factid));
-                                    //var fact = p.Facts[f_ix];
-                                    var newfactstring = fact.ToString();
-                                    foreach (var key in typestoreplace.Keys)
+                                    var factkey = Taxonomy.FactsManager.GetFactKey(factid).ToList().ToArray();
+                                    for (int fp_ix = 0; fp_ix < factkey.Length; fp_ix++) 
                                     {
-                                        newfactstring = newfactstring.Replace(key, typestoreplace[key]);
+                                        var fp = factkey[fp_ix];
+                                        if (typestoreplaceids.ContainsKey(fp)) 
+                                        {
+                                            factkey[fp_ix] = typestoreplaceids[fp];
+                                        }
                                     }
+                         
                                     //p.Facts[f_ix] = newfactstring;
-                                    var instfact = GetFact(newfactstring, instance);
+                                    var instfact = instance.GetFactsByInstKey(factkey).FirstOrDefault();
                                     var inst_ix = instfact == null ? -1 : instfact.IX;
-                                    p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
-                                    var newfact = FactBase.GetFactFrom(newfactstring);
+                                    if (inst_ix == -1) 
+                                    {
 
-                                    if (Taxonomy.HasFact(fact))
+                                    }
+                                    p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
+
+                                    if (Taxonomy.HasFact(instfact.TaxonomyKey))
                                     {
                                         var cellist = new List<string>();
                                         p.Cells.Add(cellist);
-                                        var cells = Taxonomy.GetCellsOfFact(fact);
+                                        var cells = Taxonomy.GetCellsOfFact(instfact.TaxonomyKey);
                                         cellist.Clear();
                                         foreach (var cell in cells)
                                         {
-                                            cellist.Add(instance.GetDynamicCellID(cell, newfact));
+                                            cellist.Add(instance.GetDynamicCellID(cell, instfact));
                                         }
                                     }
 
@@ -509,7 +530,7 @@ namespace LogicalModel.Validation
             {
                 foreach (var p in result.Parameters) 
                 {
-                    if (p.Cells.Any(c1 => c1.Any(c2 => c2.Contains("*"))))
+                    if (p.Cells.Any(c1 => c1.Any(c2 => c2.Contains(Literals.DynamicCode))))
                     {
                         for (int i = 0; i < p.FactIDs.Count;i++ )
                         {

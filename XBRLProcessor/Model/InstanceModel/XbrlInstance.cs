@@ -197,6 +197,7 @@ namespace Model.InstanceModel
                             {
                                 lastfactpartid++;
                                 this.FactParts.Add(dimstr, lastfactpartid);
+                                this.CounterFactParts.Add(lastfactpartid, dimstr);
                             }
                         }
 
@@ -263,7 +264,7 @@ namespace Model.InstanceModel
 
         public void LoadLogicalData() 
         {
-     
+            this.FactDictionary.SetInstance(this);
             this.TaxonomyModuleReference = this.SchemaRef.Href;
             this.FilingIndicators = this.XbrlFilingIndicators.Select(i=> {
                 var find = new LogicalModel.FilingIndicator();
@@ -293,46 +294,12 @@ namespace Model.InstanceModel
                 var factkey = factstring;
   
                 logicalfact.Concept = new LogicalModel.Concept();
-               
                 logicalfact.Concept.Content = xbrlfact.Concept;
-                if (instancecontext.Dimensions != null)
-                {
-                    var dimensions = instancecontext.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
-                    foreach (var dimension in dimensions)
-                    {
-                        var dimstr = dimension.ToString();
-
-                        var dimitem = String.Format("{0},", dimstr);
-                        factparts.Add(dimstr);
-           
-                        var dimitemforkey = String.Format("{0},", dimension.DimensionItemWithDomain.Trim());         
-
-                        factstring += dimitem;
-              
-                        factkey += dimension.IsTyped ? dimitemforkey : dimitem;
-                        
-                    }
-                }
-                factids.AddRange(instancecontext.DimensionIds.OrderBy(i=>i));
-                var instancefactkey = Utilities.Strings.ArrayToString(factids.ToArray(), ",");
-                logicalfact.FactIntkeys = instancefactkey;
-                logicalfact.SetFromString(factstring);
-
-                //logicalfact.FactString = factstring;
-                logicalfact.FactKey = logicalfact.GetFactKey();
-                logicalfact.FactString = logicalfact.GetFactString();
                 logicalfact.Value = xbrlfact.Value;
+
+                this.FactDictionary.AddFact(logicalfact);
                 this.Facts.Add(logicalfact);
-                //var key = logicalfact.FactIntkeys;
-                if (!this.FactDictionary.ContainsKey(instancefactkey))
-                {
-                    this.FactDictionary.Add(instancefactkey, new List<LogicalModel.InstanceFact>() { logicalfact });
-                }
-                else 
-                {
-                    var factlist = this.FactDictionary[instancefactkey];
-                    factlist.Add(logicalfact);
-                }
+              
             }
 
             var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));

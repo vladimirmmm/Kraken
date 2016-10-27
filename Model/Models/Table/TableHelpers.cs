@@ -63,7 +63,7 @@ namespace LogicalModel
             if (firstchild!=null)
             {
                 //hastypedextension = firstchild.Where(i => i.Item.Dimensions.Any(j => j.IsTyped)).Count > 1;
-                hastypedextension = firstchild.Where(i => i.Item.Dimensions.Any(j => String.IsNullOrEmpty(j.DomainMember))).Count > 1;
+                hastypedextension = firstchild.Where(i => i.Item.Dimensions.Any(j => String.IsNullOrEmpty(j.DomainMember))).Count >= 1;
             }
 
             foreach (var child in hli.Children)
@@ -358,6 +358,7 @@ namespace LogicalModel
                     dyn_li.ID = "dynamic_" + sourceAxisnode.Item.Axis;
                     dyn_li.Dimensions = aspect_source_dimensions;
                     dyn_li.Category = LayoutItemCategory.Dynamic;
+                    dyn_li.LabelCode = Literals.DynamicCode;
                     //var dyn_h = new Hierarchy<LayoutItem>(dyn_li);
                     //source.Item = dyn_li;
                     var dyn_hli = new Hierarchy<LayoutItem>(dyn_li);

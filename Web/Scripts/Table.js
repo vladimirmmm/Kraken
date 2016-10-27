@@ -165,7 +165,7 @@ var UI;
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
-                    me.Instance.FactDictionary = {};
+                    me.Instance.FactDictionary = new Model.InstanceFactDictionary();
                 }
             }
             me.UITable.Manager.Clear(me.UITable);

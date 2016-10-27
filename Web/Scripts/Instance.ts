@@ -107,10 +107,23 @@
             var me = this;
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
+                var instdata = <Model.Instance>data;
+
+                var ifd = new Model.InstanceFactDictionary();
+                ifd.FactsByIndex = instdata.FactDictionary.FactsByIndex;
+                ifd.FactsByInstanceKey = instdata.FactDictionary.FactsByInstanceKey;
+                ifd.FactsByTaxonomyKey = instdata.FactDictionary.FactsByTaxonomyKey;
+                ifd.GetIntKey = (s) => me.GetFactKeyStringFromFactString(s);
+                me.Instance.FactDictionary = ifd;
                 me.LoadToUI();
                 CallFunction(onloaded);
 
             }, function (error) { console.log(error); });
+        }
+        public GetFactKeyStringFromFactString(factstring: string): string
+        {
+            var keys = this.GetFactKeyFromFactString(factstring);
+            return keys.join();
         }
         public GetFactKeyFromFactString(factstring: string): number[] {
             var me = this;
@@ -180,8 +193,8 @@
             var factintkey = me.GetFactKeyFromFactString(cellfact.FactString).join();
             var factkey = Model.FactBase.GetFactKey(cellfact);
             var factstring = cellfact.FactString;
-            if (factintkey in me.Instance.FactDictionary) {
-                facts = me.Instance.FactDictionary[factintkey];
+            if ( me.Instance.FactDictionary.ContainsKey(factintkey)) {
+                facts = me.Instance.FactDictionary.GetFacts(factintkey);
                 if (facts.length > 0) {
                     fact = facts.AsLinq<Model.InstanceFact>().FirstOrDefault(i=> i.FactString == factstring);
                 }
@@ -200,10 +213,10 @@
             //ShowContentByID("#TaxonomyContainer");
 
             var facts: Model.FactBase[] = [];
-            var dict = this.Instance.FactDictionary;
-            if (IsNull(this.Instance.Facts))
+            var dict = me.Instance.FactDictionary.FactsByInstanceKey;
+            if (IsNull(me.Instance.Facts))
             {       
-                this.Instance.Facts = [];
+                me.Instance.Facts = [];
             }
             me.Instance.CounterFactParts = {};
             GetProperties(me.Instance.FactParts).forEach(
@@ -215,7 +228,7 @@
             for (var key in dict)
             {
                 if (dict.hasOwnProperty(key)) {
-                    var factlist = <Model.InstanceFact[]>dict[key];
+                    var factlist = me.Instance.FactDictionary.GetFacts(key);
                     for (var i = 0; i < factlist.length; i++)
                     {
                         var fact = factlist[i];
@@ -303,7 +316,7 @@
         {
             var me = this;
             if (!IsNull(me.Instance)) {
-                var facts: Model.InstanceFact[] = this.Instance.FactDictionary[factkey];
+                var facts: Model.InstanceFact[] = this.Instance.FactDictionary.GetFacts(factkey);
 
                 if (facts != null && facts.length > 0) {
 

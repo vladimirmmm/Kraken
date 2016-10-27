@@ -581,7 +581,7 @@ namespace XBRLProcessor.Models
                 fd = Utilities.Converters.JsonTo<FactDictionaries>(Utilities.FS.ReadAllText(this.TaxonomyDimensionPath));
                 this.CounterFactParts = fd.CounterFactParts;
                 this.FactParts = fd.FactParts;
-                this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains;
+                this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains == null ? new Dictionary<int, int>() : fd.MembersOfDimensionDomains;
             }
             //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
             //foreach (var item in dimensiondomainparts) 
