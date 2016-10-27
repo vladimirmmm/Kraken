@@ -14,10 +14,11 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     {
         //all but the filter if true else only the filter
         public bool Complement { get; set; }
+        public bool Cover { get; set; }
 
         public override string ToString()
         {
-            return base.ToString() + (Complement ? " [C]" : "");
+            return base.ToString() + (Complement ? " [C]" : "") + (Cover ? " [cover]" : "");
         }
 
 
@@ -26,6 +27,14 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         {
             var queries = new List<FactBaseQuery>();
             return queries;
+        }
+
+        public virtual void SetCover(List<FactBaseQuery> queries) 
+        {
+            foreach (var query in queries) 
+            {
+                query.Cover = this.Cover;
+            }
         }
     }
     public class FilterContainer : XbrlIdentifiable 

@@ -20,5 +20,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     {
         private String _Aspect = "";
         public String Aspect { get { return _Aspect; } set { _Aspect = value; } }
+
+        public bool Cover { get; set; }
     }
 }

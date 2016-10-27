@@ -303,7 +303,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 }
             }
 
-
+            SetCover(queries);
             return queries;
         }
     }
@@ -364,6 +364,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 };
             }
 
+            SetCover(queries);
 
             return queries;
         }

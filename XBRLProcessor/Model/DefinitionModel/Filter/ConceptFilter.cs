@@ -102,6 +102,8 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 }
             }
             queries.Add(query);
+            SetCover(queries);
+
             return queries;
         }
     }
