@@ -14,7 +14,32 @@ namespace XBRLProcessor.Model
 {
     public partial class XbrlValidation
     {
-     
+
+        public void RemoveCommon(FactBaseQuery querytoremovefrom, FactBaseQuery query) 
+        {
+            var common_dfs = query.DictFilterIndexes.Intersect(querytoremovefrom.DictFilterIndexes).ToList();
+            var common_ndfs = query.NegativeDictFilterIndexes.Intersect(querytoremovefrom.NegativeDictFilterIndexes).ToList();
+            foreach (var common_df in common_dfs) 
+            {
+                querytoremovefrom.DictFilterIndexes.Remove(common_df);
+            }
+            foreach (var common_ndf in common_ndfs)
+            {
+                querytoremovefrom.NegativeDictFilterIndexes.Remove(common_ndf);
+            }
+            querytoremovefrom.DictFilters = "";
+            foreach (var df in querytoremovefrom.DictFilterIndexes) 
+            {
+                querytoremovefrom.DictFilters += Taxonomy.CounterFactParts[df]+ ",";
+            }
+            querytoremovefrom.FalseFilters = "";
+            foreach (var ndf in querytoremovefrom.NegativeDictFilterIndexes)
+            {
+                querytoremovefrom.FalseFilters += Taxonomy.CounterFactParts[ndf] + ",";
+            }
+            //querytoremovefrom.NrOfDictFilters = querytoremovefrom.DictFilterIndexes.Count;
+        }
+
         public string CheckCells(LogicalModel.Validation.ValidationParameter parameter) 
         {
             var cellfound = false;
@@ -161,7 +186,10 @@ namespace XBRLProcessor.Model
             var rootqueries = CombineQueries(rootquerypool.ToArray());
 
             var allqueries = rootqueries;
-
+            foreach (var qry in allqueries)
+            {
+                qry.NrOfDictFilters = qry.DictFilterIndexes.Count;
+            }
             return allqueries;
         }
         
@@ -220,7 +248,10 @@ namespace XBRLProcessor.Model
             var rootqueries = CombineQueries(rootquerypool.ToArray());
 
             var allqueries = CombineQueries(rootqueries, mergedqueries);
-
+            foreach (var qry in allqueries) 
+            {
+                qry.NrOfDictFilters = qry.DictFilterIndexes.Count;
+            }
             return allqueries;
         }
 
@@ -492,6 +523,7 @@ namespace XBRLProcessor.Model
             target.ChildQueries = source.ChildQueries;
             var originalfilter = target.Filter;
             target.Filter = null;
+            target.Cover = source.Cover;
             target.Filter = (s) => originalfilter(s) && source.Filter(s);
 
         }
@@ -509,6 +541,35 @@ namespace XBRLProcessor.Model
                 foreach (var fbq in combination)
                 {
                     Merge(fbq, mergedquery);
+                }
+                mergedqueries.Add(mergedquery);
+            }
+            return mergedqueries;
+        }
+
+        public List<FactBaseQuery> SoftCombineQueries(params List<FactBaseQuery>[] querypool)
+        {
+            var nonempty = querypool.Where(i => i.Count > 0);
+
+            var combinedqueries = MathX.CartesianProduct(nonempty);
+
+            var mergedqueries = new List<FactBaseQuery>();
+            foreach (var combination in combinedqueries)
+            {
+                var mergedquery = new FactBaseQuery();
+                var combinationlist = combination.ToList();
+                var ix = 0;
+                foreach (var fbq in combinationlist)
+                {
+                    //Merge(fbq, mergedquery);
+                    mergedquery.NrOfDictFilters += fbq.NrOfDictFilters;
+                    //if (ix == combinationlist.Count - 1) 
+                    //{
+                    //    Merge(fbq, mergedquery);
+                    //}
+                    Merge(fbq, mergedquery);
+
+                    ix++;
                 }
                 mergedqueries.Add(mergedquery);
             }

@@ -291,6 +291,8 @@ namespace LogicalModel
             }
             return result;
         }
+
+    
         public virtual List<ValidationRuleResult> Validate(List<String> messages) 
         {
             ValidationRuleResults.Clear();

@@ -65,8 +65,21 @@ namespace Utilities
             return sb.ToString();
         }
 
-        public static List<T> SortedExcept<T>(List<T> m, List<T> n) where T : IComparable<T>
+        public static List<T> SortedExcept_Old<T>(List<T> m, List<T> n) where T : IComparable<T>
         {
+            if (m.Count > 2 && n.Count > 2)
+            {
+                var startm = m[0];
+                var startn = n[0];
+                var endm = m[m.Count - 1];
+                var endn = n[n.Count - 1];
+                // a > b: a compareto b > 0  
+                if (startn.CompareTo(endm) > 0 || endn.CompareTo(startm)<0) 
+                {
+                    return m;
+                }
+            }
+            
             var result = new List<T>();
             int i = 0, j = 0;
             if (n.Count == 0)
@@ -100,6 +113,71 @@ namespace Utilities
             }
             return result;
         }
+
+        public static List<T> SortedExcept<T>(List<T> m, List<T> n) where T : IComparable<T>
+        {
+            if (m.Count > 2 && n.Count > 2)
+            {
+                var startm = m[0];
+                var startn = n[0];
+                var endm = m[m.Count - 1];
+                var endn = n[n.Count - 1];
+                // a > b: a compareto b > 0  
+                if (startn.CompareTo(endm) > 0 || endn.CompareTo(startm) < 0)
+                {
+                    return m;
+                }
+            }
+            var mcount = m.Count;
+            var ncount = n.Count;
+            var result = new List<T>();
+            int i = 0, j = 0;
+            if (ncount == 0)
+            {
+                result.AddRange(m);
+                return result;
+            }
+            if (mcount == 0)
+            {
+                return m;
+            }
+            var mi = m[i];
+            var nj = n[j];
+            while (i < mcount)
+            {
+                if (mi.CompareTo(nj) < 0)
+                {
+                    result.Add(mi);
+                    i++;
+                    mi = i >= mcount ? mi : m[i];
+                }
+                else if (mi.CompareTo(nj) > 0)
+                {
+                    j++;
+                    //nj = n[j];
+                    nj = j >= ncount ? nj : n[j];
+
+                }
+                else
+                {
+                    i++;
+                    mi = i >= mcount ? mi : m[i];
+                }
+                if (j >= ncount)
+                {
+                    for (; i < mcount; i++)
+                    {
+                        mi = m[i];
+                        result.Add(mi);
+                        
+                    }
+                    break;
+                }
+            }
+            return result;
+        }
+        
+        
         public void test() 
         {
             Random rnd = new Random();

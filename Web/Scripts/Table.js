@@ -184,6 +184,7 @@ var UI;
                     var factstring = cell_factstring;
                     Model.FactBase.LoadFromFactString(cellfb);
                     Model.FactBase.Merge(cellfb, me.CurrentExtension, true);
+                    Model.FactBase.RemoveDimensionsWithDefaultMemebr(cellfb);
                     factstring = cellfb.GetFactString();
                     if (!IsNull(factstring)) {
                         var fact = me.GetFactFor(cellfb, cell_layoutid);
@@ -331,9 +332,11 @@ var UI;
             cellcontainer.Cells.forEach(function (cell, ix) {
                 var cellelement = cell.UIElement;
                 var templatefact = templatefacts[ix];
-                if (templatefact.Concept == null && templatefact.Dimensions.length == 1) {
-                    var celldimension = templatefact.Dimensions[0];
-                    var dim = containerfactdimensionsquery.FirstOrDefault(function (i) { return i.DimensionItem == celldimension.DimensionItem && i.Domain == celldimension.Domain; });
+                var iskey = _HasClass(cellelement, "key");
+                if (iskey) {
+                    var celldimension = _Attribute(cell.UIElement, "factstring");
+                    celldimension = celldimension.replace(",", "");
+                    var dim = containerfactdimensionsquery.FirstOrDefault(function (i) { return Model.Dimension.GetDomainFullName(i) == celldimension; });
                     if (dim != null) {
                         var text = dim.DomainMember;
                         _Html(cellelement, text);

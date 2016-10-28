@@ -313,7 +313,16 @@
             });
 
         }
-
+        public static RemoveDimensionsWithDefaultMemebr(fact: FactBase)
+        {
+            var itemstoremove = [];
+            fact.Dimensions.forEach((d,ix) => {
+                if (d.DomainMember == "x0") { itemstoremove.push(d); }
+            });
+            itemstoremove.forEach((d, ix) => {
+                RemoveFrom(d, fact.Dimensions);
+            });
+        }
         public static LoadFromFactString(fact: FactBase)
         {
             var me = fact;
@@ -749,6 +758,7 @@
         public CounterFactParts: Model.Dictionary<string> = {};
 
         public Concepts: Model.Concept[] = [];
+        public CellIndexDictionary: Model.Dictionary<string> = {};
         public Hierarchies: Model.Hierarchy<Model.QualifiedItem> = null;
         public TaxonomyDocuments: Model.TaxonomyDocument[] = [];
         public ConceptValues: Model.ConceptLookUp[] = [];

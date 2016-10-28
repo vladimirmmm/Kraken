@@ -777,6 +777,7 @@ namespace LogicalModel
                                 if (!iscolkey)
                                 {
                                     cell.Dimensions.AddRange(col.Item.Dimensions);//.Where(i => !i.IsDefaultMember));
+
                                 }
                                 var rowRole = String.IsNullOrEmpty(row.Item.Role) ? "" : String.Format("Role:{0};Axis:{1};", row.Item.Role, row.Item.RoleAxis);
                                 var colRole = String.IsNullOrEmpty(col.Item.Role) ? "" : String.Format("Role:{0};Axis:{1};", col.Item.Role, col.Item.RoleAxis);
@@ -784,7 +785,16 @@ namespace LogicalModel
                                 cell.IsKey = isrowkey || iscolkey;
                                 if (cell.IsKey) 
                                 {
+                                    if (isrowkey) 
+                                    {
+                                        cell.FactString = row.Item.FactString;
 
+                                    }
+                                    if (iscolkey) 
+                                    {
+                                        cell.FactString = col.Item.FactString;
+
+                                    }
                                 }
                                 TableHelpers.SetDimensions(cell);
                                 cell.Dimensions = cell.Dimensions.Where(i => !i.IsDefaultMember).ToList();
@@ -1121,6 +1131,7 @@ namespace LogicalModel
                     if (cell.IsKey)
                     {
                         cssclass += " key";
+                    
                     }
                     var rl = String.IsNullOrEmpty(cell.Role) ? "" : String.Format("role=\"{0}\"", cell.Role);
                     sb.AppendLine(String.Format(

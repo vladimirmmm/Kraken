@@ -152,6 +152,11 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
+            AjaxRequest("Taxonomy/CellIndexes", "get", "json", null, function (data) {
+                me.Taxonomy.CellIndexDictionary = data;
+            }, function (error) {
+                console.log(error);
+            });
             AjaxRequest("Taxonomy/Documents", "get", "json", null, function (data) {
                 me.Taxonomy.TaxonomyDocuments = data;
             }, function (error) {
@@ -180,6 +185,11 @@ var Control;
                 AjaxRequest("Taxonomy/Facts", "get", "json", p, function (data) {
                     if (!IsNull(data.Items)) {
                         me.CurrentFacts = data.Items;
+                        me.CurrentFacts.forEach(function (fact) {
+                            for (var i = 0; i < fact.Value.length; i++) {
+                                fact.Value[i] = me.Taxonomy.CellIndexDictionary[fact.Value[i]];
+                            }
+                        });
                         fwc.Callback(data);
                     }
                 }, null);
@@ -365,7 +375,7 @@ var Control;
         TaxonomyContainer.prototype.GetFilterValue = function (selector) {
             var element = this.SelFromFact(s_listfilter_selector + " " + selector);
             if (!IsNull(element)) {
-                return _Value(element).toLowerCase().trim();
+                return _Value(element).trim();
             }
             return "";
         };

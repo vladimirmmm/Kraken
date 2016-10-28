@@ -276,6 +276,11 @@ namespace Engine.Services
                                     json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyConceptPath);
 
                                 }
+                                if (part1 == "cellindexes")
+                                {
+                                    json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyCellIndexPath);
+
+                                }
                                 if (part1 == "documents")
                                 {
                                     json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyStructurePath);
@@ -318,32 +323,36 @@ namespace Engine.Services
                                 {
                                     var page = int.Parse(request.GetParameter("page"));
                                     var pagesize = int.Parse(request.GetParameter("pagesize"));
-                                    var factstring = request.GetParameter("factstring").ToLower();
+                                    var factstring = request.GetParameter("factstring");
                                     var cellid = request.GetParameter("cellid").ToLower();
                                     var rs = new DataResult<KeyValue>();
                                     var query = Engine.CurrentTaxonomy.FactsAsQuearyable();
 
-                                    var factstrings = factstring.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                                    var factstrings = factstring.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO
                                     var taxonomy = AppEngine.Features.Engine.CurrentTaxonomy;
                                     var idlist = new List<int>();
+                                    var keys = new List<int>();
                                     foreach (var fs in factstrings)
                                     {
                                         var fsidlist = new List<int>();
                                         var dimparts = new List<Utilities.KeyValue<int,List<int>>>(); //TODO taxonomy.FactsOfParts.Where(i => taxonomy.GetFactStringKey(i).Key.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>-1);
-                                        foreach (var dimpart in dimparts) 
-                                        {
-                                            fsidlist.AddRange(dimpart.Value);
-                                        }
-                                        fsidlist = fsidlist.Distinct().ToList();
-                                        if (idlist.Count == 0)
-                                        {
-                                            idlist = fsidlist;
-                                        }
-                                        else 
-                                        {
-                                            idlist = Utilities.Objects.IntersectSorted(idlist, fsidlist, null);
-                                        }
+                                        var key = taxonomy.FactParts[fs];
+                                        keys.Add(key);
+
+                                        //foreach (var kepart in key) 
+                                        //{
+                                        //    fsidlist.AddRange(dimpart.Value);
+                                        //}
+                                        //fsidlist = fsidlist.Distinct().ToList();
+                                        //if (idlist.Count == 0)
+                                        //{
+                                        //    idlist = fsidlist;
+                                        //}
+                                        //else 
+                                        //{
+                                        //    idlist = Utilities.Objects.IntersectSorted(idlist, fsidlist, null);
+                                        //}
                                       
                                         //query = query.Where(i => keys.Contains(i.Key, comparer));
 
@@ -352,15 +361,17 @@ namespace Engine.Services
                                     }
                                     if (factstrings.Length > 0)
                                     {
-                                        var keys = idlist.Select(i => taxonomy.FactsManager.GetFactKey(i)).ToDictionary(k => k, v => true);
+                                        idlist = taxonomy.SearchFactsGetIndex3(keys.ToArray(), taxonomy.FactsOfParts, null, 0);
+
+                                        var indexes = idlist.Select(i => taxonomy.FactsManager.GetFactKey(i)).ToDictionary(k => k, v => true);
                                         var comparer = new Utilities.IntArrayEqualityComparer();
-                                        query = query.Where(i => keys.ContainsKey(i.Key));
+                                        query = query.Where(i => indexes.ContainsKey(i.Key));
                                     }
                                     if (!String.IsNullOrEmpty(cellid))
                                     {
-                                        Int64 longcellid = 0;
+                                        var cells = taxonomy.CellIndexDictionary.Where(i => i.Value.IndexOf(cellid, StringComparison.Ordinal)>-1).Select(i=>i.Key);
                                         //longcellid=cellid
-                                        //query = query.Where(i => i.Value.Any(j => j.Contains(cellid)));
+                                        query = query.Where(i => i.Value.Any(j =>cells.Contains(j)));
                                     }
 
                                     rs.Items = query.Skip(pagesize * page).Take(pagesize).Select(i=>new KeyValue(taxonomy.GetFactStringKey(i.Key),i.Value)).ToList();

@@ -477,7 +477,7 @@ namespace LogicalModel
             var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts, null);
             return resultfacts.Select(i => FactsManager.GetFactKey(i)).ToList();
         }
-        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts, bool EnsureFactKeyLength)
+        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts, int PartNr)
         {
             var result = new List<int>();
             var memberkeys = factkey.ToList();
@@ -504,6 +504,10 @@ namespace LogicalModel
             for (int i = 1; i < memberfactspool.Count; i++)
             {
                 result = Utilities.Objects.IntersectSorted(result, memberfactspool[i], null);
+            }
+            if (PartNr != 0)
+            {
+                result = result.Where(i => FactsManager.GetFactKey(i).Length == PartNr).ToList();
             }
             if (result == null)
             {
@@ -703,7 +707,7 @@ namespace LogicalModel
             //var parts = Utilities.Strings.FactSplit(key, ',', 8);
             if (key.Contains(":"))
             {
-                var parts = Utilities.Strings.FactSplit(key, ',', 8);
+                var parts = key.IndexOf(",") == -1 ? new List<string>() { key } : Utilities.Strings.FactSplit(key, ',', 8);
 
                 foreach (var part in parts)
                 {

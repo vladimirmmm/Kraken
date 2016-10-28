@@ -210,7 +210,7 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().TaxFacts;
-            var aregroupsok = Parameters.Select(i => i.TaxFacts.Count).Distinct().Count() == 1;
+            var aregroupsok = Parameters.Where(i=>!i.IsGeneral).Select(i => i.TaxFacts.Count).Distinct().Count() == 1;
             if (!aregroupsok) 
             {
                 Utilities.Logger.WriteLine(String.Format("Rule {0} has factgroup problems", this.ID));
@@ -499,7 +499,7 @@ namespace LogicalModel.Validation
                                     }
                                     p.FactIDs[f_ix] = String.Format("I:{0}", inst_ix);
 
-                                    if (Taxonomy.HasFact(instfact.TaxonomyKey))
+                                    if (instfact!=null && Taxonomy.HasFact(instfact.TaxonomyKey))
                                     {
                                         var cellist = new List<string>();
                                         p.Cells.Add(cellist);

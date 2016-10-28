@@ -351,6 +351,7 @@ namespace LogicalModel.Base
         public List<int> NegativeDictFilterIndexes = new List<int>();
         public bool Cover = false;
         public Func<string, bool> Filter = (s) => true;
+        public int NrOfDictFilters = 0;
  
         public List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
         public bool HasDictFilter(string dictfilter) 
@@ -461,10 +462,11 @@ namespace LogicalModel.Base
             return items;
         }
 
-        public List<int> ToList(Taxonomy taxonomy, List<int> facts)
+        public List<int> ToList(Taxonomy taxonomy, List<int> facts,bool ensurepartnr=false)
         {
             //cover here
-            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts,false);  
+            var partnr = Cover ? ensurepartnr ? NrOfDictFilters : 0 : 0;
+            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts, partnr);  
             foreach (var negativeindex in NegativeDictFilterIndexes)
             {
                 if (taxonomy.FactsOfParts.ContainsKey(negativeindex))

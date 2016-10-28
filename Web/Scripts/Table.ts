@@ -247,7 +247,7 @@ module UI {
 
                     Model.FactBase.LoadFromFactString(cellfb);
                     Model.FactBase.Merge(cellfb, me.CurrentExtension, true);
-
+                    Model.FactBase.RemoveDimensionsWithDefaultMemebr(cellfb);
                     factstring = cellfb.GetFactString();
           
                     if (!IsNull(factstring)) {
@@ -444,10 +444,13 @@ module UI {
             cellcontainer.Cells.forEach(function (cell, ix) {
                 var cellelement = cell.UIElement;
                 var templatefact = templatefacts[ix];
-                if (templatefact.Concept == null && templatefact.Dimensions.length == 1) {
-                    var celldimension = templatefact.Dimensions[0];
+                var iskey = _HasClass(cellelement, "key");
+                if (iskey) {
+                 
+                        var celldimension = _Attribute(cell.UIElement, "factstring");
+                        celldimension = celldimension.replace(",", "");
                     var dim = containerfactdimensionsquery.FirstOrDefault(
-                        i=> i.DimensionItem == celldimension.DimensionItem && i.Domain == celldimension.Domain
+                        i=> Model.Dimension.GetDomainFullName(i) == celldimension
                         );
                     if (dim != null) {
                         var text = dim.DomainMember;

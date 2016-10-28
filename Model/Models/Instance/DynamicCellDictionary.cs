@@ -62,6 +62,14 @@ namespace LogicalModel.Models
             dynamiccell.Row = cell.Row;
             dynamiccell.Column = cell.Column;
 
+            if (fact.Dimensions.Count == 0)
+            {
+                var factstring = Instance.GetFactStringKey(fact.InstanceKey);
+                var tmpfact = new FactBase();
+                tmpfact.SetFromString(factstring);
+                fact.Dimensions.AddRange(tmpfact.Dimensions);
+            }
+
             if (cell.Extension == Literals.DynamicCode) 
             {
                 var ext = table.Extensions.Children.FirstOrDefault();
@@ -69,13 +77,7 @@ namespace LogicalModel.Models
 
                 //var typeddimensions = ext.Item.Dimensions.Where(i => i.IsTyped).ToList();
                 //var axistypeddimensions = Dimension.GetDimensions(fact.Dimensions, typeddimensions);
-                if (fact.Dimensions.Count == 0) 
-                {
-                    var factstring = Instance.GetFactStringKey(fact.InstanceKey);
-                    var tmpfact = new FactBase();
-                    tmpfact.SetFromString(factstring);
-                    fact.Dimensions.AddRange(tmpfact.Dimensions);
-                }
+            
                 var instanceopendimensions = Dimension.GetDimensions(fact.Dimensions, opendimensions);
                 var openfactstring = GetFactString(instanceopendimensions);
 
@@ -157,6 +159,10 @@ namespace LogicalModel.Models
 
         public Hierarchy<LayoutItem> GetInstanceExtensions(Table table) 
         {
+            if (table.ID.Contains("07")) 
+            {
+
+            }
             if (ExtDictionary.Count == 0)
             {
                 return table.Extensions;

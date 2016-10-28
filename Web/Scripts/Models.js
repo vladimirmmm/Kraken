@@ -303,6 +303,17 @@ var Model;
                 }
             });
         };
+        FactBase.RemoveDimensionsWithDefaultMemebr = function (fact) {
+            var itemstoremove = [];
+            fact.Dimensions.forEach(function (d, ix) {
+                if (d.DomainMember == "x0") {
+                    itemstoremove.push(d);
+                }
+            });
+            itemstoremove.forEach(function (d, ix) {
+                RemoveFrom(d, fact.Dimensions);
+            });
+        };
         FactBase.LoadFromFactString = function (fact) {
             var me = fact;
             me.Dimensions = [];
@@ -726,6 +737,7 @@ var Model;
             this.FactParts = {};
             this.CounterFactParts = {};
             this.Concepts = [];
+            this.CellIndexDictionary = {};
             this.Hierarchies = null;
             this.TaxonomyDocuments = [];
             this.ConceptValues = [];

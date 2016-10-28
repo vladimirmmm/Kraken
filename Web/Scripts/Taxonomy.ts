@@ -173,6 +173,10 @@
                 me.Taxonomy.Concepts = data;
             }, function (error) { console.log(error); });
 
+            AjaxRequest("Taxonomy/CellIndexes", "get", "json", null, function (data) {
+                me.Taxonomy.CellIndexDictionary = data;
+            }, function (error) { console.log(error); });
+
             AjaxRequest("Taxonomy/Documents", "get", "json", null, function (data) {
                 me.Taxonomy.TaxonomyDocuments = data;
             }, function (error) { console.log(error); });
@@ -203,6 +207,13 @@
                         function (data: DataResult) {
                             if (!IsNull(data.Items)) {
                                 me.CurrentFacts = <Model.KeyValuePair<string, string[]>[]>data.Items;
+                                me.CurrentFacts.forEach((fact) =>
+                                {
+                                    for (var i = 0; i < fact.Value.length; i++)
+                                    {
+                                        fact.Value[i] = me.Taxonomy.CellIndexDictionary[fact.Value[i]];
+                                    }
+                                });
                                 fwc.Callback(data);
                             }
                         }, null);
@@ -430,7 +441,7 @@
             var element = this.SelFromFact(s_listfilter_selector + " " + selector);
             if (!IsNull(element))
             {
-                return _Value(element).toLowerCase().trim();
+                return _Value(element).trim();
             }
             return "";
         }

@@ -384,12 +384,12 @@ namespace XBRLProcessor.Model
             {
                 tmp_rule.Remove(fv);
             }
-            if (valueassertion.ID.Contains("0390"))
-            {
-            }
+        
             var rulefactqueries = GetFactQuery(tmp_rule);
             var rulefactIds = new List<int>();
             var rulebasequery = GetRuleQuery(tmp_rule).FirstOrDefault();
+
+        
             var rbds = new List<string>();
             bool RuleHasDictFilter = false; 
             if (rulebasequery != null)
@@ -398,12 +398,19 @@ namespace XBRLProcessor.Model
                 rulefactIds.AddRange(rulebasequery.ToList(Taxonomy,null));
 
             }
+            else
+            {
+                rulebasequery = new LogicalModel.Base.FactBaseQuery();
+            }
             var additionalfacts = new List<int>();
             foreach (var rulefactquery in rulefactqueries) 
             {
+                RemoveCommon(rulefactquery, rulebasequery);
+
                 var factindexes = rulefactquery.ToList(Taxonomy, rulebasequery == null ? null : rulefactIds);
                 additionalfacts.AddRange(factindexes);
             }
+         
             if (additionalfacts.Count > 0) 
             {
                 rulefactIds = additionalfacts;
@@ -440,10 +447,12 @@ namespace XBRLProcessor.Model
                 parameter.FallBackValue = factvariable.FallbackValue;
 
                 var mergedqueries = new List<LogicalModel.Base.FactBaseQuery>();
+                var rulefactdictcount = rulefactqueries.Select(i => i.DictFilterIndexes.Count).ToList();
+           
                 if (parameter.BindAsSequence)
                 {
-                    //mergedqueries = CombineQueries(rulefactqueries, new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery });
-                    mergedqueries = new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery };
+                    mergedqueries = SoftCombineQueries(rulefactqueries, new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery });
+                    //mergedqueries = new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery };
 
                 }
                 else
@@ -452,8 +461,8 @@ namespace XBRLProcessor.Model
                     {
                         //Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has multiple queries, but it is not sequenced.", logicalrule.ID, parameter.Name));
                     }
-                    //mergedqueries = CombineQueries(rulefactqueries, parameterfactqueries);
-                    mergedqueries = parameterfactqueries;
+                    mergedqueries = SoftCombineQueries(rulefactqueries, parameterfactqueries);
+                    //mergedqueries = parameterfactqueries;
                 }
                 if (mergedqueries.Count == 0)
                 {
@@ -477,7 +486,7 @@ namespace XBRLProcessor.Model
                     //var datafactids = new List<int>();
                     //var facts = GetFacts(fbq, parameterfacts, parameterfactdict, datafactids);
 
-                    var facts = fbq.ToList(Taxonomy,parameterfacts);
+                    var facts = fbq.ToList(Taxonomy, parameterfacts, true);
 
                     var ok = true;
 
@@ -511,7 +520,7 @@ namespace XBRLProcessor.Model
 
                     }
 
-
+               
                     qix++;
                 }
 
@@ -569,11 +578,18 @@ namespace XBRLProcessor.Model
 
             }
 
+            var groupcounts = logicalrule.Parameters.Select(i => i.TaxFacts.Count).Distinct().ToList();
+            if (groupcounts.Count > 1) 
+            {
+                Utilities.Logger.WriteLine(String.Format("Rule {0} has fact group issues!", logicalrule.ID));
+            }
+            /*
             //remove invalid facts
             var firstparameter = logicalrule.Parameters.FirstOrDefault();
             //var xx = Taxonomy.GetFactStringKeys(firstparameter.TaxFacts);
 
             var taxfactstoremove = new List<int>();
+
             for (int i = 0; i < firstparameter.TaxFacts.Count; i++)
             {
                 var factlist = new List<List<int>>();
@@ -612,7 +628,7 @@ namespace XBRLProcessor.Model
                 }
             }
 
-
+            */
             if (valueassertion.Test.Contains("$ReportingLevel"))
             {
                 var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel", logicalrule.ID);

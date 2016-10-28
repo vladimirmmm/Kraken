@@ -13,6 +13,7 @@ namespace LogicalModel
         public const string DynamicCode = "*";
         public const string PipeSeparator = "|";
         public const string Coma = ",";
+        public const string DefaultMember = "x0";
         public const string NewLine = "\r\n";
     }
 }

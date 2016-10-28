@@ -207,6 +207,15 @@ namespace LogicalModel
                 {
                     dimensions.Add(existing);
                 }
+                else 
+                {
+                    var defdim = new Dimension();
+                    defdim.DimensionItem = item.DimensionItem;
+                    defdim.Domain = item.Domain;
+                    defdim.DomainMember = Literals.DefaultMember;
+                    dimensions.Add(defdim);
+
+                }
             }
             return dimensions;
         }

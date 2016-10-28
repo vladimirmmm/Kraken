@@ -49,6 +49,10 @@ namespace LogicalModel
             }
             extensions.AddChildren(leafs);
             //Fixing the labels
+            if (table.ID.Contains("15")) 
+            {
+
+            }
             FixLabels(extensions);
 
             return extensions;
@@ -83,18 +87,21 @@ namespace LogicalModel
                 }
                 else
                 {
-                    var code = String.Format(Table.LabelCodeFormat, ix);
-                    var content = String.Format(Table.ExtensionLableContentFormat, code);
-                    if (hastypedextension)
+                    if (string.IsNullOrEmpty(child.Item.LabelCode))
                     {
-                        child.Item.LabelCode = Literals.DynamicCode;
+                        var code = String.Format(Table.LabelCodeFormat, ix);
+                        var content = String.Format(Table.ExtensionLableContentFormat, code);
+                        if (hastypedextension)
+                        {
+                            child.Item.LabelCode = Literals.DynamicCode;
 
+                        }
+                        else
+                        {
+                            child.Item.LabelCode = code;
+                        }
+                        child.Item.LabelContent = content;
                     }
-                    else
-                    {
-                        child.Item.LabelCode = code;
-                    }
-                    child.Item.LabelContent = content;
                 }
 
                 ix++;
