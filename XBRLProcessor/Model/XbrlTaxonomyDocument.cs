@@ -71,25 +71,32 @@ namespace XBRLProcessor.Models
 
 
                     _XmlDocument.Load(this.LocalPath);
+                    _XmlDocument.DocumentElement.SetAttribute("localpath", this.LocalPath);
+                    var localpath = _XmlDocument.DocumentElement.GetAttribute("localpath");
+                    if (String.IsNullOrEmpty(localpath))
+                    {
+
+                    }
+
                 }
                 return _XmlDocument;
             }
         }
 
-        public void test()
-        {
-            var xmlreadersettings = new XmlReaderSettings();
-            xmlreadersettings.ValidationType = ValidationType.None;
-            xmlreadersettings.DtdProcessing = DtdProcessing.Parse;
-            xmlreadersettings.ConformanceLevel = ConformanceLevel.Fragment;
-            xmlreadersettings.XmlResolver = null;
-            XmlReader xmlReader = XmlReader.Create(@"C:\Users\vladimir.balacescu\AppData\Roaming\XbrlStudio\Taxonomies\www.xbrl.org\in\bk\2009\in-gaap-roles-2009-06-30.xsd", xmlreadersettings);
-            //extract and flatten data from the xml doc
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.XmlResolver = null;
-            xmlDoc.Load(xmlReader);
+        //public void test()
+        //{
+        //    var xmlreadersettings = new XmlReaderSettings();
+        //    xmlreadersettings.ValidationType = ValidationType.None;
+        //    xmlreadersettings.DtdProcessing = DtdProcessing.Parse;
+        //    xmlreadersettings.ConformanceLevel = ConformanceLevel.Fragment;
+        //    xmlreadersettings.XmlResolver = null;
+        //    XmlReader xmlReader = XmlReader.Create(@"C:\Users\vladimir.balacescu\AppData\Roaming\XbrlStudio\Taxonomies\www.xbrl.org\in\bk\2009\in-gaap-roles-2009-06-30.xsd", xmlreadersettings);
+        //    //extract and flatten data from the xml doc
+        //    XmlDocument xmlDoc = new XmlDocument();
+        //    xmlDoc.XmlResolver = null;
+        //    xmlDoc.Load(xmlReader);
   
-        }
+        //}
 
         private List<XmlNodeHandler> structurehandlers = new List<XmlNodeHandler>();
         private Dictionary<string, bool> _RelativeReferencedFiles = new Dictionary<string, bool>();
@@ -279,7 +286,7 @@ namespace XBRLProcessor.Models
         public override void LoadDocument()
         {
             XmlDocument.LoadXml(System.IO.File.ReadAllText(LocalPath));
-
+            XmlDocument.DocumentElement.SetAttribute("localpath", LocalPath);
         }
 
         public override void ClearDocument()

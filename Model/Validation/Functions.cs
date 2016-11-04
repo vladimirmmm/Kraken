@@ -71,6 +71,42 @@ namespace LogicalModel.Validation
             _Treshold = Treshold;
 
         }
+        public static bool operator >(ValueWithTreshold lhs, decimal rhs)
+        {
+            return lhs.DecimalValue > rhs;
+        }
+        public static bool operator >(decimal lhs, ValueWithTreshold rhs)
+        {
+            return lhs > rhs.DecimalValue;
+        }
+        public static bool operator >=(ValueWithTreshold lhs, decimal rhs)
+        {
+            return lhs.DecimalValue >= rhs;
+        }
+        public static bool operator >=(decimal lhs, ValueWithTreshold rhs)
+        {
+            return lhs >= rhs.DecimalValue;
+        }
+
+        public static bool operator <(ValueWithTreshold lhs, decimal rhs)
+        {
+            return lhs.DecimalValue < rhs;
+        }
+        public static bool operator <(decimal lhs, ValueWithTreshold rhs)
+        {
+            return lhs < rhs.DecimalValue;
+        }
+
+        public static bool operator <=(ValueWithTreshold lhs, decimal rhs)
+        {
+            return lhs.DecimalValue <= rhs;
+        }
+        public static bool operator <=(decimal lhs, ValueWithTreshold rhs)
+        {
+            return lhs <= rhs.DecimalValue;
+        }
+
+
         public static bool operator ==(ValueWithTreshold lhs, decimal rhs)
         {
             return Equals(lhs.DecimalValue, rhs);

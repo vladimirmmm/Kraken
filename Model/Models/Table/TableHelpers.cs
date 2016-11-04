@@ -49,7 +49,7 @@ namespace LogicalModel
             }
             extensions.AddChildren(leafs);
             //Fixing the labels
-            if (table.ID.Contains("15")) 
+            if (table.ID.Contains("20.04")) 
             {
 
             }
@@ -62,45 +62,49 @@ namespace LogicalModel
         public static void FixLabels(Hierarchy<LayoutItem> hli)
         {
             var ix =0;
-            var hastypedextension = false;
-            var firstchild = hli.Children.FirstOrDefault();
-            if (firstchild!=null)
-            {
-                //hastypedextension = firstchild.Where(i => i.Item.Dimensions.Any(j => j.IsTyped)).Count > 1;
-                hastypedextension = firstchild.Where(i => i.Item.Dimensions.Any(j => String.IsNullOrEmpty(j.DomainMember))).Count >= 1;
-            }
 
+            var taxonomy = TaxonomyEngine.CurrentEngine.CurrentTaxonomy;
             foreach (var child in hli.Children)
             {
-                var firstnode= child.Children.FirstOrDefault();
-
-                if (child.Children.Count == 1
-                    && !String.IsNullOrEmpty(firstnode.Item.LabelCode)
-                    && !hastypedextension)
+                var firstnode = child.Children.FirstOrDefault();
+                var li = child.Item;
+                if (string.IsNullOrEmpty(li.LabelCode))
                 {
-                    child.Item.LabelCode = firstnode.Item.LabelCode;
-                    //var dim = firstchild.Item.Dimensions.FirstOrDefault();
-                    //var label = TaxonomyEngine.CurrentEngine.CurrentTaxonomy.GetLabelForDimension()
+                    if (li.Dimensions.Count == 1)
+                    {
+                        var dim = li.Dimensions.FirstOrDefault();
 
-                    child.Item.LabelContent = firstnode.Item.LabelContent;
-                    child.Item.ID = firstnode.Item.ID;
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(child.Item.LabelCode))
+                        var l = taxonomy.GetLabelForMember(dim.DomainAndMember);
+                        li.LabelCode = l.Code;
+                        li.LabelContent = l.Content;
+                    }
+                    if (li.Dimensions.Count > 1)
                     {
                         var code = String.Format(Table.LabelCodeFormat, ix);
-                        var content = String.Format(Table.ExtensionLableContentFormat, code);
-                        if (hastypedextension)
-                        {
-                            child.Item.LabelCode = Literals.DynamicCode;
+                        var content = "";
+                        var dimcodes = "";
+                        var dimlabelcontents = "";
 
-                        }
-                        else
+                        foreach (var dim in li.Dimensions)
                         {
-                            child.Item.LabelCode = code;
+                            dimcodes += dim.DomainMemberFullName + ",";
+                            var l = taxonomy.GetLabelForMember(dim.DomainAndMember);
+                            dimlabelcontents += l.Content + ",";
                         }
-                        child.Item.LabelContent = content;
+                        dimcodes = dimcodes.TrimEnd(',');
+                        dimlabelcontents = dimlabelcontents.TrimEnd(',');
+                        content = "<" + dimcodes + "><" + dimlabelcontents + ">";
+                        li.LabelCode = code;
+                        li.LabelContent = content;
+
+                    }
+                    if (li.Dimensions.Count == 0)
+                    {
+                        var code = String.Format(Table.LabelCodeFormat, ix);
+                        var content = "Default"; String.Format(Table.ExtensionLableContentFormat, ix);
+                        li.LabelCode = code;
+                        li.LabelContent = content;
+
                     }
                 }
 
@@ -114,7 +118,7 @@ namespace LogicalModel
             var result = new List<int>();
             foreach (var keypart in factintkey) 
             {
-                if (table.Taxonomy.MembersOfDimensionDomains.ContainsKey(keypart))
+                if (table.Taxonomy.DimensionDomainsOfMembers.ContainsKey(keypart))
                 {
                     var items = GetAspectItems(keypart, table);
                     if (items.Any(i => i.Contains(":x0"))) 

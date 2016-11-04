@@ -235,6 +235,7 @@ function Ajax(url, method, parameters, generichandler, contentType) {
         type: method,
         data: params,
         cache: false,
+        timeout: 300000,
         success: function (data) {
             StopProgress("ajax");
             var Id = this.url.toString();

@@ -331,7 +331,10 @@ function AjaxResponse(message: General.Message)
 {
     
     StopProgress("ajax");
-
+    if ( IsNull(message) || !("Id" in message))
+    {
+        Log("Message can't be retreieved!");
+    }
     var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == message.Id);
     if (request != null) {
         var requesthandler = <RequestHandler>request.Value;
@@ -1218,6 +1221,17 @@ function GetProperties(item: Object): General.KeyValue[]
             kv.Key = propertyName;
             kv.Value = propertyValue;
             properties.push(kv)
+        }
+    }
+    return properties;
+}
+
+function GetKeys(item: Object): any[] {
+    var properties: any[] = [];
+    for (var propertyName in item) {
+        if (item.hasOwnProperty(propertyName)) {
+            var propertyValue = item[propertyName];
+            properties.push(propertyName);
         }
     }
     return properties;

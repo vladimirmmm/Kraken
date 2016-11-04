@@ -46,6 +46,26 @@ namespace LogicalModel
             get { return _FactParts; }
             set { _FactParts = value; }
         }
+
+        private Dictionary<int, int> _TypedDimensions = new Dictionary<int, int>();
+        public Dictionary<int, int> TypedDimensions
+        {
+            get { return _TypedDimensions; }
+            set { _TypedDimensions = value; }
+        }
+
+        private Dictionary<int, int> _Concepts = new Dictionary<int, int>();
+        public Dictionary<int, int> Concepts
+        {
+            get { return _Concepts; }
+            set { _Concepts = value; }
+        }
+        private Dictionary<int, int> _DimensionDomainsOfMembers = new Dictionary<int, int>();
+        public Dictionary<int, int> DimensionDomainsOfMembers
+        {
+            get { return _DimensionDomainsOfMembers; }
+            set { _DimensionDomainsOfMembers = value; }
+        }
         private TaxonomySettings _UserSettings = new TaxonomySettings();
         public TaxonomySettings UserSettings
         {

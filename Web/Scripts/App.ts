@@ -260,15 +260,34 @@ module Applications
             LoadTab("#DetailWindow", tabselector);
            
         }
-
-        public Load()
+        private IsTaxonomyLoading: boolean = false;
+        private ShouldLoadInstance: boolean = false;
+        public LoadInstance()
         {
             var me = this;
-            me.taxonomycontainer.Table.GetFactFor = (a, b) => { return me.instancecontainer.GetFactFor(a, b); };
+            if (!me.IsTaxonomyLoading) {
+                me.instancecontainer.SetExternals();
+            }
+            else
+            {
+                me.ShouldLoadInstance = true;
+            }
+
+
+        }
+        public LoadTaxonomy()
+        {
+            var me = this;
+            me.IsTaxonomyLoading = true;
+
+            me.taxonomycontainer.Table.TaxonomyService = new Service.TaxonomyService(me.taxonomycontainer, me.instancecontainer);
             me.taxonomycontainer.SetExternals();
             me.taxonomycontainer.OnLoaded = () => {
-                me.instancecontainer.SetExternals();
-
+                me.IsTaxonomyLoading = false;
+                if (me.ShouldLoadInstance) {
+                    me.ShouldLoadInstance = false;
+                    me.LoadInstance();
+                }
             }
         }
     }

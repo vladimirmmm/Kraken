@@ -27,6 +27,7 @@ var UITableManager = (function () {
     UITableManager.prototype.LoadLayoutFromHtml = function (element, table) {
         var me = this;
         var datarows = _Select("tbody>tr", element);
+        var extensioncell = _SelectFirst("thead #Extension", element);
         var headerrowelements = _Select("thead>tr", element);
         var headerix = 0;
         var columncells = [];
@@ -136,6 +137,7 @@ var UITableManager = (function () {
         colheader.Cells = columncells.AsLinq().Select(function (i) { return Controls.Cell.ConvertFrom(i, 2 /* Header */); }).ToArray();
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
+        table.SetSheet(extensioncell);
         CallFunctionWithContext(me, me.OnLoaded, [table]);
     };
     UITableManager.prototype.ManageRows = function (table) {

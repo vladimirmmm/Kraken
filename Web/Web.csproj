@@ -308,6 +308,7 @@
     <TypeScriptCompile Include="Scripts\Table.ts" />
     <TypeScriptCompile Include="Scripts\TableManager.ts" />
     <TypeScriptCompile Include="Scripts\Taxonomy.ts" />
+    <TypeScriptCompile Include="Scripts\TaxonomyService.ts" />
     <TypeScriptCompile Include="Scripts\typings\Hubs.d.ts">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -34,7 +34,7 @@ namespace LogicalModel
         public event TaxonomyEventHandler InstanceLoadFailed;
         public event TaxonomyEventHandler InstanceLoaded;
 
-        protected Boolean IsInstanceLoading = false;
+        public Boolean IsInstanceLoading = false;
 
         public string HtmlPath = AppDomain.CurrentDomain.BaseDirectory + "UI.html";
         

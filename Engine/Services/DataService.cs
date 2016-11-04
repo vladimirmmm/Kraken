@@ -122,6 +122,8 @@ namespace Engine.Services
                                 if (part1 == "get")
                                 {
                                     var json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.CurrentInstancePath);
+                                    json = json.Replace("\r\n", "");
+
                                     result.Data = json;
                                 }
                                 if (part1 == "save")
@@ -369,9 +371,10 @@ namespace Engine.Services
                                     }
                                     if (!String.IsNullOrEmpty(cellid))
                                     {
-                                        var cells = taxonomy.CellIndexDictionary.Where(i => i.Value.IndexOf(cellid, StringComparison.Ordinal)>-1).Select(i=>i.Key);
+                                        //var cells = taxonomy.CellIndexDictionary.Where(i => i.Value.IndexOf(cellid, StringComparison.Ordinal)>-1).Select(i=>i.Key);
                                         //longcellid=cellid
-                                        query = query.Where(i => i.Value.Any(j =>cells.Contains(j)));
+                                        //query = query.Where(i => i.Value.Any(j => cells.Contains(j)));
+                                        query = query.Where(i => i.Value.Any(j=>taxonomy.CellIndexDictionary[j].IndexOf(cellid, StringComparison.OrdinalIgnoreCase)>-1));
                                     }
 
                                     rs.Items = query.Skip(pagesize * page).Take(pagesize).Select(i=>new KeyValue(taxonomy.GetFactStringKey(i.Key),i.Value)).ToList();

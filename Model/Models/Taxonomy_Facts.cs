@@ -123,7 +123,11 @@ namespace LogicalModel
         }
         public void AddCellToFact(int index, int cellix, StringBuilder sb)
         {
-            FactsManager.FactsOfPages[index].Add(cellix);
+            var cellcontainer = FactsManager.FactsOfPages[index];
+            cellcontainer.Capacity = cellcontainer.Count + 1;
+            cellcontainer.Add(cellix);
+
+            //FactsManager.FactsOfPages[index].Add(cellix);
         }
         public void AddCellToFact(int[] key, int cellix,StringBuilder sb ) 
         {
@@ -131,7 +135,11 @@ namespace LogicalModel
             {
                 sb.AppendLine(this.CellIndexDictionary[cellix] + "" + GetFactStringKey(key));
             }
-            FactsManager.FactsOfPages[key].Add(cellix);
+            var cellcontainer = FactsManager.FactsOfPages[key];
+            cellcontainer.Capacity=cellcontainer.Count+1;
+            cellcontainer.Add(cellix);
+            //FactsManager.FactsOfPages[key].Add(cellix);
+      
      
         }
         public List<string> GetCellsOfFact(IEnumerable<int> factkey)

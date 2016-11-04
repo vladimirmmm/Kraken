@@ -1,11 +1,29 @@
 ﻿<div class="listfilter">
+    <table class="filter noborder">
+        <tr>
+    
+            <td>
+                <label>Concept: </label><br /><input type="text" id="F_Concept" />
+            </td>
+        
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterConcepts()" />
+                <input type="button" value="Search" onclick="app.taxonomycontainer.FilterConcepts()" />
+
+            </td>
+        </tr>
+
+    </table>
 </div>
 <div>
     <div class="listpager pagination">
     </div>
     <ul class="list" binding-items="this">
         <li binding-type="template">
-            <span>$bind:{Content} | {ItemType} | Role: {HierarchyRole}$</span>
+            <span>$bind:{Content} | {ItemType} | Role:$</span>
+            <a href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.ShowHierarchy('{HierarchyRole}')$">$bind:{HierarchyRole}$</a>
         </li>
     </ul>
 

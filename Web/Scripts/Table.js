@@ -7,6 +7,27 @@
 /// <reference path="Binding.ts" />
 var UI;
 (function (UI) {
+    var CellMetaData = (function () {
+        function CellMetaData() {
+            this.InstanceFactKey = [];
+            this.TaxonomyFactKey = [];
+            this.Cell = null;
+        }
+        CellMetaData.prototype.SetFromControlCell = function (Cell) {
+            this.Cell = Cell;
+        };
+        CellMetaData.prototype.IsBlocked = function () {
+            return _HasClass(this.Cell.UIElement, "blocked");
+        };
+        CellMetaData.prototype.IsKey = function () {
+            return _HasClass(this.Cell.UIElement, "key");
+        };
+        CellMetaData.prototype.FactString = function () {
+            return _Attribute(this.Cell.UIElement, "factstring");
+        };
+        return CellMetaData;
+    })();
+    UI.CellMetaData = CellMetaData;
     var Table = (function () {
         function Table() {
             this.Taxonomy = null;
@@ -26,8 +47,8 @@ var UI;
             this.Current_ExtensionCode = "";
             this.Current_ReportID = "";
             this.IsInstanceLoaded = false;
+            this.TaxonomyService = null;
             this.changes = {};
-            this.GetFactFor = function (a, b) { return null; };
         }
         Table.prototype.LoadTable = function (reportid) {
             var me = this;
@@ -40,8 +61,8 @@ var UI;
                     me.SaveInstance();
                     _Html(_SelectFirst("#ReportContainer"), data);
                     me.Current_ReportID = reportid;
-                    me.SetExternals();
                     me.Load();
+                    me.SetExternals();
                     me.GetData();
                     var table = Model.Hierarchy.FirstOrDefault(app.taxonomycontainer.TableStructure, function (i) {
                         var id = i.Item.ID;
@@ -76,6 +97,7 @@ var UI;
             if (this.ExtensionsRoot.Children.length > 0) {
                 current_extension = me.ExtensionsRoot.Children[0].Item;
             }
+            me.SetCellFactKeys();
             me.LoadExtension(current_extension);
             //this.CurrentExtension = current_extension;
         };
@@ -146,18 +168,6 @@ var UI;
         Table.prototype.LoadCells = function (cells) {
             this.Cells = cells;
         };
-        Table.prototype.LoadExtension = function (li) {
-            Log("LoadExtension");
-            this.CurrentExtension = li;
-            var extensionscell = _SelectFirst("#Extension");
-            var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
-            this.Cells.forEach(function (cell, ix) {
-                //var 
-                //cell.FactString
-            });
-            _Html(extensionscell, Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
-            _Attribute(extensionscell, "title", li.FactString);
-        };
         Table.prototype.LoadInstance = function (instance) {
             var me = this;
             me.SaveInstance();
@@ -168,30 +178,21 @@ var UI;
                     me.Instance.FactDictionary = new Model.InstanceFactDictionary();
                 }
             }
+            me.UITable.Manager.ClearDynamicItems(me.UITable);
             me.UITable.Manager.Clear(me.UITable);
-            me.SetDynamicRows();
             me.SetExtensionByCode(me.Current_ExtensionCode);
+            me.SetDynamicRows();
             var c = 0;
             var cells = this.UITable.Cells; //this.Cells;
             Model.FactBase.LoadFromFactString(me.CurrentExtension);
             cells.forEach(function (cell, index) {
                 if (!_HasClass(cell, "blocked")) {
-                    var cellelement = cell.UIElement;
-                    var cell_layoutid = _Attribute(cellelement, "id");
-                    var cell_factstring = _Attribute(cellelement, "factstring");
-                    var cellfb = new Model.FactBase();
-                    cellfb.FactString = cell_factstring; //  cell.FactString;
-                    var factstring = cell_factstring;
-                    Model.FactBase.LoadFromFactString(cellfb);
-                    Model.FactBase.Merge(cellfb, me.CurrentExtension, true);
-                    Model.FactBase.RemoveDimensionsWithDefaultMemebr(cellfb);
-                    factstring = cellfb.GetFactString();
-                    if (!IsNull(factstring)) {
-                        var fact = me.GetFactFor(cellfb, cell_layoutid);
-                        if (!IsNull(fact)) {
-                            _Html(cellelement, fact.Value);
-                            c++;
-                        }
+                    var fact = me.TaxonomyService.GetFactByKey(cell.CurrentFactKey);
+                    //var str = me.TaxonomyService.GetFactStringKey(cell.CurrentFactKey);
+                    //Log(cell.RowID + "|" + cell.ColID + ": " + str);
+                    if (!IsNull(fact)) {
+                        _Html(cell.UIElement, fact.Value);
+                        c++;
                     }
                 }
             });
@@ -205,48 +206,30 @@ var UI;
             });
             ShowNotification(Format("{0} cells were populated!", c));
         };
-        Table.prototype.SaveInstance = function () {
-            return null;
+        Table.prototype.LoadExtension = function (li) {
             var me = this;
-            if (me.UITable == null) {
-                return null;
+            Log("LoadExtension");
+            this.CurrentExtension = li;
+            var extensionscell = _SelectFirst("#Extension");
+            var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
+            _Html(extensionscell, Format("{0} <br /> {1}", li.LabelCode, li.LabelContent));
+            _Attribute(extensionscell, "title", li.FactString);
+            _Attribute(extensionscell, "factkeys", li.FactKeys.join(","));
+            var cells = this.UITable.Cells; //this.Cells;
+            if (!IsNull(this.UITable.Manager.TemplateRow)) {
+                cells = cells.concat(this.UITable.Manager.TemplateRow.Cells);
             }
-            var instance = me.Instance;
-            ShowNotification("Saving Instance to UI");
-            var c = 0;
-            var cells = me.UITable.Cells; //this.Cells;
-            var facts = [];
+            if (!IsNull(this.UITable.Manager.TemplateColumn)) {
+                cells = cells.concat(this.UITable.Manager.TemplateColumn.Cells);
+            }
+            var extensionkeys = me.CurrentExtension.FactKeys;
             cells.forEach(function (cell, index) {
-                if (!_HasClass(cell, "blocked") && !IsNull(cell.ColID) && !IsNull(cell.RowID)) {
-                    var row = me.UITable.GetRowOfCell(cell);
-                    var col = me.UITable.GetColOfCell(cell);
-                    var celluielement = cell.UIElement;
-                    var value = _Text(celluielement);
-                    var dynamicfact = new Model.InstanceFact();
-                    if (_HasClass(row.UIElement, "dynamicdata")) {
-                        var keys = "";
-                        row.Cells.forEach(function (c) {
-                            if (_HasClass(c.UIElement, "key")) {
-                                dynamicfact.FactString += _Attribute(c.UIElement, "factstring");
-                                dynamicfact.FactString += _Value(c.UIElement);
-                            }
-                        });
-                    }
-                    if (_HasClass(col.UIElement, "dynamicdata")) {
-                        var keys = "";
-                        col.Cells.forEach(function (c) {
-                            if (_HasClass(c.UIElement, "key")) {
-                                dynamicfact.FactString += _Attribute(c.UIElement, "factstring");
-                                dynamicfact.FactString += _Value(c.UIElement);
-                            }
-                        });
-                    }
-                    var cellfact = new Model.InstanceFact();
-                    cellfact.FactString = _Attribute(cell.UIElement, "factstring");
-                    Model.FactBase.Merge(cellfact, dynamicfact, true);
-                    Model.FactBase.Merge(cellfact, me.CurrentExtension, true);
-                    cellfact.Value = value;
-                    Model.Instance.SaveFact(me.Instance, cellfact);
+                if (!_HasClass(cell, "blocked")) {
+                    var cellelement = cell.UIElement;
+                    var cellkey = cell.GetAxisKeys(me.UITable);
+                    //cellkey = me.TaxonomyService.MergeKeys(cellkey, extensionkeys, true);
+                    cellkey = me.TaxonomyService.GetFixedKey(cellkey);
+                    cell.CurrentFactKey = cellkey;
                 }
             });
         };
@@ -266,89 +249,159 @@ var UI;
             if (!IsNull(templaterow)) {
                 me.UITable.Manager.ClearDynamicItems(me.UITable);
                 var templatefacts = [];
+                var templatedicts = [];
                 //s
                 me.UITable.CanManageRows = false;
                 templaterow.Cells.forEach(function (cell, ix) {
-                    var factstring = _Attribute(cell.UIElement, "factstring");
-                    var fact = Model.FactBase.GetFactFromString(factstring);
+                    var fact = new Model.FactBase();
+                    if (cell.IsKey()) {
+                        var column = Controls.Cell.GetColumn(cell, me.UITable);
+                        fact.FactKeys = Controls.Cell.GetKeysFromElement(column.HeaderCell.UIElement);
+                    }
+                    else {
+                        fact.FactKeys = cell.GetAxisKeys(me.UITable);
+                    }
+                    fact.FactKeys = me.TaxonomyService.GetFixedKey(fact.FactKeys);
+                    fact.FactKeys = fact.FactKeys.AsLinq().Distinct().ToArray();
+                    var dict = {};
+                    for (var i = 0; i < fact.FactKeys.length; i++) {
+                        var key = fact.FactKeys[i];
+                        if (me.TaxonomyService.IsTyped(key)) {
+                            dict[key] = i;
+                        }
+                    }
+                    templatedicts.push(dict);
                     templatefacts.push(fact);
                 });
-                rows.forEach(function (rowitem) {
+                rows.forEach(function (rowitem, ix) {
                     var row = me.UITable.AddRow(-1, rowitem.Value);
-                    me.SetDataCells(row, rowitem, templatefacts);
+                    me.SetDataCells2(row, rowitem, templatefacts, templatedicts);
                 });
                 //me.UITable.CanManageRows = true;
                 me.UITable.Manager.ManageRows(me.UITable);
             }
             if (!IsNull(templatecol)) {
                 var templatefacts = [];
+                var templatedicts = [];
                 //s
                 me.UITable.CanManageColumns = false;
                 templatecol.Cells.forEach(function (cell, ix) {
-                    var factstring = _Attribute(cell.UIElement, "factstring");
-                    var fact = Model.FactBase.GetFactFromString(factstring);
+                    var fact = new Model.FactBase();
+                    if (cell.IsKey()) {
+                        var row = Controls.Cell.GetRow(cell, me.UITable);
+                        fact.FactKeys = Controls.Cell.GetKeysFromElement(row.HeaderCell.UIElement);
+                    }
+                    else {
+                        fact.FactKeys = cell.GetAxisKeys(me.UITable);
+                    }
+                    fact.FactKeys = me.TaxonomyService.GetFixedKey(fact.FactKeys);
+                    fact.FactKeys = fact.FactKeys.AsLinq().Distinct().ToArray();
+                    var dict = {};
+                    for (var i = 0; i < fact.FactKeys.length; i++) {
+                        var key = fact.FactKeys[i];
+                        if (me.TaxonomyService.IsTyped(key)) {
+                            dict[key] = i;
+                        }
+                    }
+                    templatedicts.push(dict);
                     templatefacts.push(fact);
                 });
-                cols.forEach(function (colitem) {
+                cols.forEach(function (colitem, ix) {
                     var col = me.UITable.AddColumn(-1, colitem.Value);
                     //me.SetCellIDs(row, null);
-                    me.SetDataCells(col, colitem, templatefacts);
+                    me.SetDataCells2(col, colitem, templatefacts, templatedicts);
                 });
                 //me.UITable.CanManageColumns = true;
                 me.UITable.Manager.ManageColumns(me.UITable);
             }
-            if (exts.length > 0) {
-                //var extitem = Model.Hierarchy.FirstOrDefault(me.ExtensionsRoot,
-                //    i=> i.Item.LabelContent == me.CurrentExtension.LabelContent);
-                //var extix = me.ExtensionsRoot.Children.indexOf(extitem);
-                //var extdictitem = exts[extix];
+            /*
+            if (exts.length > 0)
+            {
                 Log("SetExtension");
-                exts.forEach(function (item, ix) {
+
+                exts.forEach((item,ix) => {
+                   
                     var extitem = me.ExtensionsRoot.Children[ix];
                     var id = Format("Ext_{0}", item.Value);
-                    //var labelcontent = Format("Extension {0}", item.Value);
                     extitem.Item.ID = id;
                     extitem.Item.Label = new Model.Label();
                     extitem.Item.LabelCode = item.Value;
-                    //extitem.Item.LabelContent = labelcontent;
                     extitem.Item.Label.Code = item.Value;
-                    //extitem.Item.Label.Content = labelcontent;
                     extitem.Item.FactString = item.Key;
+
                 });
                 me.LoadExtension(me.CurrentExtension);
             }
+            */
         };
-        Table.prototype.SetDataCells = function (cellcontainer, ditem, templatefacts) {
+        Table.prototype.SetDataCells2 = function (cellcontainer, ditem, templatefacts, templatedicts) {
             var me = this;
             var containerfact = new Model.FactBase();
-            containerfact.FactString = ditem.Key;
-            Model.FactBase.LoadFromFactString(containerfact);
-            //Dynamic Attempt 6
-            Model.FactBase.Merge(containerfact, me.CurrentExtension);
-            var containerfactdimensionsquery = containerfact.Dimensions.AsLinq();
-            var containerfactdict = {};
             _Attribute(cellcontainer.UIElement, "factstring", ditem.Key);
+            var typedkeys = me.TaxonomyService.GetInstFactKey(ditem.Key);
+            var typeddomains = [];
+            cellcontainer.HeaderCell.SetFactKey(typedkeys);
+            var typedomainkeys = {};
+            typedkeys.forEach(function (key) {
+                var domkey = me.TaxonomyService.GetInstanceDomain(key);
+                var keystr = key.toString();
+                var instdim = me.TaxonomyService.GetFactPartFromKey(keystr);
+                var member = instdim.substr(instdim.lastIndexOf(":") + 1);
+                typedomainkeys[domkey] = member;
+                typeddomains.push(domkey);
+            });
             //var cells = _Select("td", row.UIElement);
             cellcontainer.Cells.forEach(function (cell, ix) {
                 var cellelement = cell.UIElement;
                 var templatefact = templatefacts[ix];
+                var dict = templatedicts[ix];
                 var iskey = _HasClass(cellelement, "key");
+                var cellfactkey = templatefact.FactKeys.slice();
                 if (iskey) {
-                    var celldimension = _Attribute(cell.UIElement, "factstring");
-                    celldimension = celldimension.replace(",", "");
-                    var dim = containerfactdimensionsquery.FirstOrDefault(function (i) { return Model.Dimension.GetDomainFullName(i) == celldimension; });
-                    if (dim != null) {
-                        var text = dim.DomainMember;
-                        _Html(cellelement, text);
-                    }
+                    var celldimid = cellfactkey.join(",");
+                    var text = typedomainkeys[celldimid];
+                    _Html(cellelement, text);
                 }
                 else {
-                    var fact = new Model.FactBase();
-                    Model.FactBase.Merge(fact, templatefact, true);
-                    Model.FactBase.Merge(fact, containerfact, true);
-                    var fs = fact.GetFactString();
-                    _Attribute(cellelement, "factstring", fs);
+                    var factkey = [];
+                    typedkeys.forEach(function (t, ix) {
+                        var domkey = typeddomains[ix];
+                        var tix = dict[domkey];
+                        cellfactkey[tix] = t;
+                    });
+                    cell.CurrentFactKey = cellfactkey;
                 }
+            });
+        };
+        Table.prototype.SetCellFactKeys = function () {
+            var me = this;
+            me.UITable.Rows.forEach(function (row, rix) {
+                var cell = row.HeaderCell;
+                var factstring = cell.GetFactID();
+                var key = me.TaxonomyService.GetTaxFactKey(factstring);
+                cell.SetFactKey(key);
+            });
+            me.UITable.Columns.forEach(function (col, rix) {
+                var cell = col.HeaderCell;
+                var factstring = cell.GetFactID();
+                var key = me.TaxonomyService.GetTaxFactKey(factstring);
+                cell.SetFactKey(key);
+            });
+            if (!IsNull(me.UITable.Manager.TemplateRow)) {
+                var cell = me.UITable.Manager.TemplateRow.HeaderCell;
+                var factstring = cell.GetFactID();
+                var key = me.TaxonomyService.GetTaxFactKey(factstring);
+                cell.SetFactKey(key);
+            }
+            if (!IsNull(me.UITable.Manager.TemplateColumn)) {
+                var cell = me.UITable.Manager.TemplateColumn.HeaderCell;
+                var factstring = cell.GetFactID();
+                var key = me.TaxonomyService.GetTaxFactKey(factstring);
+                cell.SetFactKey(key);
+            }
+            me.Extensions.ForEach(function (ext, eix) {
+                var item = ext;
+                item.FactKeys = me.TaxonomyService.GetTaxFactKey(item.FactString);
             });
         };
         Table.prototype.GetDynamicRowID = function (cellid, fact) {
@@ -441,6 +494,51 @@ var UI;
             extensiontemplate.Dimensions.forEach(function (dim) {
                 var domainfullname = Model.Dimension.GetDomainFullName(dim);
                 dim.DomainMember = _Value(_SelectFirst("input[fact='" + domainfullname + "']"));
+            });
+        };
+        Table.prototype.SaveInstance = function () {
+            return null;
+            var me = this;
+            if (me.UITable == null) {
+                return null;
+            }
+            var instance = me.Instance;
+            ShowNotification("Saving Instance to UI");
+            var c = 0;
+            var cells = me.UITable.Cells; //this.Cells;
+            var facts = [];
+            cells.forEach(function (cell, index) {
+                if (!_HasClass(cell, "blocked") && !IsNull(cell.ColID) && !IsNull(cell.RowID)) {
+                    var row = me.UITable.GetRowOfCell(cell);
+                    var col = me.UITable.GetColOfCell(cell);
+                    var celluielement = cell.UIElement;
+                    var value = _Text(celluielement);
+                    var dynamicfact = new Model.InstanceFact();
+                    if (_HasClass(row.UIElement, "dynamicdata")) {
+                        var keys = "";
+                        row.Cells.forEach(function (c) {
+                            if (_HasClass(c.UIElement, "key")) {
+                                dynamicfact.FactString += _Attribute(c.UIElement, "factstring");
+                                dynamicfact.FactString += _Value(c.UIElement);
+                            }
+                        });
+                    }
+                    if (_HasClass(col.UIElement, "dynamicdata")) {
+                        var keys = "";
+                        col.Cells.forEach(function (c) {
+                            if (_HasClass(c.UIElement, "key")) {
+                                dynamicfact.FactString += _Attribute(c.UIElement, "factstring");
+                                dynamicfact.FactString += _Value(c.UIElement);
+                            }
+                        });
+                    }
+                    var cellfact = new Model.InstanceFact();
+                    cellfact.FactString = _Attribute(cell.UIElement, "factstring");
+                    Model.FactBase.Merge(cellfact, dynamicfact, true);
+                    Model.FactBase.Merge(cellfact, me.CurrentExtension, true);
+                    cellfact.Value = value;
+                    Model.Instance.SaveFact(me.Instance, cellfact);
+                }
             });
         };
         return Table;

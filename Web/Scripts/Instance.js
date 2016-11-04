@@ -84,6 +84,7 @@ var Control;
         };
         InstanceContainer.prototype.LoadInstance = function (onloaded) {
             var me = this;
+            Log("Instance: Getting facts");
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
                 me.Instance = data;
                 var instdata = data;
@@ -92,7 +93,32 @@ var Control;
                 ifd.FactsByInstanceKey = instdata.FactDictionary.FactsByInstanceKey;
                 ifd.FactsByTaxonomyKey = instdata.FactDictionary.FactsByTaxonomyKey;
                 ifd.GetIntKey = function (s) { return me.GetFactKeyStringFromFactString(s); };
+                me.Instance.DimensionDomainOfTypedFactMembers = {};
+                for (var item in me.Instance.TypedFactMembers) {
+                    if (me.Instance.TypedFactMembers.hasOwnProperty(item)) {
+                        var val = me.Instance.TypedFactMembers[item];
+                        var members = val;
+                        members.forEach(function (member) {
+                            me.Instance.DimensionDomainOfTypedFactMembers[member] = parseInt(item);
+                        });
+                    }
+                }
                 me.Instance.FactDictionary = ifd;
+                var ix = 0;
+                for (var item in me.Instance.FactDictionary.FactsByIndex) {
+                    if (me.Instance.FactDictionary.FactsByIndex.hasOwnProperty(item)) {
+                        var fact = me.Instance.FactDictionary.FactsByIndex[item];
+                        var parts = fact.Content.split("@");
+                        fact.ContextID = parts[0];
+                        fact.UnitID = parts[1];
+                        fact.Decimals = parts[2];
+                        fact.Value = parts[3];
+                        fact.Cells = parts[4].split(", ");
+                        fact.ID = item;
+                        ix++;
+                    }
+                }
+                Log("Instance: Facts received: " + ix.toString() + "!");
                 me.LoadToUI();
                 CallFunction(onloaded);
             }, function (error) {
@@ -171,6 +197,18 @@ var Control;
             }
             return fact;
         };
+        InstanceContainer.prototype.GetFactbyKey = function (key) {
+            var me = this;
+            var fact = null;
+            var keystr = key.join(",");
+            if (me.Instance.FactDictionary.ContainsKey(keystr)) {
+                var facts = me.Instance.FactDictionary.GetFacts(keystr);
+                if (facts.length > 0) {
+                    fact = facts.AsLinq().FirstOrDefault();
+                }
+            }
+            return fact;
+        };
         InstanceContainer.prototype.LoadToUI = function () {
             var me = this;
             //me.Sel(s_detail_selector).hide();
@@ -184,9 +222,12 @@ var Control;
                 me.Instance.Facts = [];
             }
             me.Instance.CounterFactParts = {};
-            GetProperties(me.Instance.FactParts).forEach(function (item, ix) {
-                me.Instance.CounterFactParts[item.Value] = item.Key;
-            });
+            for (var item in me.Instance.FactParts) {
+                if (me.Instance.FactParts.hasOwnProperty(item)) {
+                    var val = me.Instance.FactParts[item];
+                    me.Instance.CounterFactParts[val] = item;
+                }
+            }
             for (var key in dict) {
                 if (dict.hasOwnProperty(key)) {
                     var factlist = me.Instance.FactDictionary.GetFacts(key);

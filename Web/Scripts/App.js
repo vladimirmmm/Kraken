@@ -10,6 +10,8 @@ var Applications;
             this.Tabs_instance = null;
             this.TaskManager = new ProgressManager("#progressbar");
             this.MenuAccessorFunction = null;
+            this.IsTaxonomyLoading = false;
+            this.ShouldLoadInstance = false;
         }
         App.prototype.MenuCommand = function (id) {
             var me = this;
@@ -209,14 +211,26 @@ var Applications;
             //LoadTab("#ConsoleWindow", tabselector);
             LoadTab("#DetailWindow", tabselector);
         };
-        App.prototype.Load = function () {
+        App.prototype.LoadInstance = function () {
             var me = this;
-            me.taxonomycontainer.Table.GetFactFor = function (a, b) {
-                return me.instancecontainer.GetFactFor(a, b);
-            };
+            if (!me.IsTaxonomyLoading) {
+                me.instancecontainer.SetExternals();
+            }
+            else {
+                me.ShouldLoadInstance = true;
+            }
+        };
+        App.prototype.LoadTaxonomy = function () {
+            var me = this;
+            me.IsTaxonomyLoading = true;
+            me.taxonomycontainer.Table.TaxonomyService = new Service.TaxonomyService(me.taxonomycontainer, me.instancecontainer);
             me.taxonomycontainer.SetExternals();
             me.taxonomycontainer.OnLoaded = function () {
-                me.instancecontainer.SetExternals();
+                me.IsTaxonomyLoading = false;
+                if (me.ShouldLoadInstance) {
+                    me.ShouldLoadInstance = false;
+                    me.LoadInstance();
+                }
             };
         };
         return App;

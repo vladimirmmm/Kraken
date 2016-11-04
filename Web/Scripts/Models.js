@@ -220,6 +220,7 @@ var Model;
             this.Concept = null;
             this.Dimensions = [];
             this.FactString = "";
+            this.FactKeys = [];
         }
         FactBase.prototype.GetFactString = function () {
             var me = this;
@@ -265,15 +266,6 @@ var Model;
             }
             return result;
         };
-        //public get FactString(): string {
-        //    if (IsNull(this._FactString)) {
-        //        this._FactString = this.GetFactString();
-        //    }
-        //    return this._FactString;
-        //}
-        //public set FactString(value:string) {
-        //    this._FactString = value;
-        //}
         FactBase.Merge = function (target, item, overwrite) {
             if (overwrite === void 0) { overwrite = false; }
             if (IsNull(target.Concept)) {
@@ -639,6 +631,8 @@ var Model;
             this.FactDictionary = null;
             this.FactParts = {};
             this.CounterFactParts = {};
+            this.TypedFactMembers = {};
+            this.DimensionDomainOfTypedFactMembers = {};
             this.FactIDDictionary = null;
             this.DynamicCellDictionary = {};
             this.DynamicReportCells = {};

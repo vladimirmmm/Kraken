@@ -455,6 +455,7 @@ namespace XBRLProcessor.Models
 
                     }
                 }
+                var typeddims = new Dictionary<string, int>();
                 foreach (var dimelement in this.DimensionItems)
                 {
                     if (!String.IsNullOrEmpty(dimelement.TypedDomainRef))
@@ -468,10 +469,15 @@ namespace XBRLProcessor.Models
                             dimdict.Add(key, new List<string>());
                         }
                         var typeddomain = String.Format("{0}:{1}", eldoc.TargetNamespacePrefix, domainelement.Name);
+                        var dimdomkey = string.Format("[{0}]{1}", key, typeddomain);
+                        if (!typeddims.ContainsKey(dimdomkey)) 
+                        {
+                            typeddims.Add(dimdomkey, -2);
+                        }
                         dimdict[key].Add(typeddomain);
                     }
                 }
-
+              
                 var memtodomdefinitions = new List<DefinitionLink>();
                 foreach (var doc in memtodom_docs)
                 {
@@ -523,7 +529,7 @@ namespace XBRLProcessor.Models
                     foreach (var dom in dim.Value)
                     {
                         var dimdom = String.Format("[{0}]{1}", dim.Key, dom);
-
+                      
                         memebrsofdomain.Add(dimdom,new List<string>(){});
                         var dimdomkvp = memebrsofdomain[dimdom];
                         if (domdict.ContainsKey(dom))
@@ -552,6 +558,15 @@ namespace XBRLProcessor.Models
                 foreach (var dim in dimlist)
                 {
                     //sb.AppendLine(dim);
+                    if (typeddims.ContainsKey(dim))
+                    {
+                        typeddims[dim] = ix;
+                        this.Module.TypedDimensions.Add(ix, 0);
+                    }
+                    if (Concepts.ContainsKey(dim)) 
+                    {
+                        this.Module.Concepts.Add(ix, 0);
+                    }
                     FactParts.Add(dim, ix);
                     CounterFactParts.Add(ix, dim);
                     ix++;
@@ -564,14 +579,14 @@ namespace XBRLProcessor.Models
                     var int_dimdommemberlist = dimdomembers.Select(i => FactParts[i]).ToList();
                     foreach (var memberkey in int_dimdommemberlist) 
                     {
-                        MembersOfDimensionDomains.Add(memberkey, int_dimdomkey);
+                        DimensionDomainsOfMembers.Add(memberkey, int_dimdomkey);
                     }
-                    MembersOfDimensionDomains.Add(int_dimdomkey, int_dimdomkey);
+                    DimensionDomainsOfMembers.Add(int_dimdomkey, int_dimdomkey);
                 }
           
                 fd.CounterFactParts = CounterFactParts;
                 fd.FactParts = FactParts;
-                fd.MembersOfDimensionDomains = MembersOfDimensionDomains;
+                fd.DimensionDomainsOfMembers = DimensionDomainsOfMembers;
                 Utilities.FS.WriteAllText(this.TaxonomyDimensionPath, Utilities.Converters.ToJson(fd));
 
             }
@@ -581,7 +596,7 @@ namespace XBRLProcessor.Models
                 fd = Utilities.Converters.JsonTo<FactDictionaries>(Utilities.FS.ReadAllText(this.TaxonomyDimensionPath));
                 this.CounterFactParts = fd.CounterFactParts;
                 this.FactParts = fd.FactParts;
-                this.MembersOfDimensionDomains = fd.MembersOfDimensionDomains == null ? new Dictionary<int, int>() : fd.MembersOfDimensionDomains;
+                this.DimensionDomainsOfMembers = fd.DimensionDomainsOfMembers == null ? new Dictionary<int, int>() : fd.DimensionDomainsOfMembers;
             }
             //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
             //foreach (var item in dimensiondomainparts) 
@@ -596,7 +611,7 @@ namespace XBRLProcessor.Models
             public Dictionary<string, int> FactParts { get; set; }
             public Dictionary<int, string> CounterFactParts { get; set; }
             //public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
-            public Dictionary<int, int> MembersOfDimensionDomains { get; set; }
+            public Dictionary<int, int> DimensionDomainsOfMembers { get; set; }
 
 
         }
@@ -677,7 +692,8 @@ namespace XBRLProcessor.Models
             {
                 if (filingindicatorsdoc.XmlDocument != null)
                 {
-                    var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, "//gen:link");
+                    var xpathcontainer = Utilities.Xml.GetXPath("//gen:link");
+                    var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, xpathcontainer);
                     if (genlinknode != null)
                     {
                         foreach (XmlNode node in genlinknode)
@@ -704,7 +720,9 @@ namespace XBRLProcessor.Models
                 var predoc = this.TaxonomyDocumentDictionary[predocpath];
                 if (predoc != null)
                 {
-                    var genlinknode = Utilities.Xml.SelectSingleNode(predoc.XmlDocument.DocumentElement, "//gen:link");
+                    var xpathcontainer = Utilities.Xml.GetXPath("//gen:link");
+
+                    var genlinknode = Utilities.Xml.SelectSingleNode(predoc.XmlDocument.DocumentElement, xpathcontainer);
                     if (genlinknode != null)
                     {
                         var hier = new XbrlHierarchy<LogicalModel.Base.IdentifiablewithLabel>();
@@ -791,7 +809,8 @@ namespace XBRLProcessor.Models
 
             foreach (var doc in validationsetdocuments) 
             {
-                var genlinknode = Utilities.Xml.SelectSingleNode(doc.XmlDocument.DocumentElement, "//gen:link");
+                var xpathcontainer = Utilities.Xml.GetXPath("//gen:link");
+                var genlinknode = Utilities.Xml.SelectSingleNode(doc.XmlDocument.DocumentElement, xpathcontainer);
                 if (genlinknode != null)
                 {
                     var hier = new AssertionSet();
@@ -869,7 +888,9 @@ namespace XBRLProcessor.Models
 
                     foreach (var validdoc in validationdocuments)
                     {
-                        var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, "//gen:link");
+                        var xpathcontainer = Utilities.Xml.GetXPath("//gen:link");
+
+                        var node = Utilities.Xml.SelectSingleNode(validdoc.XmlDocument.DocumentElement, xpathcontainer);
                         var validation = new XbrlValidation();
                         validation.Taxonomy = this;
                         Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
@@ -1150,7 +1171,7 @@ namespace XBRLProcessor.Models
                 }
               
 
-                MapLayout(layoutdocument.XmlDocument.ChildNodes[0], table);
+                MapLayout(layoutdocument.XmlDocument.DocumentElement, table);
 
                 table.LoadDefinitionHierarchy(logicaltable);
                 table.LoadLayoutHierarchy(logicaltable);
@@ -1165,6 +1186,10 @@ namespace XBRLProcessor.Models
 
                 this.Module.TablePaths.Add(logicaltable.JsonFileName);
                 this.Tables.Add(logicaltable);
+
+                layoutdocument.ClearDocument();
+                definitiondocument.ClearDocument();
+                taxonomydocument.ClearDocument();
                 //this.TaxonomyTables.Add(table);
             }
         
@@ -1282,14 +1307,20 @@ namespace XBRLProcessor.Models
 
         public void MapLayout(XmlNode node, XbrlTable instance)
         {
-            var rootnode = Utilities.Xml.SelectSingleNode(node, "//" + Tags.TableLayoutContainer);
+            var xpathcontainer = Utilities.Xml.GetXPath("//" + Tags.TableLayoutContainer);
+            var rootnode = Utilities.Xml.SelectSingleNode(node, xpathcontainer);
+            if (rootnode == null) 
+            {
+
+            }
             var table = Mappings.CurrentMapping.Map<XbrlTable>(rootnode, instance);
         }
 
         public void MapDefinition(XmlNode node, XbrlTable instance)
         {
-        
-            var rootnode = Utilities.Xml.SelectSingleNode(node, "//" + Tags.LinkBase);
+            var xpathcontainer = Utilities.Xml.GetXPath("//" + Tags.LinkBase);
+
+            var rootnode = Utilities.Xml.SelectSingleNode(node, xpathcontainer);
             var table = Mappings.CurrentMapping.Map<XbrlTable>(rootnode, instance);
 
         }
@@ -1325,7 +1356,7 @@ namespace XBRLProcessor.Models
             //this.FactsOfDimensionsD.Clear();
             this.FactsManager.Clear();
         
-            this.MembersOfDimensionDomains.Clear();
+            this.DimensionDomainsOfMembers.Clear();
      
             this.TaxonomyDocuments.Clear();
             this.Cells.Clear();
@@ -1353,8 +1384,11 @@ namespace XBRLProcessor.Models
             link.Href = this.SourceTaxonomyPath;
             //set the xml
             var doc = new XmlDocument();
+
             var docelement = doc.CreateElement("xbrli:xbrl");
             doc.AppendChild(docelement);
+            doc.DocumentElement.SetAttribute("localpath", "emptyinstance");
+
             instance.SetDocument(doc);
             //set the period
             instance.ReportingPeriod = new LogicalModel.Period();

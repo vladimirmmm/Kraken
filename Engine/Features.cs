@@ -77,6 +77,10 @@ namespace Engine
         private void Engine_TaxonomyLoaded(object sender, EventArgs e)
         {
             LoadTaxonomyToUI();
+            if (!Engine.IsInstanceLoading) 
+            {
+                InstanceToUI();
+            }
         }
         
         public Instance CurrentInstance
@@ -413,22 +417,20 @@ namespace Engine
         {
             SetRegValue(RegSettingsPath + "LastInstance", path);
             AddToRecent(RecentInstances,RegKey_Recent_Instances, path);
-            
-            Engine.InstanceLoaded -= Engine_InstanceLoaded;
-            Engine.InstanceLoaded += Engine_InstanceLoaded;
+
             Engine.TaxonomyLoad -= Engine_TaxonomyLoad;
             Engine.TaxonomyLoad += Engine_TaxonomyLoad;
+
             Engine.TaxonomyLoaded -= Engine_TaxonomyLoaded;
             Engine.TaxonomyLoaded += Engine_TaxonomyLoaded;
+
+            Engine.InstanceLoaded -= Engine_InstanceLoaded;
+            Engine.InstanceLoaded += Engine_InstanceLoaded;
+     
             Engine.LoadInstance(path);
 
-      
-           
-            LoadInstanceToUI();
-            if (Settings.ValidateOnInstanceLoaded) 
-            {
-                ValidateInstance();
-            }
+
+     
             //ValidateInstance();
         }
         
@@ -437,28 +439,22 @@ namespace Engine
             SetRegValue(RegSettingsPath + "LastTaxonomy", e.FilePath);
             AddToRecent(RecentTaxonomies, RegKey_Recent_Taxonomies, e.FilePath);
         }
-        
+        public void InstanceToUI() 
+        {
+            var msg = new Message();
+            msg.Category = "action";
+            msg.Data = "instanceloaded";
+            UI.ToUI(msg);
+        }
         private void Engine_InstanceLoaded(object sender, EventArgs e)
         {
-            UIReload();
-            var msg = new Message();
-            msg.Category="action";
-            msg.Data="instanceloaded";
-            UI.ToUI(msg);
-
-        }
-
-        public void UIReload() 
-        {
-
-            if (UI.DispatcherCheckAccess())
+            InstanceToUI();
+      
+            if (Settings.ValidateOnInstanceLoaded)
             {
-                UI.BrowserRefresh();
+                ValidateInstance();
             }
-            else 
-            {
-                UI.DispatcherInvoke(() => { LoadInstanceToUI(); });
-            }
+
         }
         
         public void CloseInstance()
@@ -606,18 +602,6 @@ namespace Engine
                         }
                     }
                 }
-            }
-        }
-
-        public void LoadInstanceToUI()
-        {
-            if (UI.DispatcherCheckAccess())
-            {
-            
-            }
-            else
-            {
-                UI.DispatcherInvoke(() => { LoadInstanceToUI(); });
             }
         }
 

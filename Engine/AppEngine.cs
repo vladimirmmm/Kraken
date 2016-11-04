@@ -14,10 +14,12 @@ namespace Engine
     {
         public Features Features = new Features();
         public DataService DataService = null;
+        public UIService UIService = null;
 
         public void Start(UIService ui)
         {
             DataService = new Services.DataService(this);
+            UIService = ui;
             Features.DataService = DataService;
             Features.Start(ui);
             

@@ -78,6 +78,22 @@ var Control;
                 console.log(error);
             });
         };
+        TaxonomyContainer.prototype.ShowHierarchy = function (role) {
+            var me = this;
+            me.ActivateTab(me.s_hierarchy_selector);
+            var container = _SelectFirst(me.s_hierarchy_selector);
+            if (!IsNull(container)) {
+                var item = _SelectFirst("li[rel='" + role + "']", container);
+                if (!IsNull(item)) {
+                    _AddClass(item, "selected");
+                    me.ExpandHierarchy('#hierarchytreeview', me.Taxonomy.Hierarchies, item);
+                    _Focus(item);
+                }
+            }
+        };
+        TaxonomyContainer.prototype.ActivateTab = function (selector) {
+            $('a[href="' + selector + '"]').click();
+        };
         TaxonomyContainer.prototype.SetHeight = function () {
             var bodyheight = $("td.th2").height();
             var pivotheight1 = (bodyheight - 70) + "px";
@@ -122,11 +138,26 @@ var Control;
                 var m = me.Taxonomy.Module;
                 BindX($("#TaxonomyInfo"), m);
                 BindX($("#TaxonomyGeneral"), m);
-                GetProperties(m.FactParts).forEach(function (item, ix) {
-                    me.Taxonomy.FactParts[item.Key] = item.Value;
-                    me.Taxonomy.CounterFactParts[item.Value] = item.Key;
-                });
+                for (var item in m.FactParts) {
+                    if (m.FactParts.hasOwnProperty(item)) {
+                        var val = m.FactParts[item];
+                        me.Taxonomy.FactParts[item] = val;
+                        me.Taxonomy.CounterFactParts[val] = item;
+                    }
+                }
                 m.FactParts = null;
+                var dict = m.DimensionDomainsOfMembers;
+                m.MembersofDimensionDomains = {};
+                var counterdict = m.MembersofDimensionDomains;
+                for (var item in dict) {
+                    if (dict.hasOwnProperty(item)) {
+                        var val = dict[item];
+                        if (!(val in counterdict)) {
+                            counterdict[val] = [];
+                        }
+                        counterdict[val].push(parseInt(item));
+                    }
+                }
                 me.OnLoaded();
             }, function (error) {
                 console.log(error);
@@ -292,6 +323,9 @@ var Control;
             if (_TagName(target).toLowerCase() != "li") {
                 target = _Parents(target).AsLinq().FirstOrDefault(function (i) { return _TagName(i).toLowerCase() == "li"; });
             }
+            me.ExpandHierarchy(selector, data, target);
+        };
+        TaxonomyContainer.prototype.ExpandHierarchy = function (selector, data, target) {
             var uid = _Attribute(target, "uid");
             var data = Model.Hierarchy.FirstOrDefault(data, function (i) { return i["uid"] == uid; });
             if (data.Children.length > 0) {
@@ -306,6 +340,21 @@ var Control;
                     });
                 }
             }
+        };
+        TaxonomyContainer.prototype.ClearFilterConcepts = function () {
+            $("input[type=text]", "#LabelFilter ").val("");
+            $("textarea", "#LabelFilter ").val("");
+            this.FilterLabels();
+        };
+        TaxonomyContainer.prototype.FilterConcepts = function () {
+            var me = this;
+            var f_concept = _Value(me.SelFromConcept(s_listfilter_selector + " #F_Concept")).toLowerCase().trim();
+            var query = GetKeys(me.Taxonomy.Concepts).AsLinq();
+            //var query = me.Taxonomy.Concepts.AsLinq<Model.Concept>();
+            if (!IsNull(f_concept)) {
+                query = query.Where(function (i) { return i.toLowerCase().indexOf(f_concept) > -1; }).Select(function (i) { return me.Taxonomy.Concepts[i]; });
+            }
+            LoadPage(me.SelFromConcept(s_list_selector), me.SelFromConcept(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
         };
         TaxonomyContainer.prototype.ClearFilterLabels = function () {
             $("input[type=text]", "#LabelFilter ").val("");

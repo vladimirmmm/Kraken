@@ -71,6 +71,7 @@ namespace Web.Controllers
             //msg[Category]=ajax&msg[Url]=Layout/Taxonomy_Validations.html&msg[Id]=6b256208-c7b7-ada8-93d6-eee130f3c0ca&msg[ContentType]=text/html&_=1447835900729
             var msg = GetMessageFromRequest();
             var features = MvcApplication.engine.Features;
+
             var jmsg = features.ProcessRequest(msg);
             JsonNetResult jsonNetResult = new JsonNetResult();
             //jsonNetResult.Formatting = Formatting.Indented;
@@ -85,6 +86,8 @@ namespace Web.Controllers
             var features = MvcApplication.engine.Features;
             var jmsg = features.ProcessRequest(msg);
             JsonNetResult jsonNetResult = new JsonNetResult();
+            jmsg.Data = jmsg.Data.Replace("\r\n", "");
+
             //jsonNetResult.Formatting = Formatting.Indented;
             jsonNetResult.Data = jmsg;
 

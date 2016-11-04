@@ -271,6 +271,9 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
 }
 function AjaxResponse(message) {
     StopProgress("ajax");
+    if (IsNull(message) || !("Id" in message)) {
+        Log("Message can't be retreieved!");
+    }
     var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == message.Id; });
     if (request != null) {
         var requesthandler = request.Value;
@@ -1065,6 +1068,16 @@ function GetProperties(item) {
             kv.Key = propertyName;
             kv.Value = propertyValue;
             properties.push(kv);
+        }
+    }
+    return properties;
+}
+function GetKeys(item) {
+    var properties = [];
+    for (var propertyName in item) {
+        if (item.hasOwnProperty(propertyName)) {
+            var propertyValue = item[propertyName];
+            properties.push(propertyName);
         }
     }
     return properties;

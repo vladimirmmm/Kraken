@@ -24,6 +24,7 @@ class UITableManager implements Controls.ITableManager {
     LoadLayoutFromHtml(element: Element, table: Controls.Table) {
         var me = this;
         var datarows = _Select("tbody>tr", element);
+        var extensioncell = _SelectFirst("thead #Extension", element);
         var headerrowelements = _Select("thead>tr", element);
         var headerix = 0;
         var columncells: Element[] = [];
@@ -151,6 +152,8 @@ class UITableManager implements Controls.ITableManager {
 
         table.RowHeader = colheader;
         table.ColumnHeader = rowheader;
+
+        table.SetSheet(extensioncell);
         CallFunctionWithContext(me, me.OnLoaded, [table]);
 
     }

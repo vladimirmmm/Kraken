@@ -70,6 +70,8 @@ namespace Model.InstanceModel
                     _XmlDocument = new XmlDocument();
                     _XmlDocument.XmlResolver = null;
                     _XmlDocument.Load(this.FullPath);
+                    _XmlDocument.DocumentElement.SetAttribute("localpath", this.FullPath);
+
                 }
                 return _XmlDocument;
             }
@@ -165,6 +167,7 @@ namespace Model.InstanceModel
                 }
 
             }
+            ct.Dimensions = ct.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal).ToList();
 
         }
       
@@ -213,9 +216,13 @@ namespace Model.InstanceModel
                             var typedmemberid = FactParts[dimstr];
                             if (!this.TypedFactMembers.ContainsKey(dimdompartid))
                             {
-                                this.TypedFactMembers.Add(dimdompartid, new List<int>());
+                                this.TypedFactMembers.Add(dimdompartid, new HashSet<int>());
                             }
-                            this.TypedFactMembers[dimdompartid].Add(typedmemberid);
+                            if (!this.TypedFactMembers[dimdompartid].Contains(typedmemberid))
+                            {
+                                this.TypedFactMembers[dimdompartid].Add(typedmemberid);
+                                this.CounterTypedFactMembers.Add(typedmemberid, dimdompartid);
+                            }
                         }
                      
                         dimension.MapID = GetPartID(dimstr);
@@ -229,6 +236,7 @@ namespace Model.InstanceModel
                     }
                 }
                 ct.SetContent();
+                ct.Dimensions.Clear();
             }
             var conceptnsurilist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.NamespaceURI).Distinct().ToList();
             foreach (var conceptnsuri in conceptnsurilist)
@@ -296,7 +304,6 @@ namespace Model.InstanceModel
                 logicalfact.Concept = new LogicalModel.Concept();
                 logicalfact.Concept.Content = xbrlfact.Concept;
                 logicalfact.Value = xbrlfact.Value;
-
                 this.FactDictionary.AddFact(logicalfact);
                 this.Facts.Add(logicalfact);
               

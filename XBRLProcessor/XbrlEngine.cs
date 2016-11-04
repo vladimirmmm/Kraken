@@ -217,14 +217,20 @@ namespace XBRLProcessor
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
             CurrentXbrlInstance.LoadSimple();
-
+        
             CurrentInstanceTaxonomyLoaded = (object o, TaxonomyEventArgs e) =>
             {
+                //Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
+                
                 CurrentInstance.SetTaxonomy(CurrentTaxonomy);
-                CurrentXbrlInstance.LoadComplex();
-                Trigger_InstanceLoaded(filepath);
+               
+                Task.Factory.StartNew(()=>{
+                     CurrentXbrlInstance.LoadComplex();
+                    Trigger_InstanceLoaded(filepath);
+                    Logger.WriteLine("Loading Instance finished");
 
-                Logger.WriteLine("Loading Instance finished");
+                });
+
             };
             CurrentInstanceTaxonomyLoadFailed = (object o, TaxonomyEventArgs e) =>
             {

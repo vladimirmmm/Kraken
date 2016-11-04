@@ -94,9 +94,11 @@ namespace LogicalModel
         protected Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
 
 
-        private Dictionary<int, List<int>> _TypedFactMembers = new Dictionary<int, List<int>>();
+        private Dictionary<int, HashSet<int>> _TypedFactMembers = new Dictionary<int, HashSet<int>>();
         [JsonProperty]
-        public Dictionary<int, List<int>> TypedFactMembers { get { return _TypedFactMembers; } set { _TypedFactMembers = value; } }
+        public Dictionary<int, HashSet<int>> TypedFactMembers { get { return _TypedFactMembers; } set { _TypedFactMembers = value; } }
+       
+        public Dictionary<int, int> CounterTypedFactMembers = new Dictionary<int, int>();
 
         public void CreateHtml() 
         {
@@ -349,7 +351,7 @@ namespace LogicalModel
                 {
                     //sb.AppendFormat(String.Format("Invalid Fact ({0}, {1}) {2}!\n", fact.Concept, fact.ContextID, fact.FactString));
                     invalidfacts.Add(fact.FactKey);
-                    sb_invalidfacts.Append(String.Format("<{0}|{1}|{2}>, ", fact.Concept.FullName, fact.ContextID, fact.Value));
+                    sb_invalidfacts.Append(String.Format("<{0} id:\"{1}\" ct:\"{2}\" val:\"{3}\">, ", fact.Concept.FullName, fact.ID, fact.ContextID, fact.Value));
                 }
                 TaxValidation.ValidateByTypedDimension(fact, ValidationRuleResults, invalidtypevalues);
                 TaxValidation.ValidateByConcept(fact, ValidationRuleResults, invalidtypevalues);
@@ -533,6 +535,8 @@ namespace LogicalModel
                 else
                 {
                 }
+                fact.SetContent();
+
             }
 
             foreach (var key in reportdict.Keys)

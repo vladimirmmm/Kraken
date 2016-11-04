@@ -644,7 +644,7 @@ namespace LogicalModel
             Y_Axis.Clear();
             Z_Axis.Clear();
 
-            if (this.ID.Contains("02")) 
+            if (this.ID.Contains("20")) 
             {
 
             }
@@ -835,7 +835,7 @@ namespace LogicalModel
                                     //var item = this.Taxonomy.GetCellsOfFact(factintkey);
                                     //item.Add(xcell.CellID);
 
-                                    this.Taxonomy.AddCellToFact(factintkey, cellix, sbe);
+                                    this.Taxonomy.AddCellToFact(factintkey, cellix, null);//sbe
                                     cell.IsBlocked = false;
 
                                 }
@@ -939,7 +939,7 @@ namespace LogicalModel
             FactindexList.Clear();
 
             System.IO.File.WriteAllText(LayoutPath.Replace(".txt",".sbe.dat"), sbe.ToString());
-
+            sbe.Clear();
 
             CreateHtmlLayout();
             this.LayoutRoot = lr;
@@ -1054,7 +1054,7 @@ namespace LogicalModel
                     colclass = "dynamic";
                 }
                 colclass = String.IsNullOrEmpty(colclass) ? "" : "class=\"" + colclass + "\"";
-                columncoderow = columncoderow + String.Format("<th {0} {1}>{2}</th>\r\n", colclass, "", column.Item.LabelCode);
+                columncoderow = columncoderow + String.Format("<th {0} {1} factid=\"{3}\">{2}</th>\r\n", colclass, "", column.Item.LabelCode, column.Item.FactString);
 
             }
             sb.AppendLine("<tr>");
@@ -1098,16 +1098,12 @@ namespace LogicalModel
                 
                 //adding the label cell
 
-                sb.AppendLine(String.Format("<th class=\"title left\" {0}{1} factid=\"{3}\" title=\"{4}\">{2}</th>", 
+                sb.AppendLine(String.Format("<th class=\"title left\" {0}{1} factid=\"{3}\" title=\"{4}\">{2}</th>",
                 colspan, rowspan,
-                row.Item.LabelContent, row.Item.FactString, row.Item.LabelID+"  "+row.Item.FactString));
+                row.Item.LabelContent, row.Item.FactString, row.Item.LabelID + "  " + row.Item.FactString));
                 
                 //adding the code cell
-                if (String.IsNullOrEmpty(row.Item.LabelCode))
-                {
-
-                }
-                sb.AppendLine(String.Format("<th class=\"code left\">{0}</th>", row.Item.LabelCode));
+                sb.AppendLine(String.Format("<th class=\"code left\" factid=\"{1}\">{0}</th>", row.Item.LabelCode, row.Item.FactString));
 
                 //adding the data cells
                 foreach (var column in Columns) 
@@ -1134,10 +1130,14 @@ namespace LogicalModel
                     
                     }
                     var rl = String.IsNullOrEmpty(cell.Role) ? "" : String.Format("role=\"{0}\"", cell.Role);
+                    //sb.AppendLine(String.Format(
+                    //    "<td id=\"{0}\" {3} factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>",
+                    //    alt, cssclass, cell.FactKey, rl
+                    //    ));
                     sb.AppendLine(String.Format(
-                        "<td id=\"{0}\" {3} factstring=\"{2}\" class=\"{1}\" title=\"{0}\"></td>",
-                        alt, cssclass, cell.FactKey, rl
-                        ));
+                   "<td id=\"{0}\" {2} class=\"{1}\" title=\"{0}\"></td>",
+                   alt, cssclass, rl
+                   ));
                     colix++;
                 }
 

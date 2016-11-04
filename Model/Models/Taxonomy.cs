@@ -51,7 +51,7 @@ namespace LogicalModel
 
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
         //public SortedDictionary<int, List<int>> MembersOfDimensionDomains = new SortedDictionary<int, List<int>>();
-        public Dictionary<int, int> MembersOfDimensionDomains = new Dictionary<int, int>();
+        public Dictionary<int, int> DimensionDomainsOfMembers = new Dictionary<int, int>();
 
         public Dictionary<int, string> CellIndexDictionary = new Dictionary<int, string>();
 
@@ -359,7 +359,7 @@ namespace LogicalModel
             //var maxKey = Array.BinarySearch(MembersOfDimensionDomainsIndex, factpartkey);
             //var minix = maxKey >= 0 ? maxKey : ~maxKey - 1;
             //return MembersOfDimensionDomainsIndex[minix];
-            return MembersOfDimensionDomains.ContainsKey(factpartkey) ? MembersOfDimensionDomains[factpartkey] : -1;
+            return DimensionDomainsOfMembers.ContainsKey(factpartkey) ? DimensionDomainsOfMembers[factpartkey] : -1;
             
             //var keys = MembersOfDimensionDomains.Keys.ToList();
             //for (int i =0;i<keys.Count;i++)
@@ -442,7 +442,7 @@ namespace LogicalModel
         public FactFilter GetFactPartPool(int[] fact, FactsPartsDictionary factsofparts) 
         {
             var filter = new FactFilter();
-            var domainkeys = fact.Where(i => this.MembersOfDimensionDomains.ContainsKey(i)).ToList();
+            var domainkeys = fact.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i)).ToList();
             var memberkeys = fact.Except(domainkeys).ToList();
 
 
@@ -518,7 +518,7 @@ namespace LogicalModel
         public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts)
         {
             var result = new List<int>();
-            var domainkeys = factkey.Where(i => this.MembersOfDimensionDomains.ContainsKey(i) && this.MembersOfDimensionDomains[i] == i).ToList();
+            var domainkeys = factkey.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i) && this.DimensionDomainsOfMembers[i] == i).ToList();
             var memberkeys = factkey.Except(domainkeys).ToList();
             var memberfactspool = new List<List<int>>();
             foreach (var memberkey in memberkeys) 
@@ -1101,6 +1101,7 @@ namespace LogicalModel
                 TableHandler.HandleTaxonomy(this);
 
                 Module.FactParts = this.FactParts;
+                Module.DimensionDomainsOfMembers = this.DimensionDomainsOfMembers;
 
                 var jsoncontent = Utilities.Converters.ToJson(Module);
 
@@ -1551,8 +1552,8 @@ namespace LogicalModel
             var l = new Label();
             var sb = new StringBuilder();
             sb.Append(String.Format("{0}: {1} | ", dimension.DimensionItem, GetLabelForDimensionItem(dimension.DimensionItem)));
-            sb.Append(String.Format("{0}: {1} | ", dimension.Domain, GetLabelForDimensionItem(dimension.Domain)));
-            sb.Append(String.Format("{0}: {1}", dimension.DomainAndMember, GetLabelForDimensionItem(dimension.DomainAndMember)));
+            sb.Append(String.Format("{0}: {1} | ", dimension.Domain, GetLabelForDomain(dimension.Domain)));
+            sb.Append(String.Format("{0}: {1}", dimension.DomainAndMember, GetLabelForMember(dimension.DomainAndMember)));
 
             l.Content = sb.ToString();
             return l;
@@ -1642,6 +1643,11 @@ namespace LogicalModel
             if (dimparts.Length > 2) { return new Label(); }
             var domain = dimparts[0];
             var member = dimparts[1];
+            if (String.IsNullOrEmpty(member)) 
+            {
+                member = Literals.DefaultMember;
+                //return new Label();
+            }
             var domainelement = GetDomain(domain);
             var memberelement = this.SchemaElements.FirstOrDefault(i => i.Name == member && i.Namespace == domain);
 

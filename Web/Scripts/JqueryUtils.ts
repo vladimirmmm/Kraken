@@ -270,6 +270,7 @@ function Ajax(url: string, method: string, parameters: Dictionary, generichandle
         type: method,
         data: params,
         cache: false,
+        timeout: 300000,
         success: function (data) {
             StopProgress("ajax");
             var Id = this.url.toString();

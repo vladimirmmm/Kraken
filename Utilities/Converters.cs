@@ -49,13 +49,30 @@ namespace Utilities
             var settings = new JsonSerializerSettings(){  
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 DefaultValueHandling = DefaultValueHandling.Ignore 
-
+                
             };
             //Newtonsoft.Json.Serialization.DefaultContractResolver dcr = new Newtonsoft.Json.Serialization.DefaultContractResolver();
             //dcr.DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic;
             //jss.ContractResolver = dcr;
             settings.ContractResolver = new PublicContractResolver();
      
+            return Newtonsoft.Json.JsonConvert.SerializeObject(obj, Formatting.Indented, settings
+                );
+        }
+
+        public static String ToJsonMin(object obj)
+        {
+            var settings = new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                Formatting=Formatting.None
+            };
+            //Newtonsoft.Json.Serialization.DefaultContractResolver dcr = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+            //dcr.DefaultMembersSearchFlags = System.Reflection.BindingFlags.NonPublic;
+            //jss.ContractResolver = dcr;
+            settings.ContractResolver = new PublicContractResolver();
+
             return Newtonsoft.Json.JsonConvert.SerializeObject(obj, Formatting.Indented, settings
                 );
         }

@@ -57,14 +57,26 @@ namespace LogicalModel
             fact.IX = ix;
             FactsByIndex.Add(ix, fact);
             var instancecontext = Instance.Contexts.Items[fact.ContextID];
-            var partcount = instancecontext.Dimensions.Count + 1;
+            var partcount = instancecontext.DimensionIds.Count + 1;
             var taxfactkeylist = new List<int>(partcount);
             var instfactkeylist = new List<int>(partcount);
             var conceptid = Instance.GetPartID(fact.Concept.Content);
             taxfactkeylist.Add(conceptid);
             instfactkeylist.Add(conceptid);
-            if (instancecontext.Dimensions != null)
+            if (instancecontext.DimensionIds != null)
             {
+
+                foreach (var id in instancecontext.DimensionIds)
+                {
+                    instfactkeylist.Add(id);
+                    var taxid = id;
+                    if (Instance.CounterTypedFactMembers.ContainsKey(id)) 
+                    {
+                        taxid = Instance.CounterTypedFactMembers[id];
+                    }
+                    taxfactkeylist.Add(taxid);
+                }
+                /*
                 var dimensions = instancecontext.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
                 foreach (var dimension in dimensions)
                 {
@@ -84,6 +96,7 @@ namespace LogicalModel
                     }
 
                 }
+                 * */
             }
             var taxfactkey = taxfactkeylist.ToArray();
             var instfactkey = instfactkeylist.ToArray();

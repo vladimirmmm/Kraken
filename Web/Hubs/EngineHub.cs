@@ -24,10 +24,16 @@ namespace Web.Hubs
         {
             if (MvcApplication.engine.Features.CanLoadToUI())
             {
+              
                 var msg = new BaseModel.Message();
                 msg.Category = "action";
+                msg.Data = "taxonomyloaded";
+                MvcApplication.engine.UIService.ToUI(msg);
+                msg = new BaseModel.Message();
+                msg.Category = "action";
                 msg.Data = "instanceloaded";
-                SendMessage(msg);
+                MvcApplication.engine.UIService.ToUI(msg);
+                //SendMessage(msg);
             }
             return base.OnConnected();
         }

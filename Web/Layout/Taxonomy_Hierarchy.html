@@ -1,6 +1,6 @@
 ﻿<div id="hierarchytreeview" onclick="app.taxonomycontainer.LoadHierarchyToUI('#hierarchytreeview', app.taxonomycontainer.Taxonomy.Hierarchies)">
     <ul class="treeview" binding-items="Children" binding-mode="recursive">
-        <li binding-type="template" uid="$bind:{uid}$">
+        <li binding-type="template" uid="$bind:{uid}$" rel="$bind:{Item.Role}$">
             <a href="javascript:void(0)" onclick="">
                 $bind:Item.Label.LocalID$
             </a>

@@ -219,6 +219,7 @@
         public Dimensions: Dimension[] = [];
 
         public FactString: string = "";
+        public FactKeys: number[] = [];
         public GetFactString(): string
         {
             var me = this;
@@ -269,16 +270,7 @@
             return result;
         }
 
-        //public get FactString(): string {
-        //    if (IsNull(this._FactString)) {
-        //        this._FactString = this.GetFactString();
-        //    }
-        //    return this._FactString;
-        //}
-        //public set FactString(value:string) {
-        //    this._FactString = value;
-        //}
-
+     
         public static Merge(target: FactBase, item: FactBase, overwrite:boolean=false)
         {
             if (IsNull(target.Concept)) { target.Concept = item.Concept; }
@@ -445,6 +437,7 @@
         public Decimals: string;
         public UnitID: string;
         public ContextID: string;
+        public Content: string;
         public FactKey: string;
         //public FactString: string;
         public FactID: number;
@@ -589,6 +582,7 @@
             var key = this.GetIntKey(stringkey);
             return this.ContainsKey(key);
         }
+
         public ContainsKey(key: string): boolean {
             return key in this.FactsByTaxonomyKey ? true : key in this.FactsByInstanceKey;
      
@@ -641,6 +635,9 @@
   
         public FactParts: Model.Dictionary<number> = {};
         public CounterFactParts: Model.Dictionary<string> = {};
+
+        public TypedFactMembers: Model.Dictionary<number[]> = {};
+        public DimensionDomainOfTypedFactMembers: Model.Dictionary<number> = {};
 
         public FactIDDictionary: Dictionary<InstanceFact> = null;
         public DynamicCellDictionary: Dictionary<Dictionary<string>> = {};
@@ -773,6 +770,10 @@
         public SchemaRef: string;
         public LocalPath: string;
         public FactParts: Dictionary<number>;
+        public TypedDimensions: Dictionary<number>;
+        public Concepts: Dictionary<number>;
+        public DimensionDomainsOfMembers: Dictionary<number>;
+        public MembersofDimensionDomains: Dictionary<number[]>;
 
     }
     export class TaxonomyProperties {

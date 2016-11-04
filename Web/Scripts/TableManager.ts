@@ -64,6 +64,9 @@ module Controls {
         public Value: string = "";
         public Type: CellType = CellType.Unknown;
         public UIElement: Element = null;
+        public CurrentFactKey: number[] = [];
+
+
         public static Clear(cell: Cell) {
             _Html(cell.UIElement, "");
         }
@@ -77,16 +80,93 @@ module Controls {
         }
 
         public static SetID(cell: Cell, id: string = "") {
-            if (!IsNull(id))
-            {
-               
-            }
+
             var cellid = Format("{0}|{1}", cell.RowID, cell.ColID);
             _Attribute(cell.UIElement, "id", cellid);
         }
 
         public HasData(): boolean {
             return !IsNull(_Html(this.UIElement).trim());
+        }
+        public IsKey(): boolean {
+            return _HasClass(this.UIElement, "key");
+        }
+        public IsBlocked(): boolean {
+            return _HasClass(this.UIElement, "blocked");
+        }
+        public static GetKeysFromElement(element: Element): number[]
+        {
+            var result: number[] = [];
+
+            var keystr = _Attribute(element, "factkeys");
+            if (IsNull(keystr))
+            {
+                return [];
+            }
+            var keystrarray = keystr.split(",");
+            keystrarray.forEach((item) => {
+                result.push(parseInt(item));
+            });
+            return result;
+        }
+        public static GetColumn(cell: Cell, table: Table)
+        {
+            var column = table.GetColumnByID(cell.ColID);
+            if (IsNull(column)) {
+                column = table.Manager.TemplateColumn.ID == cell.ColID ? table.Manager.TemplateColumn : null;
+            }
+            return column;
+        }
+        public static GetRow(cell: Cell, table: Table) {
+            var row = table.GetRowByID(cell.RowID);
+            if (IsNull(row)) {
+                row = table.Manager.TemplateRow.ID == cell.RowID ? table.Manager.TemplateRow : null;
+            }
+            return row;
+        }
+        public GetAxisKeys(table:Table): number[]
+        {
+            var me = this;
+            var result: number[] = [];
+            var column = Cell.GetColumn(me,table);
+            var row = Cell.GetRow(me, table);
+            var sheet = table.Sheets[0];
+            var colkeys = Cell.GetKeysFromElement(column.HeaderCell.UIElement);
+            var rowkeys = Cell.GetKeysFromElement(row.HeaderCell.UIElement);
+            var sheetkeys = Cell.GetKeysFromElement(sheet.HeaderCell.UIElement);
+
+            result = rowkeys.concat(colkeys).concat(sheetkeys);
+            return result;
+        }
+        public GetFactKey_Old(): number[]
+        {
+            var result: number[] = [];
+            var strfactkeys = _Attribute(this.UIElement, "factkeys");
+            strfactkeys = IsNull(strfactkeys) ? "" : strfactkeys;
+            var strkeysarray = strfactkeys.split(",");
+            strkeysarray.forEach((item) => {
+                result.push(parseInt(item));
+            });
+            return result;
+        }
+        public SetFactKeyByString(key: string) {
+            _Attribute(this.UIElement, "factkeys", key);
+        }
+        public SetFactKey(key: number[]) {
+            _Attribute(this.UIElement, "factkeys",key.join(","));
+        }
+        public GetFactString(): string {
+            var strfactkeys = _Attribute(this.UIElement, "factstring");
+            strfactkeys = IsNull(strfactkeys) ? "" : strfactkeys;
+            return strfactkeys;
+        }
+        public GetFactID(): string {
+            var strfactkeys = _Attribute(this.UIElement, "factid");
+            strfactkeys = IsNull(strfactkeys) ? "" : strfactkeys;
+            return strfactkeys;
+        }
+        public SetFactString(key: string) {
+            _Attribute(this.UIElement, "factstring", key);
         }
     }
 
@@ -117,10 +197,13 @@ module Controls {
     interface IIdentifiable {
         ID: string
     }
+    export class Sheet extends CellContainer
+    {
 
+    }
     export class Row extends CellContainer {
         //public RowID: string = "";
-        public UIElement: Element;
+        //public UIElement: Element;
 
         public static SetRowFromElement(row: Row, element: Element) {
             var headercells = _Select("th", element);
@@ -175,6 +258,8 @@ module Controls {
         public RowHeader: Column = null;
         public Rows: Row[] = [];
         public Columns: Column[] = [];
+        public Sheets: Sheet[] = [];
+
         public Cells: Cell[] = [];
 
         public HeaderRows: Row[] = [];
@@ -254,7 +339,12 @@ module Controls {
                 }
             };
         }
-
+        public GetCellByElement(element: Element): Cell
+        {
+            var me = this;
+            var cell = me.Cells.AsLinq<Cell>().FirstOrDefault(i=> i.UIElement == element);;
+            return cell;
+        }
         public GetCellByID(id: string): Cell {
             var parts = id.split("|");
             var rowid = parts[0];
@@ -328,9 +418,21 @@ module Controls {
             this.BodyUIElement = _SelectFirst("tbody", this.UIElement);
 
             this.Manager.LoadLayoutFromHtml(element, this);
+
             this.LoadEventHandlers();
         }
-
+        public SetSheet(element:Element)
+        {
+            var me = this;
+            if (me.Sheets.length == 0) {
+                var sh = new Sheet();
+                var hcell = new Cell();
+                hcell.UIElement = element;
+                sh.HeaderCell = hcell;
+                me.Sheets.push(sh);
+            } 
+            me.Sheets[0].HeaderCell.UIElement = element;
+        }
         public AddRow(index: number = -1, id: string = ""): Row {
             var me = this;
             var templaterow = this.Manager.TemplateRow;
@@ -345,8 +447,8 @@ module Controls {
 
             newrow.Cells.forEach(function (cell, ix) {
                 var column = me.Columns[ix];
-                var cellid = Format("{0}|{1}", id, column.ID);
-                _Attribute(cell.UIElement, "id", cellid);
+                //var cellid = Format("{0}|{1}", id, column.ID);
+                //_Attribute(cell.UIElement, "id", cellid);
             });
 
             for (var i = 0; i < me.Columns.length; i++) {
@@ -354,7 +456,7 @@ module Controls {
                 var column = me.Columns[i];
                 cell.ColID = column.ID;
                 cell.RowID = id;
-                Controls.Cell.SetID(cell);
+                //Controls.Cell.SetID(cell);
             }
             //Row.ClearDataCells(newrow);
 
@@ -436,7 +538,7 @@ module Controls {
                 var row = me.Rows[i];
                 cell.ColID = id;
                 cell.RowID = row.ID;
-                Controls.Cell.SetID(cell);
+                //Controls.Cell.SetID(cell);
             }
             //Row.ClearDataCells(newrow);
 

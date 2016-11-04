@@ -38,23 +38,48 @@ namespace LogicalModel
         [JsonIgnore]
         public int[] TaxonomyKey { get { return _TaxonomyKey; } set { _TaxonomyKey = value; } }
 
+
         [JsonProperty]
+        public string Content { get; set; }
+
+        public void SetContent() 
+        {
+            var sb = new StringBuilder();
+            /*
+             * \"Decimals\": \"0\",   
+             * \"Value\": \"-444.99\",    
+             * \"IX\": 98508,    
+             * \"Cells\": [      \"eba_tC_14.00<00000|11358|210>\"    ],  
+             * \"ContextID\": \"CT_64398\",   
+             * \"UnitID\": \"monetaryItemType\"  }
+             */
+            //sb.Append(IX); sb.Append("@");
+            sb.Append(ContextID); sb.Append("@");
+            sb.Append(UnitID); sb.Append("@");
+            sb.Append(Decimals); sb.Append("@");
+            sb.Append(Value); sb.Append("@");
+            sb.Append(Utilities.Strings.EnumerableToString(Cells, ", ")); sb.Append("@");
+
+            Content = sb.ToString();
+        }
+
+        [JsonIgnore]
         [DefaultValue("")]
         public string Decimals { get; set; }
 
         private String _Value = "";
-        [JsonProperty]
+        [JsonIgnore]
         public String Value { get { return _Value; } set { _Value = value; } }
 
         private int _IX = -1;
-        [JsonProperty]
+        [JsonIgnore]
         public int IX { get { return _IX; } set { _IX = value; } }
 
         private List<IstanceFactPart> _Parts = new List<IstanceFactPart>();
         public List<IstanceFactPart> Parts { get { return _Parts; } set { _Parts=value; } }
 
         private List<String> _Cells = new List<string>();
-        [JsonProperty]
+        [JsonIgnore]
         public List<String> Cells { get { return _Cells; } set { _Cells = value; } }
 
         public decimal Value_F { 
@@ -75,10 +100,10 @@ namespace LogicalModel
             }
         }
 
-        [JsonProperty]
+        [JsonIgnore]
         public String ContextID { get; set; }
 
-        [JsonProperty]
+        [JsonIgnore]
         public String ID { get; set; }
 
         //[JsonProperty]
@@ -88,7 +113,7 @@ namespace LogicalModel
         //public Entity Entity { get; set; }
         //[JsonIgnore]
         //public InstanceUnit Unit { get; set; }
-        [JsonProperty]
+        [JsonIgnore]
         public String UnitID { get; set; }
 
         public override string ToString()

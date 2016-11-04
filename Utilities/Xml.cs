@@ -70,9 +70,10 @@ namespace Utilities
         {
             if (document != null)
             {
-                if (NamespaceDictionary.ContainsKey(document.BaseURI))
+                var localpath = document.DocumentElement.GetAttribute("localpath");
+                if (NamespaceDictionary.ContainsKey(localpath))
                 {
-                    NamespaceDictionary.Remove(document.BaseURI);
+                    NamespaceDictionary.Remove(localpath);
                 }
             }
         }
@@ -81,12 +82,13 @@ namespace Utilities
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
         {
             XmlNamespaceManager manager = null;
+            var localpath = doc.DocumentElement.GetAttribute("localpath");
 
-            if (!NamespaceDictionary.ContainsKey(doc.BaseURI))
+            if (!NamespaceDictionary.ContainsKey(localpath))
             {
                 lock (DictionaryLocker)
                 {
-                    if (!NamespaceDictionary.ContainsKey(doc.BaseURI))
+                    if (!NamespaceDictionary.ContainsKey(localpath))
                     {
                         manager = new XmlNamespaceManager(doc.NameTable);
                         manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
@@ -110,13 +112,13 @@ namespace Utilities
                         string s = doc.GetNamespaceOfPrefix("");
                         manager.AddNamespace("ns", s);
                         //manager.AsQueryable().
-                        NamespaceDictionary.Add(doc.BaseURI, manager);
+                        NamespaceDictionary.Add(localpath, manager);
                     }
                 }
             }
             else
             {
-                manager = NamespaceDictionary[doc.BaseURI];
+                manager = NamespaceDictionary[localpath];
             }
             return manager;
         }
@@ -162,16 +164,16 @@ namespace Utilities
         //    return manager;
         //}
      
-        public static XmlDocument GetXmlDocumentFromString(string xml)
-        {
-            var doc = new XmlDocument();
+        //public static XmlDocument GetXmlDocumentFromString(string xml)
+        //{
+        //    var doc = new XmlDocument();
 
-            using (var sr = new StringReader(xml))
-            using (var xtr = new XmlTextReader(sr) { Namespaces = false })
-                doc.Load(xtr);
+        //    using (var sr = new StringReader(xml))
+        //    using (var xtr = new XmlTextReader(sr) { Namespaces = false })
+        //        doc.Load(xtr);
 
-            return doc;
-        }
+        //    return doc;
+        //}
 
         public static string Attr(XmlNode node, string Name)
         {
@@ -226,7 +228,16 @@ namespace Utilities
             }
             return null;
         }
+        public static XmlNode SelectSingleNode(XmlNode node, XPathContainer XPathContainer)
+        {
+            XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
+            if (!XPathContainer.HasNamespace(manager))
+            {
+                return null;
+            }
 
+            return node.OwnerDocument.SelectSingleNode(XPathContainer.XPath, manager);
+        }
         public static XmlNode SelectSingleNode(XmlNode node, string XPath)
         {
             XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
@@ -242,16 +253,16 @@ namespace Utilities
         public static XPathContainer GetXPath(string XmlSelector) 
         {
             var xpathcontainer = new XPathContainer();
-            var xpath = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
+            var xpath = XmlSelector.IndexOf("<") > -1 ? Utilities.Strings.TextBetween(XmlSelector, "<", ">") : XmlSelector;
             var ix = xpath.IndexOf(":", StringComparison.Ordinal);
             if (ix > -1)
             {
                 var ns = xpath;
-                if (xpath.StartsWith("//", StringComparison.Ordinal))
-                {
-                    ns = xpath.Substring(2);
-                }
                 ns = ns.Remove(ix);
+                if (ns.StartsWith("//", StringComparison.Ordinal))
+                {
+                    ns = ns.Substring(2);
+                }
                 var name = xpath.Substring(ix + 1);
                 xpathcontainer.Namespaces.Add(ns);
 

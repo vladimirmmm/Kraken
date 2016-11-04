@@ -96,6 +96,27 @@
             );
         }
 
+        public ShowHierarchy(role: string)
+        {
+            var me = this;
+            me.ActivateTab(me.s_hierarchy_selector);
+            var container = _SelectFirst(me.s_hierarchy_selector);
+            if (!IsNull(container)) {
+                var item = _SelectFirst("li[rel='" + role + "']", container);
+                if (!IsNull(item)) {
+                    _AddClass(item, "selected");
+                    me.ExpandHierarchy('#hierarchytreeview', me.Taxonomy.Hierarchies, item);
+
+                    _Focus(item);
+                }
+            }
+
+
+        }
+        public ActivateTab(selector)
+        {
+            $('a[href="' + selector+'"]').click();
+        }
         private SetHeight() {
             var bodyheight = $("td.th2").height();
             var pivotheight1 = (bodyheight - 70) + "px";
@@ -143,12 +164,29 @@
                 var m = me.Taxonomy.Module;
                 BindX($("#TaxonomyInfo"), m);
                 BindX($("#TaxonomyGeneral"), m);
-                GetProperties(m.FactParts).forEach(
-                    (item, ix) => {
-                        me.Taxonomy.FactParts[item.Key] = item.Value;
-                        me.Taxonomy.CounterFactParts[item.Value] = item.Key;
-                    });
+                //GetProperties(m.FactParts).forEach(
+                for (var item in m.FactParts) {
+                    if (m.FactParts.hasOwnProperty(item)) {
+                        var val = m.FactParts[item]
+                        me.Taxonomy.FactParts[item] = val;
+                        me.Taxonomy.CounterFactParts[val] = item;
+                    }
+                }
                 m.FactParts = null;
+                
+                var dict = m.DimensionDomainsOfMembers;
+                m.MembersofDimensionDomains = {};
+                var counterdict: Model.Dictionary<number[]> = m.MembersofDimensionDomains;
+                for (var item in dict) {
+                    if (dict.hasOwnProperty(item)) {
+                        var val = dict[item];
+                        if (!(val in counterdict)) {
+                            counterdict[val] = [];
+                        }
+                        counterdict[val].push(parseInt(item));
+                    }
+                }
+              
                 me.OnLoaded();
             }, function (error) { console.log(error); });
 
@@ -339,8 +377,12 @@
             if (_TagName(target).toLowerCase() != "li") {
                 target = _Parents(target).AsLinq<Element>().FirstOrDefault(i=> _TagName(i).toLowerCase() == "li");
             }
+            me.ExpandHierarchy(selector, data, target);
+        } 
+        public ExpandHierarchy<TClass>(selector: any, data: Model.Hierarchy<TClass>, target:Element)
+        {
             var uid = _Attribute(target, "uid");
-            var data = Model.Hierarchy.FirstOrDefault(data,i => i["uid"] == uid);
+            var data = Model.Hierarchy.FirstOrDefault(data, i => i["uid"] == uid);
             if (data.Children.length > 0) {
                 var template = GetBindingTemplateX(_SelectFirst(selector));
                 if (template != null) {
@@ -355,7 +397,27 @@
                     });
                 }
             }
-        }       
+        }
+           
+        public ClearFilterConcepts() {
+            $("input[type=text]", "#LabelFilter ").val("");
+            $("textarea", "#LabelFilter ").val("");
+            this.FilterLabels();
+        }
+
+        public FilterConcepts() {
+            var me = this;
+            var f_concept: string = _Value(me.SelFromConcept(s_listfilter_selector + " #F_Concept")).toLowerCase().trim();
+ 
+            var query = GetKeys(me.Taxonomy.Concepts).AsLinq<string>();
+            //var query = me.Taxonomy.Concepts.AsLinq<Model.Concept>();
+            if (!IsNull(f_concept)) {
+                query = query.Where(i=> i.toLowerCase().indexOf(f_concept) > -1).Select(i=> me.Taxonomy.Concepts[i]);
+            }
+
+            LoadPage(me.SelFromConcept(s_list_selector), me.SelFromConcept(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+
+        }   
 
         public ClearFilterLabels() {
             $("input[type=text]", "#LabelFilter ").val("");

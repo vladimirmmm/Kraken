@@ -28,7 +28,9 @@ var ResultFormatter = function (rawdata) {
 var requests = [];
 function GetXbrlCellEditor(target) {
     var typeclass = "";
-    var factstring = _Attribute(target, "factstring");
+    var cell = app.taxonomycontainer.Table.UITable.GetCellByElement(target);
+    var factstring = app.taxonomycontainer.Table.TaxonomyService.GetFactStringKey(cell.CurrentFactKey);
+    //var factstring = _Attribute(target, "factstring");
     var factitems = factstring.split(",");
     var concept = "";
     if (factitems[0].indexOf("[") == -1) {
@@ -233,10 +235,12 @@ function MessageReceived(message) {
             app.instancecontainer.HandleAction(message);
         }
         if (message.Data.toLowerCase() == "instanceloaded") {
-            app.Load();
+            Log("Instance Loaded");
+            app.LoadInstance();
         }
         if (message.Data.toLowerCase() == "taxonomyloaded") {
-            app.Load();
+            Log("Taxonomy Loaded");
+            app.LoadTaxonomy();
         }
     }
     if (message.Category == "debug") {
