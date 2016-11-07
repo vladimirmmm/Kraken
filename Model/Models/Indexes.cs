@@ -498,7 +498,7 @@ namespace LogicalModel
     }
 
    
-    public class FactsPartsDictionary : SharedDictionary<int, List<int>> 
+    public class FactsPartsDictionary : SharedDictionary<int, IntervalList> 
     {
         public int GetTotalCount() 
         {
@@ -513,7 +513,7 @@ namespace LogicalModel
         {
             if (!this.ContainsKey(key)) 
             {
-                this.Add(key, new List<int>());
+                this.Add(key, new IntervalList());
             }
             this[key].Add(index);
         }
@@ -524,11 +524,12 @@ namespace LogicalModel
             {
                 if (!target.ContainsKey(item.Key)) 
                 {
-                    target.Add(item.Key, new List<int>());
+                    target.Add(item.Key, new IntervalList());
                 }
                 target[item.Key].AddRange(this[item.Key]);
              
-                target[item.Key] = target[item.Key].Distinct().ToList();
+                //target[item.Key] = target[item.Key].Distinct().ToList();
+                
                 target[item.Key].TrimExcess();
                 this[item.Key].Clear();
             }
@@ -543,10 +544,10 @@ namespace LogicalModel
         {
             var instance = new FactsPartsDictionary();
             instance.DeSerializeItems = (lines) => {
-                var values = new List<int>();
+                var values = new IntervalList();
                 foreach (var line in lines) 
                 {
-                    values.Add(Utilities.Converters.FastParse(line));
+                    values.AddInterval(Interval.GetInstanceFromString(line));
                 }
                 values.TrimExcess();
 
@@ -555,9 +556,9 @@ namespace LogicalModel
             instance.SerializeItem = (itemcontainer) =>
             {
                 var sb = new StringBuilder();
-                foreach(var item in itemcontainer)
+                foreach(var item in itemcontainer.Intervals)
                 {
-                    sb.AppendLine(item.ToString());
+                    sb.AppendLine(item.Content());
                 }
                 return sb;
             };

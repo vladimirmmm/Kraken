@@ -113,7 +113,68 @@ namespace Utilities
             }
             return result;
         }
+        public static List<T> SortedExcept<T>(IList<T> m, IList<T> n) where T : IComparable<T>
+        {
+            if (m.Count > 2 && n.Count > 2)
+            {
+                var startm = m[0];
+                var startn = n[0];
+                var endm = m[m.Count - 1];
+                var endn = n[n.Count - 1];
+                // a > b: a compareto b > 0  
+                if (startn.CompareTo(endm) > 0 || endn.CompareTo(startm) < 0)
+                {
+                    return m.ToList();
+                }
+            }
+            var mcount = m.Count;
+            var ncount = n.Count;
+            var result = new List<T>();
+            int i = 0, j = 0;
+            if (ncount == 0)
+            {
+                result.AddRange(m);
+                return result;
+            }
+            if (mcount == 0)
+            {
+                return m.ToList();
+            }
+            var mi = m[i];
+            var nj = n[j];
+            while (i < mcount)
+            {
+                if (mi.CompareTo(nj) < 0)
+                {
+                    result.Add(mi);
+                    i++;
+                    mi = i >= mcount ? mi : m[i];
+                }
+                else if (mi.CompareTo(nj) > 0)
+                {
+                    j++;
+                    //nj = n[j];
+                    nj = j >= ncount ? nj : n[j];
 
+                }
+                else
+                {
+                    i++;
+                    mi = i >= mcount ? mi : m[i];
+                }
+                if (j >= ncount)
+                {
+                    for (; i < mcount; i++)
+                    {
+                        mi = m[i];
+                        result.Add(mi);
+
+                    }
+                    break;
+                }
+            }
+            return result;
+        }
         public static List<T> SortedExcept<T>(List<T> m, List<T> n) where T : IComparable<T>
         {
             if (m.Count > 2 && n.Count > 2)
@@ -340,38 +401,58 @@ namespace Utilities
             }
             return false;
         }
-        public static List<int> IntersectSorted(List<int> sequence1, List<int> sequence2, IComparer<int> comparer)
+        private static bool IsContinous(IList<int> items)
+        {
+            if (items[items.Count - 1] - items[0] == items.Count - 1)
+            {
+                return true;
+            }
+            return false;
+        }
+        private static bool IsTheSame(IList<int> items1, IList<int> items2)
+        {
+            if (items1.Count != items2.Count) { return false; }
+            if (items1.Count == 0) { return false; }
+            if (items1[0] == items2[0])
+            {
+                return IsContinous(items1) && IsContinous(items2);
+            }
+            return false;
+        }
+
+        public static List<int> IntersectSorted(IList<int> sequence1, IList<int> sequence2, IComparer<int> comparer)
         {
         
             if (IsTheSame(sequence1, sequence2)) { 
-                return sequence1;
+                return sequence1.ToList();
             }
             var smaller = sequence1.Count < sequence2.Count ? sequence1 : sequence2;
             var bigger = smaller == sequence1 ? sequence2 : sequence1;
             List<int> r = new List<int>(smaller.Count);
 
-            if (smaller.Count*10 < bigger.Count)
-            {
-                var secix = 0;
-                var seccount = bigger.Count;
-                foreach (var item in smaller)
-                {
-                    var ix = bigger.BinarySearch(secix, seccount, item, null);
-                    if (ix >= 0)
-                    {
-                        r.Add(item);
-                        secix = ix;
-                        seccount = bigger.Count - secix;
-                    }
-                }
-            }
-            else 
-            {
-                return IntersectSorted((IEnumerable<int>)smaller, (IEnumerable<int>)bigger, null).ToList();
-            }
+            //if (smaller.Count*10 < bigger.Count)
+            //{
+            //    var secix = 0;
+            //    var seccount = bigger.Count;
+            //    foreach (var item in smaller)
+            //    {
+            //        var ix = bigger.BinarySearch(secix, seccount, item, null);
+            //        if (ix >= 0)
+            //        {
+            //            r.Add(item);
+            //            secix = ix;
+            //            seccount = bigger.Count - secix;
+            //        }
+            //    }
+            //}
+            //else 
+            //{
+            //    return IntersectSorted((IEnumerable<int>)smaller, (IEnumerable<int>)bigger, null).ToList();
+            //}
+            return IntersectSorted((IEnumerable<int>)smaller, (IEnumerable<int>)bigger, null).ToList();
             
-            //r.TrimExcess();
-            return r;
+     
+            //return r;
         }
         public static List<T> IntersectSorted<T>(IEnumerable<T> sequence1, List<HashSet<T>> sequence2, IComparer<T> comparer)
         {

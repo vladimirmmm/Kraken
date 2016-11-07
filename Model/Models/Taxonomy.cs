@@ -486,7 +486,7 @@ namespace LogicalModel
             {
                 if (factsOfParts.ContainsKey(memberkey))
                 {
-                    memberfactspool.Add(factsOfParts[memberkey]);
+                    memberfactspool.Add(factsOfParts[memberkey].AsEnumerable().ToList());
                 }
             }
             var partcount = memberfactspool.Count;
@@ -495,7 +495,7 @@ namespace LogicalModel
                 memberfactspool.Add(facts);
 
             }
-            memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
+            memberfactspool = memberfactspool.OrderBy(i => i.Count).ToList();
             result = memberfactspool.FirstOrDefault();
             //if ( facts!=null && (result==null || result.Count > facts.Count)) 
             //{
@@ -520,7 +520,7 @@ namespace LogicalModel
             var result = new List<int>();
             var domainkeys = factkey.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i) && this.DimensionDomainsOfMembers[i] == i).ToList();
             var memberkeys = factkey.Except(domainkeys).ToList();
-            var memberfactspool = new List<List<int>>();
+            var memberfactspool = new List<IList<int>>();
             foreach (var memberkey in memberkeys) 
             {
                 if (factsOfParts.ContainsKey(memberkey))
@@ -533,9 +533,9 @@ namespace LogicalModel
             {
                 memberfactspool.Add(facts);
             }
-            memberfactspool = memberfactspool.OrderBy(i => i.Count()).ToList();
+            memberfactspool = memberfactspool.OrderBy(i => i.Count).ToList();
             var memberresults = memberfactspool.FirstOrDefault();
-
+         
             for (int i = 1; i < memberfactspool.Count; i++)
             {
                     memberresults = Utilities.Objects.IntersectSorted(memberresults, memberfactspool[i], null);
@@ -600,7 +600,7 @@ namespace LogicalModel
                         var index = ix;
                         var ccc = cc;
                         var factpartpool = new List<int>();
-                        var factspool = new List<List<int>>();
+                        var factspool = new List<IList<int>>();
                         var i_domainkeys = combination.ToList();
 
                         factpartpool.AddRange(i_domainkeys.Where(i => i != -1));

@@ -64,10 +64,14 @@ namespace LogicalModel
         }
     }
 
-    public class IntervalList : List<int> 
+    public class IntervalList : IList<int> 
     {
-        protected List<Interval> Intervals = new List<Interval>();
+        public List<Interval> Intervals = new List<Interval>();
         protected Dictionary<int, Interval> StartValues = new Dictionary<int, Interval>();
+
+        public void TrimExcess() { }
+        public void Sort() { }
+
         public Interval LastInterval 
         {
             get { return Intervals.LastOrDefault(); }
@@ -82,7 +86,18 @@ namespace LogicalModel
             var interval = new Interval(value);
             this.Intervals.Insert(ix, interval);
         }
-        public new void Add(int value) 
+        public void AddInterval(Interval interval) 
+        {
+            this.Intervals.Add(interval);
+        }
+        public void AddRange(IEnumerable<int> values) 
+        {
+            foreach (var value in values) 
+            {
+                this.Add(value);
+            }
+        }
+        public void Add(int value) 
         {
             if (LastInterval == null) 
             {
@@ -143,7 +158,28 @@ namespace LogicalModel
                 }
             }
         }
-
+       
+        //public new int this[int index] 
+        //{
+        //    get 
+        //    { 
+        //        if (index == 0) { return Intervals[0].Start; } 
+        //        if (index == this.Count-1) { return LastInterval.End; }
+        //        var counter=0;
+        //        foreach (var interval in Intervals) {
+        //            if (index < counter + interval.Count) 
+        //            {
+        //                return interval.Start + (index - counter);
+        //            }
+        //            counter+=interval.Count;
+        //        }
+        //        return -1;
+        //    }
+        //}
+        public new IEnumerable<int> GetEnumerator() 
+        {
+            return this.AsEnumerable();
+        }
         public IEnumerable<int> AsEnumerable() 
         {
             foreach (var interval in Intervals) 
@@ -154,7 +190,7 @@ namespace LogicalModel
                 }
             }
         }
-        public new int Count 
+        public int Count 
         {
             get 
             {
@@ -184,6 +220,77 @@ namespace LogicalModel
         {
             Intervals.Clear();
         }
+
+        public int IndexOf(int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int this[int index]
+        {
+
+            get
+            {
+                if (index == 0) { return Intervals[0].Start; }
+                if (index == this.Count - 1) { return LastInterval.End; }
+                var counter = 0;
+                foreach (var interval in Intervals)
+                {
+                    if (index < counter + interval.Count)
+                    {
+                        return interval.Start + (index - counter);
+                    }
+                    counter += interval.Count;
+                }
+                return -1;
+
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+
+        public bool Contains(int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(int[] array, int arrayIndex)
+        {
+            this.AsEnumerable().ToArray().CopyTo(array, arrayIndex);
+        }
+
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public bool Remove(int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        {
+            return this.AsEnumerable().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.AsEnumerable().GetEnumerator();
+        }
     }
     public class TestInterval
     {
@@ -206,6 +313,12 @@ namespace LogicalModel
             list.Add(23);
             list.Add(22);
             list.Add(18);
+            var ix1 = list[4];
+            var ix2 = list[0];
+            var ix3 = list[1];
+            var ix4 = list[3];
+            var ix5 = list[list.Count - 1];
+            var ix6 = list[list.Count - 2];
             var s = list.GetString();
         }
     }
