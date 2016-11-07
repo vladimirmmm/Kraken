@@ -40,16 +40,15 @@ namespace LogicalModel.Models
         }
       
     }
+    
     public class FactKeyManager2
     {
         public int maxdictnr = 10;
         public bool SaveToFile = true;
         public string DataFolder = "";
-        public FactDictionary2 LastPage = null;
-        public string LastPageKey = "";
         public FactDictionaryCollection FactsOfPages = new FactDictionaryCollection();
-        public List<Utilities.KeyValue<string, FactPage2>> LoadedFactsOfPages = new List<Utilities.KeyValue<string, FactPage2>>();
-        public HashSet<string> ExistingFiles = new HashSet<string>();
+
+
         public Action<FactDictionary2> ManageLoadedFacts = (f) => { };
         public Func<int[], int> GetFactIndex = (key) => -1;
         public Func<int> GetNewFactIndex = () => -1;
@@ -73,19 +72,31 @@ namespace LogicalModel.Models
         {
             return FactsOfPages.GetKvp(factkey);
         }
-        public void EnsureFact(int[] factkey)
+        public Utilities.KeyValue<int, List<int>> GetFact(int factindex)
         {
-            FactsOfPages.Save(factkey);
+            var factkey = FactsOfPages.Key(factindex);
+            return FactsOfPages.GetKvp(factkey);
         }
 
+  
+        public int EnsureFact(int[] factkey,int[] hashkeys)
+        {
+            var ix = FactsOfPages.Save(factkey);
+            FactsOfPages.HashKeys.Add(hashkeys, ix);
+            return ix;
+        }
 
+        
 
         public void Load()
         {
             FactsOfPages.Clear();
+ 
             FactsOfPages.LoadPages();
-        }
 
+
+        }
+   
         public void SaveAll()
         {
              FactsOfPages.SavePages();
@@ -108,9 +119,7 @@ namespace LogicalModel.Models
 
         public void Clear()
         {
-            this.ExistingFiles.Clear();
             this.FactsOfPages.Clear();
-            this.LoadedFactsOfPages.Clear();
         }
 
         public int Count 
@@ -118,6 +127,22 @@ namespace LogicalModel.Models
             get { return FactsOfPages.Count; }
         }
 
+
+        public int HasFact(int[] key)
+        {
+            var hashkey = FactsOfPages.GetHashKeys(key);
+            return this.FactsOfPages.GetIndexByHashKeys(hashkey);
+        }
+
+        public int[] GetHashKeys(int[] key)
+        {
+            return FactsOfPages.GetHashKeys(key);
+        }
+
+        public int GetFactIndexByHashKey(int[] hashkeys)
+        {
+            return FactsOfPages.GetIndexByHashKeys(hashkeys);
+        }
     }
 
 

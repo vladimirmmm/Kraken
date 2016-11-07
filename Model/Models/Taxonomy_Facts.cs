@@ -38,16 +38,25 @@ namespace LogicalModel
             //LoadFactToFactsOfParts(key);
         }
 
-        public void AddFactKey(int[] key)
+        public int AddFactKey(int[] key)
         {
-            FactsManager.EnsureFact(key);
-            SetRelatedDictionaries(key);
+            var hashkeys = FactsManager.FactsOfPages.GetHashKeys(key);
+            return AddFactKey(key, hashkeys);
 
 
         }
-        public void AddFactKey(List<int> key)
+        public int AddFactKey(int[] key, int[] hashkeys)
         {
-            AddFactKey(key.ToArray());
+            var ix = FactsManager.EnsureFact(key, hashkeys);
+
+            //SetRelatedDictionaries(key);
+            return ix;
+
+
+        }
+        public int AddFactKey(List<int> key)
+        {
+            return AddFactKey(key.ToArray());
 
 
         }
@@ -91,6 +100,13 @@ namespace LogicalModel
             return FactsManager.FactKeyExists(factkey);
         }
 
+        public bool HasFact(int[] factkey, int[] hashkey)
+        {
+            var ix = FactsManager.GetFactIndexByHashKey(hashkey);
+
+            return ix > -1;
+        }
+
         public void ClearFacts()
         {
             this.FactsManager.Clear();
@@ -110,6 +126,17 @@ namespace LogicalModel
             var ids = GetFactIntKey(factkey).ToArray();
             return GetCellsOfFact(ids);
         }
+        public List<string> GetCellsOfFact(int factindex)
+        {
+            var cellixs = FactsManager.GetFact(factindex).Value;
+            var cells = new List<string>();
+            foreach (var cellix in cellixs)
+            {
+                var cellstr = CellIndexDictionary.ContainsKey(cellix) ? CellIndexDictionary[cellix] : "?";
+                cells.Add(cellstr);
+            }
+            return cells;
+        }
         public List<string> GetCellsOfFact(int[] factintkey)
         {
             var cellixs = FactsManager.GetFact(factintkey).Value;
@@ -123,11 +150,11 @@ namespace LogicalModel
         }
         public void AddCellToFact(int index, int cellix, StringBuilder sb)
         {
-            var cellcontainer = FactsManager.FactsOfPages[index];
-            cellcontainer.Capacity = cellcontainer.Count + 1;
-            cellcontainer.Add(cellix);
+            //var cellcontainer = FactsManager.FactsOfPages[index];
+            //cellcontainer.Capacity = cellcontainer.Count + 1;
+            //cellcontainer.Add(cellix);
 
-            //FactsManager.FactsOfPages[index].Add(cellix);
+            FactsManager.FactsOfPages[index].Add(cellix);
         }
         public void AddCellToFact(int[] key, int cellix,StringBuilder sb ) 
         {
@@ -135,10 +162,10 @@ namespace LogicalModel
             {
                 sb.AppendLine(this.CellIndexDictionary[cellix] + "" + GetFactStringKey(key));
             }
-            var cellcontainer = FactsManager.FactsOfPages[key];
-            cellcontainer.Capacity=cellcontainer.Count+1;
-            cellcontainer.Add(cellix);
-            //FactsManager.FactsOfPages[key].Add(cellix);
+            //var cellcontainer = FactsManager.FactsOfPages[key];
+            //cellcontainer.Capacity=cellcontainer.Count+1;
+            //cellcontainer.Add(cellix);
+            FactsManager.FactsOfPages[key].Add(cellix);
       
      
         }

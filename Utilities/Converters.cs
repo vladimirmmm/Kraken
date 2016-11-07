@@ -98,6 +98,12 @@ namespace Utilities
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsontext);
         }
 
+        public static void JsonToObject<T>(string jsontext, T target)
+        {
+            if (String.IsNullOrEmpty(jsontext)) { }
+            Newtonsoft.Json.JsonConvert.PopulateObject(jsontext,target);
+        }
+
         public static string GetSizeReadable(long i)
         {
             string sign = (i < 0 ? "-" : "");

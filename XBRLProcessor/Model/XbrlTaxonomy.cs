@@ -1179,7 +1179,10 @@ namespace XBRLProcessor.Models
                 //for debug
                 Utilities.FS.WriteAllText(logicaltable.DefPath, table.DefinitionRoot.ToHierarchyString(i => i.ToString()));
                 //Utilities.FS.WriteAllText(logicaltable.LayoutPath, logicaltable.LayoutRoot.ToHierarchyString(i => i.ID+"<"+i.FactString+">"));
-               
+                if (logicaltable.ID.Contains("19")) 
+                {
+
+                }
                 logicaltable.LoadDefinitions2();
                 logicaltable.LoadLayout();
                 //var s = Utilities.Converters.ToJson(logicaltable);

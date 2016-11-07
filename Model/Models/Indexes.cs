@@ -30,8 +30,8 @@ namespace LogicalModel
     }
     public class FactLookupValue 
     {
-        public int Index = -1;
-        private List<int> _CellIndexes = new List<int>();
+        public int KeyCount = -1;
+        private List<int> _CellIndexes = new List<int>(1);
         public List<int> CellIndexes 
         {
             get { return _CellIndexes; }
@@ -45,43 +45,60 @@ namespace LogicalModel
         {
 
         }
-        public FactLookupValue(int index)
+        public FactLookupValue(int keycount)
         {
-            this.Index = index;
+            this.KeyCount = keycount;
         }
-        public FactLookupValue(int index, List<int> cellIndexes)
+        public FactLookupValue(int keycount, List<int> cellIndexes)
         {
-            this.Index = index;
+            this.KeyCount = keycount;
             this.CellIndexes = cellIndexes;
+        }
+
+        public string Content()
+        {
+            return string.Format("{0}|{1}", this.KeyCount, Utilities.Strings.EnumerableToString(this.CellIndexes, ","));
+        }
+
+        public static FactLookupValue GetInstanceFromString(string content) 
+        {
+            var parts = content.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+            var cellindexes = parts[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i)).ToList();
+            var key = Utilities.Converters.FastParse(parts[0]);
+                     
+            var result = new FactLookupValue(key,cellindexes);
+            return result;
         }
     }
     public class FactDictionaryCollection : LogicalModel.Models.IFactDictionary
     {
-        public List<FactDictionary3> Pages = new List<FactDictionary3>();
-        public Dictionary<int, int> KeyCountOfIndex = new Dictionary<int, int>();
-        public FactDictionary3 LastPage = null;
+        public List<FactKeyDictionary> Pages = new List<FactKeyDictionary>();
+        public Dictionary<int, int> FactKeyCountOfIndexes = new Dictionary<int, int>();
+        public Dictionary<int[], int> HashKeys = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
+
+        public FactKeyDictionary LastPage = null;
         public List<int> LoadedPages = new List<int>();
         public Func<string> Folder = () => @"C:\Users\vladimir.balacescu\Desktop\f\";
         public static string Tag = "Facts_";
         public string FileNameFormat = Tag+"{0}.dat";
         public string FileNamePattern = Tag+"*.dat";
-        public int NrItemsPerPage=500000;
-        public int NrLoadedPages = 0;
+        public int NrItemsPerPage=100000;
+        public int NrLoadedPages = 10;
         public FactDictionaryCollection() 
         {
 
         }
 
-        public IEnumerable<KeyValuePair<int[], FactLookupValue>> Facts 
+        public IEnumerable<KeyValuePair<int[], FactKeyWithCells>> Facts 
         {
             get 
             {
                 foreach (var page in Pages)
                 {
            
-                    foreach (var key in page.Keys)
+                    foreach (var key in page.LookupOfIndexes)
                     {
-                        yield return page.GetItem(key);
+                        yield return new KeyValuePair<int[], FactKeyWithCells>(key.Value.FactKey, key.Value);
                     }
                     //yield return item + "roxxors";
                 }
@@ -107,11 +124,22 @@ namespace LogicalModel
                 LoadPage(page);
 
             }
-        }
+            Utilities.FS.DictionaryFromFile(GetHashKeyFilePath(), this.HashKeys);
+            //Utilities.FS.DictionaryFromFile(GetLookupOfIndexesFilePath(), this.FactKeyCountOfIndexes, (i) => Utilities.Converters.FastParse(i), (s) => FactLookupValue.GetInstanceFromString(s));
 
-        public FactDictionary3 CreatePage() 
+
+        }
+        public string GetHashKeyFilePath()
         {
-            var page = new FactDictionary3();
+            return Folder() + "HashKeys.dat";
+        }
+        public string GetLookupOfIndexesFilePath()
+        {
+            return Folder() + "LookupOfIndexes.dat";
+        }
+        public FactKeyDictionary CreatePage() 
+        {
+            var page = new FactKeyDictionary();
             page.ID = this.Pages.Count;
             page.NrMaxItems = this.NrItemsPerPage;
             page.IndexStartAt = page.ID * page.NrMaxItems;
@@ -127,17 +155,23 @@ namespace LogicalModel
             var page = this.Pages[ix];
             LoadPage(page);
         }
-        public void LoadPage(FactDictionary3 page)
+        public void LoadPage(FactKeyDictionary page)
         {
             Log("Loading page " + page.ID);
             var filepath = GetFilePath(page.ID);
             var lines = System.IO.File.ReadAllLines(filepath);
-            foreach (var line in lines)
+            lock (Locker)
             {
-                var kv = page.Save(line);
-                KeyCountOfIndex.Add(kv.Key, kv.Value.Length);
+                foreach (var line in lines)
+                {
+                    var kv = page.Save(line);
+                    //if (!KeyCountOfIndex.ContainsKey(kv.Key))
+                    //{
+                    //    KeyCountOfIndex.Add(kv.Key,  kv.Value.Length);
+                    //}
+                }
+                page.IsDirty = false;
             }
-            page.IsDirty = false;
             if (NrLoadedPages!=0 && LoadedPages.Count > NrLoadedPages )
             {
                 Unload(0);
@@ -157,7 +191,7 @@ namespace LogicalModel
         }
  
 
-        public void CheckPages(Func<FactDictionary3,bool> action) 
+        public void CheckPages(Func<FactKeyDictionary,bool> action) 
         {
             for (int i = LoadedPages.Count-1; i > -1; i--) 
             {
@@ -188,60 +222,99 @@ namespace LogicalModel
             return result;
         }
 
+        public int GetIndexByHashKeys(int[] hashkeys)
+        {
+            if (this.HashKeys.ContainsKey(hashkeys))
+            {
+                return this.HashKeys[hashkeys];
+            }
+            else { return -1; }
+        }
+        public int[] GetHashKeys(int[] array)
+        {
+            var result = new int[2];
+            result[0] = GetHashKey1(array);
+            result[1] = GetHashKey2(array);
+            return result;
+        }
+        public int GetHashKey1(int[] array)
+        {
+            int hc = array.Length;
+            for (int i = 0; i < array.Length; ++i)
+            {
+                hc = unchecked(hc * 314159 + array[i]);
+            }
+            return hc;
+        }
+        public int GetHashKey2(int[] array)
+        {
+            //98047
+            int hc = array.Length;
+            for (int i = 0; i < array.Length; ++i)
+            {
+                hc = unchecked(hc * 98047 - array[i]);
+            }
+            return hc;
+
+        } 
 
         public bool ContainsKey(int[] key)
         {
-            var result = false;
-            CheckPages((p) => 
-            { 
-                result = p.ContainsKey(key); return result; 
-            });
-            return result;
+            var hashkey = GetHashKeys(key);
+            return this.HashKeys.ContainsKey(hashkey);
         }
 
         public int Index(int[] key)
         {
-            var result = -1;
-            CheckPages((p) => 
-            { 
-                result = p.ContainsKey(key) ? p.Index(key) : -1; return p.ContainsKey(key); 
-            });
-            return result;
+            var hashkey = GetHashKeys(key);
+            if (this.HashKeys.ContainsKey(hashkey)) 
+            {
+                var ix = this.HashKeys[hashkey];
+                return ix;
+            }
+            return -1;
         }
 
-        public KeyValuePair<int[], FactLookupValue> GetItem(int[] key)
-        {
-            var result = new KeyValuePair<int[], FactLookupValue>(key,new FactLookupValue());
-            CheckPages((p) => 
-            { 
-                result = p.ContainsKey(key) ? p.GetItem(key) : result; 
-                return p.ContainsKey(key); 
-            });
-            return result;
-        }
+        //public KeyValuePair<int[], FactLookupValue> GetItem(int[] key)
+        //{
+        //    var result = new KeyValuePair<int[], FactLookupValue>(key, new FactLookupValue());
+        //    CheckPages((p) =>
+        //    {
+        //        result = p.ContainsKey(key) ? p.GetItem(key) : result;
+        //        return p.ContainsKey(key);
+        //    });
+        //    return result;
+        //}
         public Utilities.KeyValue<int, List<int>> GetKvp(int[] key)
         {
             var result = new Utilities.KeyValue<int, List<int>>(-1, new List<int>());
-            CheckPages((p) => { 
-                result = p.ContainsKey(key) ? p.GetKvp(key) : result; return p.ContainsKey(key); 
-            });
+            var hashkey = GetHashKeys(key);
+            var ix = GetIndexByHashKeys(hashkey);
+            result.Key = ix;
+            result.Value = GetFactKeyWithCells(ix).CellIndexes;
             return result;
         }
         public int[] Key(int index)
         {
-            if (index >= LastPage.IndexStartAt && index < LastPage.IndexEndAt) 
+            return GetFactKeyWithCells(index).FactKey;
+        
+        }
+
+        public FactKeyWithCells GetFactKeyWithCells(int index) 
+        {
+            if (index >= LastPage.IndexStartAt && index < LastPage.IndexEndAt)
             {
-                return LastPage.Key(index);
+                return LastPage.LookupOfIndexes[index];
 
             }
-            //if (LastPage.ContainsIndex(index)) 
-            //{
-            //    return LastPage.Key(index);
-            //}
+
             int pid = index / NrItemsPerPage;
             LastPage = this.Pages[pid];
-            return LastPage.Key(index);
-        
+            if (!LastPage.IsLoaded)
+            {
+                LoadPage(LastPage);
+            }
+            return LastPage.LookupOfIndexes[index];
         }
 
  
@@ -250,19 +323,7 @@ namespace LogicalModel
         {
             get 
             {
-                var result = new List<int>();
-                CheckPages((p) =>
-                {
-                    //result = p.ContainsIndex(index) ? p[index] : result; return p.ContainsIndex(index);
-
-                    var contains = p.ContainsIndex(index);
-                    if (contains)
-                    {
-                        result = p.GetItem(index);
-                    }
-                    return contains;
-                });
-                return result;
+                return GetFactKeyWithCells(index).CellIndexes;
             }
         }
 
@@ -272,12 +333,9 @@ namespace LogicalModel
         {
             get 
             {
-                var result = new List<int>();
-                CheckPages((p) => 
-                { 
-                    result = p.ContainsKey(key) ? p[key] : result; return p.ContainsKey(key); 
-                });
-                return result;
+                var hashkey  = GetHashKeys(key);
+                var index = GetIndexByHashKeys(hashkey);
+                return GetFactKeyWithCells(index).CellIndexes;
             }
         }
         public int Count { 
@@ -323,9 +381,9 @@ namespace LogicalModel
                     {
                         LoadPage(page);
                     }
-                    foreach (var item in page.Keys)
+                    foreach (var item in page.LookupOfIndexes)
                     {
-                        yield return new Utilities.KeyValue<int[], List<int>>(item, page[item]);
+                        yield return new Utilities.KeyValue<int[], List<int>>(item.Value.FactKey, item.Value.CellIndexes);
                     }
                 }
             }
@@ -334,17 +392,7 @@ namespace LogicalModel
         {
             get
             {
-                foreach (var page in Pages)
-                {
-                    if (!page.IsLoaded)
-                    {
-                        LoadPage(page);
-                    }
-                    foreach (var item in page.Keys)
-                    {
-                        yield return page.Index(item);
-                    }
-                }
+                return this.FactKeyCountOfIndexes.Keys;
             }
         }
 
@@ -371,8 +419,13 @@ namespace LogicalModel
                 Unload(0);
 
             }
-            var ix = lastpage.Save(key, value);
-            KeyCountOfIndex.Add(ix, key.Length);
+            var ix = FactKeyCountOfIndexes.Count;
+            lastpage.Save(key, ix,value);
+            if (!this.FactKeyCountOfIndexes.ContainsKey(ix))
+            {
+                FactKeyCountOfIndexes.Add(ix, key.Length);
+
+            }
             return ix;
         }
         public void Unload(int ix)
@@ -381,7 +434,7 @@ namespace LogicalModel
             var page = this.Pages[pageix];
             Unload(page);
         }
-        private void Unload(FactDictionary3 page)
+        private void Unload(FactKeyDictionary page)
         {
 
 
@@ -391,16 +444,20 @@ namespace LogicalModel
                 Save(page);
             }
             LoadedPages.Remove(page.ID);
-            page.Clear();
         }
-        public void Save(FactDictionary3 page)
+        public object Locker = new Object();
+        public void Save(FactKeyDictionary page)
         {
             Task.Run(
                 () =>
                 {
-                    var path = GetFilePath(page.ID);
-                    Utilities.FS.WriteAllText(path, page.Content());
-                    page.IsDirty = false;
+                    lock (Locker)
+                    {
+                        var path = GetFilePath(page.ID);
+                        Utilities.FS.WriteAllText(path, page.Content());
+                        page.IsDirty = false;
+                        page.Clear();
+                    }
                 });
         }
         public void SavePages(bool clear=false) 
@@ -415,8 +472,12 @@ namespace LogicalModel
                     Unload(page);
                 }
             }
+            Utilities.FS.DictionaryToFile(GetHashKeyFilePath(), this.HashKeys);
+            //Utilities.FS.DictionaryToFile(GetLookupOfIndexesFilePath(), pages,(i)=>i.ToString(), (f)=>f.ToString());
             
         }
+
+
         public void Clear() 
         {
             var pages = Pages.ToList();
@@ -425,324 +486,29 @@ namespace LogicalModel
                 Unload(page);
             }
             this.Pages.Clear();
-            KeyCountOfIndex.Clear();
-
+            FactKeyCountOfIndexes.Clear();
+            HashKeys.Clear();
         }
+
+
 
 
 
 
     }
 
-    public class FactDictionary3 : LogicalModel.Models.IFactDictionary 
-    {
-        public int ID = 0;
-        public int NrMaxItems = -1;
-        public int IndexStartAt = 0;
-        public int IndexEndAt = 0;
-        protected Dictionary<int[], FactLookupValue> a = new Dictionary<int[], FactLookupValue>(new Utilities.IntArrayEqualityComparer());
-        protected Dictionary<int,int[]> b = new Dictionary<int,int[]>();
-        public bool IsDirty = false;
-        private bool _IsLoaded = false;
-        public bool IsLoaded 
-        {
-            get 
-            {
-                return _IsLoaded;
-            }
-        }
-        public void UnLoad() 
-        {
-            this._IsLoaded = false;
-        }
-        public void Load()
-        {
-            this._IsLoaded = true;
-        }
-        public FactDictionary3() 
-        {
-        }
-        public int Count { get { return a.Count; } }
-
-        public IEnumerable<int[]> Keys 
-        {
-            get
-            {
-                return b.Values;
-            }
-        }
-        public Utilities.KeyValue<int,int[]> Save(string content)
-        {
-            var kv = new Utilities.KeyValue<int, int[]>();
-            var sp_pipe = Literals.PipeSeparator[0];
-            var sp_coma = Literals.Coma[0];
-            var s_ix = 0;
-            List<string> keyparts = new List<string>(20);
-            List<string> values = new List<string>(20);
-            List<string> container = keyparts;
-            var diff = 0;
-            var val = "";
-            var index = -2;
-            for (int i = 0; i < content.Length; i++)
-            {
-                char c = content[i];
-                if (c == sp_coma)
-                {
-                    diff = i - s_ix;
-                    val = content.Substring(s_ix, diff).Trim();
-                    if (!String.IsNullOrEmpty(val))
-                    {
-                        container.Add(val);
-                    }
-                    s_ix = i + 1;
-                }
-                if (c == sp_pipe)
-                {
-                    diff = i - s_ix;
-                    val = content.Substring(s_ix, diff).Trim();
-                    if (index != -2)
-                    {
-                        index = Utilities.Converters.FastParse(val);
-                    }
-                    else
-                    {
-                        index = -1;
-                    }
-                    s_ix = i + 1;
-                    container = values;
-                }
-            }
-            var intkeys = new int[keyparts.Count];
-
-            for (int i = 0; i < keyparts.Count; i++)
-            {
-                intkeys[i] = Utilities.Converters.FastParse(keyparts[i]);
-            }
-
-            var cells = new List<int>(values.Count);
-            cells.AddRange(values.Select(i => Utilities.Converters.FastParse(i)));
-            Save(intkeys, index, cells);
-            kv.Key = index;
-            kv.Value = intkeys;
-            //var kvp = new KeyValuePair<int, List<int>>(intkeys[0], cells);
-            //return kvp;
-            _IsLoaded = true;
-            return kv;
-        }
-        public string Content() 
-        {
-            var sb = new StringBuilder();
-            foreach (var item in a) 
-            {
-                sb.AppendLine(Content(item));
-            }
-            return sb.ToString();
-        }
-        public string Content(KeyValuePair<int[],FactLookupValue> kvp) 
-        {
-            var sb = new StringBuilder();
-            foreach (var cell in kvp.Key)
-            {
-                sb.Append(cell);
-                sb.Append(Literals.Coma);
-            }
-            sb.Append(Literals.PipeSeparator);
-            sb.Append(kvp.Value.Index);
-            sb.Append(Literals.PipeSeparator);
-            foreach (var cell in kvp.Value.CellIndexes)
-            {
-                sb.Append(cell);
-                sb.Append(Literals.Coma);
-            }
-            return sb.ToString();
-        }
-        public int Save(int[] key)
-        {
-            return Save(key, -1, new List<int>());
-        }
-        public int Save(int[] key, List<int> value)
-        {
-            return Save(key, -1, value);
-        }
-        public int Save(int[] key, int index, List<int> value) 
-        {
-            int ix = -1;
-            if (!a.ContainsKey(key))
-            {
-                var flv= new FactLookupValue(index == -1 ? (NrMaxItems * this.ID) + a.Count : index, value);
-                a.Add(key, flv);
-                b.Add(flv.Index, key);
-                _IsLoaded = true;
-                ix = flv.Index;
-            }
-            else 
-            {
-                a[key].CellIndexes=value;
-                ix = a[key].Index;
-            }
-            IsDirty = true;
-            return ix;
-        }
-        public int GetPageIndex(int ix) 
-        {
-            var index = ix - IndexStartAt;
-            return index;
-        }
-        private int GetRealIndex(int ix) 
-        {
-            var index = IndexStartAt + ix;
-            return index;
-        }
-        public bool ContainsKey(int[] key) 
-        {
-            return a.ContainsKey(key);
-        }
-        public bool ContainsIndex(int index)
-        {
-            return b.ContainsKey(index);
-        }
-        public bool ContainsPageIndex(int pageindex)
-        {
-            return pageindex > -1 && pageindex < b.Count;
-        }
-        public List<int> this[int index] 
-        {
-            get 
-            {
-                index = GetPageIndex(index);
-                if (ContainsPageIndex(index))
-                {
-                    var item = b[index];
-                    return a[item].CellIndexes;
-                }
-                return null;
-            }
-        }
-        public List<int> this[int[] key]
-        {
-            get
-            {
-                return a[key].CellIndexes;
-            }
-        }
-
-        public int[] Key(int index)
-        {
-            return b[index];
-            //var pageindex = GetPageIndex(index);
-            //if (ContainsPageIndex(pageindex))
-            //{
-            //    var item = b[pageindex];
-            //    return item;
-            //}
-            //return new int[0];
-        }
-        public int[] GetKeyByPageIndex(int pageindex) 
-        {
-            return b[pageindex];
-        }
-        public int Index(int[] key)
-        {
-            return (a[key].Index);
-        }
-
-        public KeyValuePair<int[], FactLookupValue> GetItem(int[] key)
-        {
-            return new KeyValuePair<int[], FactLookupValue>(key, a[key]);
-
-        }
-
-        public Utilities.KeyValue<int, List<int>> GetKvp(int[] key)
-        {
-            var item = GetItem(key);
-            return new Utilities.KeyValue<int, List<int>>(Index(key), item.Value.CellIndexes);
-
-        }
-
-        public void Clear()
-        {
-            a.Clear();
-            b.Clear();
-            _IsLoaded = false;
-        }
-
-
-
-        internal List<int> GetItem(int pindex)
-        {
-            return a[b[pindex]].CellIndexes;
-        }
-    }
-    public class HashSetList : ICollection<int> 
-    {
-        public List<HashSet<int>> Value = new List<HashSet<int>>();
-
-
-
-        public void Add(int item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(int item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(int[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Count
-        {
-            get
-            {
-                var c = 0;
-                foreach (var item in Value)
-                {
-                    c += item.Count;
-                }
-                return c;
-            }
-        }
-
-        public bool IsReadOnly
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public bool Remove(int item)
-        {
-            throw new NotImplementedException();
-        }
-        public IEnumerable<int> IndexesAsEnumerable() 
-        {
-            foreach (var item in Value) 
-            {
-                foreach (var i in item) 
-                {
-                    yield return i;
-                }
-            }
-        }
-        public IEnumerator<int> GetEnumerator()
-        {
-            return this.IndexesAsEnumerable().OrderBy(i=>i).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-    }
+   
     public class FactsPartsDictionary : SharedDictionary<int, List<int>> 
     {
+        public int GetTotalCount() 
+        {
+            var count = 0;
+            foreach (var item in this) 
+            {
+                count += item.Value.Count;
+            }
+            return count;
+        }
         public void AddIfNotExists(int key, int index) 
         {
             if (!this.ContainsKey(key)) 
@@ -767,64 +533,9 @@ namespace LogicalModel
                 this[item.Key].Clear();
             }
         }
-        //public Dictionary<int, HashSet<int>> FactsDomains = new Dictionary<int, HashSet<int>>();
-        //public HashSet<int> AddFactPart(int factpart, int index) 
-        //{
-        //    if (!this.ContainsKey(factpart)) 
-        //    {
-        //        this.Add(factpart, new HashSet<int>());
-        //    }
-        //    var hashset = this[factpart];
-        //    hashset.Add(index);
-        //    return hashset;
-        //}
-        //public void AddPart(int domainpart,int factpart, int index) 
-        //{
-        //    var hashset = AddFactPart(factpart,index);
-        //    if (!FactsDomains.ContainsKey(domainpart))
-        //    {
-        //        FactsDomains.Add(domainpart,new HashSet<int>());
-        //    }
-        //    var h2 = FactsDomains[domainpart];
-        //    if (!h2.Contains(factpart)) 
-        //    {
-        //        h2.Add(factpart);
-        //    }
-           
-        //}
-        //public HashSetList FactsOfDomainX(int key)
-        //{
-        //    var result = new HashSetList();
-        //    var parts = FactsDomains[key];
-        //    foreach (var part in parts) 
-        //    {
-        //        result.Value.Add(this[part]); 
-        //    }
-        //    return result;
-        //}
-
-
-        //public bool ContainsDomainKey(int key) 
-        //{
-        //    return this.FactsDomains.ContainsKey(key);
-        //}
-
-        //public override string ToString()
-        //{
-        //    var sb = new StringBuilder();
-        //    sb.AppendLine("Facts Of Domains");
-        //    foreach (var item in FactsDomains) 
-        //    {
-        //        sb.AppendLine(String.Format("{0}: {1}", item.Key, item.Value.Count));
-        //    }
-        //    sb.AppendLine("Facts Of Parts");
-        //    foreach (var item in this)
-        //    {
-        //        sb.AppendLine(String.Format("{0}: {1}", item.Key, item.Value.Count));
-        //    }
-        //    return sb.ToString();
-        //}
+        
     }
+    
     public class RelationDictionary
     {
         

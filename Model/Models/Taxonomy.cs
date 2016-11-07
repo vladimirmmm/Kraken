@@ -553,7 +553,7 @@ namespace LogicalModel
                 foreach (var item in memberresults)
                 {
                     //key = FactsManager.GetFactKey(item);
-                    keylength = FactsManager.FactsOfPages.KeyCountOfIndex[item];// key.Length;
+                    keylength = FactsManager.FactsOfPages.FactKeyCountOfIndexes[item];// key.Length;
                     if (lastkeylength != keylength)
                     {
                         if (!memberresultsbycount.ContainsKey(keylength))

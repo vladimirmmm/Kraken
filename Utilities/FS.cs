@@ -9,6 +9,82 @@ namespace Utilities
 {
     public class FS
     {
+        public static void DictionaryToFile<TKey, TValue>(string filepath, Dictionary<TKey, TValue> dict, Func<TKey,string> KeyToString,Func<TValue,string> ValueTostring)
+        {
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath))
+            {
+                foreach (var item in dict)
+                {
+                    fsw.WriteLine(KeyToString(item.Key) + ":" + ValueTostring(item.Value));
+                }
+            }
+
+        }
+        public static bool DictionaryFromFile<TKey, TValue>(string filepath, Dictionary<TKey, TValue> dict, Func<string, TKey> KeyFromString, Func<string, TValue> ValueFromstring)
+        {
+            try
+            {   // Open the text file using a stream reader.
+                using (StreamReader sr = new StreamReader(filepath))
+                {
+                    while (sr.Peek() >= 0)
+                    {
+                        String line = sr.ReadLine();
+                        var parts = line.Split(":");
+                        TKey key = KeyFromString(parts[0]);
+                        TValue value = ValueFromstring(parts[1]);
+                        dict.Add(key, value);
+
+                    }
+                    // Read the stream to a string, and write the string to the console.
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                Utilities.Logger.WriteLine("Can't read from file " + filepath + ": " + ex.Message);
+                return false;
+            }
+
+        }
+        public static void DictionaryToFile(string filepath, Dictionary<int[], int> dict) 
+        {
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath))
+            {
+                foreach (var item in dict)
+                {
+                    fsw.WriteLine(Utilities.Strings.ArrayToString(item.Key, ",") + ":" + item.Value.ToString());
+                }
+            }
+        
+        }
+        public static bool DictionaryFromFile(string filepath, Dictionary<int[], int> dict)
+        {
+            try
+            {   // Open the text file using a stream reader.
+                using (StreamReader sr = new StreamReader(filepath))
+                {
+                    while (sr.Peek() >= 0)
+                    {
+                        String line = sr.ReadLine();
+                        var parts = line.Split(new string[]{":"},StringSplitOptions.RemoveEmptyEntries);
+                        var key = parts[0].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i)).ToArray();
+                        var value = Utilities.Converters.FastParse(parts[1]);
+                        dict.Add(key, value);
+ 
+                    }
+                    // Read the stream to a string, and write the string to the console.
+                }
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                Utilities.Logger.WriteLine("Can't read from file " + filepath + ": " + ex.Message);
+                return false;
+            }
+
+        }
         public static bool FileExists(string path) 
         {
             if (path.Contains("{0}")) 
