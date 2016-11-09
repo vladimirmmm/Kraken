@@ -479,14 +479,13 @@ namespace LogicalModel
         }
         public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts, int PartNr)
         {
-            var result = new List<int>();
             var memberkeys = factkey.ToList();
-            var memberfactspool = new List<List<int>>();
+            var memberfactspool = new List<IList<int>>();
             foreach (var memberkey in memberkeys)
             {
                 if (factsOfParts.ContainsKey(memberkey))
                 {
-                    memberfactspool.Add(factsOfParts[memberkey].AsEnumerable().ToList());
+                    memberfactspool.Add(factsOfParts[memberkey]);
                 }
             }
             var partcount = memberfactspool.Count;
@@ -496,7 +495,7 @@ namespace LogicalModel
 
             }
             memberfactspool = memberfactspool.OrderBy(i => i.Count).ToList();
-            result = memberfactspool.FirstOrDefault();
+            var result = memberfactspool.FirstOrDefault();
             //if ( facts!=null && (result==null || result.Count > facts.Count)) 
             //{
             //    result = facts;
@@ -513,8 +512,10 @@ namespace LogicalModel
             {
                 result = new List<int>();
             }
-            return result;
+            return result.ToList();
         }
+
+
         public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts)
         {
             var result = new List<int>();
@@ -544,9 +545,9 @@ namespace LogicalModel
             {
                 memberresults = new List<int>();
             }
-            var memberresultsbycount = new Dictionary<int, List<int>>();
+            var memberresultsbycount = new Dictionary<int, IList<int>>();
             var lastkeylength = -1;
-            List<int> lastkeycontainer = null;
+            IList<int> lastkeycontainer = null;
             var keylength = 0;
             int[] key = null;
           
@@ -558,7 +559,7 @@ namespace LogicalModel
                     {
                         if (!memberresultsbycount.ContainsKey(keylength))
                         {
-                            var keycontainer = new List<int>();
+                            var keycontainer = new IntervalList();
                             memberresultsbycount.Add(keylength, keycontainer);
 
                         }
@@ -624,7 +625,7 @@ namespace LogicalModel
                       
                         factspool = factspool.OrderBy(i => i.Count()).ToList();
 
-                        var partialresult = factspool.FirstOrDefault().AsEnumerable();
+                        var partialresult = factspool.FirstOrDefault();
 
                         for (int i = 1; i < factspool.Count; i++)
                         {

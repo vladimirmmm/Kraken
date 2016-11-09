@@ -69,7 +69,6 @@
     <Compile Include="Models\Instance\Instance.cs" />
     <Compile Include="Models\Instance\InstanceClasses.cs" />
     <Compile Include="Models\Instance\InstanceContext.cs" />
-    <Compile Include="Models\IntervalList.cs" />
     <Compile Include="Models\LayoutLink.cs" />
     <Compile Include="Models\TableGroup.cs" />
     <Compile Include="Models\Table\Cell.cs" />

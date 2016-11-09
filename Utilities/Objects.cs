@@ -113,6 +113,89 @@ namespace Utilities
             }
             return result;
         }
+
+        public static IntervalList SortedExcept(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
+        {
+            var result = new IntervalList();
+            var smaller = sequence1;
+            var bigger = sequence2;
+            var bix = 0;
+            var six = 0;
+            if (bigger.Intervals.Count == 0) { return smaller; }
+
+            Interval s = smaller.Intervals.FirstOrDefault();
+            Interval b = bigger.Intervals.FirstOrDefault();
+            Interval snext = smaller.Intervals.FirstOrDefault();
+            Interval bnext = bigger.Intervals.FirstOrDefault();
+
+      
+            while (snext !=null)
+            {
+
+                s = snext;
+                b = bnext;
+
+            
+                var r = b==null?-1: s.Compare(b);
+                if (r == 0)
+                {
+                    var except = s.Except(b);
+                    var hasany = except != null && except.Count > 0;
+                    if (!hasany)
+                    {
+                        six++;
+                        snext = six < smaller.Intervals.Count ? smaller.Intervals[six] : null;
+                        continue;
+                    }
+                    else 
+                    {
+                   
+                        if (except.Count == 2)
+                        {
+                            result.Intervals.Add(except[0]);
+                            snext = except[1];
+                            continue;
+                        }
+                        else
+                        {
+                            snext = except[0];
+                           
+                        }
+                        s = snext;
+                    
+                    }
+
+                    if (s.End > b.End)
+                    {
+                        bix++;
+                    }
+                    else
+                    {
+                        result.Intervals.Add(s);
+                        six++;
+                        snext = six < smaller.Intervals.Count ? smaller.Intervals[six] : null;
+
+                    }
+                    
+
+                }
+                if (r < 0)
+                {
+                    result.Intervals.Add(s);
+                    six++;
+                    snext = six < smaller.Intervals.Count ? smaller.Intervals[six] : null;
+
+                }
+                if (r > 0)
+                {
+                    bix++;
+                }
+                bnext = bix < bigger.Intervals.Count ? bigger.Intervals[bix] : null;
+            }
+
+            return result;
+        }
+
         public static List<T> SortedExcept<T>(IList<T> m, IList<T> n) where T : IComparable<T>
         {
             if (m.Count > 2 && n.Count > 2)
@@ -420,9 +503,83 @@ namespace Utilities
             return false;
         }
 
-        public static List<int> IntersectSorted(IList<int> sequence1, IList<int> sequence2, IComparer<int> comparer)
+        public static IntervalList IntersectSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
-        
+            var result = new IntervalList();
+            var smaller = sequence1.Intervals.Count < sequence2.Intervals.Count ? sequence1 : sequence2;
+            var bigger = smaller == sequence1 ? sequence2 : sequence1;
+            var bix = 0;
+            var six = 0;
+            if (IsTheSame(sequence1, sequence2)) 
+            {
+                return sequence1;
+            }
+            Interval s = null;
+            Interval b = null;
+            var sc = smaller.Intervals.Count;
+            var bc = bigger.Intervals.Count;
+            var bchanged = true;
+            var schanged = true;
+            //if (sc>0 && bc>sc*100)
+            //{
+            //    //var vix = bigger.Intervals.BinarySearch(smaller.FirstInterval, IntervalList.ic2);
+            //    //bix = (vix < 0 ? ~vix : vix) - 1;
+            //    //if (bix < 0 || bix == bigger.Intervals.Count)
+            //    //{
+            //    //    bix = 0;
+            //    //}
+            //}
+            while (six < sc && bix < bc) 
+            {
+                if (schanged)
+                {
+                    s = smaller.Intervals[six];
+                    schanged = false;
+                }
+                if (bchanged)
+                {
+                    b = bigger.Intervals[bix];
+                    bchanged = false;
+                }
+                var r = s.Compare(b);
+                if (r == 0) 
+                {
+                    result.Intervals.Add(s.Intersect(b));
+                    if (s.End > b.End)
+                    {
+                        bix++;
+                        bchanged = true;
+                    }
+                    else 
+                    {
+                        six++;
+                        schanged = true;
+
+                    }
+
+                }
+                if (r < 0) 
+                {
+                    six++;
+                    schanged = true;
+
+                }
+                if (r > 0) 
+                {
+                    bix++;
+                    bchanged=true;
+                }
+            }       
+
+            return result;
+        }
+
+        public static IList<int> IntersectSorted(IList<int> sequence1, IList<int> sequence2, IComparer<int> comparer)
+        {
+            if (sequence1.GetType() == typeof(IntervalList) && sequence2.GetType() == typeof(IntervalList)) 
+            {
+                return IntersectSorted((IntervalList)sequence1, (IntervalList)sequence2, null);
+            }
             if (IsTheSame(sequence1, sequence2)) { 
                 return sequence1.ToList();
             }

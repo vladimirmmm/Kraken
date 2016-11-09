@@ -32,10 +32,11 @@ namespace LogicalModel
         public int NrMaxItems = -1;
         public int IndexStartAt = 0;
         public int IndexEndAt = 0;
-        //protected Dictionary<int[], FactLookupValue> LookupOfKeys = new Dictionary<int[], FactLookupValue>(new Utilities.IntArrayEqualityComparer());
         public Dictionary<int, FactKeyWithCells> LookupOfIndexes = new Dictionary<int, FactKeyWithCells>();
         public bool IsDirty = false;
+        public bool IsPersisting = false;
         private bool _IsLoaded = false;
+        public object Locker = new Object();
         public bool IsLoaded
         {
             get
@@ -76,6 +77,9 @@ namespace LogicalModel
             
             Save(intkeys, index,cells);
             kv.Key = index;
+            //if (index == 2117299) 
+            //{
+            //}
             kv.Value = new FactKeyWithCells(intkeys, cells);
             //var kvp = new KeyValuePair<int, List<int>>(intkeys[0], cells);
             //return kvp;
@@ -87,11 +91,15 @@ namespace LogicalModel
             var sb = new StringBuilder();
             foreach (var item in LookupOfIndexes)
             {
+                //if (item.Key == 2117299) 
+                //{
+
+                //}
                 sb.AppendLine(Content(item));
             }
             return sb.ToString();
         }
-        public string Content(KeyValuePair<int, FactKeyWithCells> kvp)
+        public static string Content(KeyValuePair<int, FactKeyWithCells> kvp)
         {
             var sb = new StringBuilder();
             sb.Append(kvp.Key);
@@ -114,12 +122,29 @@ namespace LogicalModel
         {
             if (!LookupOfIndexes.ContainsKey(index))
             {
+                //if (index == 2117299) 
+                //{ 
+                //}
                 LookupOfIndexes.Add(index, new FactKeyWithCells(key, CellIndexes));
                 _IsLoaded = true;
             }
             IsDirty = true;
             return index;
         }
+
+        //public int AddtoDictionary(int[] key, int index, List<int> CellIndexes)
+        //{
+        //    if (!LookupOfIndexes.ContainsKey(index))
+        //    {
+        //        if (index == 2117299)
+        //        {
+        //        }
+        //        LookupOfIndexes.Add(index, new FactKeyWithCells(key, CellIndexes));
+        //        _IsLoaded = true;
+        //    }
+        //    IsDirty = true;
+        //    return index;
+        //}
         public int GetPageIndex(int ix)
         {
             var index = ix - IndexStartAt;
@@ -172,11 +197,21 @@ namespace LogicalModel
 
         public void Clear()
         {
+            Log("Clearing page" + this.ID.ToString());
             LookupOfIndexes.Clear();
             _IsLoaded = false;
+       
+
         }
 
-
+        protected void Log(string item)
+        {
+            var debug = true;
+            if (debug)
+            {
+                Console.WriteLine(Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ": " + item);
+            }
+        }
 
         public bool ContainsKey(int[] key)
         {

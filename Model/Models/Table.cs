@@ -343,6 +343,9 @@ namespace LogicalModel
         }
         private List<int[]> FactList = new List<int[]>();
         private List<int> FactindexList = new List<int>();
+        private List<int> ProcessedFactindexList = new List<int>();
+        //private Dictionary<int, List<int>> FactIndexToCells = new Dictionary<int, List<int>>();
+        private List<Tuple<int, int>> FactIndexToCells = new List<Tuple<int, int>>();
 
   
         public void LoadDefinitions2()
@@ -647,12 +650,12 @@ namespace LogicalModel
                     var rowix=0;
 
                     var members = ext.Dimensions.Where(i => i.MapID != i.DomMapID).ToList();
-                    var memberkeys = members.Select(i => i.MapID).ToList();
-                    if (memberkeys.Count==2)
-                    {
-                        var ids = Utilities.Objects.IntersectSorted(this.FactsOfParts[memberkeys[0]], this.FactsOfParts[memberkeys[1]], null);
+                    //var memberkeys = members.Select(i => i.MapID).ToList();
+                    //if (memberkeys.Count==2)
+                    //{
+                    //    var ids = Utilities.Objects.IntersectSorted(this.FactsOfParts[memberkeys[0]], this.FactsOfParts[memberkeys[1]], null);
 
-                    }
+                    //}
                     foreach (var row in Rows)
                     {
                         var colix = 0;
@@ -740,11 +743,15 @@ namespace LogicalModel
                                 var factix = this.Taxonomy.FactsManager.GetFactIndex(factintkey);
                                 if (factix>-1)
                                 {
-                                    //Legacy
-                                    //var item = this.Taxonomy.GetCellsOfFact(factintkey);
-                                    //item.Add(xcell.CellID);
+                                    this.FactIndexToCells.Add(new Tuple<int, int>(factix, cellix));
+                                    //if (!this.FactIndexToCells.ContainsKey(factix)) 
+                                    //{
+                                    //    this.FactIndexToCells.Add(factix, new List<int>(1));
+                                    //}
+                                    //this.FactIndexToCells[factix].Add(cellix);
+                                    //this.Taxonomy.AddCellToFact(factix, cellix, null);//sbe
+                                    this.ProcessedFactindexList.Add(factix);
 
-                                    this.Taxonomy.AddCellToFact(factix, cellix, null);//sbe
                                     cell.IsBlocked = false;
 
                                 }
@@ -756,12 +763,17 @@ namespace LogicalModel
                                         List<int> results = new List<int>();
                                         results = this.Taxonomy.SearchFactsGetIndex3( factintkey, this.FactsOfParts,null);
                                         cell.IsBlocked = results.Count == 0;
-                                        foreach (var result in results)
+                                        foreach (var factindex in results)
                                         {
-                                            //Legacy
-                                            //var item = this.Taxonomy.GetCellsOfFact(result);
-                                            //item.Add(xcell.CellID);
-                                            this.Taxonomy.AddCellToFact(result, cellix, null);
+                                            this.FactIndexToCells.Add(new Tuple<int, int>(factindex, cellix));
+
+                                            //if (!this.FactIndexToCells.ContainsKey(factindex))
+                                            //{
+                                            //    this.FactIndexToCells.Add(factindex, new List<int>(1));
+                                            //}
+                                            //this.FactIndexToCells[factindex].Add(cellix);
+
+                                            this.ProcessedFactindexList.Add(factindex);
 
                                         }
                                         if (results.Count == 0)
@@ -802,16 +814,32 @@ namespace LogicalModel
                 
 
             }
+            FactIndexToCells = FactIndexToCells.OrderBy(i => i.Item1).ToList();
+            foreach (var tuple in FactIndexToCells)
+            {
+                this.Taxonomy.AddCellToFact(tuple.Item1, tuple.Item2, null);
+            }
+            //foreach (var index in indexes) 
+            //{
+            //    foreach (var cellindex in FactIndexToCells[index])
+            //    {
+            //        this.Taxonomy.AddCellToFact(index, cellindex, null);
+            //    }
+            //}
+            FactIndexToCells.Clear();
             var fsb = new StringBuilder();
             var firstunmappedfact = "";
             var unmappednr = 0;
             foreach (var factindex in FactindexList) 
             {
-                var fact = this.Taxonomy.FactsManager.GetFactKey(factindex);
-                if (this.Taxonomy.GetCellsOfFact(fact).Count == 0) 
+                //;
+                if (this.Taxonomy.GetCellsOfFact(factindex).Count == 0) 
                 {
-                    var item = Taxonomy.SearchFacts3(this.FactsOfParts, fact);
-                    this.Taxonomy.AddCellToFact(fact, -1,null);
+                    var wasprocessed = ProcessedFactindexList.Contains(factindex);
+                    var page = this.Taxonomy.FactsManager.FactsOfPages.GetPageByFactIndex(factindex);
+                    var fact = this.Taxonomy.FactsManager.GetFactKey(factindex);
+                   // var item = Taxonomy.SearchFacts3(this.FactsOfParts, fact,);
+                    this.Taxonomy.AddCellToFact(factindex, -1, null);
                     unmappednr++;
                     var identifier = String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.ID);
                     if (String.IsNullOrEmpty(firstunmappedfact)) 
@@ -847,7 +875,7 @@ namespace LogicalModel
             FactsOfParts.Clear();
             FactList.Clear();
             FactindexList.Clear();
-
+            ProcessedFactindexList.Clear();
             System.IO.File.WriteAllText(LayoutPath.Replace(".txt",".sbe.dat"), sbe.ToString());
             sbe.Clear();
 

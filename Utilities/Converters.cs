@@ -151,7 +151,7 @@ namespace Utilities
         public static String DateTimeToString(DateTime dt, string format)
         {
             CultureInfo ci = new CultureInfo("en-US");
-            return String.Format(ci, format, dt);
+            return String.Format("{0:"+format+"}", dt);
         }
         public static string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
         public static DateTime StringToDateTime(String dt, string format)

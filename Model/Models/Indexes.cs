@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel
 {
@@ -75,6 +77,7 @@ namespace LogicalModel
         public List<FactKeyDictionary> Pages = new List<FactKeyDictionary>();
         public Dictionary<int, int> FactKeyCountOfIndexes = new Dictionary<int, int>();
         public Dictionary<int[], int> HashKeys = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
+        //public SortedList<int[], int> HashKeys = new SortedList<int[], int>(100000,new Utilities.IntArrayComparer());
 
         public FactKeyDictionary LastPage = null;
         public List<int> LoadedPages = new List<int>();
@@ -121,7 +124,8 @@ namespace LogicalModel
                 //var filename = Utilities.Strings.GetFileName(file);
                 //var ix = Utilities.Converters.FastParse(Utilities.Strings.TextBetween(filename, Tag, "."));
                 //page.ID = ix;
-                LoadPage(page);
+               
+                //LoadPage(page);
 
             }
             Utilities.FS.DictionaryFromFile(GetHashKeyFilePath(), this.HashKeys);
@@ -145,7 +149,7 @@ namespace LogicalModel
             page.IndexStartAt = page.ID * page.NrMaxItems;
             page.IndexEndAt = page.IndexStartAt + page.NrMaxItems;
             this.Pages.Add(page);
-            this.LoadedPages.Add(page.ID);
+            AddIDToLoadedPages(page.ID);
             LastPage = page;
             return page;
         }
@@ -157,36 +161,66 @@ namespace LogicalModel
         }
         public void LoadPage(FactKeyDictionary page)
         {
-            Log("Loading page " + page.ID);
+            Log("Loading page" + page.ID);
+            page.IsPersisting = true;
             var filepath = GetFilePath(page.ID);
-            var lines = System.IO.File.ReadAllLines(filepath);
-            lock (Locker)
+
+            lock (page.Locker)
             {
-                foreach (var line in lines)
+                // Open the text file using a stream reader.
+                using (StreamReader sr = new StreamReader(filepath))
                 {
-                    var kv = page.Save(line);
-                    //if (!KeyCountOfIndex.ContainsKey(kv.Key))
-                    //{
-                    //    KeyCountOfIndex.Add(kv.Key,  kv.Value.Length);
-                    //}
+
+                    while (sr.Peek() >= 0)
+                    {
+                        String line = sr.ReadLine();
+                        var kv = page.Save(line);
+
+
+                    }
+                    page.IsDirty = false;
+
                 }
-                page.IsDirty = false;
+                // Read the stream to a string, and write the string to the console.
             }
-            if (NrLoadedPages!=0 && LoadedPages.Count > NrLoadedPages )
+
+            page.IsPersisting = false;
+
+
+            if (NrLoadedPages != 0 && LoadedPages.Count > NrLoadedPages)
             {
                 Unload(0);
             }
-            LoadedPages.Add(page.ID);
+            AddIDToLoadedPages(page.ID);
             LastPage = page;
-        
+
 
         }
+
+        private void RemoveIDFromLoadedPages(int pageid) 
+        {
+            if (pageid == 8)
+            {
+            }
+            Log(String.Format("Removing page{0} from LoadedPages", pageid));
+            LoadedPages.Remove(pageid);
+        }
+        private void AddIDToLoadedPages(int pageid) 
+        {
+            if (pageid == 8)
+            { 
+            } 
+            LoadedPages.Add(pageid);
+            Log(String.Format("page{0} was added to LoadedPages", pageid));
+        }
+
+        
         protected void Log(string item) 
         {
             var debug = true;
             if (debug)
             {
-                Console.WriteLine(item);
+                Console.WriteLine(Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ": " + item);
             }
         }
  
@@ -299,7 +333,17 @@ namespace LogicalModel
             return GetFactKeyWithCells(index).FactKey;
         
         }
+        public FactKeyDictionary GetPageByFactIndex(int factindex) 
+        {
+            if (factindex >= LastPage.IndexStartAt && factindex < LastPage.IndexEndAt)
+            {
+                return LastPage;
 
+            }
+
+            int pid = factindex / NrItemsPerPage;
+            return this.Pages[pid];
+        }
         public FactKeyWithCells GetFactKeyWithCells(int index) 
         {
             if (index >= LastPage.IndexStartAt && index < LastPage.IndexEndAt)
@@ -309,12 +353,16 @@ namespace LogicalModel
             }
 
             int pid = index / NrItemsPerPage;
-            LastPage = this.Pages[pid];
-            if (!LastPage.IsLoaded)
+            var page = this.Pages[pid];
+            LastPage = page;
+            if (!page.IsLoaded)
             {
-                LoadPage(LastPage);
+                //if (page.ID == 21) 
+                //{ 
+                //}
+                LoadPage(page);
             }
-            return LastPage.LookupOfIndexes[index];
+            return page.LookupOfIndexes[index];
         }
 
  
@@ -410,7 +458,7 @@ namespace LogicalModel
             }
             if (lastpage.Count == NrItemsPerPage)
             {
-                Save(lastpage);
+                SaveToFS(lastpage);
                 lastpage = CreatePage();
 
             }
@@ -430,43 +478,90 @@ namespace LogicalModel
         }
         public void Unload(int ix)
         {
-            var pageix = LoadedPages[ix];
-            var page = this.Pages[pageix];
+            var pageid= LoadedPages[ix];
+       
+            var page = this.Pages[pageid];
+            while (page.IsPersisting)
+            { 
+                pageid=pageid+1;
+                if (LastPage.ID == pageid) 
+                {
+                    pageid = 0;
+                }
+                page = this.Pages[pageid % this.Pages.Count];
+            }
             Unload(page);
         }
         private void Unload(FactKeyDictionary page)
         {
 
 
-            Log("UnLoading page " + page.ID);
+            Log("UnLoading page" + page.ID);
+            if (page.ID == 8) 
+            {
+
+            }
             if (page.IsDirty)
             {
-                Save(page);
+                SaveToFS(page);
             }
-            LoadedPages.Remove(page.ID);
+            else 
+            {
+                lock (page.Locker)
+                {
+                    page.Clear();
+                    RemoveIDFromLoadedPages(page.ID);
+
+                }
+
+            }
+
+
         }
-        public object Locker = new Object();
-        public void Save(FactKeyDictionary page)
+        //public object Locker = new Object();
+        public void SaveToFS(FactKeyDictionary page)
         {
+            page.IsPersisting = true;
             Task.Run(
                 () =>
                 {
-                    lock (Locker)
+                    lock (page.Locker)
                     {
+                        Log(String.Format("Saveing page{0} to FS", page.ID));
+
                         var path = GetFilePath(page.ID);
-                        Utilities.FS.WriteAllText(path, page.Content());
+                        Utilities.FS.EnsurePath(path);
+                        //Utilities.FS.WriteAllText(path, page.Content());
+                        using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(path, false))
+                        {
+   
+                            foreach (var item in page.LookupOfIndexes)
+                            {
+                                fsw.WriteLine(FactKeyDictionary.Content(item));
+                            }
+                        }
+
+                        Log(String.Format("page{0} was saved to FS", page.ID));
+
                         page.IsDirty = false;
                         page.Clear();
+                        RemoveIDFromLoadedPages(page.ID);
+                        page.IsPersisting = false;
+
                     }
                 });
         }
+        
         public void SavePages(bool clear=false) 
         {
             var pages = Pages.ToList();
 
             foreach (var page in pages) 
             {
-                Save(page);
+                if (page.IsDirty)
+                {
+                    SaveToFS(page);
+                }
                 if (clear)
                 {
                     Unload(page);
@@ -495,6 +590,33 @@ namespace LogicalModel
 
 
 
+
+        internal void AddCellToFact(int index, int cellix)
+        {
+            var page = GetPageByFactIndex(index);
+            if (page.IsPersisting)
+            {
+                lock (page.Locker)
+                {
+                    if (!page.IsLoaded) 
+                    {
+                        LoadPage(page);
+                    }
+                    page.LookupOfIndexes[index].CellIndexes.Add(cellix);
+                    page.IsDirty = true;
+                }
+            }
+            else
+            {
+                if (!page.IsLoaded)
+                {
+                    LoadPage(page);
+                }
+                page.LookupOfIndexes[index].CellIndexes.Add(cellix);
+                page.IsDirty = true;
+
+            }
+        }
     }
 
    

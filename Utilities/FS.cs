@@ -9,9 +9,9 @@ namespace Utilities
 {
     public class FS
     {
-        public static void DictionaryToFile<TKey, TValue>(string filepath, Dictionary<TKey, TValue> dict, Func<TKey,string> KeyToString,Func<TValue,string> ValueTostring)
+        public static void DictionaryToFile<TKey, TValue>(string filepath, IDictionary<TKey, TValue> dict, Func<TKey,string> KeyToString,Func<TValue,string> ValueTostring)
         {
-            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath))
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath,false))
             {
                 foreach (var item in dict)
                 {
@@ -20,7 +20,7 @@ namespace Utilities
             }
 
         }
-        public static bool DictionaryFromFile<TKey, TValue>(string filepath, Dictionary<TKey, TValue> dict, Func<string, TKey> KeyFromString, Func<string, TValue> ValueFromstring)
+        public static bool DictionaryFromFile<TKey, TValue>(string filepath, IDictionary<TKey, TValue> dict, Func<string, TKey> KeyFromString, Func<string, TValue> ValueFromstring)
         {
             try
             {   // Open the text file using a stream reader.
@@ -47,20 +47,21 @@ namespace Utilities
             }
 
         }
-        public static void DictionaryToFile(string filepath, Dictionary<int[], int> dict) 
+        public static void DictionaryToFile(string filepath, IDictionary<int[], int> dict) 
         {
-            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath))
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath,false))
             {
                 foreach (var item in dict)
                 {
                     fsw.WriteLine(Utilities.Strings.ArrayToString(item.Key, ",") + ":" + item.Value.ToString());
                 }
+                fsw.Close();
             }
         
         }
-        public static bool DictionaryFromFile(string filepath, Dictionary<int[], int> dict)
+        public static bool DictionaryFromFile(string filepath, IDictionary<int[], int> dict)
         {
-            try
+            if (FileExists(filepath))
             {   // Open the text file using a stream reader.
                 using (StreamReader sr = new StreamReader(filepath))
                 {
@@ -78,9 +79,9 @@ namespace Utilities
                 return true;
 
             }
-            catch (Exception ex)
+            else
             {
-                Utilities.Logger.WriteLine("Can't read from file " + filepath + ": " + ex.Message);
+                Utilities.Logger.WriteLine("Can't read from file " + filepath);
                 return false;
             }
 

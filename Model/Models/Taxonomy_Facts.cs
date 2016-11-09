@@ -128,7 +128,7 @@ namespace LogicalModel
         }
         public List<string> GetCellsOfFact(int factindex)
         {
-            var cellixs = FactsManager.GetFact(factindex).Value;
+            var cellixs = FactsManager.FactsOfPages[factindex];
             var cells = new List<string>();
             foreach (var cellix in cellixs)
             {
@@ -153,8 +153,34 @@ namespace LogicalModel
             //var cellcontainer = FactsManager.FactsOfPages[index];
             //cellcontainer.Capacity = cellcontainer.Count + 1;
             //cellcontainer.Add(cellix);
+            FactsManager.FactsOfPages.AddCellToFact(index, cellix);
+            //var page = FactsManager.FactsOfPages.GetPageByFactIndex(index);
+            //if (page.IsPersisting)
+            //{
+            //    lock (page.Locker)
+            //    {
+            //        AddCellToFactUnsafe(page, index, cellix);
+            //    }
+            //}
+            //else
+            //{
+            //    AddCellToFactUnsafe(page, index, cellix);
 
+            //}
+            //AddCellToFactUnsafe(page, index, cellix);
+        }
+
+        public void AddCellToFactUnsafe(FactKeyDictionary page, int index, int cellix) 
+        {
             FactsManager.FactsOfPages[index].Add(cellix);
+            FactsManager.FactsOfPages.AddCellToFact(index, cellix);
+            page.IsDirty = true;
+            //if (index == 1100000)
+            //{
+            //    Console.WriteLine(Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ": " + "Adding "+index);
+
+            //}
+
         }
         public void AddCellToFact(int[] key, int cellix,StringBuilder sb ) 
         {

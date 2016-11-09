@@ -142,39 +142,39 @@ namespace XBRLProcessor.Models
             var unmappedfacts = 0;
             FactsManager.Load();
             FactsManager.SaveToFile = false;
-            foreach (var fact in this.FactsAsQuearyable())
-            {
-                //EnsureFactIndex(fact.Key);
-                //LoadFactToFactsOfParts(fact.Key);
-                ix++;
-                //EnsureFactIndex(fact.Key);
-                /*
-                var parts = fact.Key;
-                var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //foreach (var fact in this.FactsAsQuearyable())
+            //{
+            //    //EnsureFactIndex(fact.Key);
+            //    //LoadFactToFactsOfParts(fact.Key);
+            //    ix++;
+            //    //EnsureFactIndex(fact.Key);
+            //    /*
+            //    var parts = fact.Key;
+            //    var keyparts = GetFactKeyStringParts(fact.Key);// stringkey.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-                for (int i = 0; i < keyparts.Count; i++)
-                {
-                    var id = keyparts[i];
+            //    for (int i = 0; i < keyparts.Count; i++)
+            //    {
+            //        var id = keyparts[i];
 
-                    HashSet<int> keylist2 = null;
-                    if (!FactsOfDimensions.ContainsKey(id))
-                    {
-                        keylist2 = new HashSet<int>();
-                        FactsOfDimensions.Add(id, keylist2);
-                    }
-                    else
-                    {
-                        keylist2 = FactsOfDimensions[id];
-                    }
-                    keylist2.Add(ix);
-                }
-                */
-                if (fact.Value.Count == 0) 
-                {
-                    unmappedfacts++;
-                }
+            //        HashSet<int> keylist2 = null;
+            //        if (!FactsOfDimensions.ContainsKey(id))
+            //        {
+            //            keylist2 = new HashSet<int>();
+            //            FactsOfDimensions.Add(id, keylist2);
+            //        }
+            //        else
+            //        {
+            //            keylist2 = FactsOfDimensions[id];
+            //        }
+            //        keylist2.Add(ix);
+            //    }
+            //    */
+            //    if (fact.Value.Count == 0) 
+            //    {
+            //        unmappedfacts++;
+            //    }
              
-            }
+            //}
             //foreach (var key in FactsOfParts)
             //{
             //    //key.Value.Sort();// = key.Value.OrderBy(i => i).ToList();

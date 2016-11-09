@@ -48,6 +48,7 @@
     <Compile Include="Converters.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FS.cs" />
+    <Compile Include="Intervals.cs" />
     <Compile Include="KeyValue.cs" />
     <Compile Include="Linq.cs" />
     <Compile Include="Log.cs" />
