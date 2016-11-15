@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 using XBRLProcessor.Model.Base;
 using XBRLProcessor.Model.DefinitionModel;
 using XBRLProcessor.Model.DefinitionModel.Filter;
@@ -55,8 +56,8 @@ namespace XBRLProcessor.Model
         private List<FactVariable> _FactVariables = new List<FactVariable>();
         public List<FactVariable> FactVariables { get { return _FactVariables; } set { _FactVariables = value; } }
 
-        private List<FilterContainer> _Filters = new List<FilterContainer>();
-        public List<FilterContainer> Filters { get { return _Filters; } set { _Filters = value; } }
+        private List<Filter> _Filters = new List<Filter>();
+        public List<Filter> Filters { get { return _Filters; } set { _Filters = value; } }
 
 
         public Hierarchy<XbrlIdentifiable> ValidationRoot = null;
@@ -379,42 +380,6 @@ namespace XBRLProcessor.Model
             logicalrule.LabelID = valueassertion.LabelID;
             logicalrule.OriginalExpression = valueassertion.Test.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
             logicalrule.SetTaxonomy(this.Taxonomy);
-            var factvariables = tmp_rule.Where(i => i.Item is FactVariable);
-            foreach (var fv in factvariables)
-            {
-                tmp_rule.Remove(fv);
-            }
-        
-            var rulefactqueries = GetFactQuery(tmp_rule);
-            var rulefactIds = new List<int>();
-            var rulebasequery = GetRuleQuery(tmp_rule).FirstOrDefault();
-
-        
-            var rbds = new List<string>();
-            bool RuleHasDictFilter = false; 
-            if (rulebasequery != null)
-            {
-                RuleHasDictFilter = rulebasequery.DictFilterIndexes.Count > 0;
-                rulefactIds.AddRange(rulebasequery.ToList(Taxonomy,null));
-
-            }
-            else
-            {
-                rulebasequery = new LogicalModel.Base.FactBaseQuery();
-            }
-            var additionalfacts = new List<int>();
-            foreach (var rulefactquery in rulefactqueries) 
-            {
-                RemoveCommon(rulefactquery, rulebasequery);
-
-                var factindexes = rulefactquery.ToList(Taxonomy, rulebasequery == null ? null : rulefactIds);
-                additionalfacts.AddRange(factindexes);
-            }
-         
-            if (additionalfacts.Count > 0) 
-            {
-                rulefactIds = additionalfacts;
-            }
 
             var sb = new StringBuilder();
             sb.AppendLine(logicalrule.DisplayText);
@@ -423,212 +388,67 @@ namespace XBRLProcessor.Model
 
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
-            //
-          
+
+            var factvariables = tmp_rule.Where(i => i.Item is FactVariable);
+            foreach (var fv in factvariables)
+            {
+                tmp_rule.Remove(fv);
+            }
+            if (logicalrule.ID.Contains("4002"))
+            {
+                //var rulebasequeryX = GetRuleQuery(tmp_rule).FirstOrDefault();
+
+            }
+            logicalrule.BaseQuery = GetQuery(tmp_rule);
+            
+         
 
             foreach (var fv in factvariables)
             {
                 var factvariable = fv.Item as FactVariable;
-                var parameterfactqueries = GetFactQuery(fv, 1);
-
-                var parameterfactbasequery = GetRuleQuery(fv).FirstOrDefault();
-                var parameterfacts = parameterfactbasequery == null ? rulefactIds.ToList() : parameterfactbasequery.ToList(Taxonomy, RuleHasDictFilter ? rulefactIds : null);
-    
-                var parameterfactquery = new LogicalModel.Base.FactBaseQuery();
-                foreach (var pfbq in parameterfactqueries)
-                {
-                    parameterfactquery.ChildQueries.Add(pfbq);
-                }
-
-
                 var name = factvariable.Name;
                 var parameter = new LogicalModel.Validation.ValidationParameter(name, logicalrule.ID);
+                logicalrule.Parameters.Add(parameter);
                 parameter.BindAsSequence = factvariable.BindAsSequence;
                 parameter.FallBackValue = factvariable.FallbackValue;
 
-                var mergedqueries = new List<LogicalModel.Base.FactBaseQuery>();
-                var rulefactdictcount = rulefactqueries.Select(i => i.DictFilterIndexes.Count).ToList();
-           
-                if (parameter.BindAsSequence)
+                parameter.BaseQuery = GetQuery(fv);
+                parameter.Concept = parameter.BaseQuery.GetConcept();
+                if (String.IsNullOrEmpty(parameter.Concept)) 
                 {
-                    mergedqueries = SoftCombineQueries(rulefactqueries, new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery });
-                    //mergedqueries = new List<LogicalModel.Base.FactBaseQuery>() { parameterfactquery };
-
+                    parameter.Concept = logicalrule.BaseQuery.GetConcept();
                 }
-                else
+                if (parameter.BaseQuery.HasDictFilter("find:filingIndicator"))
                 {
-                    if (parameterfactqueries.Count > 1)
-                    {
-                        //Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has multiple queries, but it is not sequenced.", logicalrule.ID, parameter.Name));
-                    }
-                    mergedqueries = SoftCombineQueries(rulefactqueries, parameterfactqueries);
-                    //mergedqueries = parameterfactqueries;
+                    parameter.IsGeneral = true;
+                    parameter.StringValue = "filingindicators";
                 }
-                if (mergedqueries.Count == 0)
-                {
-                    mergedqueries.Add(new LogicalModel.Base.FactBaseQuery());
-                }
-                //TODO
-                var multiplefactsfornonseqparameter = 0;
-                var qix = 0;
-                parameter.TaxFacts.Capacity = mergedqueries.Count;
-
-                var isnonsequenced = !parameter.BindAsSequence;
-                var parameterfactdict = new HashSet<int>(parameterfacts);
-
-                foreach (var fbq in mergedqueries)
-                {
-                    if (fbq.HasDictFilter("find:filingIndicator"))
-                    {
-                        parameter.IsGeneral = true;
-                        parameter.StringValue = "filingindicators";
-                    }
-                    //var datafactids = new List<int>();
-                    //var facts = GetFacts(fbq, parameterfacts, parameterfactdict, datafactids);
-
-                    var facts = fbq.ToList(Taxonomy, parameterfacts, true);
-
-                    var ok = true;
-
-                    if (isnonsequenced && facts.Count > 1)
-                    {
-                        multiplefactsfornonseqparameter++;
-                        ok = false;
-                        //like concepts for exampl
-                        if (parameterfactqueries.Count == 0)
-                        {
-                            multiplefactsfornonseqparameter = 0;
-                            foreach (var fact in facts)
-                            {
-                                parameter.TaxFacts.Add(new List<int>() { fact });
-                            }
-                        }
-                        else
-                        {
-                            multiplefactsfornonseqparameter = 0;
-                            foreach (var fact in facts)
-                            {
-                                parameter.TaxFacts.Add(new List<int>() { fact });
-                            }
-                        }
-
-                    }
-                    if (ok)
-                    {
-
-                        parameter.TaxFacts.Add(facts.Select(i => i).ToList());
-
-                    }
-
-               
-                    qix++;
-                }
-
-
-                if (multiplefactsfornonseqparameter > 0)
-                {
-                    Utilities.Logger.WriteLine(String.Format("Rule {0} non-sequenced parameter {1} has multiple facts", logicalrule.ID, parameter.Name));
-
-                }
-                if (parameter.TaxFacts.Count == 0 && !parameter.IsGeneral)
-                {
-                    Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has no facts", logicalrule.ID, parameter.Name));
-
-                }
-
                 var type = LogicalModel.TypeEnum.Numeric;
-                var firsttaxfact = parameter.TaxFacts.FirstOrDefault(i => i.Count > 0);
                 if (!parameter.IsGeneral)
                 {
-                    if (firsttaxfact == null)
+                    if (parameter.Concept != null
+                        && (parameter.Concept.Contains(":ei")
+                        || parameter.Concept.Contains(":si")))
                     {
-                        Utilities.Logger.WriteLine(String.Format("Rule {0} parameter {1} has no valid facts", logicalrule.ID, parameter.Name));
+                        type = LogicalModel.TypeEnum.String;
                     }
-                    else
+                    if (parameter.Concept != null
+                        && (parameter.Concept.Contains(":di")))
                     {
-                        var firstfactid = firsttaxfact.FirstOrDefault();
-                        var firstfactstring = Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(firstfactid));
-                        var firstfact = LogicalModel.Base.FactBase.GetFactFrom(firstfactstring);
-
-                        if (firstfact.Concept != null
-                            && (firstfact.Concept.Name.StartsWith("ei") || firstfact.Concept.Name.StartsWith("si")))
-                        {
-                            type = LogicalModel.TypeEnum.String;
-                        }
-                        if (firstfact.Concept != null
-                            && (firstfact.Concept.Name.StartsWith("di")))
-                        {
-                            type = LogicalModel.TypeEnum.Date;
-                        }
-                        parameter.Type = type;
+                        type = LogicalModel.TypeEnum.Date;
                     }
                 }
                 else
                 {
-                    parameter.Type = LogicalModel.TypeEnum.String;
-                }
-                var sequence = parameter.BindAsSequence ? "Sequence" : "";
-                sb.AppendLine("parameter: " + name + " " + sequence);
+                    type = LogicalModel.TypeEnum.String;
 
-                if (LogicalModel.Settings.Current.CheckValidationCells)
-                {
-                    sb.AppendLine(CheckCells(parameter));
                 }
-                logicalrule.Parameters.Add(parameter);
+                parameter.Type = type; 
 
+
+               
             }
 
-            var groupcounts = logicalrule.Parameters.Select(i => i.TaxFacts.Count).Distinct().ToList();
-            if (groupcounts.Count > 1) 
-            {
-                Utilities.Logger.WriteLine(String.Format("Rule {0} has fact group issues!", logicalrule.ID));
-            }
-            /*
-            //remove invalid facts
-            var firstparameter = logicalrule.Parameters.FirstOrDefault();
-            //var xx = Taxonomy.GetFactStringKeys(firstparameter.TaxFacts);
-
-            var taxfactstoremove = new List<int>();
-
-            for (int i = 0; i < firstparameter.TaxFacts.Count; i++)
-            {
-                var factlist = new List<List<int>>();
-                factlist.Add(firstparameter.TaxFacts[i]);
-                for (int j = 1; j < logicalrule.Parameters.Count; j++)
-                {
-                    var parameter = logicalrule.Parameters[j];
-                    if (parameter.TaxFacts.Count != firstparameter.TaxFacts.Count) 
-                    {
-
-                    }
-                    if (i >= parameter.TaxFacts.Count)
-                    {
-
-                    }
-                    else
-                    {
-                        factlist.Add(parameter.TaxFacts[i]);
-
-                    }
-                }
-                if (factlist.All(f => f.Count == 0))
-                {
-                    taxfactstoremove.Add(i);
-                }
-            }
-            taxfactstoremove = taxfactstoremove.OrderByDescending(i => i).ToList();
-            foreach (var taxfactid in taxfactstoremove)
-            {
-                foreach (var parameter in logicalrule.Parameters)
-                {
-                    if (parameter.TaxFacts.Count > taxfactid)
-                    {
-                        parameter.TaxFacts.RemoveAt(taxfactid);
-                    }
-                }
-            }
-
-            */
             if (valueassertion.Test.Contains("$ReportingLevel"))
             {
                 var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel", logicalrule.ID);
@@ -646,11 +466,12 @@ namespace XBRLProcessor.Model
                 logicalrule.Parameters.Add(p_rl2);
             }
 
+            SetFacts(logicalrule);
 
             return logicalrule;
         }
 
-
+     
         private void AddDimensionIfNotExists(LogicalModel.Dimension dimension, LogicalModel.Base.FactBase fact)
         {
             var existingdim = fact.Dimensions.FirstOrDefault(i => i.DimensionItem == dimension.DimensionItem);

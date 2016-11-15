@@ -477,7 +477,7 @@ namespace LogicalModel
             var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts, null);
             return resultfacts.Select(i => FactsManager.GetFactKey(i)).ToList();
         }
-        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts, int PartNr)
+        public IList<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts, int PartNr)
         {
             var memberkeys = factkey.ToList();
             var memberfactspool = new List<IList<int>>();
@@ -506,42 +506,54 @@ namespace LogicalModel
             }
             if (PartNr != 0)
             {
-                result = result.Where(i => FactsManager.GetFactKey(i).Length == PartNr).ToList();
+                result = GetIntervals(result.Where(i => FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == PartNr));
             }
             if (result == null)
             {
                 result = new List<int>();
             }
-            return result.ToList();
+            return result;
         }
 
-
-        public List<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, List<int> facts)
+        public IntervalList GetIntervals(IEnumerable<int> items) 
+        {
+            var result = new IntervalList();
+            foreach (var item in items) 
+            {
+                result.Add(item);
+            }
+            return result;
+        }
+        public IList<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
         {
             var result = new List<int>();
             var domainkeys = factkey.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i) && this.DimensionDomainsOfMembers[i] == i).ToList();
             var memberkeys = factkey.Except(domainkeys).ToList();
             var memberfactspool = new List<IList<int>>();
-            foreach (var memberkey in memberkeys) 
+            foreach (var memberkey in memberkeys)
             {
                 if (factsOfParts.ContainsKey(memberkey))
                 {
                     memberfactspool.Add(factsOfParts[memberkey]);
                 }
+                else 
+                {
+                    return new List<int>();
+                }
             }
             var partcount = memberfactspool.Count;
-            if (facts != null) 
+            if (facts != null)
             {
                 memberfactspool.Add(facts);
             }
             memberfactspool = memberfactspool.OrderBy(i => i.Count).ToList();
             var memberresults = memberfactspool.FirstOrDefault();
-         
+
             for (int i = 1; i < memberfactspool.Count; i++)
             {
-                    memberresults = Utilities.Objects.IntersectSorted(memberresults, memberfactspool[i], null);
+                memberresults = Utilities.Objects.IntersectSorted(memberresults, memberfactspool[i], null);
             }
-            if (memberresults == null) 
+            if (memberresults == null)
             {
                 memberresults = new List<int>();
             }
@@ -549,31 +561,30 @@ namespace LogicalModel
             var lastkeylength = -1;
             IList<int> lastkeycontainer = null;
             var keylength = 0;
-            int[] key = null;
-          
-                foreach (var item in memberresults)
+
+            foreach (var item in memberresults)
+            {
+                //key = FactsManager.GetFactKey(item);
+                keylength = FactsManager.FactsOfPages.FactKeyCountOfIndexes[item];// key.Length;
+                if (lastkeylength != keylength)
                 {
-                    //key = FactsManager.GetFactKey(item);
-                    keylength = FactsManager.FactsOfPages.FactKeyCountOfIndexes[item];// key.Length;
-                    if (lastkeylength != keylength)
+                    if (!memberresultsbycount.ContainsKey(keylength))
                     {
-                        if (!memberresultsbycount.ContainsKey(keylength))
-                        {
-                            var keycontainer = new IntervalList();
-                            memberresultsbycount.Add(keylength, keycontainer);
+                        var keycontainer = new IntervalList();
+                        memberresultsbycount.Add(keylength, keycontainer);
 
-                        }
-                        lastkeylength = keylength;
-                        lastkeycontainer = memberresultsbycount[keylength];
                     }
-                    lastkeycontainer.Add(item);
-
+                    lastkeylength = keylength;
+                    lastkeycontainer = memberresultsbycount[keylength];
                 }
-            
+                lastkeycontainer.Add(item);
+
+            }
+
             //var memberresultscounts = memberresults.Select((i) => FactsManager.GetFactKey(i).Length).ToList();
             //setting up the items for the combination
             var vpool = new List<List<int>>();
-            foreach (var domainkey in domainkeys) 
+            foreach (var domainkey in domainkeys)
             {
                 vpool.Add(new List<int>() { -1, domainkey });
             }
@@ -595,7 +606,7 @@ namespace LogicalModel
                 for (int ix = 0; ix < cc; ix++)
                 {
                     var combination = combinations[ix];
-                 
+
                     actions.Add(() =>
                     {
                         var index = ix;
@@ -620,9 +631,9 @@ namespace LogicalModel
                         //factspool.Add(memberresults.Where((int i,int index )=> {
                         //    return memberresultscounts[index]==pcount;
                         //}).ToList());
-                    
+
                         factspool.Add(memberresultsbycount.ContainsKey(pcount) ? memberresultsbycount[pcount] : new List<int>());
-                      
+
                         factspool = factspool.OrderBy(i => i.Count()).ToList();
 
                         var partialresult = factspool.FirstOrDefault();
@@ -639,14 +650,14 @@ namespace LogicalModel
                             partialresult = partialresult.Where(i => FactsManager.GetFactKey(i).Length == pcount).ToList();
 
                         }
-                        lock (locker) 
+                        lock (locker)
                         {
                             result.AddRange(partialresult);
                         }
 
                     });
                 }
-             
+
                 //foreach (var a in actions) 
                 //{
                 //    a();
@@ -909,48 +920,51 @@ namespace LogicalModel
             ManageUIFiles();
             //
 
-            if (!Utilities.FS.FileExists(TaxonomyFactsPathFormat) || Settings.Current.ReloadFullTaxonomyButStructure)
+            //if (!Utilities.FS.FileExists(TaxonomyFactsPathFormat) || Settings.Current.ReloadFullTaxonomyButStructure)
+            //{
+            //    //if (this.Facts.Count == 0)
+            //    //{
+            //        //foreach (var table in Tables)
+            //        //{
+            //        //    table.LoadDefinitions2();
+            //        //}
+            //    //}
+            //    LoadCells();
+
+            //    //this.LoadFactDictionary();
+
+            //    //var jsoncontent = Utilities.Converters.ToJson(Facts);
+            //    //Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
+                
+            //    //LogicalModel.Helpers.FileManager.SaveToJson(this.Facts, this.TaxonomyFactsPathFormat, 50000);
+                
+                
+                
+            //    //SerializeFacts(50000);
+            //}
+            //else
+            //{
+
+            //    //var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
+            //    //this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
+                
+                
+                
+            //    //DeSerializeFacts();
+                
+                
+                
+            //    //this.Facts = new Dictionary<int[], List<string>>(2000000, new Utilities.IntArrayEqualityComparer());
+            //    //LogicalModel.Helpers.FileManager.SetFromJson(this.Facts, this.TaxonomyFactsPathFormat, DeserialzieFacts);
+
+      
+            //}
+            if (this.FactsManager.FactsOfPages.FactKeyCountOfIndexes.Count == 0)
             {
-                //if (this.Facts.Count == 0)
-                //{
-                    //foreach (var table in Tables)
-                    //{
-                    //    table.LoadDefinitions2();
-                    //}
-                //}
-                LoadCells();
-
                 this.LoadFactDictionary();
-
-                //var jsoncontent = Utilities.Converters.ToJson(Facts);
-                //Utilities.FS.WriteAllText(TaxonomyFactsPath, jsoncontent);
-                
-                //LogicalModel.Helpers.FileManager.SaveToJson(this.Facts, this.TaxonomyFactsPathFormat, 50000);
-                
-                
-                
-                //SerializeFacts(50000);
             }
-            else
-            {
 
-                //var jsoncontent = System.IO.File.ReadAllText(TaxonomyFactsPath);
-                //this.Facts = Utilities.Converters.JsonTo<Dictionary<string, List<string>>>(jsoncontent);
-                
-                
-                
-                //DeSerializeFacts();
-                
-                
-                
-                //this.Facts = new Dictionary<int[], List<string>>(2000000, new Utilities.IntArrayEqualityComparer());
-                //LogicalModel.Helpers.FileManager.SetFromJson(this.Facts, this.TaxonomyFactsPathFormat, DeserialzieFacts);
-                
-               
-                this.LoadFactDictionary();
-
-                LoadCells();
-            }
+            LoadCells();
             Logger.WriteLine("Load Facts completed");
         }
         

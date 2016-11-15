@@ -530,18 +530,27 @@ var Control;
         TaxonomyContainer.SetValues = function (ruleresult) {
             ruleresult.Parameters.forEach(function (parameter) {
                 parameter.FactItems = IsNull(parameter.FactItems) ? [] : parameter.FactItems;
-                parameter.FactIDs.forEach(function (factrefrence, ix) {
-                    var fi = new Model.FactItem();
-                    if (parameter.Facts.length == parameter.FactIDs.length) {
+                if (parameter.FactItems.length == 0) {
+                    parameter.FactIDs.forEach(function (factrefrence, ix) {
+                        var fi = new Model.FactItem();
                         var factstring = parameter.Facts[ix];
-                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        //var strval = TaxonomyContainer.GetFactValue(factstring);
+                        var ids = factrefrence.split(":");
+                        var strval = "";
+                        var id = parseInt(ids[1]);
+                        if (ids[0] == "T") {
+                            var strval = TaxonomyContainer.GetFactValueByID(id);
+                        }
+                        else {
+                            var strval = TaxonomyContainer.GetFactValueByID(id);
+                        }
                         fi.FactString = factstring;
                         fi.Value = strval;
                         fi.Cells = parameter.Cells[ix];
-                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        //var strval = TaxonomyContainer.GetFactValue(factstring);
                         parameter.FactItems.push(fi);
-                    }
-                });
+                    });
+                }
                 parameter.FactItems = parameter.FactItems.AsLinq().OrderByDescending(function (i) { return i.Value; }).ToArray();
                 if (parameter.BindAsSequence) {
                     var total = 0;
@@ -575,8 +584,9 @@ var Control;
             }
             return "";
         };
-        TaxonomyContainer.GetFactValueByID = function (factid) {
-            var fact = app.instancecontainer.Instance.Facts[factid];
+        TaxonomyContainer.GetFactValueByID = function (instancefactix) {
+            //var fact: Model.InstanceFact = app.instancecontainer.Instance.FactDictionary.FactsByIndex[factid];
+            var fact = app.instancecontainer.Instance.Facts[instancefactix];
             if (fact != null) {
                 return fact.Value;
             }

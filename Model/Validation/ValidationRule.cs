@@ -97,6 +97,7 @@ namespace LogicalModel.Validation
         public String ID { get; set; }
         public String FunctionName { get { return Utilities.Strings.AlfaNumericOnly(this.ID); } }
         public Expression RootExpression = null;
+        public FactBaseQuery BaseQuery = null;
 
         [JsonIgnore]
         public override string OriginalExpression { get; set; }
@@ -298,7 +299,7 @@ namespace LogicalModel.Validation
                         }
                     }
 
-                    sp.Facts.AddRange(itemfacts);
+                    //sp.Facts.AddRange(itemfacts);
                     sp.FactIDs.AddRange(itemfactids.Select(f => String.Format("T:{0}", f)));
                     //p.FactIDs.Add(String.Format("I:{0}", fact.IX));
                     //
@@ -802,11 +803,11 @@ namespace LogicalModel.Validation
                 sp.Cells.Add(item.ToArray().ToList());
 
             }
-            sp.Facts.AddRange(_Facts);
+            //sp.Facts.AddRange(_Facts);
             sp.FactIDs.AddRange(_FactIDs);
             sp.Name = this.Name;
             sp.Value = this.Value;
-            sp.BindAsSequence = this.BindAsSequence;
+            sp.BindAsSequence = this.BindAsSequence;      
             return sp;
         }
     }

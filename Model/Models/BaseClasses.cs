@@ -350,10 +350,38 @@ namespace LogicalModel.Base
         public List<int> DictFilterIndexes = new List<int>();
         public List<int> NegativeDictFilterIndexes = new List<int>();
         public bool Cover = false;
+        public string Concept = "";
         public Func<string, bool> Filter = (s) => true;
         public int NrOfDictFilters = 0;
- 
+
         public List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
+        private List<FactPoolQuery> _Pools = new List<FactPoolQuery>();
+        public List<FactPoolQuery> Pools 
+        {
+            get 
+            {
+                if (_Pools.Count == 0)
+                {
+                    _Pools= ChildQueries.Where(i => i is FactPoolQuery).Select(i => i as FactPoolQuery).ToList();
+                    
+                }
+                return _Pools;
+            }
+        }
+
+        public FactBaseQuery() 
+        {
+           
+        }
+        public FactBaseQuery(List<FactBaseQuery> queries)
+        {
+            this.ChildQueries.AddRange(queries);
+        }
+
+        public bool IsEmpty() 
+        {
+            return this.DictFilterIndexes.Count == 0 && this.NegativeDictFilterIndexes.Count == 0;
+        }
         public bool HasDictFilter(string dictfilter) 
         {
             if (DictFilters.Contains(dictfilter)) 
@@ -374,7 +402,20 @@ namespace LogicalModel.Base
             return queryable.Where(i => Filter(i)).ToList();
         }
 
-
+        public string GetConcept() 
+        {
+            //rec todo
+            if (!String.IsNullOrEmpty(Concept)) { return Concept; }
+            foreach (var childquery in ChildQueries)
+            {
+                var concept = childquery.GetConcept();
+                if (!String.IsNullOrEmpty(concept)) 
+                {
+                    return concept;
+                }
+            }
+            return "";
+        }
         public List<string> GetDimensions()
         {
             var filterparts = new List<string>();
@@ -407,7 +448,22 @@ namespace LogicalModel.Base
             return filterparts.ToList();
 
         }
+        
+        public static void Merge(FactBaseQuery source, FactBaseQuery target)
+        {
+            target.TrueFilters = target.TrueFilters + source.TrueFilters;
+            target.FalseFilters = target.FalseFilters + source.FalseFilters;
+            target.DictFilters = target.DictFilters + source.DictFilters;
+            target.DictFilterIndexes.AddRange(source.DictFilterIndexes);
+            target.NegativeDictFilterIndexes.AddRange(source.NegativeDictFilterIndexes);
+            target.ChildQueries = source.ChildQueries;
+            var originalfilter = target.Filter;
+            target.Filter = null;
+            target.Cover = source.Cover;
+            target.Filter = (s) => originalfilter(s) && source.Filter(s);
 
+        }
+        
         public IEnumerable<String> ToQueryable(IEnumerable<String> queryable)
         {
             var result = queryable.Where(i => Filter(i));
@@ -462,7 +518,7 @@ namespace LogicalModel.Base
             return items;
         }
 
-        public List<int> ToList(Taxonomy taxonomy, List<int> facts,bool ensurepartnr=false)
+        public IList<int> ToList(Taxonomy taxonomy, IList<int> facts,bool ensurepartnr=false)
         {
             //cover here
             var partnr = Cover ? ensurepartnr ? NrOfDictFilters : 0 : 0;
@@ -487,18 +543,143 @@ namespace LogicalModel.Base
 
             return items;
         }
-        
-        public override string ToString()
+
+        public IList<int> ToIntervalList(Taxonomy taxonomy, IList<int> facts, bool ensurepartnr = false)
         {
-            var thisstr = String.Format("DictFilters: {0}\n FalseFilters: {2}\n TrueFilters: {1}\n", DictFilters, TrueFilters, FalseFilters);
-            var sb = new StringBuilder();
-            sb.Append(thisstr);
-            foreach (var child in ChildQueries) 
+            //cover here
+            var partnr =  0;
+            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts, partnr);
+            foreach (var negativeindex in NegativeDictFilterIndexes)
             {
-                sb.Append(">" + child.ToString());
+                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
+                {
+                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
+                }
+            }
+            if (ChildQueries.Count > 0)
+            {
+                var result = new IntervalList();
+
+                foreach (var childquery in ChildQueries)
+                {
+                    result.AddRange(childquery.ToIntervalList(taxonomy, items));
+                }
+                return result;
+            }
+
+            return items;
+        }
+
+        public IList<int> ToIntervalList_Old(Taxonomy taxonomy, IList<int> facts, bool ensurepartnr = false)
+        {
+            //cover here
+            var partnr = Cover ? ensurepartnr ? NrOfDictFilters : 0 : 0;
+            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts, partnr);
+            foreach (var negativeindex in NegativeDictFilterIndexes)
+            {
+                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
+                {
+                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
+                }
+            }
+            if (ChildQueries.Count > 0)
+            {
+                var result = new IntervalList();
+
+                foreach (var childquery in ChildQueries)
+                {
+                    result.AddRange(childquery.ToIntervalList(taxonomy, items));
+                }
+                return result;
+            }
+
+            return items;
+        }
+
+        public IEnumerable<IList<int>> EnumerateIntervals(Taxonomy taxonomy, int ix, IList<int> data)
+        {
+            var partnr = 0;
+            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, data, partnr);
+            //if (DictFilterIndexes.Count == 0 && Pools.Count == 0) 
+            //{
+           
+            //}
+            foreach (var negativeindex in NegativeDictFilterIndexes)
+            {
+                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
+                {
+                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
+                }
+            }
+            if (Pools.Count == 0) 
+            { 
+                //var l = new List<IList<int>>(){ items};
+   
+                yield return items;
+                yield break;
+            }
+            if (ix == Pools.Count)
+            {
+                yield return data;
+            }
+            else
+            {
+                foreach (var qry in Pools[ix].ChildQueries)
+                {
+                    var subresult = qry.ToIntervalList(taxonomy, items);
+                    foreach (var x in EnumerateIntervals(taxonomy, ix + 1, subresult))
+                    {
+                        yield return x;
+                    }
+                }
+            }
+        }
+        public string GetString(Taxonomy taxonomy,string pad="")
+        {
+            var sb = new StringBuilder();
+            foreach (var ix in DictFilterIndexes)
+            {
+                sb.Append(taxonomy.CounterFactParts[ix] + ", ");
+            }
+            sb.Append("; !:");
+            foreach (var ix in NegativeDictFilterIndexes)
+            {
+                sb.Append(taxonomy.CounterFactParts[ix] + ", ");
+            }
+            sb.AppendLine();
+            foreach (var child in ChildQueries)
+            {
+                sb.AppendLine(child.GetString(taxonomy, Literals.Tab + pad));
             }
             return sb.ToString();
         }
+
+        public override string ToString()
+        {
+            return GetString(TaxonomyEngine.CurrentEngine.CurrentTaxonomy);
+            //var thisstr = String.Format("DictFilters: {0}\n FalseFilters: {2}\n TrueFilters: {1}\n", DictFilters, TrueFilters, FalseFilters);
+            //var sb = new StringBuilder();
+            //sb.Append(thisstr);
+            //foreach (var child in ChildQueries) 
+            //{
+            //    sb.Append(">" + child.ToString());
+            //}
+            //return sb.ToString();
+        }
+    }
+
+    public class FactPoolQuery:FactBaseQuery
+    {
+
+        //public IEnumerable<IList<int>> EnumerateIntervals(Taxonomy taxonomy, int ix, IList<int> data)
+        //{
+        //    if (ix == Items.Count) { yield return data; }
+        //    foreach (var qry in Items[ix])
+        //    {
+        //        var subresult = qry.ToIntervalList(taxonomy, data);
+        //        EnumerateIntervals(taxonomy, ix + 1, subresult);
+        //    }
+        //}
     }
     public class FactBase 
     {

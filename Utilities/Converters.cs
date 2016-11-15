@@ -33,14 +33,21 @@ namespace Utilities
     public class Converters
     {
         private static CultureInfo dci = new CultureInfo("en-US");
-
+        public static void test() 
+        {
+            var x = FastParse("-23");
+            var y= FastParse("123423");
+        }
         public static int FastParse(string str) 
         {
             int value = 0;
-            for (int i = 0; i < str.Length; i++)
+            var startix = str[0]==45?1:0;
+            for (int i = startix; i < str.Length; i++)
             {
+                
                 value = value * 10 + (str[i] - '0');
             }
+            if (startix == 1) { value = value * -1; }
             return value;
         }
 

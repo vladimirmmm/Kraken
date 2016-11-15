@@ -635,21 +635,35 @@
         }
 
         public static SetValues(ruleresult: Model.ValidationRuleResult) {
+      
             ruleresult.Parameters.forEach(function (parameter: Model.SimlpeValidationParameter) {    
 
                 parameter.FactItems = IsNull(parameter.FactItems) ? [] : parameter.FactItems;
-                parameter.FactIDs.forEach(function (factrefrence: string, ix:number) {
-                    var fi = new Model.FactItem();
-                    if (parameter.Facts.length == parameter.FactIDs.length) {
+                if (parameter.FactItems.length == 0) {
+
+                    parameter.FactIDs.forEach(function (factrefrence: string, ix: number) {
+                        var fi = new Model.FactItem();
                         var factstring = parameter.Facts[ix];
-                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        //var strval = TaxonomyContainer.GetFactValue(factstring);
+                        var ids = factrefrence.split(":");
+                        var strval = "";
+                        var id = parseInt(ids[1])
+                        if (ids[0] == "T") {
+                   
+                            var strval = TaxonomyContainer.GetFactValueByID(id);
+                        }
+                        else
+                        {
+                            var strval = TaxonomyContainer.GetFactValueByID(id);
+                        }
                         fi.FactString = factstring;
                         fi.Value = strval;
                         fi.Cells = parameter.Cells[ix];
-                        var strval = TaxonomyContainer.GetFactValue(factstring);
+                        //var strval = TaxonomyContainer.GetFactValue(factstring);
                         parameter.FactItems.push(fi);
-                    }      
-                });
+                    });
+                }     
+
                 parameter.FactItems = parameter.FactItems.AsLinq<Model.FactItem>().OrderByDescending(i=> i.Value).ToArray();
                 if (parameter.BindAsSequence) {
                     var total = 0;
@@ -685,8 +699,9 @@
             return "";
         }
 
-        public static GetFactValueByID(factid: number): string {
-            var fact: Model.InstanceFact = app.instancecontainer.Instance.Facts[factid];
+        public static GetFactValueByID(instancefactix: number): string {
+            //var fact: Model.InstanceFact = app.instancecontainer.Instance.FactDictionary.FactsByIndex[factid];
+            var fact: Model.InstanceFact = app.instancecontainer.Instance.Facts[instancefactix];
             if (fact != null)
             {
                 return fact.Value;

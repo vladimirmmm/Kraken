@@ -1,4 +1,6 @@
-﻿using LogicalModel.Base;
+﻿using BaseModel;
+using LogicalModel;
+using LogicalModel.Base;
 using Model.DefinitionModel;
 using System;
 using System.Collections.Generic;
@@ -87,67 +89,68 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             }
         }
-        public List<FactBaseQuery> GetQueries2(LogicalModel.Taxonomy taxonomy, int level=0)
+
+        public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
-            var queries = new List<FactBaseQuery>();
             var _complement = Complement;
-   
+            var factsofparts = taxonomy.FactsOfParts;
+            var factparts = taxonomy.FactParts;
+            var targetquery = parent;
+            var querycontainer = parent;
+            var firstmemebr = Members.FirstOrDefault();
+            if (Members.Count > 1 || (Members.Count == 1 && firstmemebr.QName.Value == Literals.Literal.Defaultmember && this.Complement)) 
+            {
+                targetquery = new FactPoolQuery();
+                querycontainer = targetquery;
+                parent.ChildQueries.Add(targetquery);
+            }
             foreach (var member in Members)
             {
-                var query = new FactBaseQuery();
-                queries.Add(query);
+                var query = targetquery;
+                if (targetquery != parent) 
+                {
+                    query =  new FactBaseQuery();
+                }
+                var membertag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
+                var domaintag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
                 if (member.QName.Value != Literals.Literal.Defaultmember)
                 {
 
                     if (!_complement)
                     {
-                        var tag = String.Format("[{0}:{1}]{2},", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
-
-                        query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
-                        query.Filter = (s) =>
+                        if (factparts.ContainsKey(membertag))
                         {
-
-                            var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
-                            Handle(ok,s,tag,"contains");     
-                            return ok;
-                        };
-
+                            query.DictFilterIndexes.Add(factparts[membertag]);
+                        }
                     }
                     else
                     {
-                        var tag = String.Format("[{0}:{1}]{2},", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
-
-                        query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
-                        query.Filter = (s) =>
+                        if (factparts.ContainsKey(membertag))
                         {
-                            var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
-                            Handle(ok, s,tag, "not contains");
-                            return ok;
-                        };
+                            query.NegativeDictFilterIndexes.Add(factparts[membertag]);
+                        }
                     }
                 }
-                else 
+                else
                 {
+                    //default member
                     if (!_complement)
                     {
-                        var tag = String.Format("[{0}:{1}]{2}:", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
-                        query.FalseFilters = query.FalseFilters + String.Format("{0}, ", tag);
-                        query.Filter = (s) =>
+                        if (factparts.ContainsKey(domaintag))
                         {
-
-                            var ok = s.IndexOf(tag, StringComparison.Ordinal) == -1;
-                            Handle(ok,s,tag,"not contains");
-                            return ok;
-                        };
+                            query.NegativeDictFilterIndexes.Add(factparts[domaintag]);
+                        }
                     }
-                    else 
+                    else
                     {
-                        if (level == 0)
+                        //default member with complement
+                        if (Members.Count == 1)
                         {
                             var tag = String.Format("[{0}:{1}]", this.Dimension.QName.Domain, this.Dimension.QName.Value);
+
                             var domain = member.QName.Domain;
-                            var members = taxonomy.GetMembersOf(domain, this._Members.Select(i => i.QName.Content).ToList());
-                            var subqueries = new List<FactBaseQuery>();
+                            var members = taxonomy.GetMembersOf(domain, this._Members.Select(i => i.QName.Content).ToList());                       
+
                             foreach (var memberitem in members)
                             {
                                 var mfbq = new FactBaseQuery();
@@ -158,35 +161,98 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                                 if (taxonomy.FactsOfParts.ContainsKey(ix))
                                 {
                                     mfbq.DictFilters = memberdictfilter + ", ";
-                                    subqueries.Add(mfbq);
+                                    if (factparts.ContainsKey(memberdictfilter))
+                                    {
+                                        mfbq.DictFilterIndexes.Add(factparts[memberdictfilter]);
+                                    }
+                                    targetquery.ChildQueries.Add(mfbq);
                                 }
-                                else 
-                                {
 
-                                }
                             }
-                            queries = subqueries;
+                            return targetquery;
                         }
                         else
                         {
-                            var tag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
-                            query.TrueFilters = query.TrueFilters + String.Format("{0}, ", tag);
-                            query.Filter = (s) =>
+                            if (factparts.ContainsKey(domaintag))
                             {
-                                var ok = s.IndexOf(tag, StringComparison.Ordinal) > -1;
-                                Handle(ok,s,tag, "contains");
-                                return ok;
-                            };
+                                query.DictFilterIndexes.Add(factparts[domaintag]);
+                            }
                         }
+
+
                     }
+
+                }
+                if (targetquery != parent)
+                {
+                    targetquery.ChildQueries.Add(query);
                 }
             }
 
+            SetCover(targetquery);
+            return targetquery;
+        }
 
+        public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level = 0)
+        {
+            var queries = new List<FactBaseQuery>();
+            var _complement = Complement;
+            var factsofparts = taxonomy.FactsOfParts;
+            var factparts = taxonomy.FactParts;
+            foreach (var member in Members)
+            {
+                var query = new FactBaseQuery();
+                queries.Add(query);
+                var membertag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
+                var domaintag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
+                if (member.QName.Value != Literals.Literal.Defaultmember)
+                {
+
+                    if (!_complement)
+                    {
+                        if (factparts.ContainsKey(membertag))
+                        {
+                            query.DictFilterIndexes.Add(factparts[membertag]);
+                        }
+                    }
+                    else
+                    {
+                        if (factparts.ContainsKey(membertag))
+                        {
+                            query.NegativeDictFilterIndexes.Add(factparts[membertag]);
+                        }
+                    }
+                }
+                else
+                {
+                    //default member
+                    if (!_complement)
+                    {
+                        if (factparts.ContainsKey(domaintag))
+                        {
+                            query.NegativeDictFilterIndexes.Add(factparts[domaintag]);
+                        }
+                    }
+                    else
+                    {
+                        //default member with complement
+
+                        if (factparts.ContainsKey(domaintag))
+                        {
+                            query.DictFilterIndexes.Add(factparts[domaintag]);
+                        }
+                 
+                    }
+
+                }
+            }
+
+            SetCover(queries);
             return queries;
         }
-       
-        public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level = 0)
+
+
+        public List<FactBaseQuery> GetQueries_Old(LogicalModel.Taxonomy taxonomy, int level = 0)
         {
             var queries = new List<FactBaseQuery>();
             var _complement = Complement;
@@ -202,9 +268,9 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                     if (!_complement)
                     {
                         var tag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
-                   
+
                         query.DictFilters = query.DictFilters + String.Format("{0}, ", tag);
-                        if (factparts.ContainsKey(tag)) 
+                        if (factparts.ContainsKey(tag))
                         {
                             query.DictFilterIndexes.Add(factparts[tag]);
                         }
@@ -276,7 +342,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                                     }
                                     subqueries.Add(mfbq);
                                 }
-                            
+
                             }
                             queries = subqueries;
                         }
@@ -288,7 +354,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                             {
                                 query.DictFilterIndexes.Add(factparts[tag]);
                             }
-                            else 
+                            else
                             {
 
                             }
@@ -306,13 +372,51 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             SetCover(queries);
             return queries;
         }
+
     }
 
     public class TypedDimensionFilter : DimensionFilter
     {
         private String _Test = "";
         public String Test { get { return _Test; } set { _Test = value; } }
+        public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
+        {
+            var query = parent;
+            var factparts = taxonomy.FactParts;
+          
+            var typeddomain = taxonomy.FindDimensionDomain(this.Dimension.QName.Content);
 
+            // var td = taxonomy.TypedDimensions.FirstOrDefault(i => i.Key.EndsWith(":" + this.Dimension.QName.Value));
+            var domainpart = typeddomain.Namespace + ":" + typeddomain.Name;
+            var tag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, domainpart);
+            if (!Complement)
+            {
+                //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
+
+                query.TrueFilters = query.TrueFilters + String.Format("{0}, ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.DictFilterIndexes.Add(factparts[tag]);
+                }
+
+
+            }
+            else
+            {
+                //var tag = String.Format(":{0}]", this.Dimension.QName.Value);
+
+                query.FalseFilters = query.FalseFilters + String.Format("{0} ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.NegativeDictFilterIndexes.Add(factparts[tag]);
+                }
+      
+            }
+
+            SetCover(query);
+
+            return query;
+        }
         public override List<FactBaseQuery> GetQueries(LogicalModel.Taxonomy taxonomy, int level = 0)
         {
             var queries = new List<FactBaseQuery>();

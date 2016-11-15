@@ -196,8 +196,12 @@ namespace Utilities
             return result;
         }
 
-        public static List<T> SortedExcept<T>(IList<T> m, IList<T> n) where T : IComparable<T>
+        public static IList<int> SortedExcept(IList<int> m, IList<int> n)
         {
+            if (m.GetType() == typeof(IntervalList) && n.GetType() == typeof(IntervalList))
+            {
+                return SortedExcept((IntervalList)m, (IntervalList)n, null);
+            }
             if (m.Count > 2 && n.Count > 2)
             {
                 var startm = m[0];
@@ -212,7 +216,7 @@ namespace Utilities
             }
             var mcount = m.Count;
             var ncount = n.Count;
-            var result = new List<T>();
+            var result = new List<int>();
             int i = 0, j = 0;
             if (ncount == 0)
             {
@@ -502,6 +506,74 @@ namespace Utilities
             }
             return false;
         }
+
+        public static IntervalList MergeSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
+        {
+            var result = new IntervalList();
+            var smaller = sequence1.Intervals.Count < sequence2.Intervals.Count ? sequence1 : sequence2;
+            var bigger = smaller == sequence1 ? sequence2 : sequence1;
+            var bix = 0;
+            var six = 0;
+            if (IsTheSame(sequence1, sequence2))
+            {
+                return sequence1;
+            }
+       
+            var sc = smaller.Intervals.Count;
+            var bc = bigger.Intervals.Count;
+
+            Interval s = smaller.Intervals.FirstOrDefault();
+            Interval b = bigger.Intervals.FirstOrDefault();
+            int r = 0;
+            while (s!=null || b!=null)
+            {
+
+                if (s != null && b != null)
+                {
+                    r = s.Compare(b);
+                }
+                else 
+                {
+                    r = s == null ? 1 : -1;
+                }
+                if (r == 0)
+                {
+                    var interval = s.Merge(b);
+              
+                    result.AddInterval(interval);
+                    
+
+                    if (interval.End >= b.End)
+                    {
+                        bigger.SetNextInterval(ref b, ref bix);
+                    }
+                    if (interval.End >= s.End)
+                    {
+                        smaller.SetNextInterval(ref s, ref six);
+
+                    }
+
+                }
+                if (r < 0)
+                {
+                    result.AddInterval(s);
+
+                    smaller.SetNextInterval(ref s, ref six);
+
+
+                }
+                if (r > 0)
+                {
+                    result.AddInterval(b);
+
+                    bigger.SetNextInterval(ref b, ref bix);
+
+                }
+            }
+
+            return result;
+        }
+
 
         public static IntervalList IntersectSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {

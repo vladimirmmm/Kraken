@@ -193,7 +193,7 @@ namespace Engine.Services
                                                 var fact = instance.GetFactBaseByIndexString(fid);
                                                 if (fact != null)
                                                 {
-                                                    p.Facts.Add(fact.FactString);
+                                                    //p.Facts.Add(fact.FactString);
                                                 }
                                             }
                                         }
@@ -333,14 +333,21 @@ namespace Engine.Services
                                     var factstrings = factstring.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO
                                     var taxonomy = AppEngine.Features.Engine.CurrentTaxonomy;
-                                    var idlist = new List<int>();
+                                    IList<int> idlist = new List<int>();
                                     var keys = new List<int>();
                                     foreach (var fs in factstrings)
                                     {
                                         var fsidlist = new List<int>();
                                         var dimparts = new List<Utilities.KeyValue<int,List<int>>>(); //TODO taxonomy.FactsOfParts.Where(i => taxonomy.GetFactStringKey(i).Key.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>-1);
-                                        var key = taxonomy.FactParts[fs];
-                                        keys.Add(key);
+                                        if (taxonomy.FactParts.ContainsKey(fs))
+                                        {
+                                            var key = taxonomy.FactParts[fs];
+                                            keys.Add(key);
+                                        }
+                                        else 
+                                        {
+                                            keys = taxonomy.FactParts.Where(i => i.Key.Contains(fs)).Select(i=>i.Value).ToList();
+                                        }
 
                                         //foreach (var kepart in key) 
                                         //{

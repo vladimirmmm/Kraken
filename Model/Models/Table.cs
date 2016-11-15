@@ -367,10 +367,11 @@ namespace LogicalModel
             var slices = new List<IEnumerable<int>>();
             var sb_fact = new StringBuilder();
             //FactKeys.Clear();
-            if (this.ID.Contains("02")) 
+            if (this.ID.Contains("eba_tC_07.00.c")) 
             {
 
             }
+            var ic = new IntArrayEqualityComparer();
            //
             foreach (var hypercube in HyperCubes)
             {
@@ -403,7 +404,7 @@ namespace LogicalModel
                     var hashkeys = this.Taxonomy.FactsManager.GetHashKeys(key);
                     factix = this.Taxonomy.FactsManager.GetFactIndexByHashKey(hashkeys);
 
-                    if (factix==-1)
+                    if (factix == -1)
                     {
                         //var oldhaskey = this.Taxonomy.HasFact(key);
                         //if (oldhaskey) 
@@ -412,6 +413,14 @@ namespace LogicalModel
                         //}
                         factix = this.Taxonomy.AddFactKey(key, hashkeys);
 
+                    }
+                    else 
+                    {
+                        var factkeys = this.Taxonomy.FactsManager.GetFactKey(factix);
+                        if (!ic.Equals(factkeys, key)) 
+                        {
+
+                        }
                     }
                     this.AddFactKeyParts(key,factix);
 
@@ -552,7 +561,7 @@ namespace LogicalModel
             Y_Axis.Clear();
             Z_Axis.Clear();
 
-            if (this.ID.Contains("20")) 
+            if (this.ID.Contains("eba_tC_07.00.c")) 
             {
 
             }
@@ -760,7 +769,7 @@ namespace LogicalModel
                                     if (!factintkey.Any(fk => fk < 0) )
                                     {
                                         //List<int[]> results = new List<int[]>();
-                                        List<int> results = new List<int>();
+                                        IList<int> results = new List<int>();
                                         results = this.Taxonomy.SearchFactsGetIndex3( factintkey, this.FactsOfParts,null);
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var factindex in results)

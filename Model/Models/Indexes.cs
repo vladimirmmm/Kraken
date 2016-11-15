@@ -129,6 +129,7 @@ namespace LogicalModel
 
             }
             Utilities.FS.DictionaryFromFile(GetHashKeyFilePath(), this.HashKeys);
+            Utilities.FS.DictionaryFromFile(GetKeyCountFilePath(), this.FactKeyCountOfIndexes);
             //Utilities.FS.DictionaryFromFile(GetLookupOfIndexesFilePath(), this.FactKeyCountOfIndexes, (i) => Utilities.Converters.FastParse(i), (s) => FactLookupValue.GetInstanceFromString(s));
 
 
@@ -137,9 +138,9 @@ namespace LogicalModel
         {
             return Folder() + "HashKeys.dat";
         }
-        public string GetLookupOfIndexesFilePath()
+        public string GetKeyCountFilePath()
         {
-            return Folder() + "LookupOfIndexes.dat";
+            return Folder() + "KeyCount.dat";
         }
         public FactKeyDictionary CreatePage() 
         {
@@ -346,15 +347,19 @@ namespace LogicalModel
         }
         public FactKeyWithCells GetFactKeyWithCells(int index) 
         {
+            FactKeyDictionary page= null;
             if (index >= LastPage.IndexStartAt && index < LastPage.IndexEndAt)
             {
-                return LastPage.LookupOfIndexes[index];
+                page = LastPage;
 
             }
+            else
+            {
 
-            int pid = index / NrItemsPerPage;
-            var page = this.Pages[pid];
-            LastPage = page;
+                int pid = index / NrItemsPerPage;
+                page = this.Pages[pid];
+                LastPage = page;
+            }
             if (!page.IsLoaded)
             {
                 //if (page.ID == 21) 
@@ -390,6 +395,11 @@ namespace LogicalModel
             get 
             {
                 if (this.Pages.Count == 0) { return 0; }
+                var lastpage = this.Pages.LastOrDefault();
+                if (!lastpage.IsLoaded) 
+                {
+                    LoadPage(lastpage);
+                }
                 return (this.Pages.Count - 1) * NrItemsPerPage + this.Pages.LastOrDefault().Count;
             } 
         }
@@ -568,6 +578,7 @@ namespace LogicalModel
                 }
             }
             Utilities.FS.DictionaryToFile(GetHashKeyFilePath(), this.HashKeys);
+            Utilities.FS.DictionaryToFile(GetKeyCountFilePath(), this.FactKeyCountOfIndexes);
             //Utilities.FS.DictionaryToFile(GetLookupOfIndexesFilePath(), pages,(i)=>i.ToString(), (f)=>f.ToString());
             
         }

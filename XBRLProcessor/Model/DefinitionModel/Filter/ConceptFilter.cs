@@ -1,4 +1,5 @@
-﻿using LogicalModel;
+﻿using BaseModel;
+using LogicalModel;
 using LogicalModel.Base;
 using Model.DefinitionModel;
 using System;
@@ -18,6 +19,8 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         {
             return (fs)=>true;
         }
+
+ 
     }
     public class ConceptNameFilter : ConceptFilter
     {
@@ -85,6 +88,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
       
             var tag = Concept.QName.Content;
+            query.Concept = tag;
             if (!Complement)
             {
                 query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
@@ -105,6 +109,37 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             SetCover(queries);
 
             return queries;
+        }
+
+        public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
+        {
+            var factparts = taxonomy.FactParts;
+            var factsofparts = taxonomy.FactsOfParts;
+            var query = parent;
+
+
+            var tag = Concept.QName.Content;
+            query.Concept = tag;
+            if (!Complement)
+            {
+                query.DictFilters = parent.DictFilters + String.Format("{0} ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.DictFilterIndexes.Add(factparts[tag]);
+                }
+            }
+            else
+            {
+                query.FalseFilters = parent.DictFilters + String.Format("{0} ", tag);
+                if (factparts.ContainsKey(tag))
+                {
+                    query.NegativeDictFilterIndexes.Add(factparts[tag]);
+                }
+            }
+
+            SetCover(query);
+
+            return query;
         }
     }
 

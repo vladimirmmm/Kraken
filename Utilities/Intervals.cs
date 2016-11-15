@@ -91,6 +91,16 @@ namespace Utilities
             }
             return null;
         }
+        public Interval Merge(Interval interval)
+        {
+            var minstart = Math.Min(interval.Start, this.Start);
+            var maxend = Math.Max(interval.End, this.End);
+            if (minstart <= maxend)
+            {
+                return new Interval(minstart, maxend);
+            }
+            return null;
+        }
         public List<Interval> Except(Interval interval)
         {
             var result = new List<Interval>();
@@ -195,9 +205,23 @@ namespace Utilities
             var interval = new Interval(value);
             this.Intervals.Insert(ix, interval);
         }
+        private void AddNewInterval(int value)
+        {
+            _Count = -1;
+            var interval = new Interval(value);
+            this.Intervals.Add(interval);
+        }
         public void AddInterval(Interval interval)
         {
             _Count = -1;
+            if (LastInterval != null) 
+            {
+                if (LastInterval.End <= interval.End && LastInterval.End >= interval.Start) 
+                {
+                    LastInterval.End = interval.End;
+                    return;
+                }
+            }
             this.Intervals.Add(interval);
         }
         public void AddRange(IEnumerable<int> values)
@@ -210,6 +234,7 @@ namespace Utilities
         }
         public static IntervalComparer ic = new IntervalComparer();
         public static IntervalComparer2 ic2 = new IntervalComparer2();
+        
         public void AddX(int value)
         {
             _Count = -1;
@@ -218,6 +243,16 @@ namespace Utilities
                 AddNewInterval(value, 0);
                 return;
 
+            }
+            if (LastInterval.IsNext(value)) 
+            {
+                LastInterval.End++;
+                return;
+            }
+            if (value > LastInterval.End)
+            {
+                AddNewInterval(value);
+                return;
             }
             var vi = Intervals.BinarySearch(new Interval(value), ic);
            
@@ -256,123 +291,140 @@ namespace Utilities
             }
 
         }
+
+        public Interval GetInterval(int ix) 
+        {
+            if (ix > -1 && ix < this.Intervals.Count) 
+            {
+                return this.Intervals[ix];
+            }
+            return null;
+        }
+        public void SetNextInterval(ref Interval target, ref int index)
+        {
+            index++;
+            target=GetInterval(index);
+ 
+        }
+
+
         public void Add(int value)
         {
             AddX(value);
         }
-        public void AddY(int value) 
-        {
-            _Count = -1;
-            if (LastInterval == null)
-            {
-                AddNewInterval(value, 0);
+        //public void AddY(int value) 
+        //{
+        //    _Count = -1;
+        //    if (LastInterval == null)
+        //    {
+        //        AddNewInterval(value, 0);
 
-            }
-            else 
-            {
+        //    }
+        //    else 
+        //    {
                
 
-                for (int i = this.Intervals.Count - 1; i > -1; i--) 
-                {
-                    var prev = i - 1 > 0 ? this.Intervals[i - 1] : null;
-                    var next = i + 1 < this.Intervals.Count ? this.Intervals[i + 1] : null;
-                    var interval = this.Intervals[i];
-                    if (interval.IsNext(value))
-                    {
-                        if (next == null || next.Start > interval.End + 1) 
-                        {
-                            interval.End++;
-                            return;
-                        }
-                    }
-                    if (interval.IsInThis(value))
-                    {
-                        return;
-                    }
-                    if (interval.IsPrev(value))
-                    {
-                        if (prev == null || prev.End < interval.Start - 1)
-                        {
-                            interval.Start--;
-                            return;
-                        }
-                    }
-                    if (next == null && value > interval.End) 
-                    {
-                        AddNewInterval(value, Intervals.Count);
-                    }
-                    if (prev == null && value < interval.Start)
-                    {
-                        AddNewInterval(value, 0);
-                    }
-                }
-            }
-        }
+        //        for (int i = this.Intervals.Count - 1; i > -1; i--) 
+        //        {
+        //            var prev = i - 1 > 0 ? this.Intervals[i - 1] : null;
+        //            var next = i + 1 < this.Intervals.Count ? this.Intervals[i + 1] : null;
+        //            var interval = this.Intervals[i];
+        //            if (interval.IsNext(value))
+        //            {
+        //                if (next == null || next.Start > interval.End + 1) 
+        //                {
+        //                    interval.End++;
+        //                    return;
+        //                }
+        //            }
+        //            if (interval.IsInThis(value))
+        //            {
+        //                return;
+        //            }
+        //            if (interval.IsPrev(value))
+        //            {
+        //                if (prev == null || prev.End < interval.Start - 1)
+        //                {
+        //                    interval.Start--;
+        //                    return;
+        //                }
+        //            }
+        //            if (next == null && value > interval.End) 
+        //            {
+        //                AddNewInterval(value, Intervals.Count);
+        //            }
+        //            if (prev == null && value < interval.Start)
+        //            {
+        //                AddNewInterval(value, 0);
+        //            }
+        //        }
+        //    }
+        //}
 
-        public void AddOld(int value)
-        {
-            _Count = -1;
-            if (LastInterval == null)
-            {
-                AddNewInterval(value, 0);
+        //public void AddOld(int value)
+        //{
+        //    _Count = -1;
+        //    if (LastInterval == null)
+        //    {
+        //        AddNewInterval(value, 0);
 
-            }
+        //    }
 
-            if (value == LastInterval.End + 1)
-            {
-                LastInterval.End++;
-            }
-            else
-            {
-                if (value > LastInterval.End)
-                {
-                    AddNewInterval(value, Intervals.Count);
-                }
-                else
-                {
-                    var ix = 0;
-                    foreach (var interval in Intervals)
-                    {
-                        if (interval.Start - 1 == value)
-                        {
-                            interval.Start--;
-                            break;
-                        }
-                        //already exists
-                        if (interval.Start >= value && value <= interval.End)
-                        {
-                            return;
-                        }
-                        //next of the current interval
-                        if (value > interval.End)
-                        {
-                            if (value == interval.End + 1)
-                            {
-                                if (Intervals[ix + 1].Start == value) { break; }
+        //    if (value == LastInterval.End + 1)
+        //    {
+        //        LastInterval.End++;
+        //    }
+        //    else
+        //    {
+        //        if (value > LastInterval.End)
+        //        {
+        //            AddNewInterval(value, Intervals.Count);
+        //        }
+        //        else
+        //        {
+        //            var ix = 0;
+        //            foreach (var interval in Intervals)
+        //            {
+        //                if (interval.Start - 1 == value)
+        //                {
+        //                    interval.Start--;
+        //                    break;
+        //                }
+        //                //already exists
+        //                if (interval.Start >= value && value <= interval.End)
+        //                {
+        //                    return;
+        //                }
+        //                //next of the current interval
+        //                if (value > interval.End)
+        //                {
+        //                    if (value == interval.End + 1)
+        //                    {
+        //                        if (Intervals[ix + 1].Start == value) { break; }
 
-                                LastInterval.End++;
-                            }
-                            else
-                            {
-                                if (Intervals[ix + 1].Start > value)
-                                {
-                                    AddNewInterval(value, ix + 1);
+        //                        LastInterval.End++;
+        //                    }
+        //                    else
+        //                    {
+        //                        if (Intervals[ix + 1].Start > value)
+        //                        {
+        //                            AddNewInterval(value, ix + 1);
 
-                                    break;
-                                }
+        //                            break;
+        //                        }
 
-                            }
-                        }
+        //                    }
+        //                }
 
-                        if (value < interval.Start)
-                        {
-                            break;
-                        }
-                        ix++;
-                    }
-                }
-            }
-        }
+        //                if (value < interval.Start)
+        //                {
+        //                    break;
+        //                }
+        //                ix++;
+        //            }
+        //        }
+        //    }
+        //}
 
 
 
@@ -529,6 +581,9 @@ namespace Utilities
             var ix4 = list[3];
             var ix5 = list[list.Count - 1];
             var ix6 = list[list.Count - 2];
+            Interval sx = null;
+            var ix = 2;
+            list.SetNextInterval(ref sx,ref ix);
             var s = list.GetString();
         }
 
@@ -591,6 +646,41 @@ namespace Utilities
 
             var result = Utilities.Objects.SortedExcept(list1, list2, null);
             var result2 = Utilities.Objects.SortedExcept(list2, list1, null);
+
+        }
+
+        public void test4()
+        {
+            IntervalList list1 = new IntervalList();
+            list1.Add(-2);
+            list1.Add(-1);
+
+            list1.Add(1);
+            list1.Add(2);
+            list1.Add(3);
+
+            list1.Add(5);
+            list1.Add(6);
+            list1.Add(7);
+
+            list1.Add(9);
+            list1.Add(11);
+            list1.Add(12);
+
+            list1.Add(20);
+            list1.Add(21);
+
+            IntervalList list2 = new IntervalList();
+            list2.Add(3);
+            list2.Add(4);
+            list2.Add(5);
+
+            list2.Add(7);
+            list2.Add(8);
+            list2.Add(9);
+
+            var result = Utilities.Objects.MergeSorted(list1, list2, null);
+            var result2 = Utilities.Objects.MergeSorted(list2, list1, null);
 
         }
     }

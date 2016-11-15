@@ -878,13 +878,16 @@ namespace XBRLProcessor.Models
                     Utilities.FS.WriteAllText(TaxonomyTestPath, "");
                     Utilities.FS.WriteAllText(TaxonomyValidationFolder + "Validations_XML.txt", "");
 
-                    MoveToFirst("4025", validationdocuments);
-                    MoveToFirst("v3153", validationdocuments);
-                    MoveToFirst("3727", validationdocuments);
-                    MoveToFirst("3724", validationdocuments);
-                    MoveToFirst("1671", validationdocuments);
+                    //MoveToFirst("v3153", validationdocuments);
+                    //MoveToFirst("3727", validationdocuments);
+                    //MoveToFirst("3724", validationdocuments);
+                    //MoveToFirst("1671", validationdocuments);
 
                     validationdocuments = validationdocuments.OrderBy(i => i.FileName).ToList();
+                    MoveToFirst("vr-bv34-1.xml", validationdocuments);
+                    MoveToFirst("vr-v0600_m.xml", validationdocuments);
+                    
+
 
                     foreach (var validdoc in validationdocuments)
                     {

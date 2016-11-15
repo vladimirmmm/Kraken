@@ -47,6 +47,45 @@ namespace Utilities
             }
 
         }
+        public static void DictionaryToFile(string filepath, IDictionary<int, int> dict)
+        {
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath, false))
+            {
+                foreach (var item in dict)
+                {
+                    fsw.WriteLine(item.Key+ ":" + item.Value.ToString());
+                }
+                fsw.Close();
+            }
+
+        }
+        public static bool DictionaryFromFile(string filepath, IDictionary<int, int> dict)
+        {
+            if (FileExists(filepath))
+            {   // Open the text file using a stream reader.
+                using (StreamReader sr = new StreamReader(filepath))
+                {
+                    while (sr.Peek() >= 0)
+                    {
+                        String line = sr.ReadLine();
+                        var parts = line.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                        var key = Utilities.Converters.FastParse(parts[0]);
+                        var value = Utilities.Converters.FastParse(parts[1]);
+                        dict.Add(key, value);
+
+                    }
+                    // Read the stream to a string, and write the string to the console.
+                }
+                return true;
+
+            }
+            else
+            {
+                Utilities.Logger.WriteLine("Can't read from file " + filepath);
+                return false;
+            }
+
+        }
         public static void DictionaryToFile(string filepath, IDictionary<int[], int> dict) 
         {
             using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath,false))

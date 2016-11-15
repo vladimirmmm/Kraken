@@ -1,5 +1,5 @@
 {
-  "ValidateOnInstanceLoaded": "False",
+  "ValidateOnInstanceLoaded": "True",
   "ReloadTaxonomyOnInstanceLoaded": "False",
   "ReloadFullTaxonomyButStructure": "False",
   "ReloadFullTaxonomy": "False",

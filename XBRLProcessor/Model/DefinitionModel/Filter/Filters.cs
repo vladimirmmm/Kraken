@@ -29,6 +29,18 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             return queries;
         }
 
+        public virtual FactBaseQuery GetQuery(Taxonomy taxonomy, int level)
+        {
+            var queries = new FactBaseQuery();
+            return null;
+        }
+
+        public virtual FactBaseQuery GetQuery(Taxonomy taxonomy,Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
+        {
+            var queries = new FactBaseQuery();
+            return null;
+        }
+
         public virtual void SetCover(List<FactBaseQuery> queries) 
         {
             foreach (var query in queries) 
@@ -36,17 +48,59 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 query.Cover = this.Cover;
             }
         }
+        public virtual void SetCover(FactBaseQuery query)
+        {
+
+            query.Cover = this.Cover;
+
+        }
     }
-    public class FilterContainer : XbrlIdentifiable 
+
+    public class OrFilter : Filter
     {
 
+        public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
+        {
+            var query = new FactPoolQuery();
+            foreach (var child in currentfilter.Children)
+            {
+                var filter = child.Item as Filter;
+                if (filter != null)
+                {
+                    var childquery = filter.GetQuery(taxonomy, child, query);
+                    query.ChildQueries.Add(childquery);
+                }
+            }
+            parent.ChildQueries.Add(query);
+            return query;
+        }
+
+        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
+        {
+            throw new NotImplementedException();
+        }
     }
-    public class OrFilter : FilterContainer
+    
+    public class AndFilter : Filter
     {
-   
-    }
-    public class AndFilter : FilterContainer
-    {
-   
+        public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
+        {
+            var query = new FactBaseQuery();
+            foreach (var child in currentfilter.Children)
+            {
+                var filter = child.Item as Filter;
+                if (filter != null)
+                {
+                    var childquery = filter.GetQuery(taxonomy, child, query);
+                    //FactBaseQuery.Merge(childquery, query);
+                }
+            }
+            return query;
+        }
+
+        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

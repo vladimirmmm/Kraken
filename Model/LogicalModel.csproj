@@ -58,6 +58,7 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\FactKeyDictionary.cs" />
     <Compile Include="Models\FactKeyManager.cs" />
+    <Compile Include="Models\FactQueries.cs" />
     <Compile Include="Models\IFactDictionary.cs" />
     <Compile Include="Models\Indexes.cs" />
     <Compile Include="Models\Instance\Context.cs" />

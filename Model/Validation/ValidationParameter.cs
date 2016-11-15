@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel.Validation
 {
@@ -22,10 +23,25 @@ namespace LogicalModel.Validation
             return false;
         }
     }
+    public class test
+    {
+        public void testparameter() 
+        {
+            var p = new ValidationParameter("p","12");
+            p.Type = TypeEnum.String;
+            var s = Utilities.Converters.ToJson(p);
+            var px = Utilities.Converters.JsonTo<ValidationParameter>(s);
+        }
+    }
     public class ValidationParameter
     {
         public string Name { get; set; }
         public string RuleID = null;
+        [JsonIgnore]
+        public FactBaseQuery BaseQuery = null;
+        [JsonIgnore]
+        public IList<int> Data = null;
+        public string Concept = "";
 
         private List<List<int>> _TaxFacts = new List<List<int>>();
         public List<List<int>> TaxFacts
@@ -52,7 +68,14 @@ namespace LogicalModel.Validation
             }
         }
         private TypeEnum _Type = TypeEnum.String;
-        public TypeEnum Type { get { return _Type; } set { _Type = value; } }
+        public TypeEnum Type
+        {
+            get { return _Type; }
+            set
+            {
+                _Type = value;
+            }
+        }
         public bool BindAsSequence { get; set; }
 
         public List<String> CurrentCells = new List<String>();
