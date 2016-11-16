@@ -308,7 +308,7 @@ namespace Model.InstanceModel
                 this.Facts.Add(logicalfact);
               
             }
-
+            XbrlFacts.Clear();
             var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));
             if (miconceptfact != null)
             {

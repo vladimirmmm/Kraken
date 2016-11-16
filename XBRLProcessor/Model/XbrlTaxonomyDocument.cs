@@ -184,6 +184,10 @@ namespace XBRLProcessor.Models
 
         public bool LoadTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent) 
         {
+            if (filepath.Contains("header-rend.xml")) 
+            {
+
+            }
             var result = true;
             MarkupPath = filepath;
             var sourcepath = filepath;
@@ -236,7 +240,6 @@ namespace XBRLProcessor.Models
                 var redownload = LogicalModel.Settings.Current.ReDownloadFiles;
                 //redownload = true;
                 RelativeReferencedFiles = _RelativeReferencedFiles.Select(i => i.Key).ToList();
-                _RelativeReferencedFiles.Clear();
                 //var localfiles = RelativeReferencedFiles.AsParallel().Select(i => fm.GetFile(this, i, redownload)).ToList();
                 var localfiles = Utilities.Threading.ExecuteParalell(RelativeReferencedFiles, i => fm.GetFile(this, i, redownload)).ToList();
                 localfiles = localfiles.Where(i => !String.IsNullOrEmpty(i)).ToList();
@@ -249,6 +252,8 @@ namespace XBRLProcessor.Models
                     LoadTaxonomyDocument(file);
                 }
                 RelativeReferencedFiles.Clear();
+                _RelativeReferencedFiles.Clear();
+
             }
         }
         private void AddRelativeReferencedFiles(string path)

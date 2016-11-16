@@ -179,12 +179,17 @@ namespace Utilities
         }
         public static bool IsRelativePath(string FilePath) 
         {
-            if ((!FilePath.Contains("\\") && !FilePath.Contains("/"))
-                || FilePath.StartsWith("..") || FilePath.StartsWith("."))
+            if (!IsWebPath(FilePath) && !System.IO.Path.IsPathRooted(FilePath)) 
             {
                 return true;
             }
             return false;
+            //if ((!FilePath.Contains("\\") && !FilePath.Contains("/"))
+            //    || FilePath.StartsWith("..") || FilePath.StartsWith("."))
+            //{
+            //    return true;
+            //}
+            //return false;
         }
 
         public static bool IsWebPath(string FilePath)
@@ -768,16 +773,17 @@ namespace Utilities
 
         public static string EnumerableToString<T>(List<T> items, string delimiter = ", ")
         {
-            string rs = "";
+            var rs = new StringBuilder();
             for (int i = 0; i < items.Count; i++)
             {
-                rs += delimiter + items[i];
+                if (i > 0) 
+                {
+                    rs.Append(delimiter);
+                }
+                rs.Append(items[i]);
             }
-            if (rs.StartsWith(delimiter))
-            {
-                rs = rs.Substring(delimiter.Length);
-            }
-            return rs;
+       
+            return rs.ToString();
         }
     }
 }

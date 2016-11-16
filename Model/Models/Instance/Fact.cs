@@ -54,6 +54,7 @@ namespace LogicalModel
              * \"UnitID\": \"monetaryItemType\"  }
              */
             //sb.Append(IX); sb.Append("@");
+            sb.Append(ID); sb.Append("@");
             sb.Append(ContextID); sb.Append("@");
             sb.Append(UnitID); sb.Append("@");
             sb.Append(Decimals); sb.Append("@");

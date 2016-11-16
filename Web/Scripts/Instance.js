@@ -109,12 +109,15 @@ var Control;
                     if (me.Instance.FactDictionary.FactsByIndex.hasOwnProperty(item)) {
                         var fact = me.Instance.FactDictionary.FactsByIndex[item];
                         var parts = fact.Content.split("@");
-                        fact.ContextID = parts[0];
-                        fact.UnitID = parts[1];
-                        fact.Decimals = parts[2];
-                        fact.Value = parts[3];
-                        fact.Cells = parts[4].split(", ");
-                        fact.ID = item;
+                        fact.ID = parts[0];
+                        fact.ContextID = parts[1];
+                        if (fact.ContextID == "CT_4583") {
+                            var z = 0;
+                        }
+                        fact.UnitID = parts[2];
+                        fact.Decimals = parts[3];
+                        fact.Value = parts[4];
+                        fact.Cells = parts[5].length > 0 ? parts[5].split(", ") : [];
                         ix++;
                     }
                 }
@@ -228,9 +231,18 @@ var Control;
                     me.Instance.CounterFactParts[val] = item;
                 }
             }
+            //GetProperties(me.Instance.FactParts).forEach(
+            //    (item, ix) => {
+            //        me.Instance.CounterFactParts[item.Value] = item.Key;
+            //    });
+            var fix = 0;
             for (var key in dict) {
                 if (dict.hasOwnProperty(key)) {
+                    var ifix = dict[key];
                     var factlist = me.Instance.FactDictionary.GetFacts(key);
+                    if (factlist.length == 0) {
+                        console.log("factlist.length == 0");
+                    }
                     for (var i = 0; i < factlist.length; i++) {
                         var fact = factlist[i];
                         fact.FactString = "";
@@ -245,10 +257,14 @@ var Control;
                             fact.FactString += strpart + ",";
                         });
                         fact.FactKey = key;
-                        this.Instance.Facts.push(fact);
+                        //console.log("" + fix + ": " + fact.Cells.join(","));
+                        //this.Instance.Facts.push(fact);
+                        this.Instance.Facts[ifix] = fact;
                     }
+                    fix++;
                 }
             }
+            console.log("Facts: " + this.Instance.Facts.length);
             if (app.taxonomycontainer.Table != null) {
                 app.taxonomycontainer.Table.Instance = me.Instance;
             }

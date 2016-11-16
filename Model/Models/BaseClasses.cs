@@ -1037,6 +1037,7 @@ namespace LogicalModel.Base
             var fs = this.FactString;
             this.Concept = null;
             this.Dimensions.Clear();
+            
         }
 
         public void LoadObjects() 

@@ -43,6 +43,11 @@ namespace LogicalModel
         [JsonProperty]
         public Dictionary<int, InstanceFact> FactsByIndex { get { return _FactsByIndex; } set { _FactsByIndex = value; } }
 
+        private Dictionary<int, int> _InstIndexToTaxIndex = new Dictionary<int, int>();
+        [JsonProperty]
+        public Dictionary<int, int> InstIndexToTaxIndex { get { return _InstIndexToTaxIndex; } set { _InstIndexToTaxIndex = value; } }
+
+
         private Dictionary<int[], List<int>> _FactsByTaxonomyKey = new Dictionary<int[], List<int>>(new Utilities.IntArrayEqualityComparer());
         [JsonProperty]
         public Dictionary<int[], List<int>> FactsByTaxonomyKey { get { return _FactsByTaxonomyKey; } set { _FactsByTaxonomyKey = value; } }
@@ -56,6 +61,7 @@ namespace LogicalModel
             var ix = FactsByIndex.Count;
             fact.IX = ix;
             FactsByIndex.Add(ix, fact);
+            //InstIndexToTaxIndex.Add(ix, this.Instance.Taxonomy.FactsManager.GetFactIndex(fact.TaxonomyKey));
             var instancecontext = Instance.Contexts.Items[fact.ContextID];
             var partcount = instancecontext.DimensionIds.Count + 1;
             var taxfactkeylist = new List<int>(partcount);
@@ -180,13 +186,27 @@ namespace LogicalModel
         {
             var sb = new StringBuilder();
             sb.AppendLine("{");
-            sb.AppendLine("\"FactsByIndex\": ");
-            sb.AppendLine(Utilities.Converters.ToJson(FactsByIndex));
-            sb.AppendLine(",");
+            sb.AppendLine("\"FactsByIndex\": {");
+            var ix = 0;
+            foreach (var item in FactsByIndex)
+            {
+                sb.Append("\"" + item.Key + "\":");
+                sb.Append("{ \"Content\": \"");
+                sb.Append(item.Value.Content);
+                sb.Append("\"}");
+                ix++;
+
+                if (ix != FactsByIndex.Count)
+                {
+                    sb.AppendLine(",");
+                }
+                item.Value.Content = "";
+            }
+            sb.AppendLine("},");
 
 
             sb.AppendLine("\"FactsByTaxonomyKey\": {");
-            var ix = 0;
+            ix = 0;
             foreach (var item in FactsByTaxonomyKey)
             {
                 var key = Utilities.Strings.ArrayToString(item.Key, ",");

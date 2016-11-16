@@ -493,6 +493,7 @@ namespace LogicalModel.Validation
                          
                                     //p.Facts[f_ix] = newfactstring;
                                     var instfact = instance.GetFactsByInstKey(factkey).FirstOrDefault();
+                                    var strkey = instfact != null ? instance.GetFactStringKey(instfact.InstanceKey) : "";
                                     var inst_ix = instfact == null ? -1 : instfact.IX;
                                     if (inst_ix == -1) 
                                     {
@@ -544,7 +545,25 @@ namespace LogicalModel.Validation
 
                         }
                     }
-
+                    var mFactIDs = p.FactIDs.ToList();
+                    var ix=0;
+                    foreach (var factidentfier in p.FactIDs) 
+                    {
+                        var parts = factidentfier.Split(":");
+                        if (parts[0] == "T")
+                        {
+                            var tix = Utilities.Converters.FastParse(parts[1]);
+                            var taxkey = instance.Taxonomy.FactsManager.GetFactKey(tix);
+                            var facts = instance.GetFactsByTaxKey(taxkey);
+                            if (facts.Count==1)
+                            {
+                                var fact = facts.FirstOrDefault();
+                                mFactIDs[ix] = string.Format("I:{0}", fact.IX);
+                            }
+                        }
+                        ix++;
+                    }
+                    p.FactIDs = mFactIDs;
                 }
             }
 

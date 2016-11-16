@@ -447,7 +447,9 @@ namespace Engine.Services
                                     });
 
                                     var tgs = tablegroups.All();
-
+                                    var tablesingroups = tgs.SelectMany(i => i.Item.Tables).Distinct().ToList();
+                                    var alltableids = Engine.CurrentTaxonomy.Tables.Select(i => i.ID).ToList();
+                                    var ungrouped = alltableids.Except(tablesingroups).ToList();
                                     foreach (var tgcontainer in tgs)
                                     {
                                         var tg = tgcontainer.Item;
@@ -472,7 +474,6 @@ namespace Engine.Services
 
                                             ht.Item.ID = String.Format("{0}<>", tbl.ID);
                                             ht.Item.HasData = tbl.InstanceFactsCount;
-                                            // var name = tbl.Extensions.Count > 1 ? String.Format("{0}({1})", tbl.Name, tbl.Extensions.Count) : tbl.Name;
                                             var name = tbl.Name;
                                             ht.Item.Name = Utilities.Strings.TrimTo(name, 40);
                                             ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
@@ -502,6 +503,29 @@ namespace Engine.Services
 
                                     }
                                     h = tablegroups;
+                                    if (ungrouped.Count > 0) 
+                                    {
+                                        var ungroupedti = new TableInfo();
+                                        ungroupedti.Type = "tablegroup";
+                                        ungroupedti.Name = "Ungrouped";
+                                        var hungr = new Hierarchy<TableInfo>(ungroupedti);
+                                        h.AddChild(hungr);
+                                        foreach (var t in ungrouped) 
+                                        {
+                                            var tbinfo = new TableInfo();
+                                            var tbl = Engine.CurrentTaxonomy.Tables.FirstOrDefault(i => i.ID == t);
+                                            var ht = new BaseModel.Hierarchy<TableInfo>(tbinfo);
+        
+
+                                            ht.Item.ID = String.Format("{0}<>", tbl.ID);
+                                            ht.Item.HasData = tbl.InstanceFactsCount;
+                                            var name = tbl.Name;
+                                            ht.Item.Name = Utilities.Strings.TrimTo(name, 40);
+                                            ht.Item.Description = string.IsNullOrEmpty(tbl.LabelContent) ? name : tbl.LabelContent;
+                                            ht.Item.Type = "table";
+                                            hungr.AddChild(ht);
+                                        }
+                                    }
 
                                     json = Utilities.Converters.ToJson(h);
                                 }
