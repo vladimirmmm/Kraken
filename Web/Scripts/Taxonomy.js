@@ -162,22 +162,7 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
-            AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
-                me.TableStructure = data;
-                ForAll(me.TableStructure, "Children", function (item, parent) {
-                    if (!IsNull(item) && !IsNull(item.Item)) {
-                        item.Item.CssClass = ""; // item.Item.Type == "table" ? "hidden" : "";
-                        item.Item.CssClass += item.Item.HasData > 0 ? " hasdata" : " empty";
-                        item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
-                        //item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
-                        //item.Item["uid"] = Guid();
-                        item["uid"] = Guid();
-                    }
-                });
-                BindX($("#tabletreeview"), me.TableStructure, 5);
-            }, function (error) {
-                console.log(error);
-            });
+            me.GetTables();
             AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Taxonomy.Concepts = data;
             }, function (error) {
@@ -236,6 +221,25 @@ var Control;
                         fwc.Callback(data);
                     }
                 }, null);
+            });
+        };
+        TaxonomyContainer.prototype.GetTables = function () {
+            var me = this;
+            AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
+                me.TableStructure = data;
+                ForAll(me.TableStructure, "Children", function (item, parent) {
+                    if (!IsNull(item) && !IsNull(item.Item)) {
+                        item.Item.CssClass = ""; // item.Item.Type == "table" ? "hidden" : "";
+                        item.Item.CssClass += item.Item.HasData > 0 ? " hasdata" : " empty";
+                        item.Item.ExtensionText = item.Item.Type == "table" && item.Children.length > 0 ? Format("({0})", item.Children.length) : "";
+                        //item["uid"] = IsNull(parent) ? item.Item.ID : parent["uid"] + ">" + item.Item.ID;
+                        //item.Item["uid"] = Guid();
+                        item["uid"] = Guid();
+                    }
+                });
+                BindX($("#tabletreeview"), me.TableStructure, 5);
+            }, function (error) {
+                console.log(error);
             });
         };
         TaxonomyContainer.prototype.LoadValidationResults = function (onloaded) {

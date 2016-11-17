@@ -347,6 +347,7 @@ namespace LogicalModel
         }
         public FactKeyWithCells GetFactKeyWithCells(int index) 
         {
+            var result = new FactKeyWithCells();
             FactKeyDictionary page= null;
             if (index >= LastPage.IndexStartAt && index < LastPage.IndexEndAt)
             {
@@ -367,7 +368,12 @@ namespace LogicalModel
                 //}
                 LoadPage(page);
             }
-            return page.LookupOfIndexes[index];
+            if (page.LookupOfIndexes.ContainsKey(index)) 
+            {
+                result = page.LookupOfIndexes[index];
+
+            }
+            return result;
         }
 
  

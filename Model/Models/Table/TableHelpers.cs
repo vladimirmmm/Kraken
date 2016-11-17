@@ -49,7 +49,7 @@ namespace LogicalModel
             }
             extensions.AddChildren(leafs);
             //Fixing the labels
-            if (table.ID.Contains("20.04")) 
+            if (table.ID.Contains("eba_tC_67.00.w")) 
             {
 
             }
@@ -74,7 +74,7 @@ namespace LogicalModel
                     {
                         var dim = li.Dimensions.FirstOrDefault();
 
-                        var l = taxonomy.GetLabelForMember(dim.DomainAndMember);
+                        var l = taxonomy.GetLabelForMember(dim.DomainAndMember);           
                         li.LabelCode = l.Code;
                         li.LabelContent = l.Content;
                     }
@@ -105,6 +105,10 @@ namespace LogicalModel
                         li.LabelCode = code;
                         li.LabelContent = content;
 
+                    }
+                    if (li.IsDynamic)
+                    {
+                        li.LabelCode = Literals.DynamicCode;
                     }
                 }
 

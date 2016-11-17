@@ -328,7 +328,11 @@ namespace LogicalModel
                 }
                 if (this.Taxonomy.HasFact(fact.TaxonomyKey))
                 {
-                    var cellvalues = this.Taxonomy.GetCellsOfFact(fact.TaxonomyKey);
+                    var cellvalues=fact.Cells;
+                    if (fact.Cells.Count == 0)
+                    {
+                        //cellvalues = this.Taxonomy.GetCellsOfFact(fact.TaxonomyKey);
+                    }
                     var cells ="";
                     foreach(var cellvalue in cellvalues)
                     {
@@ -488,11 +492,14 @@ namespace LogicalModel
         public void SetCells()
         {
             var reportdict = new Dictionary<string, int>();
-            foreach (var fact in this.Facts)
+            var facttuples = this.Facts.Select(i =>new Tuple<int,InstanceFact> (this.Taxonomy.FactsManager.GetFactIndex(i.TaxonomyKey),i)).OrderBy(i=>i.Item1);
+            foreach (var facttuple in facttuples)
             {
+                var fact = facttuple.Item2;
+                var factix = facttuple.Item1;
                 if (this.Taxonomy.HasFact(fact.TaxonomyKey))
                 {
-                    fact.Cells = this.Taxonomy.GetCellsOfFact(fact.TaxonomyKey);
+                    fact.Cells = this.Taxonomy.GetCellsOfFact(factix);
                     var Cells = fact.Cells.ToList();
                     fact.Cells.Clear();
                     foreach (var cell in Cells)

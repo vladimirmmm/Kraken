@@ -379,15 +379,16 @@ class UITableManager implements Controls.ITableManager {
             if (cell != null) {
                 var cellfs = _Attribute(cell.UIElement, "factstring");
                 var mcell = new Model.Cell;
-                var cellfact = new Model.FactBase;
-                cellfact.FactString = cellfs + app.taxonomycontainer.Table.CurrentExtension.FactString;
-                Model.FactBase.LoadFromFactString(cellfact);
+                //var cellfact = new Model.FactBase;
+                //cellfact.FactString = cellfs + app.taxonomycontainer.Table.CurrentExtension.FactString;
+                //Model.FactBase.LoadFromFactString(cellfact);
 
                 mcell.Extension = app.taxonomycontainer.Table.Current_ExtensionCode;
                 mcell.Report = app.taxonomycontainer.Table.Current_ReportID;
                 mcell.Row = cell.RowID;
                 mcell.Column = cell.ColID;
-                mcell.FactString = cellfact.GetFactString().replace(",",",<br/>");
+                mcell.FactString = app.taxonomycontainer.Table.TaxonomyService.GetFactStringKey(cell.CurrentFactKey);
+                mcell.FactString = mcell.FactString.replace(",",",<br/>");
                 mcell.CellID = _Attribute(cell.UIElement, "id");
                 BindX($("#CellInfo"), mcell);
                 _Show(_SelectFirst("#CellInfo"));

@@ -214,6 +214,7 @@ var Control;
         };
         InstanceContainer.prototype.LoadToUI = function () {
             var me = this;
+            app.taxonomycontainer.GetTables();
             //me.Sel(s_detail_selector).hide();
             //me.LoadTab("#MainContainer", "#InstanceContainer");
             //me.LoadTab("#InstanceContainer", "#" + me.s_fact_id);
