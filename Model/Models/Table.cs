@@ -414,14 +414,14 @@ namespace LogicalModel
                         factix = this.Taxonomy.AddFactKey(key, hashkeys);
 
                     }
-                    else 
-                    {
-                        var factkeys = this.Taxonomy.FactsManager.GetFactKey(factix);
-                        if (!ic.Equals(factkeys, key)) 
-                        {
+                    //else 
+                    //{
+                    //    var factkeys = this.Taxonomy.FactsManager.GetFactKey(factix);
+                    //    if (!ic.Equals(factkeys, key)) 
+                    //    {
 
-                        }
-                    }
+                    //    }
+                    //}
                     this.AddFactKeyParts(key,factix);
 
                
@@ -770,7 +770,7 @@ namespace LogicalModel
                                     {
                                         //List<int[]> results = new List<int[]>();
                                         IList<int> results = new List<int>();
-                                        results = this.Taxonomy.SearchFactsGetIndex3( factintkey, this.FactsOfParts,null);
+                                        results = this.Taxonomy.SearchFactsGetIndex4( factintkey, this.FactsOfParts,null);
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var factindex in results)
                                         {

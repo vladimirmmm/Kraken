@@ -673,6 +673,40 @@ namespace LogicalModel
                 this[item.Key].Clear();
             }
         }
+
+        public IList<int> SearchFactsIndexByKey(int[] factkey, IList<int> facts)
+        {
+            var memberkeys = factkey.ToList();
+            var memberfactspool = new List<IList<int>>();
+            foreach (var memberkey in memberkeys)
+            {
+                if (this.ContainsKey(memberkey))
+                {
+                    memberfactspool.Add(this[memberkey]);
+                }
+            }
+            var partcount = memberfactspool.Count;
+            if (facts != null)
+            {
+                memberfactspool.Add(facts);
+
+            }
+            memberfactspool = memberfactspool.OrderBy(i => i.Count).ToList();
+            var result = memberfactspool.FirstOrDefault();
+            //if ( facts!=null && (result==null || result.Count > facts.Count)) 
+            //{
+            //    result = facts;
+            //}
+            for (int i = 1; i < memberfactspool.Count; i++)
+            {
+                result = Utilities.Objects.IntersectSorted(result, memberfactspool[i], null);
+            }
+            if (result == null)
+            {
+                result = new List<int>();
+            }
+            return result;
+        }
         
     }
     

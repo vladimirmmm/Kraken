@@ -125,7 +125,7 @@ namespace LogicalModel
                 if (table.Taxonomy.DimensionDomainsOfMembers.ContainsKey(keypart))
                 {
                     var items = GetAspectItems(keypart, table);
-                    if (items.Any(i => i.Contains(":x0"))) 
+                    if (items.Any(i => i.Contains(Literals.DefaultMember))) 
                     {
                         result.Add(keypart);
                     }

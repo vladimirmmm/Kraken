@@ -119,7 +119,7 @@ namespace LogicalModel
 
         public List<string> GetCellsOfFact(string factkey)
         {
-            if (factkey.Contains(":"))
+            if (factkey.Contains(Literals.QNameSeparator))
             {
                 factkey = GetFactStringKeyFromStringKey(factkey);
             }

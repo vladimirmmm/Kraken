@@ -544,16 +544,15 @@ namespace LogicalModel.Base
             return items;
         }
 
-        public IList<int> ToIntervalList(Taxonomy taxonomy, IList<int> facts, bool ensurepartnr = false)
+        public IList<int> ToIntervalList(FactsPartsDictionary FactsOfParts, IList<int> facts, bool ensurepartnr = false)
         {
             //cover here
-            var partnr =  0;
-            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts, partnr);
+            var items = FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), facts);
             foreach (var negativeindex in NegativeDictFilterIndexes)
             {
-                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
+                if (FactsOfParts.ContainsKey(negativeindex))
                 {
-                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
+                    items = Utilities.Objects.SortedExcept(items, FactsOfParts[negativeindex]);
                 }
             }
             if (ChildQueries.Count > 0)
@@ -562,7 +561,7 @@ namespace LogicalModel.Base
 
                 foreach (var childquery in ChildQueries)
                 {
-                    result.AddRange(childquery.ToIntervalList(taxonomy, items));
+                    result.AddRange(childquery.ToIntervalList(FactsOfParts, items));
                 }
                 return result;
             }
@@ -570,64 +569,53 @@ namespace LogicalModel.Base
             return items;
         }
 
-        public IList<int> ToIntervalList_Old(Taxonomy taxonomy, IList<int> facts, bool ensurepartnr = false)
+        public IEnumerable<IList<int>> EnumerateIntervals(FactsPartsDictionary FactsOfParts, int ix, IList<int> data, Func<int,int,bool> Filter)
         {
-            //cover here
-            var partnr = Cover ? ensurepartnr ? NrOfDictFilters : 0 : 0;
-            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, facts, partnr);
-            foreach (var negativeindex in NegativeDictFilterIndexes)
-            {
-                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
-                {
-                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
-                }
-            }
-            if (ChildQueries.Count > 0)
-            {
-                var result = new IntervalList();
 
-                foreach (var childquery in ChildQueries)
-                {
-                    result.AddRange(childquery.ToIntervalList(taxonomy, items));
-                }
-                return result;
-            }
-
-            return items;
-        }
-
-        public IEnumerable<IList<int>> EnumerateIntervals(Taxonomy taxonomy, int ix, IList<int> data)
-        {
-            var partnr = 0;
-            var items = taxonomy.SearchFactsGetIndex3(DictFilterIndexes.ToArray(), taxonomy.FactsOfParts, data, partnr);
+            var items = FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data);
             //if (DictFilterIndexes.Count == 0 && Pools.Count == 0) 
             //{
            
             //}
             foreach (var negativeindex in NegativeDictFilterIndexes)
             {
-                if (taxonomy.FactsOfParts.ContainsKey(negativeindex))
+                if (FactsOfParts.ContainsKey(negativeindex))
                 {
-                    items = Utilities.Objects.SortedExcept(items, taxonomy.FactsOfParts[negativeindex]);
+                    items = Utilities.Objects.SortedExcept(items, FactsOfParts[negativeindex]);
                 }
             }
             if (Pools.Count == 0) 
             { 
                 //var l = new List<IList<int>>(){ items};
-   
-                yield return items;
+                //if (Filter != null)
+                //{
+                //    yield return items.Where(i=>Filter(i,NrOfDictFilters)).ToList();
+
+                //}
+                //else
+                //{
+                    yield return items;
+                //}
                 yield break;
             }
             if (ix == Pools.Count)
             {
-                yield return data;
+                //if (Filter != null)
+                //{
+                //    yield return data.Where(i => Filter(i,-1)).ToList();
+
+                //}
+                //else
+                //{
+                    yield return data;
+                //}
             }
             else
             {
                 foreach (var qry in Pools[ix].ChildQueries)
                 {
-                    var subresult = qry.ToIntervalList(taxonomy, items);
-                    foreach (var x in EnumerateIntervals(taxonomy, ix + 1, subresult))
+                    var subresult = qry.ToIntervalList(FactsOfParts, items);
+                    foreach (var x in EnumerateIntervals(FactsOfParts, ix + 1, subresult, Filter))
                     {
                         yield return x;
                     }

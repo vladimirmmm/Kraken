@@ -11,6 +11,8 @@ namespace Utilities
     {
         public static void DictionaryToFile<TKey, TValue>(string filepath, IDictionary<TKey, TValue> dict, Func<TKey,string> KeyToString,Func<TValue,string> ValueTostring)
         {
+            EnsurePath(filepath);
+
             using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath,false))
             {
                 foreach (var item in dict)
@@ -49,6 +51,8 @@ namespace Utilities
         }
         public static void DictionaryToFile(string filepath, IDictionary<int, int> dict)
         {
+            EnsurePath(filepath);
+
             using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath, false))
             {
                 foreach (var item in dict)
@@ -88,6 +92,7 @@ namespace Utilities
         }
         public static void DictionaryToFile(string filepath, IDictionary<int[], int> dict) 
         {
+            EnsurePath(filepath);
             using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath,false))
             {
                 foreach (var item in dict)
@@ -102,13 +107,16 @@ namespace Utilities
         {
             if (FileExists(filepath))
             {   // Open the text file using a stream reader.
-                using (StreamReader sr = new StreamReader(filepath))
+                using (StreamReader sr = new StreamReader(filepath,Encoding.ASCII,true,4096))
                 {
                     while (sr.Peek() >= 0)
                     {
                         String line = sr.ReadLine();
-                        var parts = line.Split(new string[]{":"},StringSplitOptions.RemoveEmptyEntries);
-                        var key = parts[0].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i)).ToArray();
+                        var parts = Utilities.Strings.GetSplit(line,':').ToArray();
+                        var key = Utilities.Strings.GetSplit(parts[0],',').Select(i => Utilities.Converters.FastParse(i)).ToArray();
+
+                        //var parts = line.Split(new string[]{":"},StringSplitOptions.RemoveEmptyEntries);
+                        //var key = parts[0].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i)).ToArray();
                         var value = Utilities.Converters.FastParse(parts[1]);
                         dict.Add(key, value);
  

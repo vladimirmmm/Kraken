@@ -25,11 +25,19 @@ namespace Utilities
         }
     }
 
-    public class IntervalComparer2 : IComparer<Interval>
+    public class IntervalStartComparer : IComparer<Interval>
     {
         public int Compare(Interval x, Interval y)
         {
             return x.Start - y.Start;
+        }
+    }
+
+    public class IntervalEndComparer : IComparer<Interval>
+    {
+        public int Compare(Interval x, Interval y)
+        {
+            return x.End - y.End;
         }
     }
 
@@ -127,7 +135,49 @@ namespace Utilities
             return result;
 
         }
-        public int Compare(Interval interval) 
+        public int CompareX(Interval interval) 
+        {
+            //var minend = Math.Min(interval.End, this.End);
+            //var maxstart = Math.Max(interval.Start, this.Start);
+            var diff1 = this.End - interval.Start;
+            var diff2 = this.Start - interval.End;
+            return (diff1 + diff2) - Math.Max(diff1, diff2);
+            //if (diff < 0)
+            //{
+            //    return -1;
+            //}
+            //else 
+            //{
+            //    diff = this.Start - interval.End;
+            //    if (diff > 0) 
+            //    {
+            //        return 1;
+            //    }
+            //    return 0;
+            //}
+      
+        }
+        public int CompareOld0(Interval interval)
+        {
+            //var minend = Math.Min(interval.End, this.End);
+            //var maxstart = Math.Max(interval.Start, this.Start);
+            var diff = this.End - interval.Start;
+            if (diff < 0)
+            {
+                return -1;
+            }
+            else
+            {
+                diff = this.Start - interval.End;
+                if (diff > 0)
+                {
+                    return 1;
+                }
+                return 0;
+            }
+
+        }
+        public int Compare(Interval interval)
         {
             //var minend = Math.Min(interval.End, this.End);
             //var maxstart = Math.Max(interval.Start, this.Start);
@@ -233,7 +283,8 @@ namespace Utilities
             }
         }
         public static IntervalComparer ic = new IntervalComparer();
-        public static IntervalComparer2 ic2 = new IntervalComparer2();
+        public static IntervalStartComparer startcomparer = new IntervalStartComparer();
+        public static IntervalEndComparer endcomparer = new IntervalEndComparer();
         
         public void AddX(int value)
         {
@@ -312,120 +363,16 @@ namespace Utilities
         {
             AddX(value);
         }
-        //public void AddY(int value) 
-        //{
-        //    _Count = -1;
-        //    if (LastInterval == null)
-        //    {
-        //        AddNewInterval(value, 0);
-
-        //    }
-        //    else 
-        //    {
-               
-
-        //        for (int i = this.Intervals.Count - 1; i > -1; i--) 
-        //        {
-        //            var prev = i - 1 > 0 ? this.Intervals[i - 1] : null;
-        //            var next = i + 1 < this.Intervals.Count ? this.Intervals[i + 1] : null;
-        //            var interval = this.Intervals[i];
-        //            if (interval.IsNext(value))
-        //            {
-        //                if (next == null || next.Start > interval.End + 1) 
-        //                {
-        //                    interval.End++;
-        //                    return;
-        //                }
-        //            }
-        //            if (interval.IsInThis(value))
-        //            {
-        //                return;
-        //            }
-        //            if (interval.IsPrev(value))
-        //            {
-        //                if (prev == null || prev.End < interval.Start - 1)
-        //                {
-        //                    interval.Start--;
-        //                    return;
-        //                }
-        //            }
-        //            if (next == null && value > interval.End) 
-        //            {
-        //                AddNewInterval(value, Intervals.Count);
-        //            }
-        //            if (prev == null && value < interval.Start)
-        //            {
-        //                AddNewInterval(value, 0);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //public void AddOld(int value)
-        //{
-        //    _Count = -1;
-        //    if (LastInterval == null)
-        //    {
-        //        AddNewInterval(value, 0);
-
-        //    }
-
-        //    if (value == LastInterval.End + 1)
-        //    {
-        //        LastInterval.End++;
-        //    }
-        //    else
-        //    {
-        //        if (value > LastInterval.End)
-        //        {
-        //            AddNewInterval(value, Intervals.Count);
-        //        }
-        //        else
-        //        {
-        //            var ix = 0;
-        //            foreach (var interval in Intervals)
-        //            {
-        //                if (interval.Start - 1 == value)
-        //                {
-        //                    interval.Start--;
-        //                    break;
-        //                }
-        //                //already exists
-        //                if (interval.Start >= value && value <= interval.End)
-        //                {
-        //                    return;
-        //                }
-        //                //next of the current interval
-        //                if (value > interval.End)
-        //                {
-        //                    if (value == interval.End + 1)
-        //                    {
-        //                        if (Intervals[ix + 1].Start == value) { break; }
-
-        //                        LastInterval.End++;
-        //                    }
-        //                    else
-        //                    {
-        //                        if (Intervals[ix + 1].Start > value)
-        //                        {
-        //                            AddNewInterval(value, ix + 1);
-
-        //                            break;
-        //                        }
-
-        //                    }
-        //                }
-
-        //                if (value < interval.Start)
-        //                {
-        //                    break;
-        //                }
-        //                ix++;
-        //            }
-        //        }
-        //    }
-        //}
-
+        
+        public static IntervalList GetIntervals(IEnumerable<int> items)
+        {
+            var result = new IntervalList();
+            foreach (var item in items)
+            {
+                result.Add(item);
+            }
+            return result;
+        }
 
 
         public new IEnumerable<int> GetEnumerator()

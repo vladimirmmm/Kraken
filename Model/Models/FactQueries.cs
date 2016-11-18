@@ -46,18 +46,4 @@ namespace LogicalModel
         }
     }
 
-    public class FactQueryPool 
-    {
-        public List<List<FactBaseQuery>> Items = new List<List<FactBaseQuery>>();
-
-        public IEnumerable<IList<int>> EnumerateIntervals(Taxonomy taxonomy, int ix, IList<int> data) 
-        {
-            if (ix == Items.Count) { yield return data; }
-            foreach (var qry in Items[ix]) 
-            {
-                var subresult = qry.ToIntervalList(taxonomy, data);
-                EnumerateIntervals(taxonomy, ix + 1, subresult);
-            }
-        }
-    }
 }

@@ -121,14 +121,56 @@ namespace Utilities
             var bigger = sequence2;
             var bix = 0;
             var six = 0;
-            if (bigger.Intervals.Count == 0) { return smaller; }
+            var sc = smaller.Intervals.Count;
+            var bc = bigger.Intervals.Count;
+
+            var s1 = smaller.FirstInterval == null ? 0 : smaller.FirstInterval.Start;
+            var b1 = bigger.FirstInterval == null ? 0 : bigger.FirstInterval.Start;
+            var se = smaller.LastInterval == null ? 0 : smaller.LastInterval.End;
+            var be = bigger.LastInterval == null ? 0 : bigger.LastInterval.End;
+
+            if (bc == 0 || se<b1 || be<s1) { return smaller; }
+
+            var limit = 10;
+
+            if (sc > limit)
+            {
+                var tsix = smaller.Intervals.BinarySearch(bigger.FirstInterval, IntervalList.startcomparer);
+                if (tsix > sc)
+                {
+                    six = sc - 1;
+                }
+                if (tsix < 0)
+                {
+                    six = ~tsix;
+                    six = six > 0 ? six - 1 : six;
+                }
+                for (int i = 0; i < six; i++) 
+                {
+                    result.AddInterval(smaller.Intervals[i]);
+                }
+            }
+            if (bc > limit) 
+            {
+                var tbix = bigger.Intervals.BinarySearch(smaller.FirstInterval, IntervalList.endcomparer);
+                if (tbix > bc)
+                {
+                    bix = bc - 1;
+                }
+                if (tbix < 0)
+                {
+                    bix = ~tbix;
+                    bix = bix > 0 ? bix - 1 : bix;
+                }
+            }
+
 
             Interval s = smaller.Intervals.FirstOrDefault();
             Interval b = bigger.Intervals.FirstOrDefault();
-            Interval snext = smaller.Intervals.FirstOrDefault();
-            Interval bnext = bigger.Intervals.FirstOrDefault();
+            Interval snext = six < sc ? smaller.Intervals[six] : s;
+            Interval bnext = bix < bc ? bigger.Intervals[bix] : b;
 
-      
+            var evalb = true;
             while (snext !=null)
             {
 
@@ -144,7 +186,7 @@ namespace Utilities
                     if (!hasany)
                     {
                         six++;
-                        snext = six < smaller.Intervals.Count ? smaller.Intervals[six] : null;
+                        snext = six < sc ? smaller.Intervals[six] : null;
                         continue;
                     }
                     else 
@@ -168,12 +210,13 @@ namespace Utilities
                     if (s.End > b.End)
                     {
                         bix++;
+                        evalb = true;
                     }
                     else
                     {
                         result.Intervals.Add(s);
                         six++;
-                        snext = six < smaller.Intervals.Count ? smaller.Intervals[six] : null;
+                        snext = six < sc ? smaller.Intervals[six] : null;
 
                     }
                     
@@ -183,14 +226,19 @@ namespace Utilities
                 {
                     result.Intervals.Add(s);
                     six++;
-                    snext = six < smaller.Intervals.Count ? smaller.Intervals[six] : null;
+                    snext = six < sc ? smaller.Intervals[six] : null;
 
                 }
                 if (r > 0)
                 {
                     bix++;
+                    evalb = true;
                 }
-                bnext = bix < bigger.Intervals.Count ? bigger.Intervals[bix] : null;
+                if (evalb)
+                {
+                    evalb = false;
+                    bnext = bix < bc ? bigger.Intervals[bix] : null;
+                }
             }
 
             return result;
@@ -578,29 +626,40 @@ namespace Utilities
         public static IntervalList IntersectSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
             var result = new IntervalList();
-            var smaller = sequence1.Intervals.Count < sequence2.Intervals.Count ? sequence1 : sequence2;
+            var s1 = sequence1.FirstInterval == null ? 0 : sequence1.FirstInterval.Start;
+            var s2 = sequence2.FirstInterval == null ? 0 : sequence2.FirstInterval.Start;
+            var smaller = s1 < s2 ? sequence1 : sequence2;
             var bigger = smaller == sequence1 ? sequence2 : sequence1;
-            var bix = 0;
-            var six = 0;
-            if (IsTheSame(sequence1, sequence2)) 
-            {
-                return sequence1;
-            }
-            Interval s = null;
-            Interval b = null;
             var sc = smaller.Intervals.Count;
             var bc = bigger.Intervals.Count;
+            var bix = 0;
+            var six = 0;
+
+            if (sc > 50 && bigger.FirstInterval!=null)
+            {
+                var tsix = smaller.Intervals.BinarySearch(bigger.FirstInterval, IntervalList.startcomparer);
+                if (tsix > sc)
+                {
+                    six = sc - 1;
+                }
+                if (tsix < 0)
+                {
+                    six = ~tsix;
+                    six = six > 1 ? six-1 : six;
+                }
+            }
+
+
+            //if (IsTheSame(sequence1, sequence2)) 
+            //{
+            //    return sequence1;
+            //}
+            Interval s = null;
+            Interval b = null;
+      
             var bchanged = true;
             var schanged = true;
-            //if (sc>0 && bc>sc*100)
-            //{
-            //    //var vix = bigger.Intervals.BinarySearch(smaller.FirstInterval, IntervalList.ic2);
-            //    //bix = (vix < 0 ? ~vix : vix) - 1;
-            //    //if (bix < 0 || bix == bigger.Intervals.Count)
-            //    //{
-            //    //    bix = 0;
-            //    //}
-            //}
+
             while (six < sc && bix < bc) 
             {
                 if (schanged)

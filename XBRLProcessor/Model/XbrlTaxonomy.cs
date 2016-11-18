@@ -194,9 +194,9 @@ namespace XBRLProcessor.Models
             if (!this.SchemaElementDictionary.ContainsKey(dimensionitem))
             {
 
-                if (dimensionitem.Contains(":"))
+                if (dimensionitem.Contains(LogicalModel.Literals.QNameSeparator))
                 {
-                    var items = dimensionitem.Split(':');
+                    var items = dimensionitem.Split(LogicalModel.Literals.QNameSeparatorC);
                     var ns = items[0];
                     var name = items[1];
                     se =  this.SchemaElements.FirstOrDefault(i => i.Name == name && i.Namespace == ns);

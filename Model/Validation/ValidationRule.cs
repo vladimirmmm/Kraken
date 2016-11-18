@@ -691,9 +691,7 @@ namespace LogicalModel.Validation
             if (HasAtLeastOneValue && !HasMissingValue)
             {
                 Boolean partialresult=true;
-                if (this.ID.Contains("173")) 
-                { 
-                }
+           
                 var formula = Taxonomy.SimpleValidationRules.FirstOrDefault(i => i.ID == this.ID);
                 try
                 {
@@ -756,9 +754,7 @@ namespace LogicalModel.Validation
             var allinstanceresults = GetAllInstanceResults(instance);
             foreach (var r in allinstanceresults) 
             {
-                if (this.ID.Contains("0170"))
-                {
-                }
+             
                 ValidateResult(r, instance);
                 if (!r.IsOk) 
                 {

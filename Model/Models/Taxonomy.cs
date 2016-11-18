@@ -474,7 +474,7 @@ namespace LogicalModel
         
         public List<int[]> SearchFacts3(FactsPartsDictionary factsOfParts, int[] factkey)
         {
-            var resultfacts = SearchFactsGetIndex3(factkey, factsOfParts, null);
+            var resultfacts = factsOfParts.SearchFactsIndexByKey(factkey, null);
             return resultfacts.Select(i => FactsManager.GetFactKey(i)).ToList();
         }
         public IList<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts, int PartNr)
@@ -506,7 +506,7 @@ namespace LogicalModel
             }
             if (PartNr != 0)
             {
-                result = GetIntervals(result.Where(i => FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == PartNr));
+                result = IntervalList.GetIntervals(result.Where(i => FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == PartNr));
             }
             if (result == null)
             {
@@ -515,13 +515,37 @@ namespace LogicalModel
             return result;
         }
 
-        public IntervalList GetIntervals(IEnumerable<int> items) 
+     
+        public IList<int> SearchFactsGetIndex4(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
         {
-            var result = new IntervalList();
-            foreach (var item in items) 
+            var result = new List<int>();
+            var domainkeys = factkey.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i) && this.DimensionDomainsOfMembers[i] == i).ToList();
+            var memberkeys = factkey.Except(domainkeys).ToList();
+            var memberfactspool = new List<IList<int>>();
+            var domainpool = new List<List<int>>();
+            var qry = new FactBaseQuery();
+            foreach (var memberkey in memberkeys) 
             {
-                result.Add(item);
+                qry.DictFilterIndexes.Add(memberkey);
             }
+            foreach (var domainkey in domainkeys)
+            {
+                var domainquery = new FactPoolQuery();
+                qry.ChildQueries.Add(domainquery);
+
+                var negativequery = new FactBaseQuery();
+                domainquery.ChildQueries.Add(negativequery);
+                negativequery.NegativeDictFilterIndexes.Add(domainkey);
+
+                var positivequery = new FactBaseQuery();
+                domainquery.ChildQueries.Add(positivequery);
+                positivequery.DictFilterIndexes.Add(domainkey);
+         
+            }
+            //.Where(i=>this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i]==)
+            //Func<int,int,bool> filter = (int i, int dictnr) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == dictnr;
+            var resultquery = qry.EnumerateIntervals(factsOfParts, 0, null,null).SelectMany(i => i);
+            result = resultquery.ToList();
             return result;
         }
         public IList<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
@@ -1628,9 +1652,9 @@ namespace LogicalModel
         public Element GetDomain(string item)
         {
             Element element = null;
-            if (item.Contains(":"))
+            if (item.Contains(Literals.QNameSeparator))
             {
-                var parts = item.Split(":");
+                var parts = item.Split(Literals.QNameSeparator);
 
                 var ns = parts[0];
                 var name = parts[1];

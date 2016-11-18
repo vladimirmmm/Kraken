@@ -453,10 +453,10 @@ namespace XBRLProcessor.Model
                     logicalhypercubeitem.Name = hypercubeitem.Item.Element.Name;
                     logicalhypercubeitem.Namespace = hypercubeitem.Item.Element.Namespace;
                     logicalhypercubeitem.LabelID = hypercubeitem.Item.LabelID;
-                    if (logicalhypercubeitem.Name.Contains("RCP")) 
-                    {
+                    //if (logicalhypercubeitem.Name.Contains("RCP")) 
+                    //{
 
-                    }
+                    //}
                     if (hypercubeitem.Children.Count == 0) 
                     {
                         var domainref = hypercubeitem.Item.Element.TypedDomainRef;

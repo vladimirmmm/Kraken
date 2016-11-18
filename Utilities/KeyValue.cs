@@ -25,6 +25,22 @@ namespace Utilities
             this.Key = key;
             this.Value = value;
         }
+        public override bool Equals(object obj)
+        {
+            var item = (KeyValue<TKey,TValue>)obj;
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            return this.Key.Equals(item.Key);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Key.GetHashCode();
+        }
 
         public override string ToString()
         {

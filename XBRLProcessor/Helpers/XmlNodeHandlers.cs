@@ -32,9 +32,9 @@ namespace XBRLProcessor.Helpers
             foreach (var tagname in XmlTagNames) 
             {
                 var tagnamewithoutnamespace = tagname;
-                if (tagname.Contains(":")) 
+                if (tagname.Contains(LogicalModel.Literals.QNameSeparator)) 
                 {
-                    tagnamewithoutnamespace = tagname.Substring(tagname.IndexOf(":") + 1);
+                    tagnamewithoutnamespace = tagname.Substring(tagname.IndexOf(LogicalModel.Literals.QNameSeparator) + 1);
                 }
                 var existing = tags.FirstOrDefault(i => i == tagnamewithoutnamespace);
                 if (existing == null) 

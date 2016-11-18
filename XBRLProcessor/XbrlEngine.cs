@@ -106,9 +106,9 @@ namespace XBRLProcessor
                 {
                     var decoratedtagname = String.Format("<{0}>", tagname);
                     var decoratedlocaltagname="";
-                    if (tagname.Contains(":")) 
+                    if (tagname.Contains(LogicalModel.Literals.QNameSeparator)) 
                     {
-                        decoratedlocaltagname = Utilities.Strings.TextBetween(decoratedtagname,":",">");
+                        decoratedlocaltagname = Utilities.Strings.TextBetween(decoratedtagname, LogicalModel.Literals.QNameSeparator, ">");
                         decoratedlocaltagname = String.Format("<{0}>", decoratedlocaltagname);
                     }
                     if (!mapdict.ContainsKey(decoratedtagname))
