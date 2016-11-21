@@ -49,8 +49,12 @@ namespace XBRLProcessor.Model
             var singlefactparameters = rule.Parameters.Where(i => !i.IsGeneral && !i.BindAsSequence).ToList();
             var mffnspissue = false;
             LogicalModel.Validation.ValidationParameter p_mffnspissue=null;
+            //Utilities.Logger.WriteToFile(String.Format("EnumerateIntervals {0} on {1}", rule.BaseQuery, data));
+
             foreach (var group in rule.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, data, null))
             {
+                //Utilities.Logger.WriteToFile("Joining rule with parameters...");
+
                 foreach (var parameter in rule.Parameters)
                 {
                     if (!parameter.IsGeneral)
@@ -95,6 +99,8 @@ namespace XBRLProcessor.Model
 
                 }
                 ix++;
+                //Utilities.Logger.WriteToFile("End joining rule with parameters");
+
             }
             if (!hasfacts) 
             {

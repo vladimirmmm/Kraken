@@ -413,6 +413,16 @@ namespace Utilities
             {
                 sb.AppendLine(String.Format("{0} - {1}", interval.Start, interval.End));
             }
+            return sb.ToString();
+        }
+
+        public string GetFullString()
+        {
+            var sb = new StringBuilder();
+            foreach (var interval in Intervals)
+            {
+                sb.AppendLine(String.Format("{0} - {1}", interval.Start, interval.End));
+            }
             foreach (var value in this.AsEnumerable())
             {
                 sb.AppendLine(value.ToString());
@@ -465,7 +475,27 @@ namespace Utilities
             }
         }
 
+        public int SearchByStartIndexBefore(Interval interval, int startix) 
+        {
+            var ix = startix;
+            var c = this.Intervals.Count;
 
+            var tix = this.Intervals.BinarySearch(startix, c - startix, interval, IntervalList.startcomparer);
+            if (tix > c)
+            {
+                ix = c - 1;
+            }
+            if (tix < 0)
+            {
+                ix = ~tix;
+                ix = ix > 0 ? ix - 1 : ix;
+            }
+            if (ix < startix) 
+            {
+                ix = startix;
+            }
+            return ix;
+        }
         public bool Contains(int item)
         {
             throw new NotImplementedException();
@@ -495,10 +525,52 @@ namespace Utilities
         {
             return this.AsEnumerable().GetEnumerator();
         }
+
+        public override string ToString()
+        {
+            var intterval = this.FirstInterval == null ? "" : String.Format("{0}..{1}", this.FirstInterval.Start, this.LastInterval.End);
+            return string.Format("{0}/{1} [{2}]", this.Count, this.Intervals.Count, intterval);
+        }
     }
 
     public class TestInterval
     {
+        public void Testb()
+        {
+            IntervalList list1 = new IntervalList();
+            list1.AddInterval(new Interval(0, 16286069));
+
+            IntervalList list2 = new IntervalList();
+
+            list2.AddInterval(new Interval(48639, 204038));
+            list2.AddInterval(new Interval(212919, 354998));
+            list2.AddInterval(new Interval(363879, 505958));
+            list2.AddInterval(new Interval(514839, 656918));
+            list2.AddInterval(new Interval(665799, 807878));
+            list2.AddInterval(new Interval(816759, 958838));
+            list2.AddInterval(new Interval(967719, 1109798));
+            list2.AddInterval(new Interval(1122739, 2744818));
+            list2.AddInterval(new Interval(2768499, 4390578));
+            list2.AddInterval(new Interval(4402419, 6024498));
+            list2.AddInterval(new Interval(6036339, 7658418));
+            list2.AddInterval(new Interval(7682099, 9304178));
+            list2.AddInterval(new Interval(9316019, 10938098));
+            list2.AddInterval(new Interval(10949939, 12572018));
+            list2.AddInterval(new Interval(12595699, 14217778));
+            list2.AddInterval(new Interval(14229619, 15851698));
+            list2.AddInterval(new Interval(15863539, 15996738));
+            list2.AddInterval(new Interval(16132899, 16133306));
+            list2.AddInterval(new Interval(16133331, 16133738));
+            list2.AddInterval(new Interval(16133763, 16134170));
+            list2.AddInterval(new Interval(16134195, 16137674));
+            list2.AddInterval(new Interval(16137699, 16138106));
+            list2.AddInterval(new Interval(16138131, 16138538));
+            list2.AddInterval(new Interval(16138563, 16140866));
+            list2.AddInterval(new Interval(16141851, 16157690));
+
+            var x = Utilities.Objects.SortedExcept(list1, list2,null);
+
+        }
         public void Test()
         {
             IntervalList list = new IntervalList();

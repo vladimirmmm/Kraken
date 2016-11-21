@@ -117,6 +117,8 @@ namespace Utilities
         public static IntervalList SortedExcept(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
             var result = new IntervalList();
+            var steps = 0;
+            //var ds = DateTime.Now;
             var smaller = sequence1;
             var bigger = sequence2;
             var bix = 0;
@@ -152,7 +154,7 @@ namespace Utilities
             }
             if (bc > limit) 
             {
-                var tbix = bigger.Intervals.BinarySearch(smaller.FirstInterval, IntervalList.endcomparer);
+                var tbix = bigger.Intervals.BinarySearch(smaller.FirstInterval, IntervalList.startcomparer);
                 if (tbix > bc)
                 {
                     bix = bc - 1;
@@ -171,11 +173,14 @@ namespace Utilities
             Interval bnext = bix < bc ? bigger.Intervals[bix] : b;
 
             var evalb = true;
+            var schanged = false ;
             while (snext !=null)
             {
+                steps++;
 
                 s = snext;
                 b = bnext;
+           
 
             
                 var r = b==null?-1: s.Compare(b);
@@ -231,16 +236,25 @@ namespace Utilities
                 }
                 if (r > 0)
                 {
+                   // if (bigger.Intervals.Count > 1000000) { }
                     bix++;
+                    if (bc > 10000 && sc<100)
+                    {
+                        bix = bigger.SearchByStartIndexBefore(s, bix);
+                    }
                     evalb = true;
                 }
                 if (evalb)
                 {
                     evalb = false;
+                 
                     bnext = bix < bc ? bigger.Intervals[bix] : null;
                 }
             }
-
+            //var de = DateTime.Now;
+            //Utilities.Logger.WriteToFile(string.Format("SortedExcept({0},{1}):{4} in {2} steps, {3} ms ", sequence1, sequence2, steps, de.Subtract(ds).TotalMilliseconds, result.Count));
+       
+          
             return result;
         }
 
@@ -626,12 +640,17 @@ namespace Utilities
         public static IntervalList IntersectSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
             var result = new IntervalList();
-            var s1 = sequence1.FirstInterval == null ? 0 : sequence1.FirstInterval.Start;
-            var s2 = sequence2.FirstInterval == null ? 0 : sequence2.FirstInterval.Start;
+            var steps = 0;
+            //var ds = DateTime.Now;
+            var s1 = sequence1.Intervals.Count;
+            var s2 = sequence2.Intervals.Count;
+
             var smaller = s1 < s2 ? sequence1 : sequence2;
             var bigger = smaller == sequence1 ? sequence2 : sequence1;
+
             var sc = smaller.Intervals.Count;
             var bc = bigger.Intervals.Count;
+
             var bix = 0;
             var six = 0;
 
@@ -650,10 +669,6 @@ namespace Utilities
             }
 
 
-            //if (IsTheSame(sequence1, sequence2)) 
-            //{
-            //    return sequence1;
-            //}
             Interval s = null;
             Interval b = null;
       
@@ -662,6 +677,7 @@ namespace Utilities
 
             while (six < sc && bix < bc) 
             {
+                steps++;
                 if (schanged)
                 {
                     s = smaller.Intervals[six];
@@ -669,6 +685,10 @@ namespace Utilities
                 }
                 if (bchanged)
                 {
+                    if (bc > 10000 && sc < 100)
+                    {
+                        bix = bigger.SearchByStartIndexBefore(s, bix);
+                    }
                     b = bigger.Intervals[bix];
                     bchanged = false;
                 }
@@ -700,8 +720,9 @@ namespace Utilities
                     bix++;
                     bchanged=true;
                 }
-            }       
-
+            }
+            //var de = DateTime.Now;
+            //Utilities.Logger.WriteToFile(string.Format("IntersectSorted({0},{1}):{4} in {2} steps, {3} ms ", sequence1, sequence2, steps, de.Subtract(ds).TotalMilliseconds, result.Count));
             return result;
         }
 

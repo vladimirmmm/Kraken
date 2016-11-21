@@ -104,6 +104,7 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("xs:boolean", (Functions i) => i.XS_Boolean(""));
             this.Syntax.AddFunction("matches", (Functions i) => i.RegexpMatches("",""));
             this.Syntax.AddFunction("not", (Functions i) => i.not(true));
+            this.Syntax.AddFunction("nilled", (Functions i) => i.nilled(""));
             this.Syntax.AddFunction("empty", (Functions i) => i.empty(null));
             this.Syntax.AddFunction("exists", (Functions i) => i.Exists(null));
 

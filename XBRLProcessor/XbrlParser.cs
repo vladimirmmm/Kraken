@@ -160,9 +160,22 @@ namespace XBRLProcessor
 
         public override Expression GetSimpleExpression(string item)
         {
+            if (item.Contains("s2c_typ:ID")) 
+            {
+
+            }
             Expression result = null;
             var isfunction = false;
-
+            var isinstring = false;
+            var trimmeditem = item.Trim();
+            if (trimmeditem.StartsWith(Syntax.StringDelimiter) && trimmeditem.EndsWith(Syntax.StringDelimiter))
+            {
+                isinstring=true;
+            }
+            if (trimmeditem.StartsWith(Syntax.StringDelimiter2) && trimmeditem.EndsWith(Syntax.StringDelimiter2))
+            {
+                isinstring=true;
+            }
             var leftcontainer_ix = item.IndexOf(Syntax.ExpressionContainer_Left);
             var rightcontainer_ix = item.IndexOf(Syntax.ExpressionContainer_Right);
             var separator_ix = item.IndexOf(Syntax.ParameterSeparator);
@@ -180,7 +193,7 @@ namespace XBRLProcessor
                     isfunction = true;
                 }
             }
-            if (isfunction)
+            if (isfunction && !isinstring)
             {
                 var functionname = item.Remove(item.IndexOf(Syntax.ExpressionContainer_Left));
                 functionname = functionname.Trim();
@@ -193,7 +206,19 @@ namespace XBRLProcessor
                     {
                         p_true = Utilities.Strings.TextBetween(item, Syntax.Then, Syntax.Else);
                     }
-                    var p_false = Utilities.Strings.TextBetween(item, Syntax.Else + Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
+                    string p_false="";
+                    if (item.IndexOf(Syntax.Else + Syntax.ExpressionContainer_Left) == -1) 
+                    {
+                        var elsix =item.IndexOf(Syntax.Else);
+                        if (elsix > -1) 
+                        {
+                            p_false = item.Substring(elsix + Syntax.Else.Length);
+                        }
+                    }
+                    else
+                    {
+                        p_false = Utilities.Strings.TextBetween(item, Syntax.Else + Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
+                    }
                     iffunction.condition = GetSimpleExpression(p_condition);
                     iffunction.truepath = GetSimpleExpression(p_true);
                     iffunction.falsepath = GetSimpleExpression(p_false);
@@ -212,7 +237,7 @@ namespace XBRLProcessor
                 }
                 else
                 {
-                    var func = new FunctionExpression();
+                    var func = new FunctionExpression();          
                     func.Name = functionname;
                     var parameterstring = Utilities.Strings.TextBetween(item, Syntax.ExpressionContainer_Left, Syntax.ExpressionContainer_Right);
                     if (!string.IsNullOrEmpty(parameterstring))
@@ -265,11 +290,21 @@ namespace XBRLProcessor
                     svalue = trimmed.Trim(Syntax.StringDelimiter2.ToCharArray());
                     result.IsString = true;
                 }
-                if (trimmed.StartsWith(Syntax.ParameterSpecifier)) 
+                if (trimmed.StartsWith(Syntax.ParameterSpecifier))
                 {
                     result.IsParameter = true;
                     svalue = trimmed.Substring(Syntax.ParameterSpecifier.Length);
                     result.Parameters.Add(svalue);
+                }
+                else 
+                {
+                    if (!trimmed.StartsWith(Syntax.ExpressionPlaceholder) 
+                        && !result.IsString
+                        && !Utilities.Strings.IsDigitsOnly(trimmed, '.', '-')
+                        && !String.IsNullOrEmpty(trimmed))
+                    {
+                        result.IsString = true;
+                    }
                 }
                 result.Value = svalue.Trim();
 
@@ -374,6 +409,7 @@ namespace XBRLProcessor
         
         public void Test2()
         {
+            Testexpression("if ($a ne 0) then (iaf:numeric-equal($b, iaf:sum(($c, $d, $e, iaf:numeric-unary-minus($a))))) else true()");
             Testexpression("concat(month-from-date($a), \"-\", day-from-date($a)) = (\"3-31\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"6-30\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"9-30\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"12-31\" cast as xs:string)");
             Testexpression("if (string-length(string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\")))) = 9)  then ((substring(string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\"))),1,1) != \"8\")  and (substring(string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\"))),1,3) != \"999\")  and (string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\"))) != \"111111111\")) else (true())");
             Testexpression("$a = $b + $c");

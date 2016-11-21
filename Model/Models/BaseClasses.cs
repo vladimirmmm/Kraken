@@ -11,6 +11,21 @@ using Utilities;
 
 namespace LogicalModel.Base
 {
+    public class nString
+    {
+        public string Value = "";
+        public nString() { }
+        public nString(string val)
+        {
+            this.Value = val;
+        }
+
+        public static string operator /(nString item1, String item2)
+        {
+            return item1.Value;
+        }
+
+    }
     public class IndexDictionaryCollection : Dictionary<int, IndexDictionary2>
     {
         public Func<int, int> DomainIndexAccessor = (i) => -1;
@@ -571,44 +586,31 @@ namespace LogicalModel.Base
 
         public IEnumerable<IList<int>> EnumerateIntervals(FactsPartsDictionary FactsOfParts, int ix, IList<int> data, Func<int,int,bool> Filter)
         {
-
-            var items = FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data);
-            //if (DictFilterIndexes.Count == 0 && Pools.Count == 0) 
-            //{
-           
-            //}
-            foreach (var negativeindex in NegativeDictFilterIndexes)
+            var items = data;
+            if (ix == 0) 
             {
-                if (FactsOfParts.ContainsKey(negativeindex))
+                items = ix == 0 ? FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data) : data;
+
+                foreach (var negativeindex in NegativeDictFilterIndexes)
                 {
-                    items = Utilities.Objects.SortedExcept(items, FactsOfParts[negativeindex]);
+                    if (FactsOfParts.ContainsKey(negativeindex))
+                    {
+                        items = Utilities.Objects.SortedExcept(items, FactsOfParts[negativeindex]);
+                    }
                 }
             }
+       
             if (Pools.Count == 0) 
             { 
-                //var l = new List<IList<int>>(){ items};
-                //if (Filter != null)
-                //{
-                //    yield return items.Where(i=>Filter(i,NrOfDictFilters)).ToList();
-
-                //}
-                //else
-                //{
-                    yield return items;
-                //}
+         
+                yield return items;
                 yield break;
             }
+
             if (ix == Pools.Count)
             {
-                //if (Filter != null)
-                //{
-                //    yield return data.Where(i => Filter(i,-1)).ToList();
 
-                //}
-                //else
-                //{
-                    yield return data;
-                //}
+                yield return data;
             }
             else
             {
@@ -629,12 +631,18 @@ namespace LogicalModel.Base
             {
                 sb.Append(taxonomy.CounterFactParts[ix] + ", ");
             }
-            sb.Append("; !:");
-            foreach (var ix in NegativeDictFilterIndexes)
+            sb.Append("; ");
+            if (NegativeDictFilterIndexes.Count > 0)
             {
-                sb.Append(taxonomy.CounterFactParts[ix] + ", ");
+                sb.Append("!:");
+
+                foreach (var ix in NegativeDictFilterIndexes)
+                {
+                    sb.Append(taxonomy.CounterFactParts[ix] + ", ");
+                }
+                sb.AppendLine(";");
+
             }
-            sb.AppendLine();
             foreach (var child in ChildQueries)
             {
                 sb.AppendLine(child.GetString(taxonomy, Literals.Tab + pad));

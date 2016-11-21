@@ -41,6 +41,12 @@ namespace Utilities
                 logbuilder.Append(text);
             }
         }
+        public static void WriteToFile(string item)
+        {
+            var text = String.Format("{0:yyyy-MM-dd hh:mm:ss} {1}\r\n", DateTime.Now, item);
+            var path = @"C:\Users\vladimir.balacescu\Desktop\log.txt";
+            Utilities.FS.AppendAllText(path, text + "\r\n");
+        }
 
     }
 }

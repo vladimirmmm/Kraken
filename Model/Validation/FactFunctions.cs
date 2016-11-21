@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogicalModel.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -246,7 +247,7 @@ namespace LogicalModel.Validation
         {
             return e.ID;
         }
-        public string XFI_Fact_Typed_Dimension_Value(ValidationParameter a, string qname) 
+        public nString XFI_Fact_Typed_Dimension_Value(ValidationParameter a, string qname) 
         {
             var result = "";
             var fact = a.CurrentFacts.FirstOrDefault();
@@ -255,9 +256,9 @@ namespace LogicalModel.Validation
             {
                 result = dim.DomainMember;
             }
-            return result;
+            return new nString(result);
         }
-        public string XFI_Fact_Explicit_Dimension_Value(ValidationParameter a, string qname)
+        public nString XFI_Fact_Explicit_Dimension_Value(ValidationParameter a, string qname)
         {
             var result = "";
             var fact = a.CurrentFacts.FirstOrDefault();
@@ -266,7 +267,7 @@ namespace LogicalModel.Validation
             {
                 result = dim.DomainAndMember;
             }
-            return result;
+            return new nString(result);
         }
 
         public ValueWithTreshold IAF_abs(Object a)

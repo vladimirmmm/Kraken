@@ -277,6 +277,12 @@ namespace LogicalModel.Validation
         {
             return !a;
         }
+
+        public bool nilled(string a)
+        {
+            return string.IsNullOrEmpty(a);
+            //return !a;
+        }
         public int Day(ValidationParameter dt)
         {
             return dt.DateValue.Day;
