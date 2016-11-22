@@ -26,6 +26,7 @@ namespace LogicalModel.Base
         }
 
     }
+    /*
     public class IndexDictionaryCollection : Dictionary<int, IndexDictionary2>
     {
         public Func<int, int> DomainIndexAccessor = (i) => -1;
@@ -56,6 +57,8 @@ namespace LogicalModel.Base
 
         }
     }
+    */
+    /*
     public class IndexDictionary2 : Dictionary<int, HashSet<int>> 
     {
         int maxitemnr = 0;
@@ -127,7 +130,8 @@ namespace LogicalModel.Base
         }
 
     }
-
+    */
+    /*
     public class FactDictionary : Dictionary<int[], List<int>>
     {
         public FactDictionary(IEqualityComparer<int[]> comparer)
@@ -172,7 +176,8 @@ namespace LogicalModel.Base
         private bool _IsLoaded = false;
         public bool IsLoaded { get; set; }
     }
-
+    */
+    /*
     public class FactDictionary2 : Dictionary<int, List<int>>
     {
         public FactDictionary2()
@@ -218,7 +223,7 @@ namespace LogicalModel.Base
         public bool IsLoaded { get; set; }
     }
 
-
+    */
 
     public class QualifiedItem : QualifiedName, ILabeled 
     {
@@ -287,6 +292,7 @@ namespace LogicalModel.Base
             }
         }
     }
+    /*
     public class FactFilter 
     {
         public Boolean Positive = true;
@@ -314,6 +320,8 @@ namespace LogicalModel.Base
             return String.Format("[{1}] {0}{2}", Positive ? "" : "!", Level, Representation);
         }
     }
+    /*
+    /*
     public class FactBaseQuery2
     {
         public List<FactBaseQuery2> ChildQueries = new List<FactBaseQuery2>();
@@ -357,6 +365,7 @@ namespace LogicalModel.Base
         }
 
     }
+    */
     public class FactBaseQuery 
     {
         public string FalseFilters = "";

@@ -82,27 +82,7 @@ namespace LogicalModel
                     }
                     taxfactkeylist.Add(taxid);
                 }
-                /*
-                var dimensions = instancecontext.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal);
-                foreach (var dimension in dimensions)
-                {
-                    var dimstr = dimension.ToString();
 
-                    var instpartkey = Instance.GetPartID(dimstr);
-
-                    instfactkeylist.Add(instpartkey);
-                    if (dimension.IsTyped)
-                    {
-                        var dimitemforkey = dimension.DimensionItemWithDomain.Trim();
-                        taxfactkeylist.Add(Instance.GetPartID(dimitemforkey));
-                    }
-                    else
-                    {
-                        taxfactkeylist.Add(instpartkey);
-                    }
-
-                }
-                 * */
             }
             var taxfactkey = taxfactkeylist.ToArray();
             var instfactkey = instfactkeylist.ToArray();

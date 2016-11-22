@@ -173,7 +173,6 @@ namespace Utilities
             Interval bnext = bix < bc ? bigger.Intervals[bix] : b;
 
             var evalb = true;
-            var schanged = false ;
             while (snext !=null)
             {
                 steps++;

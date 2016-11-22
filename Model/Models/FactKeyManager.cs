@@ -16,7 +16,7 @@ namespace LogicalModel.Models
         public FactDictionaryCollection FactsOfPages = new FactDictionaryCollection();
 
 
-        public Action<FactDictionary2> ManageLoadedFacts = (f) => { };
+        //public Action<FactDictionary2> ManageLoadedFacts = (f) => { };
         public Func<int[], int> GetFactIndex = (key) => -1;
         public Func<int> GetNewFactIndex = () => -1;
         public Func<int, int[]> GetFactKey = (index) => new int[] { -1 };

@@ -160,7 +160,7 @@ namespace XBRLProcessor
                 CurrentTaxonomy.FactsManager.maxdictnr = 1000;
                 CurrentTaxonomy.FactsManager.SaveToFile = true;
                 CurrentTaxonomy.FactsManager.DataFolder = CurrentTaxonomy.TaxonomyFactsFolder;
-                CurrentTaxonomy.FactsManager.ManageLoadedFacts = CurrentTaxonomy.ManageLoadedFacts;
+                //CurrentTaxonomy.FactsManager.ManageLoadedFacts = CurrentTaxonomy.ManageLoadedFacts;
                 CurrentTaxonomy.LoadAllReferences();
 
                 CheckMapping();

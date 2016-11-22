@@ -262,6 +262,7 @@ namespace XBRLProcessor.Models
                 }
                 catch (Exception ex) 
                 {
+                    Utilities.Logger.WriteLine("Can't load tax.xsd.");
                 }
                 //EntryDocument.ReferencedFiles
                 var jsoncontent = Utilities.Converters.ToJson(TaxonomyDocuments);

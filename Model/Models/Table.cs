@@ -61,6 +61,10 @@ namespace LogicalModel
         {
             get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-facts.json"); }
         }
+        public string MappingTextPath
+        {
+            get { return Taxonomy.TaxonomyLayoutFolder+@"Mapping\" + _HtmlPath.Replace(".html", ".txt"); }
+        }
         public string FactMapPath
         {
             get { return Taxonomy.TaxonomyLayoutFolder + _HtmlPath.Replace(".html", "-factmap.js"); }
@@ -745,45 +749,24 @@ namespace LogicalModel
 
                                 var factintkey = factintkeys[i];
 
-                                //if (eq.Equals(factintkey, new int[] { 23272, 1616, 2406, 5248, 15287, 17455, 21076 })) 
-                                //{
-
-                                //}
                                 var factix = this.Taxonomy.FactsManager.GetFactIndex(factintkey);
                                 if (factix>-1)
                                 {
                                     this.FactIndexToCells.Add(new Tuple<int, int>(factix, cellix));
-                                    //if (!this.FactIndexToCells.ContainsKey(factix)) 
-                                    //{
-                                    //    this.FactIndexToCells.Add(factix, new List<int>(1));
-                                    //}
-                                    //this.FactIndexToCells[factix].Add(cellix);
-                                    //this.Taxonomy.AddCellToFact(factix, cellix, null);//sbe
                                     this.ProcessedFactindexList.Add(factix);
-
                                     cell.IsBlocked = false;
-
                                 }
                                 else 
                                 {
                                     if (!factintkey.Any(fk => fk < 0) )
                                     {
-                                        //List<int[]> results = new List<int[]>();
                                         IList<int> results = new List<int>();
                                         results = this.Taxonomy.SearchFactsGetIndex4( factintkey, this.FactsOfParts,null);
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var factindex in results)
                                         {
                                             this.FactIndexToCells.Add(new Tuple<int, int>(factindex, cellix));
-
-                                            //if (!this.FactIndexToCells.ContainsKey(factindex))
-                                            //{
-                                            //    this.FactIndexToCells.Add(factindex, new List<int>(1));
-                                            //}
-                                            //this.FactIndexToCells[factindex].Add(cellix);
-
                                             this.ProcessedFactindexList.Add(factindex);
-
                                         }
                                         if (results.Count == 0)
                                         {
@@ -794,8 +777,6 @@ namespace LogicalModel
                                     else 
                                     {
                                         //sbe.AppendLine(xcell.CellID + " not mapped for " + Taxonomy.GetFactStringKey(factintkey));
-
-                                  
                                     }
                                 }
                                
@@ -858,6 +839,7 @@ namespace LogicalModel
                     fsb.AppendLine(identifier);
                 }
             }
+            sbe.Clear();
             sbe.AppendLine("Extenstions");
             foreach (var item in Extensions.Children) 
             {
@@ -873,6 +855,12 @@ namespace LogicalModel
             {
                 sbe.AppendLine("    " + item.Item.ToString());
             }
+            sbe.AppendLine("Blocked");
+            foreach (var item in blocked)
+            {
+                sbe.AppendLine("    " + item.Key.ToString());
+            }
+            Utilities.FS.WriteAllText(MappingTextPath, sbe.ToString());
             if (!String.IsNullOrEmpty(firstunmappedfact)) 
             {
                 sbe.AppendLine(firstunmappedfact);

@@ -120,6 +120,7 @@ namespace Engine
                 new MenuCommand("Instance", "Instance",
                     new MenuCommand("Validate_Instance", "Validate", (o) => { ValidateInstance(); }, null),
                     new MenuCommand("Validate_Folder", "Validate Folder", (o) => { ValidateFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
+                    new MenuCommand("ToCompareFile", "To Compare File", (o) => { InsatnceToCompareFile(); }, null),
                     new MenuCommand("CehckMissing", "Check Missing Facts", (o) => { CheckMissing(); }, null),
                     new MenuCommand("SaveInstance", "Save", (o) => { SaveInstance(""); }, null),
                     new MenuCommand("SaveInstanceAs", "Save As", (o) => { SaveInstanceAs(); }, () => new object[] { UI.BrowseFile("", "") }),
@@ -161,6 +162,34 @@ namespace Engine
 
             LoadRecent();
             LoadRecentCommands();
+
+        }
+
+        private void InsatnceToCompareFile()
+        {
+            var instance = Engine.CurrentInstance;
+            var taxonomy = Engine.CurrentTaxonomy;
+            var comparer = new Utilities.IntArrayComparer();
+            var factkeys = instance.FactDictionary.FactsByTaxonomyKey.Keys.OrderBy(i => i, comparer).ToList();
+            var sb = new StringBuilder();
+            foreach (var factkey in factkeys)
+            {
+                var keystr = taxonomy.GetFactStringKey(factkey);
+                var instancefacts = instance.FactDictionary.FactsByTaxonomyKey[factkey].Select(i=>instance.FactDictionary.FactsByIndex[i]).OrderBy(i=>i.InstanceKey,comparer).ToList();
+                foreach(var instancefact in instancefacts)
+                {
+                    var key = instance.GetFactStringKey(instancefact.InstanceKey);
+                    var value = instancefact.Value;
+                    sb.AppendLine(String.Format("{0}: {1}", key, value));
+
+                }
+            }
+            var instancefilename = Utilities.Strings.GetFileName(TaxonomyEngine.CurrentEngine.CurrentInstance.FullPath);
+
+            var path = TaxonomyEngine.LocalFolder + "FeatureOutput\\" + String.Format("ToCompare-{0}.txt", instancefilename);
+            Utilities.FS.WriteAllText(path, sb.ToString());
+            Utilities.Logger.WriteLine("Comarision file for this instance was created at:  " + path);
+
 
         }
 

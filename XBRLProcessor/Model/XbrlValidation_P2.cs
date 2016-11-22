@@ -77,7 +77,7 @@ namespace XBRLProcessor.Model
                 }
                 var factcounts = singlefactparameters.Select(i=>new Utilities.KeyValue<int,LogicalModel.Validation.ValidationParameter>(i.TaxFacts.LastOrDefault().Count,i)).OrderByDescending(i => i.Key).ToList();
                 var distinctfactcounts = factcounts.Distinct().ToList();
-                if (distinctfactcounts.Count == 2 && distinctfactcounts[1].Key == 1)
+                if ((distinctfactcounts.Count == 2 && distinctfactcounts[1].Key == 1) || singlefactparameters.Count==1)
                 {
                     mffnspissue = false;
                     var facts = factcounts[0].Value.TaxFacts.LastOrDefault();

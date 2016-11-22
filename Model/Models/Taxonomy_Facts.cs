@@ -13,20 +13,21 @@ namespace LogicalModel
     {
         public FactKeyManager2 FactsManager = new FactKeyManager2();
 
-        public void ManageLoadedFacts(FactDictionary facts) 
-        {
-            foreach (var fact in facts) 
-            {
-                SetRelatedDictionaries(fact.Key);
-            }
-        }
-        public void ManageLoadedFacts(FactDictionary2 facts)
-        {
-            foreach (var fact in facts)
-            {
-                SetRelatedDictionaries(fact.Key);
-            }
-        }
+        //public void ManageLoadedFacts(FactDictionary facts) 
+        //{
+        //    foreach (var fact in facts) 
+        //    {
+        //        SetRelatedDictionaries(fact.Key);
+        //    }
+        //}
+        //public void ManageLoadedFacts(FactDictionary2 facts)
+        //{
+        //    foreach (var fact in facts)
+        //    {
+        //        SetRelatedDictionaries(fact.Key);
+        //    }
+        //}
+        /*
         public void SetRelatedDictionaries(int[] key) 
         {
             //LoadFactToFactsOfParts(key);
@@ -37,7 +38,7 @@ namespace LogicalModel
             SetRelatedDictionaries(key);
             //LoadFactToFactsOfParts(key);
         }
-
+        */
         public int AddFactKey(int[] key)
         {
             var hashkeys = FactsManager.FactsOfPages.GetHashKeys(key);
