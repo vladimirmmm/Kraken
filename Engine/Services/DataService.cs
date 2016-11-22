@@ -328,63 +328,144 @@ namespace Engine.Services
                                     var factstring = request.GetParameter("factstring");
                                     var cellid = request.GetParameter("cellid").ToLower();
                                     var rs = new DataResult<KeyValue>();
-                                    var query = Engine.CurrentTaxonomy.FactsAsQuearyable();
+                                    var query = Engine.CurrentTaxonomy.FactIndexEnumerable();
 
                                     var factstrings = factstring.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                                     //TODO
                                     var taxonomy = AppEngine.Features.Engine.CurrentTaxonomy;
                                     IList<int> idlist = new List<int>();
                                     var keys = new List<int>();
+                                    var qry = new LogicalModel.Base.FactBaseQuery();
                                     foreach (var fs in factstrings)
                                     {
-                                        var fsidlist = new List<int>();
-                                        var dimparts = new List<Utilities.KeyValue<int,List<int>>>(); //TODO taxonomy.FactsOfParts.Where(i => taxonomy.GetFactStringKey(i).Key.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>-1);
-                                        if (taxonomy.FactParts.ContainsKey(fs))
+                                        var ors = fs.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+                                        if (ors.Length == 1)
                                         {
-                                            var key = taxonomy.FactParts[fs];
-                                            keys.Add(key);
+                                            var oritem = ors.FirstOrDefault();
+                                            var isnegative = false;
+                                            if (oritem.StartsWith("!"))
+                                            {
+                                                isnegative = true;
+                                                oritem = oritem.Substring(1);
+                                            }
+                                            if (taxonomy.FactParts.ContainsKey(oritem))
+                                            {
+                                                qry.AddIndex(taxonomy.FactParts[oritem], isnegative);
+                                            }
+                                            else
+                                            {
+                                                var partkeys = taxonomy.FactParts.Keys.Where(i => i.Contains(oritem)).ToList();
+                                                if (partkeys.Count > 0)
+                                                {
+                                                    if (isnegative)
+                                                    {
+                                                        foreach (var partkey in partkeys)
+                                                        {
+                                                            var partqry = new LogicalModel.Base.FactBaseQuery();
+                                                            qry.AddIndex(taxonomy.FactParts[partkey], isnegative);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        var qrypool = new LogicalModel.Base.FactPoolQuery();
+                                                        foreach (var partkey in partkeys)
+                                                        {
+                                                            var partqry = new LogicalModel.Base.FactBaseQuery();
+                                                            partqry.AddIndex(taxonomy.FactParts[partkey], isnegative);
+                                                            qrypool.ChildQueries.Add(partqry);
+                                                        }
+                                                        qry.ChildQueries.Add(qrypool);
+                                                    }
+                                                  
+                                             
+                                                }
+                                            }
                                         }
                                         else 
                                         {
-                                            keys = taxonomy.FactParts.Where(i => i.Key.Contains(fs)).Select(i=>i.Value).ToList();
+                                            var qrypool = new LogicalModel.Base.FactPoolQuery();
+                                            var isnegative = false;
+
+                                            for (int i = 0; i < ors.Length;i++)
+                                            {
+                                                var oritem = ors[i];
+                                                if (oritem.StartsWith("!"))
+                                                {
+                                                    isnegative = true;
+                                                    oritem = oritem.Substring(1);
+                                                }
+
+                                                LogicalModel.Base.FactBaseQuery subquery = null;
+                                                if (taxonomy.FactParts.ContainsKey(oritem))
+                                                {
+                                                    subquery = new LogicalModel.Base.FactBaseQuery();
+                                                    subquery.AddIndex(taxonomy.FactParts[oritem],isnegative);
+                                                }
+                                                else
+                                                {
+                                                    var partkeys = taxonomy.FactParts.Keys.Where(k => k.Contains(oritem)).ToList();
+                                                    if (partkeys.Count > 0)
+                                                    {
+                                                        if (isnegative)
+                                                        {
+                                                            subquery = new LogicalModel.Base.FactBaseQuery();
+
+                                                            foreach (var partkey in partkeys)
+                                                            {
+                                                                var partqry = new LogicalModel.Base.FactBaseQuery();
+                                                                subquery.AddIndex(taxonomy.FactParts[partkey], isnegative);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            subquery = new LogicalModel.Base.FactPoolQuery();
+                                                            foreach (var partkey in partkeys)
+                                                            {
+                                                                var partqry = new LogicalModel.Base.FactBaseQuery();
+                                                                partqry.AddIndex(taxonomy.FactParts[partkey], isnegative);
+                                                                subquery.ChildQueries.Add(partqry);
+                                                            }
+                                                        }
+
+
+                                                       
+                                                    }
+                                                }
+                                                qrypool.ChildQueries.Add(subquery);
+                                            }
+                                            qry.ChildQueries.Add(qrypool);
                                         }
 
-                                        //foreach (var kepart in key) 
-                                        //{
-                                        //    fsidlist.AddRange(dimpart.Value);
-                                        //}
-                                        //fsidlist = fsidlist.Distinct().ToList();
-                                        //if (idlist.Count == 0)
-                                        //{
-                                        //    idlist = fsidlist;
-                                        //}
-                                        //else 
-                                        //{
-                                        //    idlist = Utilities.Objects.IntersectSorted(idlist, fsidlist, null);
-                                        //}
-                                      
-                                        //query = query.Where(i => keys.Contains(i.Key, comparer));
+                                    
+                                       
 
-                                        //oldone
-                                        //query = query.Where(i => taxonomy.KeyContains(i.Key, fs));
                                     }
                                     if (factstrings.Length > 0)
                                     {
-                                        idlist = taxonomy.SearchFactsGetIndex3(keys.ToArray(), taxonomy.FactsOfParts, null, 0);
+                                        var all = new Interval(0, taxonomy.FactsManager.FactsOfPages.FactKeyCountOfIndexes.Count);
+                                        var allist = new IntervalList();
+                                        allist.AddInterval(all);
+                                        var idlist2 = qry.EnumerateIntervals(taxonomy.FactsOfParts, 0, allist, null).SelectMany(i => i);
 
-                                        var indexes = idlist.Select(i => taxonomy.FactsManager.GetFactKey(i)).ToDictionary(k => k, v => true);
+                                        var indexes = idlist2.Select(i => i).Distinct().ToDictionary(k => k, v => true);
                                         var comparer = new Utilities.IntArrayEqualityComparer();
-                                        query = query.Where(i => indexes.ContainsKey(i.Key));
+                                        query = query.Where(i => indexes.ContainsKey(i));
                                     }
                                     if (!String.IsNullOrEmpty(cellid))
                                     {
                                         //var cells = taxonomy.CellIndexDictionary.Where(i => i.Value.IndexOf(cellid, StringComparison.Ordinal)>-1).Select(i=>i.Key);
                                         //longcellid=cellid
                                         //query = query.Where(i => i.Value.Any(j => cells.Contains(j)));
-                                        query = query.Where(i => i.Value.Any(j=>taxonomy.CellIndexDictionary[j].IndexOf(cellid, StringComparison.OrdinalIgnoreCase)>-1));
+                                        query = query.Where(i => taxonomy.FactsManager.GetFact(i).Value.Any(j=>taxonomy.CellIndexDictionary[j].IndexOf(cellid, StringComparison.OrdinalIgnoreCase)>-1));
                                     }
 
-                                    rs.Items = query.Skip(pagesize * page).Take(pagesize).Select(i=>new KeyValue(taxonomy.GetFactStringKey(i.Key),i.Value)).ToList();
+                                    rs.Items = query.Skip(pagesize * page).Take(pagesize).Select(i =>
+                                            {
+                                                var keycell = taxonomy.FactsManager.GetFactKeywithCells(i);
+                                                var keystr = taxonomy.GetFactStringKey(keycell.FactKey);
+                                                return new KeyValue(keystr, keycell.CellIndexes);//.Select(c => taxonomy.CellIndexDictionary[c]).ToList()
+                                            }
+                                        ).ToList();
                                     rs.Total = query.Count();
                                     json = Utilities.Converters.ToJson(rs);
                                     
@@ -481,19 +562,6 @@ namespace Engine.Services
                                             //TODO EXT
                                             //var tbextensions = tbl.Extensions.Children;
                                             var tbextensions = Engine.CurrentInstance.GetTableExtensions(tbl);
-
-
-                                            //var extensions = tbextensions.Select(i =>
-                                            //{
-                                            //    var ti = new TableInfo();
-                                            //    ti.ID = String.Format("{0}<{1}>", tbl.ID, i.Item.LabelCode);
-                                            //    ti.Name = i.Item.LabelContent;
-                                            //    ti.Description = i.Item.LabelContent;
-                                            //    ti.Type = "extension";
-                                            //    return ti;
-                                            //});
-                                            //extensions.Item.Type = "extension";
-                                            //foreach(var ext in extensions.ch)
                                             ht.Children.AddRange(tbextensions.Select(i => new BaseModel.Hierarchy<TableInfo>(i)));
 
 
@@ -526,7 +594,16 @@ namespace Engine.Services
                                             hungr.AddChild(ht);
                                         }
                                     }
-
+                                    var itemswithdata = h.Where(i => i.Item.HasData > 0).ToList();
+                                    foreach (var itemwithdata in itemswithdata) 
+                                    {
+                                        var current = itemwithdata;
+                                        while (current.Parent != null) 
+                                        {
+                                            current = current.Parent;
+                                            current.Item.HasData = itemwithdata.Item.HasData;
+                                        }
+                                    }
                                     json = Utilities.Converters.ToJson(h);
                                 }
                             }

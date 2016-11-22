@@ -1,25 +1,20 @@
 ﻿<div class="listfilter filter">
-    <table class="noborder">
-        <tr>
-            <td>
-                <label>Concept & Dimensions </label><br /><textarea id="F_FactString" cols="50" rows="3"></textarea>
-            </td>
-            <td>
-                <label>Cell: </label><br /><input type="text" class="" id="F_CellID" />
+    <div class="cnt">
+        <label>Concept & Dimensions </label><br /><textarea id="F_FactString" cols="50" rows="3"></textarea>
 
-            </td>
-        </tr>
-        <tr>
+    </div>
+    <div class="cnt">
+        <label>Cell: </label><br /><input type="text" class="" id="F_CellID" />
 
-            <td></td>
-            <td>
-                <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterFacts()" />
-                <input type="button" value="Search" onclick="app.taxonomycontainer.FilterFacts()" />
+    </div>
+    <div class="cnt buttons">
+        <input type="button" value="Clear" onclick="app.taxonomycontainer.ClearFilterFacts()" />
+        <input type="button" value="Search" onclick="app.taxonomycontainer.FilterFacts()" />
 
-            </td>
-        </tr>
+    </div>
+    <div class="clear">
 
-    </table>
+    </div>
 </div>
 <div>
     <div class="listpager pagination">

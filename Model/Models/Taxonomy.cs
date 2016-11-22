@@ -1785,5 +1785,7 @@ namespace LogicalModel
             var factstring = GetFactStringKey(p);
             return factstring.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>=0;
         }
+
+  
     }
 }

@@ -264,6 +264,7 @@
             var me = this;
             AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
                 me.TableStructure = data;
+
                 ForAll(me.TableStructure, "Children", function (item: Model.Hierarchy<Model.TableInfo>, parent: Model.Hierarchy<Model.TableInfo>) {
                     if (!IsNull(item) && !IsNull(item.Item)) {
                         item.Item.CssClass = "";// item.Item.Type == "table" ? "hidden" : "";
@@ -275,7 +276,13 @@
 
                     }
                 });
+
                 BindX($("#tabletreeview"), me.TableStructure, 5);
+                //var itemswithdata = _Select("#tabletreeview .hasdata");
+                //itemswithdata.forEach((e, ix) =>
+                //{
+                //    _AddClass(_Parent(e, "li"), "hasdata");
+                //});
 
             }, function (error) { console.log(error); });
         }

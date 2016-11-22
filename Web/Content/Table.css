@@ -272,15 +272,18 @@ table.report tbody tr:nth-child(2n-1).selected {
 .haschild {
     border-bottom-width: 0px;
 }
-.hasdata 
+li.hasdata 
 {
     font-weight:bold;
 }
-.empty {
+li.empty {
     font-weight:normal;
 
 }
-
+.cnt 
+{
+    float:left;
+}
 .pagination {
     font-size: 80%;
     clear: both;
@@ -521,6 +524,14 @@ input, textarea {
 {
     border:solid 1px black;
 }
+.filter 
+{
+    padding:5px;
+}
+    .filter .buttons {
+    padding:5px;
+    
+    }
 .sublist {
     margin-right:5px;
 }

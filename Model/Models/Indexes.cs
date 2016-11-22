@@ -684,6 +684,10 @@ namespace LogicalModel
                 {
                     memberfactspool.Add(this[memberkey]);
                 }
+                else 
+                {
+                    return new List<int>();
+                }
             }
             var partcount = memberfactspool.Count;
             if (facts != null)

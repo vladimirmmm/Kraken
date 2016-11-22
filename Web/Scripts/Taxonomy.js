@@ -238,6 +238,11 @@ var Control;
                     }
                 });
                 BindX($("#tabletreeview"), me.TableStructure, 5);
+                //var itemswithdata = _Select("#tabletreeview .hasdata");
+                //itemswithdata.forEach((e, ix) =>
+                //{
+                //    _AddClass(_Parent(e, "li"), "hasdata");
+                //});
             }, function (error) {
                 console.log(error);
             });

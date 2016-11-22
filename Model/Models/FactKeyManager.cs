@@ -44,6 +44,10 @@ namespace LogicalModel.Models
             var factkey = FactsOfPages.Key(factindex);
             return FactsOfPages.GetKvp(factkey);
         }
+        public FactKeyWithCells GetFactKeywithCells(int factindex)
+        {
+            return FactsOfPages.GetFactKeyWithCells(factindex);
+        }
 
   
         public int EnsureFact(int[] factkey,int[] hashkeys)

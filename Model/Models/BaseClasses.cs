@@ -388,11 +388,24 @@ namespace LogicalModel.Base
         {
            
         }
+
+     
         public FactBaseQuery(List<FactBaseQuery> queries)
         {
             this.ChildQueries.AddRange(queries);
         }
+        public void AddIndex(int ix, bool isnegative) 
+        {
+            if (isnegative) 
+            {
+                this.NegativeDictFilterIndexes.Add(ix);
+            }
+            else
+            {
+                this.DictFilterIndexes.Add(ix);
+            }
 
+        }
         public bool IsEmpty() 
         {
             return this.DictFilterIndexes.Count == 0 && this.NegativeDictFilterIndexes.Count == 0;
@@ -589,8 +602,10 @@ namespace LogicalModel.Base
             var items = data;
             if (ix == 0) 
             {
-                items = ix == 0 ? FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data) : data;
-
+                if (DictFilterIndexes.Count > 0)
+                {
+                    items = FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data);
+                }
                 foreach (var negativeindex in NegativeDictFilterIndexes)
                 {
                     if (FactsOfParts.ContainsKey(negativeindex))
