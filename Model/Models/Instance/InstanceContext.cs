@@ -49,7 +49,7 @@ namespace LogicalModel
 
         public void SetContent()
         {
-            _Content = String.Format("{0}<@>{1}<@>{2}<@>{3}<@>{4}", this.ID, this.EntityID, this.PeriodID, this.IsValid, Utilities.Strings.EnumerableToString(DimensionIds, ","));
+            _Content = String.Format("{0}<@>{1}<@>{2}<@>{3}<@>{4}", this.ID, this.EntityID, this.PeriodID, this.IsValid, Utilities.Strings.ListToString(DimensionIds, ","));
         }
 
         public string ToXmlString()

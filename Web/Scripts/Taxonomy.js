@@ -78,12 +78,12 @@ var Control;
                 console.log(error);
             });
         };
-        TaxonomyContainer.prototype.ShowHierarchy = function (role) {
+        TaxonomyContainer.prototype.ShowHierarchy = function (domain, role) {
             var me = this;
             me.ActivateTab(me.s_hierarchy_selector);
             var container = _SelectFirst(me.s_hierarchy_selector);
             if (!IsNull(container)) {
-                var item = _SelectFirst("li[rel='" + role + "']", container);
+                var item = _SelectFirst("li[rel='" + domain + "---" + role + "']", container);
                 if (!IsNull(item)) {
                     _AddClass(item, "selected");
                     me.ExpandHierarchy('#hierarchytreeview', me.Taxonomy.Hierarchies, item);
@@ -168,8 +168,17 @@ var Control;
             }, function (error) {
                 console.log(error);
             });
-            AjaxRequest("Taxonomy/CellIndexes", "get", "json", null, function (data) {
-                me.Taxonomy.CellIndexDictionary = data;
+            AjaxRequest("Taxonomy/CellIndexes", "get", "text", null, function (data) {
+                var lines = data.split("\n");
+                data = null;
+                me.Taxonomy.CellIndexDictionary = {};
+                lines.forEach(function (line) {
+                    var items = line.split(":");
+                    if (items.length == 2) {
+                        me.Taxonomy.CellIndexDictionary[items[0].trim()] = items[1].trim();
+                    }
+                });
+                //me.Taxonomy.CellIndexDictionary = data;
             }, function (error) {
                 console.log(error);
             });

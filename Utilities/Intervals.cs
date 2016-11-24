@@ -32,6 +32,13 @@ namespace Utilities
             return x.Start - y.Start;
         }
     }
+    public class IntervalStartComparer<TLookup> : IComparer<Interval>
+    {
+        public int Compare(Interval x, Interval y)
+        {
+            return x.Start - y.Start;
+        }
+    }
 
     public class IntervalEndComparer : IComparer<Interval>
     {
@@ -40,7 +47,18 @@ namespace Utilities
             return x.End - y.End;
         }
     }
-
+    public class IntervalLookup<TLookup> : Interval 
+    {
+        public TLookup Value;
+        public IntervalLookup() { }
+        public IntervalLookup(int start) :base(start)
+        { 
+        }
+        public IntervalLookup(int start,int end)
+            : base(start,end)
+        {
+        }
+    }
     public class Interval:IComparable<Interval>
     {
         public int Start = -1;
@@ -228,6 +246,402 @@ namespace Utilities
             return this.Compare(other);
         }
     }
+    //public class IntervalDictionary : IDictionary<int, int> 
+    //{
+    //    public IntervalList _Keys = new IntervalList();
+    //    public List<int> _Values = new List<int>();
+    //    public void Add(int key, int value)
+    //    {
+    //        _Keys.AddX(key)
+    //    }
+
+    //    public bool ContainsKey(int key)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public ICollection<int> Keys
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
+
+    //    public bool Remove(int key)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public bool TryGetValue(int key, out int value)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public ICollection<int> Values
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
+
+    //    public int this[int key]
+    //    {
+    //        get
+    //        {
+    //            throw new NotImplementedException();
+    //        }
+    //        set
+    //        {
+    //            throw new NotImplementedException();
+    //        }
+    //    }
+
+    //    public void Add(KeyValuePair<int, int> item)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public void Clear()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public bool Contains(KeyValuePair<int, int> item)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public void CopyTo(KeyValuePair<int, int>[] array, int arrayIndex)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public int Count
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
+
+    //    public bool IsReadOnly
+    //    {
+    //        get { throw new NotImplementedException(); }
+    //    }
+
+    //    public bool Remove(KeyValuePair<int, int> item)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    public IEnumerator<KeyValuePair<int, int>> GetEnumerator()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+
+    //    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
+    public class IntervalListLookup<TLookup> : IList<int>
+    {
+        public List<IntervalLookup<TLookup>> Intervals = new List<IntervalLookup<TLookup>>();
+
+        public void TrimExcess()
+        {
+            this.Intervals.TrimExcess();
+        }
+        public void Sort() { }
+
+        public Interval LastInterval
+        {
+            get { return Intervals.LastOrDefault(); }
+        }
+
+        public Interval FirstInterval
+        {
+            get { return Intervals.FirstOrDefault(); }
+        }
+        private void AddNewInterval(int value, int ix)
+        {
+            _Count = -1;
+            var interval = new IntervalLookup<TLookup>(value);
+            this.Intervals.Insert(ix, interval);
+        }
+        private void AddNewInterval(int value)
+        {
+            _Count = -1;
+            var interval = new IntervalLookup<TLookup>(value);
+            this.Intervals.Add(interval);
+        }
+        public void AddInterval(IntervalLookup<TLookup> interval)
+        {
+            _Count = -1;
+            if (LastInterval != null)
+            {
+                if (LastInterval.End <= interval.End && LastInterval.End >= interval.Start)
+                {
+                    LastInterval.End = interval.End;
+                    return;
+                }
+            }
+            this.Intervals.Add(interval);
+        }
+        public void AddRange(IEnumerable<int> values)
+        {
+            _Count = -1;
+            foreach (var value in values)
+            {
+                this.Add(value);
+            }
+        }
+        public static IntervalComparer ic = new IntervalComparer();
+        public static IntervalStartComparer<TLookup> startcomparer = new IntervalStartComparer<TLookup>();
+
+        public static IntervalEndComparer endcomparer = new IntervalEndComparer();
+
+        public void AddX(int value)
+        {
+            _Count = -1;
+            if (LastInterval == null)
+            {
+                AddNewInterval(value, 0);
+                return;
+
+            }
+            if (LastInterval.IsNext(value))
+            {
+                LastInterval.End++;
+                return;
+            }
+            if (value > LastInterval.End)
+            {
+                AddNewInterval(value);
+                return;
+            }
+            var vi = Intervals.BinarySearch(new IntervalLookup<TLookup>(value), ic);
+
+            if (vi > -1 && vi < Intervals.Count)
+            {
+                var i = Intervals[vi];
+                var prev = vi - 1 > -1 ? Intervals[vi - 1] : null;
+                var next = vi + 1 < Intervals.Count ? Intervals[vi + 1] : null;
+
+
+                if (i.Start - 1 == value)
+                {
+                    if (prev == null || prev.End < value)
+                    {
+                        i.Start--;
+                    }
+                    return;
+                }
+                if (i.End + 1 == value)
+                {
+                    if (next == null || next.Start > value)
+                    {
+                        i.End++;
+                    }
+                    return;
+                }
+                if (value < i.Start) { AddNewInterval(value, vi); return; }
+                if (value > i.End) { AddNewInterval(value, vi + 1); return; }
+
+
+            }
+            else
+            {
+                vi = ~vi;
+                AddNewInterval(value, vi);
+            }
+
+        }
+
+        public Interval GetInterval(int ix)
+        {
+            if (ix > -1 && ix < this.Intervals.Count)
+            {
+                return this.Intervals[ix];
+            }
+            return null;
+        }
+        public void SetNextInterval(ref Interval target, ref int index)
+        {
+            index++;
+            target = GetInterval(index);
+
+        }
+
+
+        public void Add(int value)
+        {
+            AddX(value);
+        }
+
+        public static IntervalList GetIntervals(IEnumerable<int> items)
+        {
+            var result = new IntervalList();
+            foreach (var item in items)
+            {
+                result.Add(item);
+            }
+            return result;
+        }
+
+
+        public new IEnumerable<int> GetEnumerator()
+        {
+            return this.AsEnumerable();
+        }
+        public IEnumerable<int> AsEnumerable()
+        {
+            foreach (var interval in Intervals)
+            {
+                foreach (var value in interval.AsEnumerable())
+                {
+                    yield return value;
+                }
+            }
+        }
+        private int _Count = -1;
+        public int Count
+        {
+            get
+            {
+                if (_Count == -1)
+                {
+                    var c = 0;
+                    foreach (var interval in Intervals)
+                    {
+                        c += interval.Count;
+                    }
+                    _Count = c;
+                }
+                return _Count;
+            }
+        }
+        public string GetString()
+        {
+            var sb = new StringBuilder();
+            foreach (var interval in Intervals)
+            {
+                sb.AppendLine(String.Format("{0} - {1}", interval.Start, interval.End));
+            }
+            return sb.ToString();
+        }
+
+        public string GetFullString()
+        {
+            var sb = new StringBuilder();
+            foreach (var interval in Intervals)
+            {
+                sb.AppendLine(String.Format("{0} - {1}", interval.Start, interval.End));
+            }
+            foreach (var value in this.AsEnumerable())
+            {
+                sb.AppendLine(value.ToString());
+            }
+            return sb.ToString();
+        }
+
+        public new void Clear()
+        {
+            Intervals.Clear();
+        }
+
+        public int IndexOf(int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int this[int index]
+        {
+
+            get
+            {
+                if (index == 0) { return Intervals[0].Start; }
+                if (index == this.Count - 1) { return LastInterval.End; }
+                var counter = 0;
+                foreach (var interval in Intervals)
+                {
+                    if (index < counter + interval.Count)
+                    {
+                        return interval.Start + (index - counter);
+                    }
+                    counter += interval.Count;
+                }
+                return -1;
+
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int SearchByStartIndexBefore(IntervalLookup<TLookup> interval, int startix)
+        {
+            var ix = startix;
+            var c = this.Intervals.Count;
+
+            var tix = this.Intervals.BinarySearch(startix, c - startix, interval, IntervalListLookup<TLookup>.startcomparer);
+            if (tix > c)
+            {
+                ix = c - 1;
+            }
+            if (tix < 0)
+            {
+                ix = ~tix;
+                ix = ix > 0 ? ix - 1 : ix;
+            }
+            if (ix < startix)
+            {
+                ix = startix;
+            }
+            return ix;
+        }
+        public bool Contains(int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(int[] array, int arrayIndex)
+        {
+            this.AsEnumerable().ToArray().CopyTo(array, arrayIndex);
+        }
+
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public bool Remove(int item)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        {
+            return this.AsEnumerable().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.AsEnumerable().GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            var intterval = this.FirstInterval == null ? "" : String.Format("{0}..{1}", this.FirstInterval.Start, this.LastInterval.End);
+            return string.Format("{0}/{1} [{2}]", this.Count, this.Intervals.Count, intterval);
+        }
+    }
+
 
     public class IntervalList : IList<int>
     {

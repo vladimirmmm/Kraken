@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace LogicalModel.Models
 {
@@ -53,7 +54,8 @@ namespace LogicalModel.Models
         public int EnsureFact(int[] factkey,int[] hashkeys)
         {
             var ix = FactsOfPages.Save(factkey);
-            FactsOfPages.HashKeys.Add(hashkeys, ix);
+            //FactsOfPages.HashKeys.Add(hashkeys, ix);
+            FactsOfPages.HashKeys.Add(new Tintint(hashkeys[0], hashkeys[1]), ix);
             return ix;
         }
 

@@ -68,10 +68,10 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 if (filter != null)
                 {
                     var childquery = filter.GetQuery(taxonomy, child, query);
-                    query.ChildQueries.Add(childquery);
+                    query.AddChildQuery(childquery);
                 }
             }
-            parent.ChildQueries.Add(query);
+            parent.AddChildQuery(query);
             return query;
         }
 

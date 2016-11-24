@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Utilities;
 namespace LogicalModel.Models
 {
     interface IFactDictionary
@@ -18,6 +19,16 @@ namespace LogicalModel.Models
 
     public class testxf
     {
+        struct TT
+        {
+            int Index;
+            int Count;
+            public TT(int index, int count) 
+            {
+                Index = index;
+                Count = count;
+            }
+        }
         public void testx() 
         {
             Dictionary<ushort[], int> HashKeys = new Dictionary<ushort[], int>(new Utilities.Int16ArrayEqualityComparer());
@@ -74,16 +85,51 @@ namespace LogicalModel.Models
         public void test1()
         {
             Dictionary<int[], int> HashKeys = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
+            Dictionary<int, int> counts = new Dictionary<int, int>();
             int i1 = 0;
             int i2 = 17000000;
-            int total = 16000000;
+            int total = 10000000;
+            var r = new Random();
             for (int i = 0; i < total; i++) 
             {
+                counts.Add(i, r.Next(0,11));
                 HashKeys.Add(new int[] { i1 + i, i2 + i }, i);
             }
             int z = 0;
         }
-
+        public void test11()
+        {
+            Dictionary<Tintint, int> HashKeys = new Dictionary<Tintint, int>(new Utilities.TintintEqualityComparer());
+            List<Tintint> counts = new List<Tintint>();
+            int i1 = 0;
+            int i2 = 17000000;
+            int total = 10000000;
+            var r = new Random();
+            for (int i = 0; i < total; i++)
+            {
+                counts.Add(new Tintint(i, r.Next(0, 11)));
+                HashKeys.Add(new Tintint( i1 + i, i2 + i), i);
+            }
+            counts.TrimExcess();
+            int z = 0;
+        }
+        public void test12()
+        {
+            Dictionary<Tintint, int> HashKeys = new Dictionary<Tintint, int>(new Utilities.TintintEqualityComparer());
+            IntervalListLookup<int> counts = new IntervalListLookup<int>();
+            int i1 = 0;
+            int i2 = 17000000;
+            int total = 10000000;
+            var r = new Random();
+            for (int i = 0; i < total; i++)
+            {
+                //var 
+                //counts.Add(new Tintint(i, r.Next(0, 11)));
+                HashKeys.Add(new Tintint(i1 + i, i2 + i), i);
+            }
+            int z = 0;
+        }
+ 
         public void test2()
         {
             Dictionary<int, int> HashKeys = new Dictionary<int, int>();

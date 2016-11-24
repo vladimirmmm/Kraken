@@ -51,7 +51,7 @@ namespace XBRLProcessor.Model
             LogicalModel.Validation.ValidationParameter p_mffnspissue=null;
             //Utilities.Logger.WriteToFile(String.Format("EnumerateIntervals {0} on {1}", rule.BaseQuery, data));
 
-            foreach (var group in rule.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, data, null))
+            foreach (var group in rule.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, data, false))
             {
                 //Utilities.Logger.WriteToFile("Joining rule with parameters...");
 
@@ -402,7 +402,7 @@ namespace XBRLProcessor.Model
             }
             return allqueries;
         }
-
+        /*
         public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict, List<int> factids)
         {
 
@@ -419,7 +419,8 @@ namespace XBRLProcessor.Model
             }
             return facts.ToList();
         }
-
+        */
+        /*
         public List<KeyValue<string,int>> GetFactsKV(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
         {
 
@@ -436,7 +437,7 @@ namespace XBRLProcessor.Model
             //}
             return facts.ToList();
         }
-        
+        */
         public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
         {
             IEnumerable<int> ids = null;
@@ -467,7 +468,7 @@ namespace XBRLProcessor.Model
             }
             return ids.ToList();
         }
-        
+        /*
         public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
         {
             IEnumerable<int> ids = new List<int>();
@@ -590,7 +591,7 @@ namespace XBRLProcessor.Model
             }
             return ids;
         }
-
+        */
         public List<String> GetFactsByIds(IEnumerable<int> ids) 
         {
             var factlist = new List<String>();//ids.Count());

@@ -59,7 +59,7 @@ namespace LogicalModel
             sb.Append(UnitID); sb.Append("@");
             sb.Append(Decimals); sb.Append("@");
             sb.Append(Value); sb.Append("@");
-            sb.Append(Utilities.Strings.EnumerableToString(Cells, ", ")); sb.Append("@");
+            sb.Append(Utilities.Strings.ListToString(Cells, ", ")); sb.Append("@");
 
             Content = sb.ToString();
         }

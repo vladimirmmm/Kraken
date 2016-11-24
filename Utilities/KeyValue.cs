@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
+    public struct Tintint 
+    {
+        public int v1,v2;
+        public Tintint(int pv1, int pv2) 
+        {
+            v1 = pv1;
+            v2 = pv2;
+        }
+    }
     public class KeyValue<TKey,TValue>
     {
         public TKey Key { get; set; }

@@ -49,6 +49,49 @@ namespace Utilities
             }
 
         }
+
+        public static void DictionaryToFile(string filepath, IDictionary<int, string> dict)
+        {
+            EnsurePath(filepath);
+
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath, false))
+            {
+                foreach (var item in dict)
+                {
+                    fsw.WriteLine(item.Key + ":" + item.Value);
+                }
+                fsw.Close();
+            }
+
+        }
+        public static bool DictionaryFromFile(string filepath, IDictionary<int, string> dict)
+        {
+            if (FileExists(filepath))
+            {   // Open the text file using a stream reader.
+                using (StreamReader sr = new StreamReader(filepath))
+                {
+                    while (sr.Peek() >= 0)
+                    {
+                        String line = sr.ReadLine();
+                        var parts = line.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                        var key = Utilities.Converters.FastParse(parts[0]);
+                        var value = parts[1];
+                        dict.Add(key, value);
+
+                    }
+                    // Read the stream to a string, and write the string to the console.
+                }
+                return true;
+
+            }
+            else
+            {
+                Utilities.Logger.WriteLine("Can't read from file " + filepath);
+                return false;
+            }
+
+        }
+
         public static void DictionaryToFile(string filepath, IDictionary<int, int> dict)
         {
             EnsurePath(filepath);
@@ -90,6 +133,7 @@ namespace Utilities
             }
 
         }
+        
         public static void DictionaryToFile(string filepath, IDictionary<int[], int> dict) 
         {
             EnsurePath(filepath);
@@ -133,6 +177,51 @@ namespace Utilities
             }
 
         }
+
+        public static void DictionaryToFile(string filepath, IDictionary<Tintint, int> dict)
+        {
+            EnsurePath(filepath);
+            using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath, false))
+            {
+                foreach (var item in dict)
+                {
+                    //fsw.WriteLine(Utilities.Strings.ArrayToString(item.Key, ",") + ":" + item.Value.ToString());
+                    fsw.WriteLine(item.Key.v1+ ","+item.Key.v2 + ":" + item.Value.ToString());
+                }
+                fsw.Close();
+            }
+
+        }
+        public static bool DictionaryFromFile(string filepath, IDictionary<Tintint, int> dict)
+        {
+            if (FileExists(filepath))
+            {   // Open the text file using a stream reader.
+                using (StreamReader sr = new StreamReader(filepath, Encoding.ASCII, true, 4096))
+                {
+                    while (sr.Peek() >= 0)
+                    {
+                        String line = sr.ReadLine();
+                        var parts = Utilities.Strings.GetSplit(line, ':').ToArray();
+                        var key = Utilities.Strings.GetSplit(parts[0], ',').Select(i => Utilities.Converters.FastParse(i)).ToArray();
+
+                        //var parts = line.Split(new string[]{":"},StringSplitOptions.RemoveEmptyEntries);
+                        //var key = parts[0].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i)).ToArray();
+                        var value = Utilities.Converters.FastParse(parts[1]);
+                        dict.Add(new Tintint(key[0],key[1]), value);
+
+                    }
+                    // Read the stream to a string, and write the string to the console.
+                }
+                return true;
+
+            }
+            else
+            {
+                Utilities.Logger.WriteLine("Can't read from file " + filepath);
+                return false;
+            }
+
+        }
         public static bool FileExists(string path) 
         {
             if (path.Contains("{0}")) 
@@ -163,7 +252,7 @@ namespace Utilities
         public static void WriteAllText(string path, string content) 
         {
             EnsurePath(path);
-            System.IO.File.WriteAllText(path, content);
+            System.IO.File.WriteAllText(path, content, Encoding.UTF8);
         }
         public static void AppendAllText(string path, string content)
         {

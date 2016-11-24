@@ -102,7 +102,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             {
                 targetquery = new FactPoolQuery();
                 querycontainer = targetquery;
-                parent.ChildQueries.Add(targetquery);
+                parent.AddChildQuery(targetquery);
             }
             foreach (var member in Members)
             {
@@ -165,7 +165,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                                     {
                                         mfbq.DictFilterIndexes.Add(factparts[memberdictfilter]);
                                     }
-                                    targetquery.ChildQueries.Add(mfbq);
+                                    targetquery.AddChildQuery(mfbq);
                                 }
 
                             }
@@ -185,7 +185,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 }
                 if (targetquery != parent)
                 {
-                    targetquery.ChildQueries.Add(query);
+                    targetquery.AddChildQuery(query);
                 }
             }
 

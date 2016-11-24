@@ -1030,13 +1030,26 @@ function Split(text, delimeters, removeempty) {
     return result;
 }
 function Access(obj, key) {
-    if (key == "this") {
-        return obj;
+    var encode = false;
+    var encindex = key.indexOf("~");
+    if (encindex == 0) {
+        encode = true;
+        key = key.substring(1);
     }
-    var result = key.split(".").reduce(function (o, x) {
-        return (typeof o == "undefined" || o === null) ? o : o[x];
-    }, obj);
-    return IsNull(result) ? "" : result;
+    var result = null;
+    if (key == "this") {
+        result = obj;
+    }
+    else {
+        result = key.split(".").reduce(function (o, x) {
+            return (typeof o == "undefined" || o === null) ? o : o[x];
+        }, obj);
+    }
+    result = IsNull(result) ? "" : result;
+    if (encode) {
+        result = HtmlEncode(result);
+    }
+    return result;
 }
 function OuterHtml(item) {
     return item[0].outerHTML;

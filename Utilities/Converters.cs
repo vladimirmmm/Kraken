@@ -155,12 +155,20 @@ namespace Utilities
             return sign + readable.ToString("0.## ") + suffix;
         }
 
+
+        public static string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+        public static string DateFormat = "yyyy-MM-dd";
+        public static String DateTimeToString(DateTime? dt, string format)
+        {
+            if (!dt.HasValue) { return ""; }
+            return DateTimeToString(dt.Value, format);
+        }
         public static String DateTimeToString(DateTime dt, string format)
         {
             CultureInfo ci = new CultureInfo("en-US");
-            return String.Format("{0:"+format+"}", dt);
+            return String.Format("{0:" + format + "}", dt);
         }
-        public static string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
         public static DateTime StringToDateTime(String dt, string format)
         {
             DateTime result = DateTime.Now.AddYears(-200);

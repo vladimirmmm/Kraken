@@ -653,19 +653,19 @@ namespace Utilities
             var bix = 0;
             var six = 0;
 
-            if (sc > 50 && bigger.FirstInterval!=null)
-            {
-                var tsix = smaller.Intervals.BinarySearch(bigger.FirstInterval, IntervalList.startcomparer);
-                if (tsix > sc)
-                {
-                    six = sc - 1;
-                }
-                if (tsix < 0)
-                {
-                    six = ~tsix;
-                    six = six > 1 ? six-1 : six;
-                }
-            }
+            //if (sc > 50 && bigger.FirstInterval!=null)
+            //{
+            //    var tsix = smaller.Intervals.BinarySearch(bigger.FirstInterval, IntervalList.startcomparer);
+            //    if (tsix > sc)
+            //    {
+            //        six = sc - 1;
+            //    }
+            //    if (tsix < 0)
+            //    {
+            //        six = ~tsix;
+            //        six = six > 1 ? six-1 : six;
+            //    }
+            //}
 
 
             Interval s = null;
@@ -894,6 +894,32 @@ namespace Utilities
                     result = result * 23 + obj[i];
                 }
             }
+            return result;
+        }
+    }
+    public class TintintEqualityComparer : IEqualityComparer<Tintint>
+    {
+        public bool Equals(Tintint x, Tintint y)
+        {
+
+
+            if (x.v1 == y.v1 && x.v2==y.v2)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public int GetHashCode(Tintint obj)
+        {
+            int result = 17;
+
+            unchecked
+            {
+                result = result * 23 + obj.v1;
+                result = result * 23 + obj.v2;
+            }
+
             return result;
         }
     }

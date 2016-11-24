@@ -518,7 +518,7 @@ namespace LogicalModel
      
         public IList<int> SearchFactsGetIndex4(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
         {
-            var result = new List<int>();
+            var result = new IntervalList();// new List<int>();
             var domainkeys = factkey.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i) && this.DimensionDomainsOfMembers[i] == i).ToList();
             var memberkeys = factkey.Except(domainkeys).ToList();
             var memberfactspool = new List<IList<int>>();
@@ -531,22 +531,39 @@ namespace LogicalModel
             foreach (var domainkey in domainkeys)
             {
                 var domainquery = new FactPoolQuery();
-                qry.ChildQueries.Add(domainquery);
+                qry.AddChildQuery(domainquery);
 
                 var negativequery = new FactBaseQuery();
-                domainquery.ChildQueries.Add(negativequery);
+                domainquery.AddChildQuery(negativequery);
                 negativequery.NegativeDictFilterIndexes.Add(domainkey);
 
                 var positivequery = new FactBaseQuery();
-                domainquery.ChildQueries.Add(positivequery);
+                domainquery.AddChildQuery(positivequery);
                 positivequery.DictFilterIndexes.Add(domainkey);
          
             }
             //.Where(i=>this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i]==)
             //Func<int,int,bool> filter = (int i, int dictnr) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == dictnr;
-            var resultquery = qry.EnumerateIntervals(factsOfParts, 0, null,null).SelectMany(i => i);
-            result = resultquery.ToList();
+            Func<FactBaseQuery,int,bool> filter = (FactBaseQuery q, int ix) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[ix] == q.GetDictFilterCount();
+            //qry.KeyCountGetter = (int ix) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[ix];
+            var resultquery = qry.EnumerateResults(factsOfParts, 0, null,null);
+            foreach (var qr in resultquery) 
+            {
+                result.AddRange(qr.Items.Where(i => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == qr.Query.DictFilterIndexes.Count));
+            }
+            //result = resultquery.ToList();
             return result;
+        }
+
+        private List<Tuple<int,int>> GetIndexlength(IList<int> items)
+        {
+            var l = new List<Tuple<int, int>>();
+            foreach (var item in items) 
+            {
+                var t = new Tuple<int, int>(this.FactsManager.GetFactKey(item).Length,this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[item]);
+                l.Add(t);
+            }
+            return l;
         }
         public IList<int> SearchFactsGetIndex3(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
         {
@@ -782,6 +799,11 @@ namespace LogicalModel
             }
             return parts;
         }
+        public string GetFactStringKeysFromIndexes(params int[] indexes)
+        {
+            var keys = indexes.Select(i => FactsManager.GetFactKey(i));
+            return GetFactStringKeys(keys);
+        }
         public string GetFactStringKeys(IEnumerable<int> indexes)
         {
             var keys = indexes.Select(i => FactsManager.GetFactKey(i));
@@ -907,6 +929,7 @@ namespace LogicalModel
             {
 
                 LabelHandler.HandleTaxonomy(this);
+
                 if (this.TaxonomyLabels.Count > 0)
                 {
                     Lang = this.TaxonomyLabels.FirstOrDefault().Lang;
@@ -1138,13 +1161,15 @@ namespace LogicalModel
                 LoadGeneral();
 
                 TableHandler.HandleTaxonomy(this);
+                GC.Collect();
 
                 Module.FactParts = this.FactParts;
                 Module.DimensionDomainsOfMembers = this.DimensionDomainsOfMembers;
 
                 var jsoncontent = Utilities.Converters.ToJson(Module);
+                Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent);
+                jsoncontent = null;
 
-                PopulateValidationSets();
 
                 foreach (var Table in Tables)
                 {
@@ -1153,27 +1178,36 @@ namespace LogicalModel
 
                 }
                 ClearTablesAfterLoad();
+
+                PopulateValidationSets();
+
                 FactsManager.SaveAll();
 
                 FactsOfParts.Save();
-                Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent);
-                Utilities.FS.WriteAllText(TaxonomyCellIndexPath, Utilities.Converters.ToJson(this.CellIndexDictionary));
 
+                //Utilities.FS.WriteAllText(TaxonomyCellIndexPath, Utilities.Converters.ToJson(this.CellIndexDictionary));
+
+                Utilities.FS.DictionaryToFile(TaxonomyCellIndexPath, this.CellIndexDictionary);
             }
             else
             {
                 var jsoncontent = Utilities.FS.ReadAllText(TaxonomyModulePath);
                 this.Module = Utilities.Converters.JsonTo<TaxonomyModule>(jsoncontent);
+                jsoncontent = null;
                 this.Module.Taxonomy = this;
                 this.Module.Load();
-                var jsoncellix = Utilities.FS.ReadAllText(TaxonomyCellIndexPath);
-                this.CellIndexDictionary = Utilities.Converters.JsonTo<Dictionary<int, string>>(jsoncellix);
+
+                Utilities.FS.DictionaryFromFile(TaxonomyCellIndexPath, this.CellIndexDictionary);
+                
+                //var jsoncellix = Utilities.FS.ReadAllText(TaxonomyCellIndexPath);
+                //this.CellIndexDictionary = Utilities.Converters.JsonTo<Dictionary<int, string>>(jsoncellix);
 
                 var jsoncontent2 = Utilities.Converters.ToJson(this.Module);
                 if (jsoncontent != jsoncontent2) 
                 {
                     Utilities.FS.WriteAllText(TaxonomyModulePath, jsoncontent2);
                 }
+                jsoncontent2 = null;
                 this.Tables.Clear();
                 foreach (var tablepath in Module.TablePaths)
                 {
@@ -1183,6 +1217,7 @@ namespace LogicalModel
                     table.Taxonomy = this;
                     table.Reload();
                     table.LoadLayout();
+
                     this.Tables.Add(table);
                 }
 
@@ -1634,6 +1669,20 @@ namespace LogicalModel
 
             dimensiondomainitems = dimensiondomainitems.Except(exceptmembers).ToList();
             return dimensiondomainitems;
+        }
+        public List<QualifiedItem> GetMembersOf(string domain)
+        {
+            var result = new List<QualifiedItem>();
+            var members = SchemaElements.Where(i => i.Namespace == domain && i.Type == "nonnum:domainItemType").ToList();//(i => i.Namespace + ":" + i.Name).Distinct().ToList();
+
+            foreach (var member in members) 
+            {
+                var qi = new QualifiedItem();
+                qi.Content = member.Namespace + ":" + member.Name;
+                qi.Label = GetLabelForMember(qi.Content);
+                result.Add(qi);
+            }
+            return result;
         }
         //public string GetDomainOfDimension(string item)
         //{

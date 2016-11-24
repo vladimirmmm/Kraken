@@ -346,10 +346,10 @@ namespace LogicalModel
             }
         }
         private List<int[]> FactList = new List<int[]>();
-        private List<int> FactindexList = new List<int>();
-        private List<int> ProcessedFactindexList = new List<int>();
+        private IList<int> FactindexList = new IntervalList();
+        //private List<int> ProcessedFactindexList = new List<int>();
         //private Dictionary<int, List<int>> FactIndexToCells = new Dictionary<int, List<int>>();
-        private List<Tuple<int, int>> FactIndexToCells = new List<Tuple<int, int>>();
+        private List<Tintint> FactIndexToCells = new List<Tintint>();
 
   
         public void LoadDefinitions2()
@@ -371,12 +371,13 @@ namespace LogicalModel
             var slices = new List<IEnumerable<int>>();
             var sb_fact = new StringBuilder();
             //FactKeys.Clear();
-            if (this.ID.Contains("eba_tC_07.00.c")) 
+            if (this.ID.Contains("eba_tC_07.00.a")) 
             {
 
             }
             var ic = new IntArrayEqualityComparer();
            //
+            var factcounter = 0;
             foreach (var hypercube in HyperCubes)
             {
                 var cubeslices = GetCubeSlices2(hypercube);
@@ -426,14 +427,37 @@ namespace LogicalModel
 
                     //    }
                     //}
+                    //if (this.ID.Contains("s2md_tS.05.01.13.01"))
+                    //{
+                    //    if ("23479, 2417, 4943, 8222, 17646, 21080" == Utilities.Strings.ListToString(key)) 
+                    //    {
+                    //    }
+                    //    if (factix == 35783) 
+                    //    {
+
+                    //    }
+                    //}
+                    //var fis = Utilities.Strings.ArrayToString(key);
+                    //if (fis == "17145, 191, 274, 4182, 11355, 12403, 16181") 
+                    //{
+
+                    //}
                     this.AddFactKeyParts(key,factix);
 
                
                     FactindexList.Add(factix);
-
+                    factcounter++;
                     //sb_fact.AppendLine();
                 }
             }
+            //if (this.ID.Contains("s2md_tS.05.01.13.01"))
+            //{
+            //    if (factcounter != FactindexList.Count) 
+            //    {
+
+            //    }
+            //}
+
             this.HyperCubes.Clear();
             foreach (var item in this.FactsOfParts) 
             {
@@ -452,6 +476,7 @@ namespace LogicalModel
             //var jsonfacts = Utilities.Converters.ToJson(this.FactList);
             System.IO.File.WriteAllText(FactsPath, sb_fact.ToString());
             sb_fact.Clear();
+            FactIndexToCells = new List<Tintint>(FactindexList.Count);
 
         }
 
@@ -565,7 +590,7 @@ namespace LogicalModel
             Y_Axis.Clear();
             Z_Axis.Clear();
 
-            if (this.ID.Contains("eba_tC_07.00.c")) 
+            if (this.ID.Contains("eba_tC_07.00.a")) 
             {
 
             }
@@ -650,7 +675,6 @@ namespace LogicalModel
                 SetMapID(exts);
                 SetMapID(rowsnode.All().Select(i=>i.Item).ToList());
                 SetMapID(columnsnode.All().Select(i => i.Item).ToList());
-                //var factmap = new Dictionary<string, Dictionary<string,string>>();
                 var bigcell =new Cell();
                 var dimensions =new List<Dimension>();
                 dimensions.AddRange(exts.SelectMany(i=>i.Dimensions));
@@ -663,12 +687,7 @@ namespace LogicalModel
                     var rowix=0;
 
                     var members = ext.Dimensions.Where(i => i.MapID != i.DomMapID).ToList();
-                    //var memberkeys = members.Select(i => i.MapID).ToList();
-                    //if (memberkeys.Count==2)
-                    //{
-                    //    var ids = Utilities.Objects.IntersectSorted(this.FactsOfParts[memberkeys[0]], this.FactsOfParts[memberkeys[1]], null);
-
-                    //}
+        
                     foreach (var row in Rows)
                     {
                         var colix = 0;
@@ -688,8 +707,8 @@ namespace LogicalModel
                                 cell.LayoutColumn = col;
                                 cell.Column = col.Item.LabelCode;
                                 cell.Concept = row.Item.Concept != null ? row.Item.Concept : col.Item.Concept;
-                                var isrowkey = row.Item.IsKey && cell.Concept == null;
-                                var iscolkey = col.Item.IsKey && cell.Concept == null;
+                                var isrowkey = row.Item.IsKey;
+                                var iscolkey = col.Item.IsKey;
                                 
                                 if (!isrowkey)
                                 {
@@ -737,53 +756,60 @@ namespace LogicalModel
                             var cellix = Taxonomy.CellIndexDictionary.Count;
                             Taxonomy.CellIndexDictionary.Add(Taxonomy.CellIndexDictionary.Count, xcell.CellID);
                             var columndimensions = cell.LayoutColumn.Item.Dimensions;
-                            var factkeys = new List<String>(20);
-                            var factintkeys = new List<int[]>(20);
+        
 
 
-                            factintkeys.Add(xcell.FactIntKey);
                             cell.IsBlocked = cell.IsKey ? false : true;
-
-                            for (int i = 0; i < factintkeys.Count; i++)
+                            if (!cell.IsKey)
                             {
 
-                                var factintkey = factintkeys[i];
+                                var factintkey = xcell.FactIntKey;
 
-                                var factix = this.Taxonomy.FactsManager.GetFactIndex(factintkey);
-                                if (factix>-1)
-                                {
-                                    this.FactIndexToCells.Add(new Tuple<int, int>(factix, cellix));
-                                    this.ProcessedFactindexList.Add(factix);
-                                    cell.IsBlocked = false;
-                                }
-                                else 
-                                {
-                                    if (!factintkey.Any(fk => fk < 0) )
+                                //var factix = this.Taxonomy.FactsManager.GetFactIndex(factintkey);
+                                //if (factix > -1)
+                                //{
+                                //    this.FactIndexToCells.Add(new Tuple<int, int>(factix, cellix));
+                                //    this.ProcessedFactindexList.Add(factix);
+                                //    cell.IsBlocked = false;
+                                //}
+                                //else
+                                //{
+                                    if (!factintkey.Any(fk => fk < 0))
                                     {
                                         IList<int> results = new List<int>();
-                                        results = this.Taxonomy.SearchFactsGetIndex4( factintkey, this.FactsOfParts,null);
+                                        results = this.Taxonomy.SearchFactsGetIndex4(factintkey, this.FactsOfParts, null);
+
                                         cell.IsBlocked = results.Count == 0;
                                         foreach (var factindex in results)
                                         {
-                                            this.FactIndexToCells.Add(new Tuple<int, int>(factindex, cellix));
-                                            this.ProcessedFactindexList.Add(factindex);
+                                            this.FactIndexToCells.Add(new Tintint(factindex, cellix));
+                                            //this.ProcessedFactindexList.Add(factindex);
                                         }
                                         if (results.Count == 0)
                                         {
+                                            //if (this.ID.Contains("eba_tC_07.00.a"))
+                                            //{
+                                            //    var fis = Utilities.Strings.ArrayToString(factintkey);
+                                            //    if (fis == "17145, 191, 274, 4182, 11355, 12403, 16181")
+                                            //    {
+
+                                            //    }
+                                            //}
                                             //sbe.AppendLine(xcell.CellID + " not mapped for "+ Taxonomy.GetFactStringKey(factintkey));
                                         }
 
                                     }
-                                    else 
+                                    else
                                     {
                                         //sbe.AppendLine(xcell.CellID + " not mapped for " + Taxonomy.GetFactStringKey(factintkey));
                                     }
-                                }
-                               
-                            }
-                            if (factintkeys.Count == 0) 
-                            {
-                                sbe.AppendLine("no facts for " + xcell.CellID);
+                                //}
+
+
+                                //if (factintkeys.Count == 0)
+                                //{
+                                //    sbe.AppendLine("no facts for " + xcell.CellID);
+                                //}
                             }
                             if (cell.IsBlocked && !blocked.ContainsKey(cell.ToString()))
                             {
@@ -804,10 +830,14 @@ namespace LogicalModel
                 
 
             }
-            FactIndexToCells = FactIndexToCells.OrderBy(i => i.Item1).ToList();
+            FactIndexToCells.TrimExcess();
+
+            FactIndexToCells = FactIndexToCells.OrderBy(i => i.v1).ToList();
+            var factsmapped=0;
             foreach (var tuple in FactIndexToCells)
             {
-                this.Taxonomy.AddCellToFact(tuple.Item1, tuple.Item2, null);
+                this.Taxonomy.AddCellToFact(tuple.v1, tuple.v2, null);
+                factsmapped++;
             }
             //foreach (var index in indexes) 
             //{
@@ -816,27 +846,36 @@ namespace LogicalModel
             //        this.Taxonomy.AddCellToFact(index, cellindex, null);
             //    }
             //}
+            if (factsmapped != FactindexList.Count)
+            {
+                var unmapped = FactindexList.Except(FactIndexToCells.Select(i => i.v1)).ToList();
+                var unmappedkeys = Taxonomy.GetFactStringKeys(unmapped);
+                var x = Taxonomy.FactsManager.GetFactKey(unmapped.FirstOrDefault()); 
+            }
             FactIndexToCells.Clear();
             var fsb = new StringBuilder();
             var firstunmappedfact = "";
             var unmappednr = 0;
-            foreach (var factindex in FactindexList) 
+            if (factsmapped != FactindexList.Count)
             {
-                //;
-                if (this.Taxonomy.GetCellsOfFact(factindex).Count == 0) 
+                foreach (var factindex in FactindexList)
                 {
-                    var wasprocessed = ProcessedFactindexList.Contains(factindex);
-                    var page = this.Taxonomy.FactsManager.FactsOfPages.GetPageByFactIndex(factindex);
-                    var fact = this.Taxonomy.FactsManager.GetFactKey(factindex);
-                   // var item = Taxonomy.SearchFacts3(this.FactsOfParts, fact,);
-                    this.Taxonomy.AddCellToFact(factindex, -1, null);
-                    unmappednr++;
-                    var identifier = String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.ID);
-                    if (String.IsNullOrEmpty(firstunmappedfact)) 
+                    //;
+                    if (this.Taxonomy.GetCellsOfFact(factindex).Count == 0)
                     {
-                        firstunmappedfact = identifier.Replace(",",",\n");
+                        //var wasprocessed = ProcessedFactindexList.Contains(factindex);
+                        var page = this.Taxonomy.FactsManager.FactsOfPages.GetPageByFactIndex(factindex);
+                        var fact = this.Taxonomy.FactsManager.GetFactKey(factindex);
+                        // var item = Taxonomy.SearchFacts3(this.FactsOfParts, fact,);
+                        this.Taxonomy.AddCellToFact(factindex, -1, null);
+                        unmappednr++;
+                        var identifier = String.Format("Fact {0} not mapped for {1}", this.Taxonomy.GetFactStringKey(fact), this.ID);
+                        if (String.IsNullOrEmpty(firstunmappedfact))
+                        {
+                            firstunmappedfact = identifier.Replace(",", ",\n");
+                        }
+                        fsb.AppendLine(identifier);
                     }
-                    fsb.AppendLine(identifier);
                 }
             }
             sbe.Clear();
@@ -868,17 +907,24 @@ namespace LogicalModel
 
 
             }
-            FactsOfParts.MoveTo(this.Taxonomy.FactsOfParts);
-            FactsOfParts.Clear();
             FactList.Clear();
             FactindexList.Clear();
-            ProcessedFactindexList.Clear();
-            System.IO.File.WriteAllText(LayoutPath.Replace(".txt",".sbe.dat"), sbe.ToString());
+            //ProcessedFactindexList.Clear();
+
+            System.IO.File.WriteAllText(LayoutPath.Replace(".txt", ".sbe.dat"), sbe.ToString());
             sbe.Clear();
 
+            FactsOfParts.MoveTo(this.Taxonomy.FactsOfParts);
+            FactsOfParts.Clear();
+
+      
             CreateHtmlLayout();
+            LayoutCellDictionary.Clear();
             this.LayoutRoot = lr;
-        
+            if (factsmapped > 100000)
+            {
+                GC.Collect();
+            }
             //if (this.Taxonomy.Tables.Where(i => i.LayoutCellDictionary.Count > 0).Count() > 50)
             //{
             //    Utilities.Logger.WriteLine("Waiting");

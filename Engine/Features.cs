@@ -131,6 +131,7 @@ namespace Engine
                     new MenuCommand("Process_Folder", "Process Folder", (o) => { ProcessFolder(o); }, () => new object[] { UI.BrowseFolder("") }),
                     new MenuCommand("TestTaxonomy", "Test", (o) => { Taxonomy_Test(); }, null),
                     new MenuCommand("Z_Axis_Test", "Z Axis Test", (o) => { Extensions_Test(); }, null),
+                    new MenuCommand("Export_EI", "Export Enumeration Values", (o) => { Export_EI(); }, null),
                     new MenuCommand("Export_Layout", "Export Layout", (o) => { Export_Layout(); }, null),
                     new MenuCommand("Export_Validations_RG", "Export Validations 4 RG", (o) => { Export_Validations_RG(); }, null),
                     new MenuCommand("Export_Validations", "Export Validations", (o) => { Export_Validations(); }, null),
@@ -163,6 +164,29 @@ namespace Engine
             LoadRecent();
             LoadRecentCommands();
 
+        }
+
+        private void Export_EI()
+        {
+            var taxonomy = Engine.CurrentTaxonomy;
+
+            var filename = Utilities.Strings.GetStringForFilename(taxonomy.Module.Name+"_"+ Utilities.Converters.DateTimeToString(taxonomy.Module.FromDate,Utilities.Converters.DateFormat));
+
+            var path = TaxonomyEngine.LocalFolder + "FeatureOutput\\" + String.Format("EI_Values_{0}.csv", filename);
+            var sb = new StringBuilder();
+
+            var eiconcepts = taxonomy.Concepts.Where(i => i.Value.Name.StartsWith("ei", StringComparison.InvariantCultureIgnoreCase)).ToList();
+            foreach (var c in eiconcepts) 
+            {
+                sb.AppendLine(c.Key + ",,");
+                var h = taxonomy.Hierarchies.FirstOrDefault(i => i.Item.Role == c.Value.HierarchyRole && i.Item.Content == c.Value.Domain.Content);
+                foreach (var item in h.Children) 
+                {
+                    sb.AppendLine(String.Format(",{0},{1}",item.Item.Content,item.Item.LabelContent));
+                }
+            }
+            Utilities.FS.WriteAllText(path, sb.ToString());
+            Utilities.Logger.WriteLine("Comarision file for this instance was created at:  " + path);
         }
 
         private void InsatnceToCompareFile()

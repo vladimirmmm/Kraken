@@ -377,8 +377,8 @@ namespace LogicalModel.Base
         public string Concept = "";
         public Func<string, bool> Filter = (s) => true;
         public int NrOfDictFilters = 0;
-
-        public List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
+        protected FactBaseQuery Parent = null;
+        protected List<FactBaseQuery> ChildQueries = new List<FactBaseQuery>();
         private List<FactPoolQuery> _Pools = new List<FactPoolQuery>();
         public List<FactPoolQuery> Pools 
         {
@@ -398,6 +398,11 @@ namespace LogicalModel.Base
            
         }
 
+        public void AddChildQuery(FactBaseQuery qry) 
+        {
+            qry.Parent = this;
+            ChildQueries.Add(qry);
+        }
      
         public FactBaseQuery(List<FactBaseQuery> queries)
         {
@@ -485,7 +490,12 @@ namespace LogicalModel.Base
             return filterparts.ToList();
 
         }
-        
+        public static void BaseMerge(FactBaseQuery source, FactBaseQuery target)
+        {
+            target.DictFilterIndexes.AddRange(source.DictFilterIndexes);
+            target.NegativeDictFilterIndexes.AddRange(source.NegativeDictFilterIndexes);
+
+        }
         public static void Merge(FactBaseQuery source, FactBaseQuery target)
         {
             target.TrueFilters = target.TrueFilters + source.TrueFilters;
@@ -605,10 +615,82 @@ namespace LogicalModel.Base
 
             return items;
         }
+        private int _DictFilterCount = -1;
+        public int GetDictFilterCount()
+        {
 
-        public IEnumerable<IList<int>> EnumerateIntervals(FactsPartsDictionary FactsOfParts, int ix, IList<int> data, Func<int,int,bool> Filter)
+            int limit = 100;
+            int counter = 0;
+            var current = this;
+            var result = 0;
+            while (current != null && counter < limit)
+            {
+                result += current.DictFilterIndexes.Count;
+                counter++;
+                current = current.Parent;
+            }
+            _DictFilterCount = result;
+
+            return _DictFilterCount;
+        }
+        public IEnumerable<FactBaseQueryResult> EnumerateResults(FactsPartsDictionary FactsOfParts, int ix, IList<int> data,FactBaseQuery currentquery)
         {
             var items = data;
+            //CurrentLength = GetDictFilterCount();
+            if (ix == 0)
+            {
+                currentquery = new FactBaseQuery();
+                currentquery.DictFilterIndexes = this.DictFilterIndexes;
+                if (DictFilterIndexes.Count > 0)
+                {
+                    items = FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data);
+                }
+                foreach (var negativeindex in NegativeDictFilterIndexes)
+                {
+                    if (FactsOfParts.ContainsKey(negativeindex))
+                    {
+                        items = Utilities.Objects.SortedExcept(items, FactsOfParts[negativeindex]);
+                    }
+                }
+            }
+
+            if (Pools.Count == 0)
+            {
+                var result = new FactBaseQueryResult();
+                result.Items = items;
+                result.Query = currentquery;
+                yield return result;
+                yield break;
+            }
+
+            if (ix == Pools.Count)
+            {
+                var result = new FactBaseQueryResult();
+                result.Items = data;
+                result.Query = currentquery;
+                yield return result;
+            }
+            else
+            {
+                foreach (var qry in Pools[ix].ChildQueries)
+                {
+                    var subresult = qry.ToIntervalList(FactsOfParts, items);
+                    var subquery = new FactBaseQuery();
+                    FactBaseQuery.BaseMerge(currentquery, subquery);
+                    FactBaseQuery.BaseMerge(qry, subquery);
+                    foreach (var x in EnumerateResults(FactsOfParts, ix + 1, subresult, subquery))
+                    {
+                        yield return x;
+                    }
+                }
+            }
+        }
+        
+
+        public IEnumerable<IList<int>> EnumerateIntervals(FactsPartsDictionary FactsOfParts, int ix, IList<int> data,bool ensureKeyCount)
+        {
+            var items = data;
+            //CurrentLength = GetDictFilterCount();
             if (ix == 0) 
             {
                 if (DictFilterIndexes.Count > 0)
@@ -625,15 +707,13 @@ namespace LogicalModel.Base
             }
        
             if (Pools.Count == 0) 
-            { 
-         
+            {
                 yield return items;
                 yield break;
             }
 
             if (ix == Pools.Count)
             {
-
                 yield return data;
             }
             else
@@ -641,13 +721,14 @@ namespace LogicalModel.Base
                 foreach (var qry in Pools[ix].ChildQueries)
                 {
                     var subresult = qry.ToIntervalList(FactsOfParts, items);
-                    foreach (var x in EnumerateIntervals(FactsOfParts, ix + 1, subresult, Filter))
+                    foreach (var x in EnumerateIntervals(FactsOfParts, ix + 1, subresult, ensureKeyCount))
                     {
                         yield return x;
                     }
                 }
             }
         }
+        
         public string GetString(Taxonomy taxonomy,string pad="")
         {
             var sb = new StringBuilder();
@@ -701,6 +782,13 @@ namespace LogicalModel.Base
         //    }
         //}
     }
+
+    public class FactBaseQueryResult 
+    {
+        public FactBaseQuery Query = null;
+        public IList<int> Items = null;
+    }
+
     public class FactBase 
     {
 

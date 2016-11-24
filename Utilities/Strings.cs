@@ -87,6 +87,17 @@ namespace Utilities
             }
             return foldername;
         }
+        public static string GetStringForFilename(string value) 
+        {
+            //string illegal = "\"M\"\\a/ry/ h**ad:>> a\\/:*?\"| li*tt|le|| la\"mb.?";
+            string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+
+            foreach (char c in invalid)
+            {
+                value = value.Replace(c.ToString(), "-");
+            }
+            return value;
+        }
         public static string GetFileName(string FilePath)
         {
             var filename = "";
@@ -836,7 +847,7 @@ namespace Utilities
         }
 
 
-        public static string EnumerableToString<T>(List<T> items, string delimiter = ", ")
+        public static string ListToString<T>(IList<T> items, string delimiter = ", ")
         {
             var rs = new StringBuilder();
             for (int i = 0; i < items.Count; i++)

@@ -59,7 +59,7 @@ namespace LogicalModel
 
         public string Content()
         {
-            return string.Format("{0}|{1}", this.KeyCount, Utilities.Strings.EnumerableToString(this.CellIndexes, ","));
+            return string.Format("{0}|{1}", this.KeyCount, Utilities.Strings.ListToString(this.CellIndexes, ","));
         }
 
         public static FactLookupValue GetInstanceFromString(string content) 
@@ -75,8 +75,12 @@ namespace LogicalModel
     public class FactDictionaryCollection : LogicalModel.Models.IFactDictionary
     {
         public List<FactKeyDictionary> Pages = new List<FactKeyDictionary>();
+        //public Dictionary<int, int> FactKeyCountOfIndexes = new Dictionary<int, int>();
+        //public Dictionary<int[], int> HashKeys = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
+
         public Dictionary<int, int> FactKeyCountOfIndexes = new Dictionary<int, int>();
-        public Dictionary<int[], int> HashKeys = new Dictionary<int[], int>(new Utilities.IntArrayEqualityComparer());
+        public Dictionary<Tintint, int> HashKeys = new Dictionary<Tintint, int>(new Utilities.TintintEqualityComparer());
+        
         //public SortedList<int[], int> HashKeys = new SortedList<int[], int>(100000,new Utilities.IntArrayComparer());
 
         public FactKeyDictionary LastPage = null;
@@ -259,9 +263,9 @@ namespace LogicalModel
 
         public int GetIndexByHashKeys(int[] hashkeys)
         {
-            if (this.HashKeys.ContainsKey(hashkeys))
+            if (this.HashKeys.ContainsKey(new Tintint(hashkeys[0], hashkeys[1])))
             {
-                return this.HashKeys[hashkeys];
+                return this.HashKeys[new Tintint(hashkeys[0], hashkeys[1])];
             }
             else { return -1; }
         }
@@ -295,16 +299,16 @@ namespace LogicalModel
 
         public bool ContainsKey(int[] key)
         {
-            var hashkey = GetHashKeys(key);
-            return this.HashKeys.ContainsKey(hashkey);
+            var hashkeys = GetHashKeys(key);
+            return this.HashKeys.ContainsKey(new Tintint(hashkeys[0], hashkeys[1]));
         }
 
         public int Index(int[] key)
         {
-            var hashkey = GetHashKeys(key);
-            if (this.HashKeys.ContainsKey(hashkey)) 
+            var hashkeys = GetHashKeys(key);
+            if (this.HashKeys.ContainsKey(new Tintint(hashkeys[0], hashkeys[1]))) 
             {
-                var ix = this.HashKeys[hashkey];
+                var ix = this.HashKeys[new Tintint(hashkeys[0], hashkeys[1])];
                 return ix;
             }
             return -1;
@@ -864,7 +868,7 @@ namespace LogicalModel
    
     public class textx 
     {
-        private int totlitems = 8000000;
+        private int totlitems = 1000000;
 
         public void test9()
         {
@@ -881,6 +885,23 @@ namespace LogicalModel
                 dict.Add(keys, new List<int>(1) { i });
                 //dict2.Add(i, keys);
                 dict3.Add(keys);
+            }
+        }
+        public void test90()
+        {
+            var dict = new List<FactKeyWithCells>();
+            for (int i = 0; i < totlitems; i++)
+            {
+                var keys = new int[12];
+                for (int j = 0; j < keys.Length; j++)
+                {
+                    keys[j] = i % (j + 1);
+                }
+                var fkc = new FactKeyWithCells();
+                fkc.FactKey = keys;
+                fkc.CellIndexes = new List<int>(1) { i };
+                dict.Add(fkc);
+                //dict2.Add(i, keys);
             }
         }
         public void test0()

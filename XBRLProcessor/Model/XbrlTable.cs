@@ -550,6 +550,7 @@ namespace XBRLProcessor.Model
             this.BreakDowns.Clear();
             this.BreakdownTrees.Clear();
             this.DefinitionLinks.Clear();
+            this.DefinitionItems.Clear();
             this.DefinitionNodeSubTrees.Clear();
             this.DimensionFilters.Clear();
             this.RuleNodes.Clear();

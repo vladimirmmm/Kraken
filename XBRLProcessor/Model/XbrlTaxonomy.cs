@@ -667,7 +667,21 @@ namespace XBRLProcessor.Models
                     var logicalhierarchy = hier.Cast<LogicalModel.Base.QualifiedItem>(Mappings.ToQualifiedItem);
                     this.Hierarchies.Add(logicalhierarchy);
                 }
+                var conceptswithouthierarchy = this.Concepts.Where(i => (i.Value.Domain != null && !String.IsNullOrEmpty(i.Value.Domain.Content)) && string.IsNullOrEmpty(i.Value.HierarchyRole)).ToList();
+                foreach (var conceptwithouthierarchy in conceptswithouthierarchy) 
+                {
+                    var h = new Hierarchy<LogicalModel.Base.QualifiedItem>(new LogicalModel.Base.QualifiedItem());
+                    var domainspecifier = conceptwithouthierarchy.Value.Domain != null ? conceptwithouthierarchy.Value.Domain :null;
+                    var domainelement = SchemaElements.FirstOrDefault(i => i.Namespace == domainspecifier.Namespace && i.Name == domainspecifier.Name);
+                    var domain = domainelement.ID;
+                    h.Item.Content = domainspecifier.Content;
+                    h.Item.Label = GetLabelForDomain(domain);
+                    this.Hierarchies.Add(h);
 
+
+                    var members = this.GetMembersOf(domain).Select(i=>new Hierarchy<LogicalModel.Base.QualifiedItem>(i));
+                    h.Children.AddRange(members);
+                }
                 var jsoncontent = Utilities.Converters.ToJson(this.Hierarchies);
                 Utilities.FS.WriteAllText(TaxonomyHierarchyPath, jsoncontent);
                 Utilities.FS.WriteAllText(TaxonomyLayoutFolder + "hierarchies.js", "var hierarchies = " + jsoncontent + ";");
@@ -1189,6 +1203,7 @@ namespace XBRLProcessor.Models
                 }
                 logicaltable.LoadDefinitions2();
                 logicaltable.LoadLayout();
+                table.Clear();
                 //var s = Utilities.Converters.ToJson(logicaltable);
 
                 this.Module.TablePaths.Add(logicaltable.JsonFileName);

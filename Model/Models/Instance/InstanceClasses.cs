@@ -192,7 +192,7 @@ namespace LogicalModel
                 var key = Utilities.Strings.ArrayToString(item.Key, ",");
                 sb.Append("\"" + key + "\":");
                 sb.Append("[");
-                var subitems = Utilities.Strings.EnumerableToString(item.Value, ",");
+                var subitems = Utilities.Strings.ListToString(item.Value, ",");
                 sb.Append(subitems);
                 sb.Append("]");
 

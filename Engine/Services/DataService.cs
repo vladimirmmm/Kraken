@@ -281,7 +281,7 @@ namespace Engine.Services
                                 if (part1 == "cellindexes")
                                 {
                                     json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyCellIndexPath);
-
+                              
                                 }
                                 if (part1 == "documents")
                                 {
@@ -354,7 +354,7 @@ namespace Engine.Services
                                             }
                                             else
                                             {
-                                                var partkeys = taxonomy.FactParts.Keys.Where(i => i.Contains(oritem)).ToList();
+                                                var partkeys = taxonomy.FactParts.Keys.Where(i => i.IndexOf(oritem, StringComparison.InvariantCultureIgnoreCase)>-1).ToList();
                                                 if (partkeys.Count > 0)
                                                 {
                                                     if (isnegative)
@@ -372,13 +372,18 @@ namespace Engine.Services
                                                         {
                                                             var partqry = new LogicalModel.Base.FactBaseQuery();
                                                             partqry.AddIndex(taxonomy.FactParts[partkey], isnegative);
-                                                            qrypool.ChildQueries.Add(partqry);
+                                                            qrypool.AddChildQuery(partqry);
                                                         }
-                                                        qry.ChildQueries.Add(qrypool);
+                                                        qry.AddChildQuery(qrypool);
                                                     }
-                                                  
-                                             
+
+
                                                 }
+                                                else 
+                                                {
+                                                    qry.DictFilterIndexes.Add(-1);
+                                                }
+
                                             }
                                         }
                                         else 
@@ -403,7 +408,7 @@ namespace Engine.Services
                                                 }
                                                 else
                                                 {
-                                                    var partkeys = taxonomy.FactParts.Keys.Where(k => k.Contains(oritem)).ToList();
+                                                    var partkeys = taxonomy.FactParts.Keys.Where(k => k.IndexOf(oritem,StringComparison.InvariantCultureIgnoreCase)>-1).ToList();
                                                     if (partkeys.Count > 0)
                                                     {
                                                         if (isnegative)
@@ -423,17 +428,21 @@ namespace Engine.Services
                                                             {
                                                                 var partqry = new LogicalModel.Base.FactBaseQuery();
                                                                 partqry.AddIndex(taxonomy.FactParts[partkey], isnegative);
-                                                                subquery.ChildQueries.Add(partqry);
+                                                                subquery.AddChildQuery(partqry);
                                                             }
                                                         }
 
 
                                                        
                                                     }
+                                                    else
+                                                    {
+                                                        qry.DictFilterIndexes.Add(-1);
+                                                    }
                                                 }
-                                                qrypool.ChildQueries.Add(subquery);
+                                                qrypool.AddChildQuery(subquery);
                                             }
-                                            qry.ChildQueries.Add(qrypool);
+                                            qry.AddChildQuery(qrypool);
                                         }
 
                                     
@@ -442,10 +451,10 @@ namespace Engine.Services
                                     }
                                     if (factstrings.Length > 0)
                                     {
-                                        var all = new Interval(0, taxonomy.FactsManager.FactsOfPages.FactKeyCountOfIndexes.Count);
+                                        var all = new Interval(0, taxonomy.FactsManager.FactsOfPages.HashKeys.Count);
                                         var allist = new IntervalList();
                                         allist.AddInterval(all);
-                                        var idlist2 = qry.EnumerateIntervals(taxonomy.FactsOfParts, 0, allist, null).SelectMany(i => i);
+                                        var idlist2 = qry.EnumerateIntervals(taxonomy.FactsOfParts, 0, allist, false).SelectMany(i => i);
 
                                         var indexes = idlist2.Select(i => i).Distinct().ToDictionary(k => k, v => true);
                                         var comparer = new Utilities.IntArrayEqualityComparer();

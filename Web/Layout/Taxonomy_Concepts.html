@@ -22,8 +22,8 @@
     </div>
     <ul class="list" binding-items="this">
         <li binding-type="template">
-            <span>$bind:{Content} | {ItemType} | Role:$</span>
-            <a href="javascript:void(0)" onclick="$bind:app.taxonomycontainer.ShowHierarchy('{HierarchyRole}')$">$bind:{HierarchyRole}$</a>
+            <span>$bind:{Content} | {ItemType} | {Domain.Content} |Role: {HierarchyRole}$</span>
+            <a href="javascript:void(0)" onclick="$bind: app.taxonomycontainer.ShowHierarchy('{Domain.Content}', '{HierarchyRole}');$">values</a>
         </li>
     </ul>
 
