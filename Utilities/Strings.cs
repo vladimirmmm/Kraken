@@ -405,12 +405,13 @@ namespace Utilities
             List<string> StringList = new List<string>();
             string cs = "";
             var six = 0;
-            while (Text.IndexOf(BeginTag, six, StringComparison.Ordinal) > -1 & Text.IndexOf(EndTag, six, StringComparison.Ordinal) > -1)
+            while (six > -1 && Text.IndexOf(EndTag, six, StringComparison.Ordinal) > -1)
             {
                 cs = TextBetween(Text, BeginTag, EndTag, six);
                 //Text = RemoveString(Text, BeginTag + cs + EndTag);
                 StringList.Add(cs);
-                six = Text.IndexOf(BeginTag, six, StringComparison.Ordinal) + BeginTag.Length;
+                //six = Text.IndexOf(BeginTag, six, StringComparison.Ordinal) + BeginTag.Length;
+                six = Text.IndexOf(BeginTag, six+BeginTag.Length+EndTag.Length+cs.Length, StringComparison.Ordinal);
             }
             return StringList;
         }

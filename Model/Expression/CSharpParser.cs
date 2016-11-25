@@ -98,6 +98,7 @@ namespace LogicalModel.Expressions
 
             this.Syntax.AddFunction("xs:qname", (Functions i) => i.XS_QName(""));
             this.Syntax.AddFunction("xs:string", (Functions i) => i.XS_String(""));
+            this.Syntax.AddFunction("xs:integer", (Functions i) => i.XS_Integer(""));
             this.Syntax.AddFunction("xs:date", (Functions i) => i.XS_Date(""));
             this.Syntax.AddFunction("qname", (Functions i) => i.QName("",""));
             this.Syntax.AddFunction("string", (Functions i) => i.String(""));
@@ -110,7 +111,7 @@ namespace LogicalModel.Expressions
 
             this.Syntax.AddFunction("abs", (Functions i) => i.abs(0));
             this.Syntax.AddFunction("floor", (Functions i) => i.floor(0));
-            this.Syntax.AddFunction("number", (Functions i) => LogicalModel.Validation.Functions.Number(""));
+            this.Syntax.AddFunction("number", (Functions i) => i.Number(""));
             this.Syntax.AddFunction("sum", (Functions i) => i.sum(0));
             this.Syntax.AddFunction("max", (Functions i) => i.max(0));
 
@@ -152,7 +153,12 @@ namespace LogicalModel.Expressions
                         return expr.StringValue + "m";
                     }
                 }
+                if (expr.IsString)
+                {
+                    return this.Syntax.StringDelimiter + expr.StringValue.Replace("\\","\\\\") + Syntax.StringDelimiter;
+                }
             }
+
             return base.Translate(expr);
         }
 

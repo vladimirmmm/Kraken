@@ -18,6 +18,13 @@ namespace XBRLProcessor.Model
     {
         public void SetFacts(LogicalModel.Validation.ValidationRule rule) 
         {
+            var tables = rule.Tables.Select(i => Taxonomy.Tables.FirstOrDefault(t => t.ID == i)).ToList();
+            IList<int> tableintevallist = new IntervalList();
+            foreach (var table in tables) 
+            {
+                tableintevallist = Utilities.Objects.MergeSorted(tableintevallist, table.FactindexList, null);
+            }
+            var hastableinfo = tableintevallist.Count > 0;
             var allfactsinteval = new Interval(0, Taxonomy.FactsManager.FactsOfPages.Count);
             var allfactsintevallist = new IntervalList();
             allfactsintevallist.AddInterval(allfactsinteval);
@@ -59,7 +66,12 @@ namespace XBRLProcessor.Model
                 {
                     if (!parameter.IsGeneral)
                     {
-                        var facts = Utilities.Objects.IntersectSorted(parameter.Data, group, null).ToList();
+                        var factsq = Utilities.Objects.IntersectSorted(parameter.Data, group, null);
+                        if (hastableinfo) 
+                        {
+                            factsq = Utilities.Objects.IntersectSorted(factsq, tableintevallist, null);
+                        }
+                        var facts = factsq.ToList();
                         //var facts = parameter.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, group,null).SelectMany(i => i).ToList();
                         if (!parameter.BindAsSequence && facts.Count > 1)
                         {
@@ -107,6 +119,7 @@ namespace XBRLProcessor.Model
                 Utilities.Logger.WriteLine(String.Format("{0}: Rule has no facts!", rule.ID));
             }
         }
+        
         public FactBaseQuery GetQuery(Hierarchy<XbrlIdentifiable> item, int level = 0)
         {
             var query = new FactBaseQuery();
@@ -342,8 +355,7 @@ namespace XBRLProcessor.Model
             }
             return allqueries;
         }
-
-     
+    
         public List<FactBaseQuery> GetFactQuery(Hierarchy<XbrlIdentifiable> item,int level=0)
         {
             //or queries
@@ -402,42 +414,7 @@ namespace XBRLProcessor.Model
             }
             return allqueries;
         }
-        /*
-        public List<string> GetFacts(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict, List<int> factids)
-        {
-
-    
-            //factids.AddRange(GetFactIDs(fbq, IdList));
-            var factsofrule = GetFactsByIds(GetFactIDs(fbq, IdList, IdDict));
-            var facts = fbq.ToQueryable(factsofrule);
-         
-            foreach (var fact in facts) 
-            {
-                var key = Taxonomy.GetFactIntKey(fact).ToArray();
-                //Taxonomy.Facts[key]
-                factids.Add(Taxonomy.FactsManager.GetFactIndex(key));
-            }
-            return facts.ToList();
-        }
-        */
-        /*
-        public List<KeyValue<string,int>> GetFactsKV(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
-        {
-
-
-            //factids.AddRange(GetFactIDs(fbq, IdList));
-            var factsofrule = GetFactsKVByIds(GetFactIDs(fbq, IdList, IdDict));
-            var facts = fbq.ToList(factsofrule);
- 
-            //foreach (var fact in facts)
-            //{
-            //    var key = Taxonomy.GetFactIntKey(fact).ToArray();
-            //    //Taxonomy.Facts[key]
-            //    factids.Add(Taxonomy.FactKeyIndex[key]);
-            //}
-            return facts.ToList();
-        }
-        */
+        
         public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
         {
             IEnumerable<int> ids = null;
@@ -468,130 +445,7 @@ namespace XBRLProcessor.Model
             }
             return ids.ToList();
         }
-        /*
-        public IEnumerable<int> GetFactIDs(FactBaseQuery fbq, List<int> IdList, HashSet<int> IdDict)
-        {
-            IEnumerable<int> ids = new List<int>();
-
-
-            var rulefactquery = fbq;
-            var source = IdList == null ? Taxonomy.FactIndexEnumerable().ToList() : IdList;
-
-            var dimparts = rulefactquery.GetDimensions().Distinct().ToList();
-            ids = source;
-
-            if (dimparts.Count > 0)
-            {
-                //var dimboxes = new List<List<int>>();
-                var dimboxes = new List<string>();
-                var mincount = 1000000;
-                var minix = 0;
-                for (int i = 0; i < dimparts.Count; i++)
-                {
-                    var dimkey = dimparts[i];
-                    //FP if (Taxonomy.FactsOfDimensions.ContainsKey(dimkey))
-                    var ix = Taxonomy.FactParts[dimkey];
-                    if (Taxonomy.FactsOfParts.ContainsKey(ix))
-                    {
-                        var dimbox = Taxonomy.FactsOfParts[ix];
-                        if (dimbox.Count < mincount) 
-                        {
-                            mincount = dimbox.Count;
-                            minix = i;
-                        }
-                        dimboxes.Add(dimkey);
-                    }
-                    else
-                    {
-                        dimboxes = new List<string>();
-                        return ids;
-                    }
-                }
-                //IEnumerable<int> dimidlist = Taxonomy.FactsOfDimensions[dimboxes[minix]];
-                IEnumerable<int> dimidlist = null;
-                //FP var mindimset = Taxonomy.FactsOfDimensions[dimboxes[minix]];
-                var dix = Taxonomy.FactParts[dimboxes[minix]];
-                var mindimset = Taxonomy.FactsOfParts[dix];
-                if (IdList.Count < mindimset.Count)
-                {
-                    dimidlist = Utilities.Objects.IntersectSorted(IdList, mindimset, null);
-                }
-                else 
-                {
-                    //dimidlist = Utilities.Objects.IntersectSorted(mindimset, IdList, null);
-                    dimidlist = Utilities.Objects.IntersectSorted(mindimset, IdDict, null);
-                    //dimidlist = mindimset;
-
-                }
-
-                dimboxes.RemoveAt(minix);
-                for (int i = 0; i < dimboxes.Count; i++)
-                {
-                    //FP var dimbox = Taxonomy.FactsOfDimensions[dimboxes[i]];
-                    var dix2 = Taxonomy.FactParts[dimboxes[i]];
-                    var dimbox = Taxonomy.FactsOfParts[dix2];
-                    //var dimidlistcount = i == 0 ? mincount : dimidlist.Count();
-                    //if (dimidlistcount * 3 < dimbox.Count)
-                    //{
-                    //    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, Taxonomy.FactsOfDimensions[dimboxes[i]], null);
-                    //}
-                    //else
-                    //{
-                    //    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimbox, null);
-                    //}
-              
-                    dimidlist = Utilities.Objects.IntersectSorted(dimidlist, dimbox, null);
-                    //dimidlist = dimidlist.Intersect(dimbox);
-
-                }
-                //foreach (var dim in dimparts)
-
-                if (source.Count < mincount)
-                {                
-                    ids = Utilities.Objects.IntersectSorted(ids, dimidlist, null);
-                }
-                else
-                {
-                    if (ids == IdList)
-                    {
-                        if (dimidlist.Count() <100 )
-                        {
-                            ids = dimidlist;
-                        }
-                        else
-                        {
-                            ids = Utilities.Objects.IntersectSorted(dimidlist, IdDict, null);
-                        }
-                    }
-                    else
-                    {
-                        ids = Utilities.Objects.IntersectSorted(dimidlist, ids, null);
-                    }
-                }
-
-
-            }
-            if (fbq.ChildQueries.Count > 0)
-            {
-                var idlist = ids.ToList();
-                if (idlist.Count > 100)
-                {
-                    var childids = new List<int>();
-                    foreach (var childquery in fbq.ChildQueries)
-                    {
-                        childids.AddRange(GetFactIDs(childquery, idlist, IdDict));
-                    }
-
-                    return childids;
-                }
-                else 
-                {
-                    return idlist;
-                }
-            }
-            return ids;
-        }
-        */
+        
         public List<String> GetFactsByIds(IEnumerable<int> ids) 
         {
             var factlist = new List<String>();//ids.Count());

@@ -225,6 +225,17 @@ namespace LogicalModel.Expressions
             var leftcontainerix = -1;
             var subexpressions = new List<string>();
 
+            var strings = Utilities.Strings.TextsBetween(expression,Literals.Quote,Literals.Quote);
+            var stringdictionary = new Dictionary<string, string>();
+            var c = 0;
+            foreach (var str in strings) 
+            {
+                var key = String.Format(Literals.PlaceholderMark + "{0}", c);
+                var value = Literals.Quote + str + Literals.Quote;
+                expression = expression.Replace(value, key);
+                stringdictionary.Add(key, value);
+                c++;
+            }
             for (int i = 0; i < expression.Length; i++)
             {
                 var character = expression[i].ToString();
@@ -267,8 +278,30 @@ namespace LogicalModel.Expressions
                     //item.Children.Add(subtree);
                 }
             }
+
+            //foreach (var ditem in stringdictionary) 
+            //{
+            //    foreach (var ch in item.HChildren)
+            //    {
+            //        ch.Item = ch.Item.Replace(ditem.Key, ditem.Value);
+            //    }
+            //}
             item.Item = expression;
+            PutbackStrings(item, stringdictionary);
+
             return item;
+        }
+
+        public void PutbackStrings(BaseModel.Hier<String> h, Dictionary<string, string> d) 
+        {
+            foreach (var ditem in d)
+            {
+                h.Item = h.Item.Replace(ditem.Key, ditem.Value);
+            }
+            foreach (var ch in h.HChildren) 
+            {
+                PutbackStrings(ch, d);
+            }
         }
 
         public virtual List<String> GetParameters(Expression expr)

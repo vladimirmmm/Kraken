@@ -168,6 +168,7 @@ namespace LogicalModel.Validation
             this.Taxonomy = taxonomy;
             var rule = this;
             var tableids = taxonomy.Tables.Where(i=>i.ValidationRules.Contains(rule.ID)).Select(i=>i.ID).ToList();
+            this.Tables.Clear();
             this.Tables.AddRange(tableids);
         }
 
@@ -639,7 +640,7 @@ namespace LogicalModel.Validation
                     }
                     if (rp.Type == TypeEnum.Numeric)
                     {
-                        rp.DecimalValues = stringvalues.Select(i => LogicalModel.Validation.Functions.Number(i)).ToArray();// GetValues(parameterfactgroup.Facts).Select(i => double.Parse(i)).ToArray();
+                        rp.DecimalValues = stringvalues.Select(i => LogicalModel.Validation.Functions.GetNumber(i)).ToArray();// GetValues(parameterfactgroup.Facts).Select(i => double.Parse(i)).ToArray();
                         rp.StringValue = Utilities.Strings.ArrayToString(rp.DecimalValues);
                         rp.Decimals = decimals;
                     }

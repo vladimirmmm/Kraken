@@ -567,7 +567,14 @@ namespace Utilities
             }
             return false;
         }
-
+        public static IList<int> MergeSorted(IList<int> sequence1, IList<int> sequence2, IComparer<int> comparer)
+        {
+            if (sequence1.GetType() == typeof(IntervalList) && sequence2.GetType() == typeof(IntervalList))
+            {
+                return MergeSorted((IntervalList)sequence1, (IntervalList)sequence2, null);
+            }
+            return null;
+        }
         public static IntervalList MergeSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
             var result = new IntervalList();

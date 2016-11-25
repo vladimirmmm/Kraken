@@ -15,7 +15,9 @@ namespace LogicalModel
         public const string QNameSeparator = ":";
         public const char QNameSeparatorC = ':';
         public const string Coma = ",";
+        public const string Quote = "\"";
         public const string DefaultMember = "x0";
         public const string NewLine = "\r\n";
+        public const string PlaceholderMark = "<PH!";
     }
 }

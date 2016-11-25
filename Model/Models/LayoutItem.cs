@@ -108,6 +108,12 @@ namespace LogicalModel
             return String.Format("{3} {0} - [{1}] {2} {4}", ID, String.IsNullOrEmpty(LabelCode) ? LabelID : LabelCode, String.IsNullOrEmpty(LabelContent) ? LabelID : LabelContent, Category.ToString("G"), FactString);
         }
 
+        public string ToCompareString()
+        {
+            return String.Format("{0}: {1} - {2}",
+                LabelCode, FactString, LabelContent );
+        }
+
         private string _FactString = "";
         public string GetFactString() 
         {

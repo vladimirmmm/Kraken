@@ -244,6 +244,14 @@ namespace LogicalModel.Validation
         {
             return a;
         }
+        public int XS_Integer(string a) 
+        {
+            if (Utilities.Strings.IsDigitsOnly(a, '-')) 
+            {
+                return Utilities.Converters.FastParse(a);
+            }
+            return 0;
+        }
         public DateTime XS_Date(object a)
         {
             return (DateTime)a;
@@ -368,10 +376,19 @@ namespace LogicalModel.Validation
         {
             return -a;
         }
-        public static decimal Number(object p) 
+        public decimal Number(object p) 
         {
             var n = string.Format("{0}", p);
             if (Utilities.Strings.IsDigitsOnly(n, '.', '-')) 
+            {
+                return decimal.Parse(n, new NumberFormatInfo() { NumberDecimalSeparator = "." });
+            }
+            return 0;
+        }
+        public static decimal GetNumber(object p) 
+        {
+            var n = string.Format("{0}", p);
+            if (Utilities.Strings.IsDigitsOnly(n, '.', '-'))
             {
                 return decimal.Parse(n, new NumberFormatInfo() { NumberDecimalSeparator = "." });
             }

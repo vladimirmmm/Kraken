@@ -72,21 +72,22 @@ namespace XBRLProcessor
             var expression = new Expression();
             expression.OriginalSource = expressionstring;
             var fixedstring = expressionstring;
+            fixedstring = fixedstring.Replace(Literals.Literal.AtSign, Literals.Literal.AtSignReplacement);
 
             Regex regExpr = new Regex("\"[^\"]*\"", RegexOptions.IgnoreCase);
             var strings = new List<string>();
             var matchlist = new List<Match>();
-            foreach (Match  m in regExpr.Matches(fixedstring))
-            { 
-                matchlist.Insert(0,m);
-             
+            foreach (Match m in regExpr.Matches(fixedstring))
+            {
+                matchlist.Insert(0, m);
+
             }
             var mix = 0;
-            foreach (var m in matchlist) 
+            foreach (var m in matchlist)
             {
                 strings.Add(m.Value);
                 fixedstring = fixedstring.Remove(m.Index, m.Value.Length);
-                fixedstring = fixedstring.Insert(m.Index, "\"#!"+mix+"\"");
+                fixedstring = fixedstring.Insert(m.Index, "\"#!" + mix + "\"");
                 mix++;
             }
 
@@ -103,7 +104,7 @@ namespace XBRLProcessor
 
             foreach (var op in operators)
             {
-                var opstring = op.Replace(" ","&spc_");
+                var opstring = op.Replace(" ", "&spc_");
                 fixedstring = fixedstring.Replace("@" + ix.ToString() + "@", "@" + opstring + "@");
                 ix++;
             }
@@ -112,13 +113,17 @@ namespace XBRLProcessor
             fixedstring = fixedstring.Replace("&spc_", " ");
             fixedstring = fixedstring.Replace("@-", "@ ").Replace("-@", " @");
 
-            for (int i = 0; i < strings.Count; i++) 
+            for (int i = 0; i < strings.Count; i++)
             {
                 fixedstring = fixedstring.Replace("\"#!" + i + "\"", strings[i]);
             }
 
 
             var items = fixedstring.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i] = items[i].Replace(Literals.Literal.AtSignReplacement, Literals.Literal.AtSign);
+            }
             if (items.Length == 1)
             {
                 var item = items[0];
@@ -160,10 +165,10 @@ namespace XBRLProcessor
 
         public override Expression GetSimpleExpression(string item)
         {
-            if (item.Contains("s2c_typ:ID")) 
-            {
+            //if (item.Contains("s2c_typ:ID")) 
+            //{
 
-            }
+            //}
             Expression result = null;
             var isfunction = false;
             var isinstring = false;
@@ -409,6 +414,9 @@ namespace XBRLProcessor
         
         public void Test2()
         {
+            //matches($a, "[\d\w]+(([_|\.|\-])?[\d\w]+)*@[\d\w]+(([_|\.|\-])?[\d\w]+)*")
+            Testexpression("string-length(string(xfi:fact-typed-dimension-value($a,QName(\"http://www.boi.org.il/xbrl/dict/dim\",\"TDR\")))) <= 20");
+            Testexpression("matches($a, \"[\\d\\w]+(([_|\\.|\\-])?[\\d\\w]+)*@[\\d\\w]+(([_|\\.|\\-])?[\\d\\w]+)*\")");
             Testexpression("if ($a ne 0) then (iaf:numeric-equal($b, iaf:sum(($c, $d, $e, iaf:numeric-unary-minus($a))))) else true()");
             Testexpression("concat(month-from-date($a), \"-\", day-from-date($a)) = (\"3-31\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"6-30\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"9-30\" cast as xs:string) or concat(month-from-date($a), \"-\", day-from-date($a)) = (\"12-31\" cast as xs:string)");
             Testexpression("if (string-length(string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\")))) = 9)  then ((substring(string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\"))),1,1) != \"8\")  and (substring(string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\"))),1,3) != \"999\")  and (string(xfi:fact-typed-dimension-value($a, QName(\"http://www.boi.org.il/xbrl/dict/dim\", \"TDD\"))) != \"111111111\")) else (true())");

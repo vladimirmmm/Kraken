@@ -154,6 +154,15 @@ namespace LogicalModel
             get;
             set;
         }
+        private IList<int> _FactindexList = new IntervalList();
+        public IList<int> FactindexList 
+        {
+            get { return _FactindexList; }
+            set { _FactindexList = value; }
+        }
+
+        private List<int[]> FactList = new List<int[]>();
+        private List<Tintint> FactIndexToCells = new List<Tintint>();
 
         public override string ToString()
         {
@@ -345,11 +354,7 @@ namespace LogicalModel
                 item.Item.LoadLabel(this.Taxonomy);
             }
         }
-        private List<int[]> FactList = new List<int[]>();
-        private IList<int> FactindexList = new IntervalList();
-        //private List<int> ProcessedFactindexList = new List<int>();
-        //private Dictionary<int, List<int>> FactIndexToCells = new Dictionary<int, List<int>>();
-        private List<Tintint> FactIndexToCells = new List<Tintint>();
+   
 
   
         public void LoadDefinitions2()
@@ -879,26 +884,30 @@ namespace LogicalModel
                 }
             }
             sbe.Clear();
+            sbe.AppendLine("ID: " + this.ID);
+            sbe.AppendLine("Name: " + this.Name);
             sbe.AppendLine("Extenstions");
             foreach (var item in Extensions.Children) 
             {
-                sbe.AppendLine("    " + item.Item.ToString());
+                sbe.AppendLine("    " + item.Item.ToCompareString());
             }
             sbe.AppendLine("Rows");
             foreach (var item in Rows)
             {
-                sbe.AppendLine("    " + item.Item.ToString());
+                sbe.AppendLine("    " + item.Item.ToCompareString());
             }
             sbe.AppendLine("Columns");
             foreach (var item in Columns)
             {
-                sbe.AppendLine("    " + item.Item.ToString());
+                sbe.AppendLine("    " + item.Item.ToCompareString());
             }
             sbe.AppendLine("Blocked");
             foreach (var item in blocked)
             {
                 sbe.AppendLine("    " + item.Key.ToString());
             }
+            sbe.AppendLine("Filing Indicator: "+this.FilingIndicator);
+
             Utilities.FS.WriteAllText(MappingTextPath, sbe.ToString());
             if (!String.IsNullOrEmpty(firstunmappedfact)) 
             {
@@ -908,7 +917,7 @@ namespace LogicalModel
 
             }
             FactList.Clear();
-            FactindexList.Clear();
+            //FactindexList.Clear();
             //ProcessedFactindexList.Clear();
 
             System.IO.File.WriteAllText(LayoutPath.Replace(".txt", ".sbe.dat"), sbe.ToString());

@@ -145,6 +145,10 @@ namespace LogicalModel.Validation
         {
             return XS_String(a.StringValue);
         }
+        public int XS_Integer(ValidationParameter a)
+        {
+            return XS_Integer(a.StringValue);
+        }
         public bool XS_Boolean(ValidationParameter a)
         {
             return XS_Boolean(a.StringValue);

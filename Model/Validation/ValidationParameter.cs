@@ -141,7 +141,7 @@ namespace LogicalModel.Validation
 
         public decimal DecimalValue
         {
-            get { return LogicalModel.Validation.Functions.Number(this.StringValue); }
+            get { return LogicalModel.Validation.Functions.GetNumber(this.StringValue); }
         }
         public DateTime DateValue
         {
