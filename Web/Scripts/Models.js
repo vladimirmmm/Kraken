@@ -679,6 +679,12 @@ var Model;
         return Label;
     })();
     Model.Label = Label;
+    var SimplLabel = (function () {
+        function SimplLabel() {
+        }
+        return SimplLabel;
+    })();
+    Model.SimplLabel = SimplLabel;
     var FactItem = (function () {
         function FactItem() {
             this.FactString = "";

@@ -812,7 +812,7 @@
                         */
                         var hiers = me.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
                             .Where(i=>
-                                i.Item.Role == concept.HierarchyRole
+                                i.Item.Content == concept.Domain.Content && (i.Item.Role == concept.HierarchyRole || IsNull(concept.HierarchyRole))
                             );
                         var hier = hiers.FirstOrDefault();
                         if (!IsNull(hier)) {

@@ -272,6 +272,8 @@ namespace Engine
                 }
                 Utilities.FS.DeleteFolder(folder);
             }
+            Utilities.Logger.WriteLine("Clearing finished");
+
         }
        
         public void ClearTaxonomy(ClearEnum cleartype) 

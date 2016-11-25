@@ -225,7 +225,63 @@ namespace LogicalModel.Base
 
     */
 
-    public class QualifiedItem : QualifiedName, ILabeled 
+    public class QualifiedItem : QualifiedName 
+    {
+        private SimpleLabel _Label = null;
+        [JsonProperty]
+        public SimpleLabel Label
+        {
+            get
+            {
+                return _Label;
+            }
+            set
+            {
+                _Label = value;
+            }
+        }
+
+        public string LabelContent
+        {
+            get 
+            {
+                if (_Label != null) 
+                {
+                    return Label.Content;
+                }
+                return "";
+            }
+        }
+
+        public string LabelCode
+        {
+            get
+            {
+                if (_Label != null)
+                {
+                    return Label.Code;
+                }
+                return "";
+            }
+        }
+
+        private string _Role = "";
+        [JsonProperty]
+        [DefaultValue("")]
+        public string Role
+        {
+            get
+            {
+                return _Role;
+            }
+            set
+            {
+                _Role = value;
+            }
+        }
+    }
+    /*
+      public class QualifiedItem : QualifiedName, ILabeled 
     {
         private Label _Label = null;
         [JsonProperty]
@@ -292,6 +348,8 @@ namespace LogicalModel.Base
             }
         }
     }
+    
+     */
     /*
     public class FactFilter 
     {
@@ -510,7 +568,70 @@ namespace LogicalModel.Base
             target.Filter = (s) => originalfilter(s) && source.Filter(s);
 
         }
-        
+        public static FactBaseQuery GetCommonQuery(params FactBaseQuery[] queries) 
+        {
+            if (queries.Length==0){return null;}
+            //if (queries.Length==1)
+            //{
+            //    return queries[0];
+            //}
+            var result = queries[0];
+
+            for (int i=1;i<queries.Length;i++) 
+            {
+                result = FactBaseQuery.GetCommon(result, queries[i]);
+            }
+
+            return result;
+        }
+
+        public static FactBaseQuery GetCommon(FactBaseQuery a, FactBaseQuery b) 
+        {
+            var common_dfs = a.DictFilterIndexes.Intersect(b.DictFilterIndexes).ToList();
+            var common_ndfs = a.NegativeDictFilterIndexes.Intersect(b.NegativeDictFilterIndexes).ToList();
+            var qry = new FactBaseQuery();
+            qry.DictFilterIndexes = common_dfs;
+            qry.NegativeDictFilterIndexes = common_ndfs;
+            foreach (var achildquery in a.ChildQueries) 
+            {
+                var acs = achildquery.GetCompareString();
+                var bchildquery = b.ChildQueries.FirstOrDefault(i => i.GetCompareString() == acs);
+                if (bchildquery != null) 
+                {
+                    qry.ChildQueries.Add(achildquery.Copy());
+                }
+            }
+            return qry;
+            
+        }
+        public FactBaseQuery Copy() 
+        {
+            var result = new FactBaseQuery();
+            result.DictFilterIndexes = this.DictFilterIndexes.ToArray().ToList();
+            result.NegativeDictFilterIndexes = this.NegativeDictFilterIndexes.ToArray().ToList();
+            foreach (var childquery in ChildQueries) 
+            {
+                result.AddChildQuery(childquery.Copy());
+            }
+            return result;
+        }
+        public static void RemoveQuery(FactBaseQuery from,FactBaseQuery item)
+        {
+            from.DictFilterIndexes = from.DictFilterIndexes.Except(item.DictFilterIndexes).ToList();
+            from.NegativeDictFilterIndexes = from.NegativeDictFilterIndexes.Except(item.NegativeDictFilterIndexes).ToList();
+            var childqueries = from.ChildQueries.ToArray().ToList();
+            foreach (var childquery in childqueries) 
+            {
+                var itemcs = childquery.GetCompareString();
+
+                var bchildquery = item.ChildQueries.FirstOrDefault(i => i.GetCompareString() == itemcs);
+                if (bchildquery != null) 
+                {
+                    from.ChildQueries.Remove(childquery);
+                }
+ 
+            }
+        }
         public IEnumerable<String> ToQueryable(IEnumerable<String> queryable)
         {
             var result = queryable.Where(i => Filter(i));
@@ -751,6 +872,31 @@ namespace LogicalModel.Base
             foreach (var child in ChildQueries)
             {
                 sb.AppendLine(child.GetString(taxonomy, Literals.Tab + pad));
+            }
+            return sb.ToString();
+        }
+        public string GetCompareString(string pad = "")
+        {
+            var sb = new StringBuilder();
+            foreach (var ix in DictFilterIndexes)
+            {
+                sb.Append(ix + ", ");
+            }
+            sb.Append("; ");
+            if (NegativeDictFilterIndexes.Count > 0)
+            {
+                sb.Append("!:");
+
+                foreach (var ix in NegativeDictFilterIndexes)
+                {
+                    sb.Append(ix + ", ");
+                }
+                sb.AppendLine(";");
+
+            }
+            foreach (var child in ChildQueries)
+            {
+                sb.AppendLine(child.GetCompareString(Literals.Tab + pad));
             }
             return sb.ToString();
         }

@@ -693,6 +693,10 @@
         public FileName: string;
 
     }
+    export class SimplLabel {
+        public Code: string;
+        public Content: string;
+    }
     export class FactItem {
         public FactString: string = "";
         public Value: string = "";

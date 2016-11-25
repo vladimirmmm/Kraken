@@ -217,7 +217,7 @@ namespace XBRLProcessor
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
             CurrentXbrlInstance.LoadSimple();
-        Task t= null;
+           Task t= null;
             CurrentInstanceTaxonomyLoaded = (object o, TaxonomyEventArgs e) =>
             {
                 //Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
@@ -240,7 +240,7 @@ namespace XBRLProcessor
             };
 
             Trigger_InstanceLoad(filepath);
-            if (wait)
+            if (wait && t!=null)
             {
                 t.Wait();
             }

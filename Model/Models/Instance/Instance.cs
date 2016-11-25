@@ -32,7 +32,7 @@ namespace LogicalModel
         }
 
         private ContextContainer _Contexts = new ContextContainer();
-        [JsonProperty]
+        [JsonIgnore]
         public ContextContainer Contexts
         {
             get { return _Contexts; }

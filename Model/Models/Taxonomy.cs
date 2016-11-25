@@ -1171,6 +1171,10 @@ namespace LogicalModel
                 jsoncontent = null;
 
 
+       
+
+                PopulateValidationSets();
+
                 foreach (var Table in Tables)
                 {
                     var tjson = Utilities.Converters.ToJson(Table);
@@ -1178,8 +1182,6 @@ namespace LogicalModel
 
                 }
                 ClearTablesAfterLoad();
-
-                PopulateValidationSets();
 
                 FactsManager.SaveAll();
 
@@ -1216,7 +1218,7 @@ namespace LogicalModel
                     var table = Utilities.Converters.JsonTo<Table>(tjson);
                     table.Taxonomy = this;
                     table.Reload();
-                    table.LoadLayout();
+                    //table.LoadLayout();
 
                     this.Tables.Add(table);
                 }
@@ -1679,7 +1681,7 @@ namespace LogicalModel
             {
                 var qi = new QualifiedItem();
                 qi.Content = member.Namespace + ":" + member.Name;
-                qi.Label = GetLabelForMember(qi.Content);
+                qi.Label = Label.GetSimpleLabel(GetLabelForMember(qi.Content));
                 result.Add(qi);
             }
             return result;

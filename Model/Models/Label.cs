@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace LogicalModel
 {
+    public class SimpleLabel
+    {
+        public string _Content = "";
+        public string _Code = "";
+        public string Content { get { return _Content; } set { _Content = value; } }
+        public string Code { get { return _Code; } set { _Code = value; } }
+       
+    }
     public class Label
     {
         public static string labelprefix = "";
@@ -113,6 +121,23 @@ namespace LogicalModel
             l.Lang = Taxonomy.Lang;
             l.LocalID = localID.StartsWith(labelprefix) ? localID.Substring(labelprefix.Length) : localID;
             return l.Key;
+        }
+
+        public SimpleLabel ToSimpleLabel()
+        {
+            var l = new SimpleLabel();
+            l.Code = this.Code;
+            l.Content = this.Content;
+            return l;
+        }
+
+        public static SimpleLabel GetSimpleLabel(Label label) 
+        {
+            if (label != null) 
+            {
+                return label.ToSimpleLabel();
+            }
+            return null;
         }
     }
 }

@@ -675,7 +675,7 @@ namespace XBRLProcessor.Models
                     var domainelement = SchemaElements.FirstOrDefault(i => i.Namespace == domainspecifier.Namespace && i.Name == domainspecifier.Name);
                     var domain = domainelement.ID;
                     h.Item.Content = domainspecifier.Content;
-                    h.Item.Label = GetLabelForDomain(domain);
+                    h.Item.Label = LogicalModel.Label.GetSimpleLabel(GetLabelForDomain(domain));
                     this.Hierarchies.Add(h);
 
 

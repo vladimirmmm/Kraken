@@ -645,6 +645,24 @@ namespace Utilities
 
     public class IntervalList : IList<int>
     {
+        public IntervalList() 
+        {
+
+        }
+        public IntervalList(int value)
+        {
+            var interval = new Interval(value);
+            this.Intervals.Add(interval);
+        }
+        public IntervalList(int start,int end)
+        {
+            var interval = new Interval(start,end);
+            this.Intervals.Add(interval);
+        }
+        public IntervalList(Interval interval)
+        {
+            this.Intervals.Add(interval);
+        }
         public List<Interval> Intervals = new List<Interval>();
         protected Dictionary<int, Interval> StartValues = new Dictionary<int, Interval>();
 

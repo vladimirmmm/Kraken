@@ -675,7 +675,7 @@ var Control;
                             && i.Item.Namespace == concept.Domain.Namespace
                             &&
                         */
-                        var hiers = me.Taxonomy.Hierarchies.Children.AsLinq().Where(function (i) { return i.Item.Role == concept.HierarchyRole; });
+                        var hiers = me.Taxonomy.Hierarchies.Children.AsLinq().Where(function (i) { return i.Item.Content == concept.Domain.Content && (i.Item.Role == concept.HierarchyRole || IsNull(concept.HierarchyRole)); });
                         var hier = hiers.FirstOrDefault();
                         if (!IsNull(hier)) {
                             var clkp = new Model.ConceptLookUp();

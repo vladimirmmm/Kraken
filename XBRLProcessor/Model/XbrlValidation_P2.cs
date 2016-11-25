@@ -18,20 +18,28 @@ namespace XBRLProcessor.Model
     {
         public void SetFacts(LogicalModel.Validation.ValidationRule rule) 
         {
+            if (rule.ID.Contains("v4019")) 
+            {
+
+            }
             var tables = rule.Tables.Select(i => Taxonomy.Tables.FirstOrDefault(t => t.ID == i)).ToList();
-            IList<int> tableintevallist = new IntervalList();
+            IList<int> tableintevallist = null;
             foreach (var table in tables) 
             {
+                tableintevallist = tableintevallist == null ? new IntervalList() : tableintevallist;
                 tableintevallist = Utilities.Objects.MergeSorted(tableintevallist, table.FactindexList, null);
             }
-            var hastableinfo = tableintevallist.Count > 0;
-            var allfactsinteval = new Interval(0, Taxonomy.FactsManager.FactsOfPages.Count);
-            var allfactsintevallist = new IntervalList();
-            allfactsintevallist.AddInterval(allfactsinteval);
+            var hastableinfo = tableintevallist != null ? tableintevallist.Count > 0 : false;
+            IList<int> allfactsintevallist = new IntervalList(0, Taxonomy.FactsManager.FactsOfPages.Count);
+
+            if (hastableinfo) 
+            {
+                allfactsintevallist = tableintevallist;
+            }
 
             foreach (var parameter in rule.Parameters)
             {
-                IList<int> sdata = null;
+                IList<int> sdata = tableintevallist;
                 if (!parameter.IsGeneral)
                 {
                     if (parameter.BaseQuery.DictFilterIndexes.Count == 0)
@@ -44,7 +52,7 @@ namespace XBRLProcessor.Model
             }
             bool hasfacts = false;
             var ix = 0;
-            IList<int> data = null;
+            IList<int> data = tableintevallist;
             if (rule.BaseQuery.DictFilterIndexes.Count == 0) 
             {
                 // && rule.BaseQuery.Pools.Count == 0
@@ -67,10 +75,10 @@ namespace XBRLProcessor.Model
                     if (!parameter.IsGeneral)
                     {
                         var factsq = Utilities.Objects.IntersectSorted(parameter.Data, group, null);
-                        if (hastableinfo) 
-                        {
-                            factsq = Utilities.Objects.IntersectSorted(factsq, tableintevallist, null);
-                        }
+                        //if (hastableinfo) 
+                        //{
+                        //    factsq = Utilities.Objects.IntersectSorted(factsq, tableintevallist, null);
+                        //}
                         var facts = factsq.ToList();
                         //var facts = parameter.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, group,null).SelectMany(i => i).ToList();
                         if (!parameter.BindAsSequence && facts.Count > 1)
@@ -87,23 +95,49 @@ namespace XBRLProcessor.Model
 
                 
                 }
-                var factcounts = singlefactparameters.Select(i=>new Utilities.KeyValue<int,LogicalModel.Validation.ValidationParameter>(i.TaxFacts.LastOrDefault().Count,i)).OrderByDescending(i => i.Key).ToList();
-                var distinctfactcounts = factcounts.Distinct().ToList();
-                if ((distinctfactcounts.Count == 2 && distinctfactcounts[1].Key == 1) || singlefactparameters.Count==1)
+                if (mffnspissue)
                 {
-                    mffnspissue = false;
-                    var facts = factcounts[0].Value.TaxFacts.LastOrDefault();
-                    var parameterstocomplete = factcounts.Where(i => i.Key < factcounts[0].Key).Select(i => i.Value);
-
-                    foreach (var p in parameterstocomplete)
+                    var factcounts = singlefactparameters.Select(i => new Utilities.KeyValue<int, LogicalModel.Validation.ValidationParameter>(i.TaxFacts.LastOrDefault().Count, i)).OrderByDescending(i => i.Key).ToList();
+                    var distinctfactcounts = factcounts.Distinct().ToList();
+                    if (singlefactparameters.Count == 1)
                     {
-                        var factlist = p.TaxFacts.LastOrDefault();
-                        var val = factlist.SingleOrDefault();
-                        factlist.Clear();
-                        factlist.AddRange(facts.Select(i => val));
+                        mffnspissue = false;
+                        var p = singlefactparameters.FirstOrDefault();
+                        var facts = p.TaxFacts.FirstOrDefault();
+                        p.TaxFacts.Clear();
+                        foreach (var fact in facts)
+                        {
+                            p.TaxFacts.Add(new List<int>() { fact });
+                        }
+                    }
+                    if ((distinctfactcounts.Count == 2 && distinctfactcounts[1].Key == 1))
+                    {
+                        mffnspissue = false;
+                        var theparameter = factcounts[0].Value;
+                        var parameterstocomplete = factcounts.Where(i => i.Key < factcounts[0].Key).Select(i => i.Value);
+
+                        var facts = theparameter.TaxFacts.LastOrDefault();
+                        theparameter.TaxFacts.Clear();
+                        var run = 0;
+                        foreach (var fact in facts)
+                        {
+                            theparameter.TaxFacts.Add(new List<int>() { fact });
+
+                            foreach (var p in parameterstocomplete)
+                            {
+                                var firsttaxfact = p.TaxFacts.FirstOrDefault();
+                                if (run > 0)
+                                {
+                                    p.TaxFacts.Add(firsttaxfact);
+                                }
+
+                            }
+                            run++;
+                        }
+
+                   
 
                     }
-
                 }
                 if (mffnspissue) 
                 {

@@ -420,7 +420,7 @@ namespace XBRLProcessor.Mapping
             var toitem = new LogicalModel.Base.QualifiedItem();
             toitem.Namespace = item.Namespace;
             toitem.Name = item.Element.Name;
-            toitem.LabelID = item.LabelID;
+            //toitem.LabelID = item.LabelID;
             toitem.ID = item.ID;
             toitem.Role = item.Role;
             if (String.IsNullOrEmpty(item.NamespaceFolder))
@@ -429,9 +429,9 @@ namespace XBRLProcessor.Mapping
 
                 //item.NamespaceFolder = item.Namespace.Replace(XbrlEngine.CurrentEngine.CurrentTaxonomy.Prefix, "");
             }
-            toitem.Label = XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(
+            toitem.Label = LogicalModel.Label.GetSimpleLabel( XbrlEngine.CurrentEngine.CurrentTaxonomy.FindLabel(
                 LogicalModel.Label.GetKey(item.NamespaceFolder, toitem.ID)
-                );
+                ));
             return toitem;
         }
         

@@ -112,8 +112,12 @@ namespace LogicalModel
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Y_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
         private List<KeyValue<int, List<Hierarchy<LayoutItem>>>> Z_Axis = new List<KeyValue<int, List<Hierarchy<LayoutItem>>>>();
 
-        public List<Hierarchy<LayoutItem>> Rows = new List<Hierarchy<LayoutItem>>();
-        public List<Hierarchy<LayoutItem>> Columns = new List<Hierarchy<LayoutItem>>();
+        private List<Hierarchy<LayoutItem>> _Rows = new List<Hierarchy<LayoutItem>>();
+        public List<Hierarchy<LayoutItem>> Rows { get { return _Rows; } set { _Rows = value; } }
+        
+        private List<Hierarchy<LayoutItem>> _Columns = new List<Hierarchy<LayoutItem>>();
+        public List<Hierarchy<LayoutItem>> Columns { get { return _Columns; } set { _Columns = value; } }
+
         private Hierarchy<LayoutItem> _Extensions = new Hierarchy<LayoutItem>();
         public Hierarchy<LayoutItem> Extensions 
         {
@@ -770,15 +774,24 @@ namespace LogicalModel
 
                                 var factintkey = xcell.FactIntKey;
 
-                                //var factix = this.Taxonomy.FactsManager.GetFactIndex(factintkey);
-                                //if (factix > -1)
-                                //{
-                                //    this.FactIndexToCells.Add(new Tuple<int, int>(factix, cellix));
-                                //    this.ProcessedFactindexList.Add(factix);
-                                //    cell.IsBlocked = false;
-                                //}
-                                //else
-                                //{
+                                var factix = this.Taxonomy.FactsManager.GetFactIndex(factintkey);
+                                if (factix > -1)
+                                {
+                                    var factixinterval = new IntervalList(factix);
+                                    var factixinthis = Utilities.Objects.IntersectSorted(factixinterval, FactindexList, null);
+                                    if (factixinthis.Count == 1)
+                                    {
+                                        this.FactIndexToCells.Add(new Tintint(factix, cellix));
+                                        //this.ProcessedFactindexList.Add(factix);
+                                        cell.IsBlocked = false;
+                                    }
+                                    else
+                                    {
+                                        factix = -1;
+                                    }
+                                }
+                                if (factix==-1)
+                                {
                                     if (!factintkey.Any(fk => fk < 0))
                                     {
                                         IList<int> results = new List<int>();
@@ -808,7 +821,7 @@ namespace LogicalModel
                                     {
                                         //sbe.AppendLine(xcell.CellID + " not mapped for " + Taxonomy.GetFactStringKey(factintkey));
                                     }
-                                //}
+                                }
 
 
                                 //if (factintkeys.Count == 0)
