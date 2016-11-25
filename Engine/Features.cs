@@ -466,7 +466,7 @@ namespace Engine
             }
         }
         
-        public void OpenInstance(string path)
+        public void OpenInstance(string path,bool wait=false)
         {
             SetRegValue(RegSettingsPath + "LastInstance", path);
             AddToRecent(RecentInstances,RegKey_Recent_Instances, path);
@@ -479,8 +479,8 @@ namespace Engine
 
             Engine.InstanceLoaded -= Engine_InstanceLoaded;
             Engine.InstanceLoaded += Engine_InstanceLoaded;
-     
-            Engine.LoadInstance(path);
+
+            Engine.LoadInstance(path, wait);
 
 
      
@@ -629,8 +629,11 @@ namespace Engine
                     var files = System.IO.Directory.GetFiles(path, "*.xbrl", System.IO.SearchOption.AllDirectories);
                     foreach (var file in files)
                     {
-                        OpenInstance(file);
-                        ValidateInstance();
+                        OpenInstance(file,true);
+                        if (!Settings.Current.ValidateOnInstanceLoaded)
+                        {
+                            ValidateInstance();
+                        }
                     }
                 }
             }

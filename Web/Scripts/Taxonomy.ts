@@ -42,6 +42,7 @@
         private ui_vruledetail: Element = null;
 
         private FactServiceFunction: General.FunctionWithCallback = null;
+        private LabelServiceFunction: General.FunctionWithCallback = null;
         public ValidationResultServiceFunction: General.FunctionWithCallback = null;
 
         constructor() {
@@ -74,7 +75,16 @@
                 }
             });
         }
+        public Clear() {
+            this.Taxonomy = null;
+            this.Taxonomy = new Model.Taxonomy();
+            this.Table = new UI.Table();
+            this.ValidationRules = [];
+            this.ConceptValues = [];
+            this.CurrentFacts = [];
+            this.CurrentValidationResults = [];
 
+        }
         public HashChanged() {
             var me = this;
             me.Table.HashChanged();
@@ -212,6 +222,15 @@
 
             AjaxRequest("Taxonomy/Documents", "get", "json", null, function (data) {
                 me.Taxonomy.TaxonomyDocuments = data;
+                for (var i = 0; i < me.Taxonomy.TaxonomyDocuments.length; i++)
+                {
+                    var doc = me.Taxonomy.TaxonomyDocuments[i];
+                    var smalldoc = new Model.TaxonomyDocument();
+                    smalldoc.FileName = doc.FileName;
+                    smalldoc.LocalRelPath = doc.LocalRelPath;
+                    me.Taxonomy.TaxonomyDocuments[i] = smalldoc;
+                }
+                GC();
             }, function (error) { console.log(error); });
 
             me.LoadValidationResults(null);
@@ -229,9 +248,9 @@
 
             }, function (error) { console.log(error); });
 
-            AjaxRequest("Taxonomy/Labels", "get", "json", null, function (data) {
-                me.Taxonomy.Labels = data;
-            }, function (error) { console.log(error); });
+            //AjaxRequest("Taxonomy/Labels", "get", "json", null, function (data) {
+            //    me.Taxonomy.Labels = data;
+            //}, function (error) { console.log(error); });
 
             me.FactServiceFunction = new General.FunctionWithCallback(
                 (fwc: General.FunctionWithCallback, args: any) => {
@@ -247,6 +266,22 @@
                                         fact.Value[i] = me.Taxonomy.CellIndexDictionary[fact.Value[i]];
                                     }
                                 });
+                                fwc.Callback(data);
+                            }
+                        }, null);
+                });
+            me.LabelServiceFunction = new General.FunctionWithCallback(
+                (fwc: General.FunctionWithCallback, args: any) => {
+                    var p = <Model.Dictionary<any>>args[0];
+                    AjaxRequest("Taxonomy/Labels", "get", "json", p,
+                        function (data: DataResult) {
+                            if (!IsNull(data.Items)) {
+                                //me.CurrentFacts = <Model.KeyValuePair<string, string[]>[]>data.Items;
+                                //me.CurrentFacts.forEach((fact) => {
+                                //    for (var i = 0; i < fact.Value.length; i++) {
+                                //        fact.Value[i] = me.Taxonomy.CellIndexDictionary[fact.Value[i]];
+                                //    }
+                                //});
                                 fwc.Callback(data);
                             }
                         }, null);
@@ -369,7 +404,9 @@
 
             }
             if (contentid == me.s_label_id) {
-                LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.Taxonomy.Labels, 0, me.LPageSize);
+                //LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, eventhandlers);
+
+                LoadPageAsync(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.LabelServiceFunction, 0, me.LPageSize,null);
 
             }
             if (contentid == me.s_xml_id) {
@@ -453,20 +490,22 @@
             var f_key: string = _Value( me.SelFromLabel(s_listfilter_selector + " #F_Key")).toLowerCase().trim();
             var f_code: string = _Value(me.SelFromLabel(s_listfilter_selector + " #F_Code")).toLowerCase().trim();
             var f_content: string = _Value(me.SelFromLabel(s_listfilter_selector + " #F_Content")).toLowerCase().trim();
-            var query = me.Taxonomy.Labels.AsLinq<Model.Label>();
-            if (!IsNull(f_content)) {
-                query = query.Where(i=> i.Content.toLowerCase().indexOf(f_content) > -1);
-            }
-            if (!IsNull(f_code)) {
-                query = query.Where(i=> i.Code.toLowerCase() == f_code);
-            }
-            if (!IsNull(f_key)) {
+            //var query = me.Taxonomy.Labels.AsLinq<Model.Label>();
+            //if (!IsNull(f_content)) {
+            //    query = query.Where(i=> i.Content.toLowerCase().indexOf(f_content) > -1);
+            //}
+            //if (!IsNull(f_code)) {
+            //    query = query.Where(i=> i.Code.toLowerCase() == f_code);
+            //}
+            //if (!IsNull(f_key)) {
 
 
-                query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
-            }
-
-            LoadPage(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), query.ToArray(), 0, me.LPageSize);
+            //    query = query.Where(i=> i.LabelID.toLowerCase().indexOf(f_key) == i.LabelID.length - f_key.length);
+            //}
+            var parameters = { key: f_key, code: f_code, content: f_content  };
+            //LoadPageAsync(me.SelFromFact(s_list_selector), me.SelFromFact(s_listpager_selector), me.FactServiceFunction, 0, me.PageSize, parameters, null);
+       
+            LoadPageAsync(me.SelFromLabel(s_list_selector), me.SelFromLabel(s_listpager_selector), me.LabelServiceFunction, 0, me.LPageSize, parameters, null);
 
         }
 
@@ -481,7 +520,7 @@
             var f_filename: string = _Value(_SelectFirst("#F_FileName", me.s_xml_selector)).toLowerCase().trim();
             var query = me.Taxonomy.TaxonomyDocuments.AsLinq<Model.TaxonomyDocument>();
             if (!IsNull(f_filename)) {
-                query = query.Where(i=> i.SourcePath.toLowerCase().indexOf(f_filename) > -1);
+                query = query.Where(i=> i.LocalRelPath.toLowerCase().indexOf(f_filename) > -1);
             }
 
             LoadPage(_SelectFirst(s_list_selector, me.s_xml_selector), _SelectFirst(s_listpager_selector, me.s_xml_selector),

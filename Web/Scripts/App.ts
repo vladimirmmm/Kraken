@@ -275,9 +275,14 @@ module Applications
 
 
         }
+
         public LoadTaxonomy()
         {
             var me = this;
+
+            me.instancecontainer.Clear();
+            me.taxonomycontainer.Clear();
+            GC();
             me.IsTaxonomyLoading = true;
 
             me.taxonomycontainer.Table.TaxonomyService = new Service.TaxonomyService(me.taxonomycontainer, me.instancecontainer);
@@ -292,7 +297,13 @@ module Applications
         }
     }
 } 
-
+function GC()
+{
+    if (typeof (window["CollectGarbage"]) == "function") {
+        Log("CollectGarbage");
+        window["CollectGarbage"]();
+    }
+}
 var app = new Applications.App();
 
 var actioncenter = new Engine.ActionCenter();

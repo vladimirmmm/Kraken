@@ -209,7 +209,7 @@ namespace XBRLProcessor
             return isloaded;
         }       
 
-        public override bool LoadInstance(string filepath)
+        public override bool LoadInstance(string filepath, bool wait)
         {
             IsInstanceLoading = true;
             Logger.WriteLine("Loading Instance started");
@@ -217,14 +217,14 @@ namespace XBRLProcessor
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
             CurrentXbrlInstance.LoadSimple();
-        
+        Task t= null;
             CurrentInstanceTaxonomyLoaded = (object o, TaxonomyEventArgs e) =>
             {
                 //Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
                 
                 CurrentInstance.SetTaxonomy(CurrentTaxonomy);
                
-                Task.Factory.StartNew(()=>{
+                t= Task.Factory.StartNew(()=>{
                      CurrentXbrlInstance.LoadComplex();
                     Trigger_InstanceLoaded(filepath);
                     Logger.WriteLine("Loading Instance finished");
@@ -240,7 +240,10 @@ namespace XBRLProcessor
             };
 
             Trigger_InstanceLoad(filepath);
-        
+            if (wait)
+            {
+                t.Wait();
+            }
             return true;
         }
 

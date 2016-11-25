@@ -48,6 +48,8 @@ var UI;
             this.Current_ReportID = "";
             this.IsInstanceLoaded = false;
             this.TaxonomyService = null;
+            this.templatefacts = [];
+            this.templatedicts = [];
             this.changes = {};
         }
         Table.prototype.LoadTable = function (reportid) {
@@ -180,22 +182,11 @@ var UI;
             }
             me.UITable.Manager.ClearDynamicItems(me.UITable);
             me.UITable.Manager.Clear(me.UITable);
+            _Html(_SelectFirst(".tablepager"), "");
             me.SetExtensionByCode(me.Current_ExtensionCode);
             me.SetDynamicRows();
-            var c = 0;
-            var cells = this.UITable.Cells; //this.Cells;
             Model.FactBase.LoadFromFactString(me.CurrentExtension);
-            cells.forEach(function (cell, index) {
-                if (!_HasClass(cell, "blocked")) {
-                    var fact = me.TaxonomyService.GetFactByKey(cell.CurrentFactKey);
-                    //var str = me.TaxonomyService.GetFactStringKey(cell.CurrentFactKey);
-                    //Log(cell.RowID + "|" + cell.ColID + ": " + str);
-                    if (!IsNull(fact)) {
-                        _Html(cell.UIElement, fact.Value);
-                        c++;
-                    }
-                }
-            });
+            me.PopulateCells();
             var extensioncell = _SelectFirst(".report #Extension");
             var extensioneditorelement = _SelectFirst("#ExtensionEditor");
             var extensioneditorcontainerelement = _SelectFirst("#ExtensionEditor .editors");
@@ -204,7 +195,6 @@ var UI;
                 _Html(extensioneditorcontainerelement, html);
                 _Show(extensioneditorelement);
             });
-            ShowNotification(Format("{0} cells were populated!", c));
         };
         Table.prototype.LoadExtension = function (li) {
             var me = this;
@@ -233,6 +223,55 @@ var UI;
                 }
             });
         };
+        Table.prototype.PopulateCells = function () {
+            var me = this;
+            var c = 0;
+            var cells = this.UITable.Cells; //this.Cells;
+            cells.forEach(function (cell, index) {
+                if (!_HasClass(cell, "blocked")) {
+                    var fact = me.TaxonomyService.GetFactByKey(cell.CurrentFactKey);
+                    if (!IsNull(fact)) {
+                        _Html(cell.UIElement, fact.Value);
+                        c++;
+                    }
+                }
+            });
+            ShowNotification(Format("{0} cells were populated!", c));
+        };
+        Table.prototype.LoadRows = function (items, page, pagesize) {
+            var me = this;
+            var startix = pagesize * page;
+            var endix = startix + pagesize;
+            var datalength = GetLength(items);
+            var itemspart = GetPart(items, startix, endix);
+            me.UITable.Manager.ClearDynamicItems(me.UITable);
+            itemspart.forEach(function (item) {
+                var row = me.UITable.AddRow(-1, item.Value);
+                me.SetDataCells2(row, item, me.templatefacts, me.templatedicts);
+            });
+            if (datalength > pagesize) {
+                var $pager = $(".tablepager");
+                if ($pager.length == 0 || 1 == 1) {
+                    $pager.pagination(datalength, {
+                        items_per_page: pagesize,
+                        current_page: page ? page : 0,
+                        link_to: "",
+                        prev_text: "Prev",
+                        next_text: "Next",
+                        ellipse_text: "...",
+                        prev_show_always: true,
+                        next_show_always: true,
+                        callback: function (pageix) {
+                            //CallFunctionFrom(events, "onpaging");
+                            me.LoadRows(items, pageix, pagesize);
+                            me.PopulateCells();
+                            //CallFunctionFrom(events, "onpaged");
+                            return false;
+                        },
+                    });
+                }
+            }
+        };
         Table.prototype.SetDynamicRows = function () {
             var me = this;
             var cellobj = me.Cells[0];
@@ -244,12 +283,12 @@ var UI;
             var rows = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.RowDictionary);
             var cols = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.ColDictionary);
             var exts = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.ExtDictionary);
+            me.templatedicts = [];
+            me.templatefacts = [];
             var templaterow = me.UITable.Manager.TemplateRow;
             var templatecol = me.UITable.Manager.TemplateColumn;
             if (!IsNull(templaterow)) {
                 me.UITable.Manager.ClearDynamicItems(me.UITable);
-                var templatefacts = [];
-                var templatedicts = [];
                 //s
                 me.UITable.CanManageRows = false;
                 templaterow.Cells.forEach(function (cell, ix) {
@@ -270,19 +309,18 @@ var UI;
                             dict[key] = i;
                         }
                     }
-                    templatedicts.push(dict);
-                    templatefacts.push(fact);
+                    me.templatedicts.push(dict);
+                    me.templatefacts.push(fact);
                 });
-                rows.forEach(function (rowitem, ix) {
-                    var row = me.UITable.AddRow(-1, rowitem.Value);
-                    me.SetDataCells2(row, rowitem, templatefacts, templatedicts);
-                });
+                //rows.forEach(function (rowitem,ix) {
+                //    var row = me.UITable.AddRow(-1, rowitem.Value);
+                //    me.SetDataCells2(row, rowitem, me.templatefacts, me.templatedicts);
+                //});
+                me.LoadRows(rows, 0, 100);
                 //me.UITable.CanManageRows = true;
                 me.UITable.Manager.ManageRows(me.UITable);
             }
             if (!IsNull(templatecol)) {
-                var templatefacts = [];
-                var templatedicts = [];
                 //s
                 me.UITable.CanManageColumns = false;
                 templatecol.Cells.forEach(function (cell, ix) {
@@ -303,36 +341,17 @@ var UI;
                             dict[key] = i;
                         }
                     }
-                    templatedicts.push(dict);
-                    templatefacts.push(fact);
+                    me.templatedicts.push(dict);
+                    me.templatefacts.push(fact);
                 });
                 cols.forEach(function (colitem, ix) {
                     var col = me.UITable.AddColumn(-1, colitem.Value);
                     //me.SetCellIDs(row, null);
-                    me.SetDataCells2(col, colitem, templatefacts, templatedicts);
+                    me.SetDataCells2(col, colitem, me.templatefacts, me.templatedicts);
                 });
                 //me.UITable.CanManageColumns = true;
                 me.UITable.Manager.ManageColumns(me.UITable);
             }
-            /*
-            if (exts.length > 0)
-            {
-                Log("SetExtension");
-
-                exts.forEach((item,ix) => {
-                   
-                    var extitem = me.ExtensionsRoot.Children[ix];
-                    var id = Format("Ext_{0}", item.Value);
-                    extitem.Item.ID = id;
-                    extitem.Item.Label = new Model.Label();
-                    extitem.Item.LabelCode = item.Value;
-                    extitem.Item.Label.Code = item.Value;
-                    extitem.Item.FactString = item.Key;
-
-                });
-                me.LoadExtension(me.CurrentExtension);
-            }
-            */
         };
         Table.prototype.SetDataCells2 = function (cellcontainer, ditem, templatefacts, templatedicts) {
             var me = this;

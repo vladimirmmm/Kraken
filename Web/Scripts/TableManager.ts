@@ -618,6 +618,21 @@ module Controls {
             return true;
         }
 
+        public ClearRows()
+        {
+            var me = this;
+            me.Rows.AsLinq<Row>().ToArray().forEach((row) => {
+                row.Cells.forEach(function (cell, ix) {
+                    RemoveFrom(cell, me.Cells);
+                });
+                RemoveFrom(row, me.Rows);
+
+            });
+            _Html(me.BodyUIElement, "");
+            CallFunctionWithContext(me, me.OnLayoutChanged, []);
+          
+        }
+
         public RemoveColumnByID(colid: string) {
 
             var coltoremove = this.GetColumnByID(colid);

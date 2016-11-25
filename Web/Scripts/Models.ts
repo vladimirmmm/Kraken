@@ -783,9 +783,9 @@
     export class TaxonomyDocument
     {
         public FileName: string = "";
-        public ReferencedFiles: string[] = [];
+        //public ReferencedFiles: string[] = [];
         public LocalRelPath: string = "";
-        public SourcePath: string = "";
+        //public SourcePath: string = "";
     }
 
     export class TableInfo extends Identifiable

@@ -68,7 +68,7 @@ namespace LogicalModel
             }
             Logger.WriteLine(LocalFolder);
         }
-        public virtual bool LoadInstance(string filepath) 
+        public virtual bool LoadInstance(string filepath, bool wait) 
         {
             return true;
         }

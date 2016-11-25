@@ -394,7 +394,7 @@ namespace XBRLProcessor.Model
             {
                 tmp_rule.Remove(fv);
             }
-            if (logicalrule.ID.Contains("4002"))
+            if (logicalrule.ID.Contains("1139"))
             {
                 //var rulebasequeryX = GetRuleQuery(tmp_rule).FirstOrDefault();
 

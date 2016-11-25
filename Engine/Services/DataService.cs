@@ -318,7 +318,28 @@ namespace Engine.Services
                                 }
                                 if (part1 == "labels")
                                 {
-                                    json = Utilities.FS.ReadAllText(Engine.CurrentTaxonomy.TaxonomyLabelPath);
+                                    var page = int.Parse(request.GetParameter("page"));
+                                    var pagesize = int.Parse(request.GetParameter("pagesize"));
+                                    var key = request.GetParameter("key");
+                                    var code = request.GetParameter("code");
+                                    var content = request.GetParameter("content");
+                                    var query = AppEngine.Features.Engine.CurrentTaxonomy.TaxonomyLabels.AsQueryable();
+                                    if (!String.IsNullOrEmpty(key)) 
+                                    {
+                                        query = query.Where(i => i.Key.IndexOf(key, StringComparison.InvariantCultureIgnoreCase) > -1);
+                                    }
+                                    if (!String.IsNullOrEmpty(code))
+                                    {
+                                        query = query.Where(i => i.Code.IndexOf(code, StringComparison.InvariantCultureIgnoreCase) > -1);
+                                    }
+                                    if (!String.IsNullOrEmpty(content))
+                                    {
+                                        query = query.Where(i => i.Content.IndexOf(content, StringComparison.InvariantCultureIgnoreCase) > -1);
+                                    }
+                                    var rs = new DataResult<Label>();
+                                    rs.Items = query.Skip(pagesize * page).Take(pagesize).ToList();
+                                    rs.Total = query.Count();
+                                    json = Utilities.Converters.ToJson(rs);
 
                                 }
                                 if (part1 == "facts")

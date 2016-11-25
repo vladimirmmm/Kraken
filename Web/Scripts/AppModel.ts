@@ -267,6 +267,7 @@ class UITableManager implements Controls.ITableManager {
 
         //});
         table.CanManageRows = false;
+
         dynamicrows.forEach(function (row) {
             table.RemoveRow(row);
         });

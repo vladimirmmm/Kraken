@@ -38,7 +38,12 @@
             this.s_find_selector = "#" + this.s_find_id;
             this.s_general_selector = "#" + this.s_general_id;
         }
-
+        public Clear()
+        {
+            this.Instance = null;
+            this.ValidationResults = [];
+            this.ValidationErrors = [];
+        }
         public Sel(selector: any): Element
         {
             var me = this;
@@ -108,6 +113,8 @@
             Log("Instance: Getting facts");
 
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
+                Log("Instance: Setting facts");
+
                 me.Instance = data;
                 var instdata = <Model.Instance>data;
 
@@ -137,10 +144,7 @@
                         var parts = fact.Content.split("@");
                         fact.ID = parts[0];
                         fact.ContextID = parts[1];
-                        if (fact.ContextID == "CT_4583")
-                        {
-                            var z=0;
-                        }
+                    
                         fact.UnitID = parts[2];
                         fact.Decimals = parts[3];
                         fact.Value = parts[4];
@@ -149,10 +153,11 @@
                     }
                 }
                 Log("Instance: Facts received: " + ix.toString() + "!");
+                GC();
                 me.LoadToUI();
                 CallFunction(onloaded);
 
-            }, function (error) { console.log(error); });
+            }, function (error) { Log("Error: "+error); });
         }
         public GetFactKeyStringFromFactString(factstring: string): string
         {

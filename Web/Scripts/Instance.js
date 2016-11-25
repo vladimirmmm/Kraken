@@ -30,6 +30,11 @@ var Control;
             this.s_find_selector = "#" + this.s_find_id;
             this.s_general_selector = "#" + this.s_general_id;
         }
+        InstanceContainer.prototype.Clear = function () {
+            this.Instance = null;
+            this.ValidationResults = [];
+            this.ValidationErrors = [];
+        };
         InstanceContainer.prototype.Sel = function (selector) {
             var me = this;
             return _SelectFirst(selector, _SelectFirst("#" + me.s_main_id));
@@ -86,6 +91,7 @@ var Control;
             var me = this;
             Log("Instance: Getting facts");
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
+                Log("Instance: Setting facts");
                 me.Instance = data;
                 var instdata = data;
                 var ifd = new Model.InstanceFactDictionary();
@@ -111,9 +117,6 @@ var Control;
                         var parts = fact.Content.split("@");
                         fact.ID = parts[0];
                         fact.ContextID = parts[1];
-                        if (fact.ContextID == "CT_4583") {
-                            var z = 0;
-                        }
                         fact.UnitID = parts[2];
                         fact.Decimals = parts[3];
                         fact.Value = parts[4];
@@ -122,10 +125,11 @@ var Control;
                     }
                 }
                 Log("Instance: Facts received: " + ix.toString() + "!");
+                GC();
                 me.LoadToUI();
                 CallFunction(onloaded);
             }, function (error) {
-                console.log(error);
+                Log("Error: " + error);
             });
         };
         InstanceContainer.prototype.GetFactKeyStringFromFactString = function (factstring) {

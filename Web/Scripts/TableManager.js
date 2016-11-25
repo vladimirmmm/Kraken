@@ -506,6 +506,17 @@ var Controls;
             //}
             return true;
         };
+        Table.prototype.ClearRows = function () {
+            var me = this;
+            me.Rows.AsLinq().ToArray().forEach(function (row) {
+                row.Cells.forEach(function (cell, ix) {
+                    RemoveFrom(cell, me.Cells);
+                });
+                RemoveFrom(row, me.Rows);
+            });
+            _Html(me.BodyUIElement, "");
+            CallFunctionWithContext(me, me.OnLayoutChanged, []);
+        };
         Table.prototype.RemoveColumnByID = function (colid) {
             var coltoremove = this.GetColumnByID(colid);
             if (!IsNull(coltoremove) && coltoremove.ID != "emptycolumn") {

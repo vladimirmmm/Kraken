@@ -305,7 +305,8 @@ li.empty {
         padding: 0.3em 0.5em;
         margin-right: 5px;
         margin-bottom: 5px;
-        min-width: 1.1em;
+        min-width: 1.4em;
+        text-align:center;
     }
 
     .pagination .current {

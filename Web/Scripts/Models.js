@@ -754,9 +754,8 @@ var Model;
     var TaxonomyDocument = (function () {
         function TaxonomyDocument() {
             this.FileName = "";
-            this.ReferencedFiles = [];
+            //public ReferencedFiles: string[] = [];
             this.LocalRelPath = "";
-            this.SourcePath = "";
         }
         return TaxonomyDocument;
     })();
