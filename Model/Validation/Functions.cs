@@ -246,7 +246,7 @@ namespace LogicalModel.Validation
         }
         public int XS_Integer(string a) 
         {
-            if (Utilities.Strings.IsDigitsOnly(a, '-')) 
+            if (Utilities.Strings.IsInteger(a)) 
             {
                 return Utilities.Converters.FastParse(a);
             }
@@ -379,7 +379,7 @@ namespace LogicalModel.Validation
         public decimal Number(object p) 
         {
             var n = string.Format("{0}", p);
-            if (Utilities.Strings.IsDigitsOnly(n, '.', '-')) 
+            if (Utilities.Strings.IsNumeric(n)) 
             {
                 return decimal.Parse(n, new NumberFormatInfo() { NumberDecimalSeparator = "." });
             }
@@ -388,7 +388,7 @@ namespace LogicalModel.Validation
         public static decimal GetNumber(object p) 
         {
             var n = string.Format("{0}", p);
-            if (Utilities.Strings.IsDigitsOnly(n, '.', '-'))
+            if (Utilities.Strings.IsNumeric(n))
             {
                 return decimal.Parse(n, new NumberFormatInfo() { NumberDecimalSeparator = "." });
             }

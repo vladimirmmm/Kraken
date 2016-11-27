@@ -110,10 +110,10 @@
 
         public LoadInstance(onloaded: Function) {
             var me = this;
-            Log("Instance: Getting facts");
+            //Log("UI","Instance: Getting facts");
 
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
-                Log("Instance: Setting facts");
+                //Log("UI","Instance: Setting facts");
 
                 me.Instance = data;
                 var instdata = <Model.Instance>data;
@@ -152,12 +152,12 @@
                         ix++;
                     }
                 }
-                Log("Instance: Facts received: " + ix.toString() + "!");
+                Log("UI","Instance: Facts received: " + ix.toString() + "!");
                 GC();
                 me.LoadToUI();
                 CallFunction(onloaded);
 
-            }, function (error) { Log("Error: "+error); });
+            }, function (error) { Log("UI","Error: "+error); });
         }
         public GetFactKeyStringFromFactString(factstring: string): string
         {

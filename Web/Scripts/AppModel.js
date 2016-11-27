@@ -196,7 +196,7 @@ var UITableManager = (function () {
         });
     };
     UITableManager.prototype.SetDynamicRowIds = function (table) {
-        ShowNotification("SetDynamicRowIds");
+        Log("UI", "SetDynamicRowIds");
         var me = this;
         var fdyndata = function (row) { return _HasClass(row.UIElement, "dynamicdata"); };
         var dynamicrows = table.Rows.AsLinq().Where(function (i) { return fdyndata(i); }).ToArray();

@@ -58,9 +58,9 @@ function GetXbrlCellEditor(target) {
     }
     if (IsNull(concept)) {
         var fact = Model.FactBase.GetFactFromString(factstring);
-        Log("NullConcept");
+        Log("UI", "NullConcept");
         if (!IsNull(fact.Dimensions) && fact.Dimensions.length == 1 && !fact.Dimensions[0].IsTyped) {
-            Log("NullConcept >>");
+            Log("UI", "NullConcept >>");
             var role = _Attribute(target, "role");
             editor = new Editor(Format('<select class="celleditor">{0}</select>', app.taxonomycontainer.GetMembersOfHierarchy(role)), function (i) { return i.val(); }, function (i, val) {
                 i.val(val);
@@ -108,7 +108,7 @@ function CreateErrorMsg(errormessage) {
 }
 function ErrorHandler(errorMsg, url, lineNumber) {
     var errortext = errortag + 'UI Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber;
-    Log(errortext);
+    Log("UI", errortext);
     return true;
 }
 function ShowHideChild(selector, sender) {
@@ -225,7 +225,7 @@ function MessageReceived(message) {
         });
     }
     if (message.Category == "notfication") {
-        Log(message.Data);
+        Log("UI", message.Data);
     }
     if (message.Category == "error") {
     }
@@ -235,11 +235,11 @@ function MessageReceived(message) {
             app.instancecontainer.HandleAction(message);
         }
         if (message.Data.toLowerCase() == "instanceloaded") {
-            Log("Instance Loaded");
+            Log("UI", "Instance Loaded");
             app.LoadInstance();
         }
         if (message.Data.toLowerCase() == "taxonomyloaded") {
-            Log("Taxonomy Loaded");
+            Log("UI", "Taxonomy Loaded");
             app.LoadTaxonomy();
         }
     }

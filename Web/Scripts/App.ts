@@ -82,7 +82,7 @@ module Applications
             var formdata = GetFromData(settingsform);
             var parameters = <Dictionary>ConvertFormDataToObj(formdata);
             AjaxRequest("Settings/Save", "post", "json", parameters, function (data) {
-                Log("Settings were saved succeassfully!");
+                Log("UI","Settings were saved succeassfully!");
                 me.CloseWindow(element);
             }, null);
 
@@ -158,7 +158,7 @@ module Applications
         public LoadContainers()
         {
             var me = this;
-            Log(window["BuildID"]);
+            Log("UI",window["BuildID"]);
             var $containers = $('[container-for]');
             me.SetMenu();
             SetPivots();
@@ -169,7 +169,7 @@ module Applications
                 if (!IsNull(engineHub)) {
                     if (!IsNull(engineHub.client)) {
                         engineHub.client.sendText = function (message:string) {
-                            Log(message);
+                            Log("UI","SR: "+message);
                         };
                         engineHub.client.sendMessage = function (message:General.Message) {
                             MessageReceived(message);
@@ -185,7 +185,7 @@ module Applications
                 }
                 if (IsDesktop())
                 {
-                    ShowNotification("UI ready.");
+                    Log("UI","UI ready.");
 
                 }
                 StopProgress("layout");
@@ -242,7 +242,7 @@ module Applications
                     });
 
             }, function (error) {
-                    Log(errortag + error);
+                    Log("UI",errortag + error);
                 });
 
         }
@@ -300,7 +300,7 @@ module Applications
 function GC()
 {
     if (typeof (window["CollectGarbage"]) == "function") {
-        Log("CollectGarbage");
+        //Log("UI","CollectGarbage");
         window["CollectGarbage"]();
     }
 }

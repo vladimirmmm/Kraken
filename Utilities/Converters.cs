@@ -168,7 +168,11 @@ namespace Utilities
             CultureInfo ci = new CultureInfo("en-US");
             return String.Format("{0:" + format + "}", dt);
         }
-
+        public static String DateTimeToString(DateTime dt)
+        {
+            CultureInfo ci = new CultureInfo("en-US");
+            return String.Format("{0:" + DateTimeFormat + "}", dt);
+        }
         public static DateTime StringToDateTime(String dt, string format)
         {
             DateTime result = DateTime.Now.AddYears(-200);

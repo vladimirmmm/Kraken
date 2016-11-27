@@ -836,7 +836,7 @@
                         }
                         else
                         {
-                            Log("Hierarchy not found for " + concept.Content);
+                            Log("UI","Hierarchy not found for " + concept.Content);
                         }
                     }
                 });
@@ -853,13 +853,13 @@
 
         public GetMembersOfHierarchy(layoutrole: string): string
         {
-            Log("layoutrole: " + layoutrole);
+            Log("UI","layoutrole: " + layoutrole);
             var role = TextBetween(layoutrole, "Role:", ";");
             var axis = TextBetween(layoutrole, "Axis:", ";");
             var h = this.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>().FirstOrDefault(i=> i.Item.Role == role);
             
             if (!IsNull(h)) {
-                Log("hierarchy found for DDL!");
+                Log("UI","hierarchy found for DDL!");
                 var items = Model.Hierarchy.GetAxis(h, axis);
                 var clkp = new Model.ConceptLookUp();
 
@@ -880,11 +880,11 @@
 
         public GetMembersOfDomainOptions(dom: string): string
         {
-            Log("dom: " + dom);
+            Log("UI","dom: " + dom);
             var h = this.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>().FirstOrDefault(i=> i.Item.Label.LocalID == dom);
             if (!IsNull(h))
             {
-                Log("hierarchy found for DDL!");
+                Log("UI","hierarchy found for DDL!");
                 var items = h.Children.length > 0 ? h.Children[0].Children:h.Children;
                 var clkp = new Model.ConceptLookUp();
 

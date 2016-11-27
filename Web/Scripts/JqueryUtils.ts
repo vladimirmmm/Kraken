@@ -6,14 +6,16 @@ function ActivateLogUI() {
     element.scrollTop = element.scrollHeight;
 
 }
-function Log(item:string)
+function Log(category:string,item:string)
 {
     
     item = IsNull(item) ? "" : item.trim();
-    var error
+    var categorycss = "";
+    categorycss = "C_" + category;
     if (item.indexOf(errortag) == 0)
     {
-        item ="<span class=\"error\">"+ item.substring(errortag.length)+"</span>";
+        item = item.substring(errortag.length);
+        categorycss += " error";
     }
     logitems++;
     var element = _SelectFirst("#contentlog");
@@ -24,7 +26,8 @@ function Log(item:string)
         logitems = 1;
     }
     item = Replace(item, "\r\n", "<br/>");
-    $(element).append(Format("{0}<br/>", item));
+    var htmlitem = Format('<span class="{0}">{1}</span>', categorycss, item);
+    $(element).append(Format("{0}<br/>", htmlitem));
     element.scrollTop = element.scrollHeight;
 }
 function LoadTab(tabselector: string, contentselector: string) {
@@ -64,7 +67,7 @@ function BrowseFile(lid:string, callback: Function)
         var me = this;
         AjaxRequest("Browse/File", "get", "text/html", { }, function (data) {
             var file = <string>data;
-            Log("file: " + file);
+            Log("UI","file: " + file);
             CallFunction(callback, [lid, file]);
         },null);
     }
@@ -72,7 +75,7 @@ function BrowseFile(lid:string, callback: Function)
         var uploader = _SelectFirst("#fileuploader");
         _EnsureEventHandler(uploader, "change", function () {
             var file = _Value(uploader);
-            Log("file: " + file);
+            Log("UI","file: " + file);
             CallFunction(callback, [lid, file]);
         });
         $(uploader).click();
@@ -84,7 +87,7 @@ function BrowseFolder(lid: string, callback: Function) {
         var me = this;
         AjaxRequest("Browse/Folder", "get", "text/html", {}, function (data) {
             var file = <string>data;
-            Log("folder: " + file);
+            Log("UI","folder: " + file);
             CallFunction(callback, [lid, file]);
         }, null);
     }
@@ -94,7 +97,7 @@ function BrowseFolder(lid: string, callback: Function) {
             var file = _Value(uploader);
             var lastsep = file.lastIndexOf("\\") + 1;
             var folder = file.substring(0, lastsep);
-            Log("Folder: " + folder);
+            Log("UI","Folder: " + folder);
             CallFunction(callback, [lid, folder]);
         });
         $(uploader).click();
@@ -287,7 +290,7 @@ function Ajax(url: string, method: string, parameters: Dictionary, generichandle
             //errormsg += Format("\nurl: {0}", Id) + "\n" + errorobj.stacktrace;
             actioncenter.AddError(errormsg);
             SetProperty(result, "Error", exception);
-            Log(errormsg);
+            Log("UI",errormsg);
             CallFunction(generichandler, [result]);
 
         }

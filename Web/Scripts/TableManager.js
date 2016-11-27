@@ -289,12 +289,12 @@ var Controls;
             var row = this.GetRowByID(rowid);
             var cell = null;
             if (IsNull(row)) {
-                Log("Row not found " + id);
+                Log("UI", "Row not found " + id);
             }
             else {
                 cell = row.Cells.AsLinq().FirstOrDefault(function (i) { return i.ColID == colid; });
                 if (IsNull(cell)) {
-                    Log("Cell not found " + id);
+                    Log("UI", "Cell not found " + id);
                 }
             }
             return cell;

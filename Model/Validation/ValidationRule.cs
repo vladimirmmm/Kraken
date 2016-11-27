@@ -574,9 +574,6 @@ namespace LogicalModel.Validation
         public void ValidateResult(ValidationRuleResult result, Instance instance)
         {
 
-            if (this.ID.Contains("0008")) 
-            { 
-            }
             var HasAtLeastOneValue = false;
             var HasMissingValue = false;
             foreach (var p in result.Parameters)
@@ -600,14 +597,6 @@ namespace LogicalModel.Validation
 
                     var facts = new List<InstanceFact>();
 
-                    //foreach (var factstring in p.Facts)
-                    //{
-                    //    var factininstance = GetFact(factstring, instance);
-                    //    if (factininstance != null)
-                    //    {
-                    //        facts.Add(factininstance);
-                    //    }
-                    //}
                     foreach (var factstring in p.FactIDs)
                     {
                         var factininstance = instance.GetFactByIDString(factstring);
@@ -666,11 +655,12 @@ namespace LogicalModel.Validation
                             //		Decimal.MaxValue	79228162514264337593543950335	decimal
                             if (rp.Type == TypeEnum.Numeric)
                             {
-                                if (rp.StringValue.Length > 29 || !Utilities.Strings.IsDigitsOnly(rp.StringValue, '.', '-'))
+                                if (rp.StringValue.Length > 29 || !Utilities.Strings.IsNumeric(rp.StringValue))
                                 {
                                     var cells = Utilities.Strings.ArrayToString(rp.CurrentCells.ToArray());
                                     Logger.WriteLine(String.Format("Invalid Value Detected at {2}: {0} Cells: {1}", rp.StringValue, cells, this.ID));
                                     rp.StringValue = "";
+                                    return;
                                 }
                             }
                         }

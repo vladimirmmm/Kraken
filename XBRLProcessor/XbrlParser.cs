@@ -305,7 +305,7 @@ namespace XBRLProcessor
                 {
                     if (!trimmed.StartsWith(Syntax.ExpressionPlaceholder) 
                         && !result.IsString
-                        && !Utilities.Strings.IsDigitsOnly(trimmed, '.', '-')
+                        && !Utilities.Strings.IsNumeric(trimmed)
                         && !String.IsNullOrEmpty(trimmed))
                     {
                         result.IsString = true;

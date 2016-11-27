@@ -34,6 +34,10 @@ namespace LogicalModel
         public event TaxonomyEventHandler InstanceLoadFailed;
         public event TaxonomyEventHandler InstanceLoaded;
 
+        public DateTime? TaxLoadStartDate = null;
+        public DateTime? InstLoadStartDate = null;
+        public DateTime? ValidationStartDate = null;
+
         public Boolean IsInstanceLoading = false;
 
         public string HtmlPath = AppDomain.CurrentDomain.BaseDirectory + "UI.html";
@@ -62,10 +66,13 @@ namespace LogicalModel
 
         public TaxonomyEngine() 
         {
+
             if (CurrentEngine == null)
             {
                 CurrentEngine = this;
             }
+            var filename = Utilities.Strings.GetStringForFilename( Utilities.Converters.DateTimeToString(DateTime.Now));
+            Logger.LogPath = LocalFolder + "Log\\" + String.Format("{0}.txt", filename);
             Logger.WriteLine(LocalFolder);
         }
         public virtual bool LoadInstance(string filepath, bool wait) 

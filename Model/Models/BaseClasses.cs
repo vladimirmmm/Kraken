@@ -482,6 +482,12 @@ namespace LogicalModel.Base
         {
             return this.DictFilterIndexes.Count == 0 && this.NegativeDictFilterIndexes.Count == 0;
         }
+
+        public bool HasFilters() 
+        {
+            var s = GetCompareString();
+            return !String.IsNullOrEmpty(s.Trim());
+        }
         public bool HasDictFilter(string dictfilter) 
         {
             if (DictFilters.Contains(dictfilter)) 
@@ -630,6 +636,20 @@ namespace LogicalModel.Base
                     from.ChildQueries.Remove(childquery);
                 }
  
+            }
+        }
+        public static void MergeQueries(FactBaseQuery target, FactBaseQuery source) 
+        {
+            target.DictFilterIndexes = target.DictFilterIndexes.Concat(source.DictFilterIndexes).Distinct().ToList();
+            target.NegativeDictFilterIndexes = target.NegativeDictFilterIndexes.Concat(source.NegativeDictFilterIndexes).Distinct().ToList();
+            foreach (var sourcechild in source.ChildQueries) 
+            {
+                var sourcechildcs = sourcechild.GetCompareString();
+                var targetchild = target.ChildQueries.FirstOrDefault(i => i.GetCompareString() == sourcechildcs);
+                if (targetchild == null) 
+                {
+                    target.ChildQueries.Add(sourcechild);
+                }
             }
         }
         public IEnumerable<String> ToQueryable(IEnumerable<String> queryable)
@@ -878,20 +898,24 @@ namespace LogicalModel.Base
         public string GetCompareString(string pad = "")
         {
             var sb = new StringBuilder();
-            foreach (var ix in DictFilterIndexes)
+            if (DictFilterIndexes.Count > 0)
             {
-                sb.Append(ix + ", ");
+                sb.Append("[");
+                foreach (var ix in DictFilterIndexes)
+                {
+                    sb.Append(ix + ", ");
+                }
+                sb.Append("]");
             }
-            sb.Append("; ");
             if (NegativeDictFilterIndexes.Count > 0)
             {
-                sb.Append("!:");
+                sb.Append("![");
 
                 foreach (var ix in NegativeDictFilterIndexes)
                 {
                     sb.Append(ix + ", ");
                 }
-                sb.AppendLine(";");
+                sb.AppendLine("]");
 
             }
             foreach (var child in ChildQueries)

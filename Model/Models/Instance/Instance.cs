@@ -297,6 +297,7 @@ namespace LogicalModel
     
         public virtual List<ValidationRuleResult> Validate(List<String> messages) 
         {
+
             ValidationRuleResults.Clear();
             var sb_invalidfacts = new StringBuilder();
             var factwithoutcells = new List<String>();
@@ -322,10 +323,6 @@ namespace LogicalModel
             var invalidtypevalues = new StringBuilder();
             foreach (var fact in Facts) 
             {
-                if (fact.ContextID == "CT_560") 
-                {
-
-                }
                 if (this.Taxonomy.HasFact(fact.TaxonomyKey))
                 {
                     var cellvalues=fact.Cells;

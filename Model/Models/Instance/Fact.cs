@@ -87,7 +87,7 @@ namespace LogicalModel
             get
             {
                 if (String.IsNullOrEmpty(_Value)) { return 0; }
-                if (_Value.Length > 29 || !Utilities.Strings.IsDigitsOnly(_Value, '.', '-'))
+                if (_Value.Length > 29 || !Utilities.Strings.IsNumeric(_Value))
                 {
                     var cells = Utilities.Strings.ArrayToString(Cells.ToArray());
                     Logger.WriteLine(String.Format("Invalid Value Detected: {0} Cells: {1}", _Value, cells));

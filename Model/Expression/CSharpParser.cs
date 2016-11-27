@@ -143,13 +143,8 @@ namespace LogicalModel.Expressions
 
                 if (expr.SubExpressions.Count == 0) 
                 {
-                    if (!expr.IsParameter && !expr.IsString && Utilities.Strings.IsDigitsOnly(expr.StringValue, '.', '-')) 
-                    {
-                        //this is for decimal;
-                        //if (String.IsNullOrEmpty(expr.StringValue)) 
-                        //{ 
-
-                        //}
+                    if (!expr.IsParameter && !expr.IsString && Utilities.Strings.IsNumeric(expr.StringValue)) 
+                    {              
                         return expr.StringValue + "m";
                     }
                 }

@@ -72,7 +72,7 @@ var Applications;
             var formdata = GetFromData(settingsform);
             var parameters = ConvertFormDataToObj(formdata);
             AjaxRequest("Settings/Save", "post", "json", parameters, function (data) {
-                Log("Settings were saved succeassfully!");
+                Log("UI", "Settings were saved succeassfully!");
                 me.CloseWindow(element);
             }, null);
         };
@@ -130,7 +130,7 @@ var Applications;
         };
         App.prototype.LoadContainers = function () {
             var me = this;
-            Log(window["BuildID"]);
+            Log("UI", window["BuildID"]);
             var $containers = $('[container-for]');
             me.SetMenu();
             SetPivots();
@@ -140,7 +140,7 @@ var Applications;
                 if (!IsNull(engineHub)) {
                     if (!IsNull(engineHub.client)) {
                         engineHub.client.sendText = function (message) {
-                            Log(message);
+                            Log("UI", "SR: " + message);
                         };
                         engineHub.client.sendMessage = function (message) {
                             MessageReceived(message);
@@ -154,7 +154,7 @@ var Applications;
                     });
                 }
                 if (IsDesktop()) {
-                    ShowNotification("UI ready.");
+                    Log("UI", "UI ready.");
                 }
                 StopProgress("layout");
             };
@@ -197,7 +197,7 @@ var Applications;
                     $(this).find('ul').stop(true, true).fadeOut("fast");
                 });
             }, function (error) {
-                Log(errortag + error);
+                Log("UI", errortag + error);
             });
         };
         App.prototype.ShowOnBottomTab = function (element, tabselector) {
@@ -242,7 +242,7 @@ var Applications;
 })(Applications || (Applications = {}));
 function GC() {
     if (typeof (window["CollectGarbage"]) == "function") {
-        Log("CollectGarbage");
+        //Log("UI","CollectGarbage");
         window["CollectGarbage"]();
     }
 }

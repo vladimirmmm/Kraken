@@ -130,12 +130,16 @@ namespace XBRLProcessor
 
                 }
             }
-            Logger.WriteLine("Tags not mapped: ");
-            Logger.WriteLine(sb.ToString());
+            if (Settings.Current.DebugLevel == 1)
+            {
+                Logger.WriteLine("Tags not mapped: ");
+                Logger.WriteLine(sb.ToString());
+            }
         }
 
         public override bool LoadTaxonomy(string filepath) 
         {
+            TaxLoadStartDate = DateTime.Now;
             if (CurrentTaxonomy != null) 
             {
                 CurrentXbrlTaxonomy.ClearObjects();
@@ -187,7 +191,6 @@ namespace XBRLProcessor
                 
                 CurrentTaxonomy.TaxonomyToUI();
                 isloaded = true;
-                Logger.WriteLine("Loading Taxonomy finished");
                 Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
                 Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstanceValidationResultPath);
                 if (!IsInstanceLoading)
@@ -198,6 +201,9 @@ namespace XBRLProcessor
                     //Utilities.FS.DeleteFile(CurrentTaxonomy.CurrentInstancePath);
                     this.CurrentInstance.SaveToJson();
                 }
+                Logger.WriteLine(String.Format("Loading Taxonomy finished in {0:0.0}s", DateTime.Now.Subtract(TaxLoadStartDate.Value).TotalSeconds));
+                Logger.Flush();
+
                 Trigger_TaxonomyLoaded(filepath);
             }
             else 
@@ -207,28 +213,31 @@ namespace XBRLProcessor
 
             }
             return isloaded;
-        }       
+        }
 
         public override bool LoadInstance(string filepath, bool wait)
         {
             IsInstanceLoading = true;
-            Logger.WriteLine("Loading Instance started");
+            InstLoadStartDate = DateTime.Now;
+            Logger.WriteLine("Loading Instance " + filepath);
             CurrentInstance = new XbrlInstance(filepath);
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
             CurrentXbrlInstance.LoadSimple();
-           Task t= null;
+            Task t = null;
             CurrentInstanceTaxonomyLoaded = (object o, TaxonomyEventArgs e) =>
             {
                 //Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
-                
-                CurrentInstance.SetTaxonomy(CurrentTaxonomy);
-               
-                t= Task.Factory.StartNew(()=>{
-                     CurrentXbrlInstance.LoadComplex();
-                    Trigger_InstanceLoaded(filepath);
-                    Logger.WriteLine("Loading Instance finished");
 
+                CurrentInstance.SetTaxonomy(CurrentTaxonomy);
+
+                t = Task.Factory.StartNew(() =>
+                {
+                    CurrentXbrlInstance.LoadComplex();
+                    Logger.WriteLine(String.Format("Loading Instance finished in {0:0.0}s", DateTime.Now.Subtract(InstLoadStartDate.Value).TotalSeconds));
+                    Logger.Flush();
+                    Trigger_InstanceLoaded(filepath);
+                 
                 });
 
             };
@@ -240,7 +249,7 @@ namespace XBRLProcessor
             };
 
             Trigger_InstanceLoad(filepath);
-            if (wait && t!=null)
+            if (wait && t != null)
             {
                 t.Wait();
             }

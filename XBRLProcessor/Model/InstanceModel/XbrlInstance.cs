@@ -308,6 +308,7 @@ namespace Model.InstanceModel
                 this.Facts.Add(logicalfact);
               
             }
+            Logger.WriteLine(String.Format("Instance has {0} facts", this.Facts.Count));
             XbrlFacts.Clear();
             var miconceptfact = Facts.FirstOrDefault(i => i.Concept.Name.StartsWith("mi"));
             if (miconceptfact != null)

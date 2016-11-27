@@ -549,7 +549,10 @@ namespace Engine
         {
             if (Engine.CurrentInstance != null) 
             {
+                Engine.ValidationStartDate = DateTime.Now;
                 var results = Engine.CurrentInstance.Validate(null);
+                Logger.WriteLine(String.Format("Instance Validation finished in {0:0.0}s", DateTime.Now.Subtract(Engine.ValidationStartDate.Value).TotalSeconds));
+                Logger.Flush();
                 var msg= new Message();
                 msg.Category="action";
                 msg.Url="Instance";
@@ -636,6 +639,7 @@ namespace Engine
                         {
                             ValidateInstance();
                         }
+                        Logger.WriteLine("");
                     }
                 }
             }

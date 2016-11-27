@@ -272,7 +272,7 @@ function AjaxRequestComplex(url, method, contenttype, parameters, success, error
 function AjaxResponse(message) {
     StopProgress("ajax");
     if (IsNull(message) || !("Id" in message)) {
-        Log("Message can't be retreieved!");
+        Log("UI", "Message can't be retreieved!");
     }
     var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == message.Id; });
     if (request != null) {

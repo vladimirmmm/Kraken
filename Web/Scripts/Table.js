@@ -58,7 +58,7 @@ var UI;
                 var jsonobj = JSON.parse(data);
                 me.HtmlTemplatePath = jsonobj["HtmlTemplatePath"];
                 me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
-                ShowNotification("Getting Html");
+                Log("UI", "Getting Html");
                 AjaxRequest(me.HtmlTemplatePath, "get", "text/html", null, function (data) {
                     me.SaveInstance();
                     _Html(_SelectFirst("#ReportContainer"), data);
@@ -173,7 +173,7 @@ var UI;
         Table.prototype.LoadInstance = function (instance) {
             var me = this;
             me.SaveInstance();
-            ShowNotification("Loading Instance to UI");
+            Log("UI", "Loading Instance to UI");
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
@@ -198,7 +198,7 @@ var UI;
         };
         Table.prototype.LoadExtension = function (li) {
             var me = this;
-            Log("LoadExtension");
+            //Log("UI","LoadExtension");
             this.CurrentExtension = li;
             var extensionscell = _SelectFirst("#Extension");
             var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq().Where(function (i) { return i.IsTyped; }).ToArray();
@@ -236,7 +236,7 @@ var UI;
                     }
                 }
             });
-            ShowNotification(Format("{0} cells were populated!", c));
+            Log("UI", Format("{0} cells were populated!", c));
         };
         Table.prototype.LoadRows = function (items, page, pagesize) {
             var me = this;
@@ -440,7 +440,7 @@ var UI;
             return "";
         };
         Table.prototype.SetExtensionByCode = function (code) {
-            Log("SetExtensionByCode " + code);
+            //Log("UI","SetExtensionByCode "+ code);
             if (this.Extensions.Count() > 0) {
                 var ext = this.Extensions.FirstOrDefault();
                 if (!IsNull(code)) {
@@ -456,7 +456,7 @@ var UI;
             this.LoadCells(cells);
         };
         Table.prototype.HashChanged = function () {
-            ShowNotification("Navigation occured: " + window.location.hash);
+            //Log("UI","Navigation occured: " + window.location.hash);
             var me = this;
             var hash = window.location.hash;
             if (hash.length > 0) {
@@ -522,7 +522,7 @@ var UI;
                 return null;
             }
             var instance = me.Instance;
-            ShowNotification("Saving Instance to UI");
+            Log("UI", "Saving Instance to UI");
             var c = 0;
             var cells = me.UITable.Cells; //this.Cells;
             var facts = [];

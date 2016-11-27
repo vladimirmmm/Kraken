@@ -18,7 +18,7 @@ namespace XBRLProcessor.Model
     {
         public void SetFacts(LogicalModel.Validation.ValidationRule rule) 
         {
-            if (rule.ID.Contains("v4019")) 
+            if (rule.ID.Contains("2909")) 
             {
 
             }
@@ -39,6 +39,7 @@ namespace XBRLProcessor.Model
 
             foreach (var parameter in rule.Parameters)
             {
+                parameter.TaxFacts.Clear();
                 IList<int> sdata = tableintevallist;
                 if (!parameter.IsGeneral)
                 {
@@ -62,6 +63,7 @@ namespace XBRLProcessor.Model
                 data = allfactsintevallist;
             }
             var singlefactparameters = rule.Parameters.Where(i => !i.IsGeneral && !i.BindAsSequence).ToList();
+            var multifactparameters = rule.Parameters.Where(i => !i.IsGeneral && i.BindAsSequence).ToList();
             var mffnspissue = false;
             LogicalModel.Validation.ValidationParameter p_mffnspissue=null;
             //Utilities.Logger.WriteToFile(String.Format("EnumerateIntervals {0} on {1}", rule.BaseQuery, data));
@@ -103,9 +105,9 @@ namespace XBRLProcessor.Model
                     {
                         mffnspissue = false;
                         var p = singlefactparameters.FirstOrDefault();
-                        var facts = p.TaxFacts.FirstOrDefault();
-                        p.TaxFacts.Clear();
-                        foreach (var fact in facts)
+                        var lasttaxfact = p.TaxFacts.LastOrDefault();
+                        p.TaxFacts.Remove(lasttaxfact);
+                        foreach (var fact in lasttaxfact)
                         {
                             p.TaxFacts.Add(new List<int>() { fact });
                         }
@@ -138,6 +140,22 @@ namespace XBRLProcessor.Model
                    
 
                     }
+                    if (distinctfactcounts.Count == 1 /*&& multifactparameters.Count==0*/)
+                    {
+                        mffnspissue = false;
+                        foreach (var p in singlefactparameters) 
+                        {
+                            var lasttaxfact = p.TaxFacts.LastOrDefault();
+                            p.TaxFacts.Remove(lasttaxfact);
+                            foreach (var fact in lasttaxfact)
+                            {
+                                p.TaxFacts.Add(new List<int>() { fact });
+                            }
+                        }
+
+
+
+                    }
                 }
                 if (mffnspissue) 
                 {
@@ -151,6 +169,11 @@ namespace XBRLProcessor.Model
             if (!hasfacts) 
             {
                 Utilities.Logger.WriteLine(String.Format("{0}: Rule has no facts!", rule.ID));
+            }
+            var parameterswithissues = singlefactparameters.Where(i => i.TaxFacts.Any(f=>f.Count>1)).ToList();
+            if (parameterswithissues.Count > 0) 
+            {
+
             }
         }
         

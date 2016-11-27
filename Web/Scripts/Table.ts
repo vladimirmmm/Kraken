@@ -70,7 +70,7 @@ module UI {
                 me.HtmlTemplatePath = jsonobj["HtmlTemplatePath"];
                 me.ExtensionsRoot = jsonobj["ExtensionsRoot"];
 
-                ShowNotification("Getting Html");
+                Log("UI","Getting Html");
 
                 AjaxRequest(me.HtmlTemplatePath, "get", "text/html", null, function (data) {
                     me.SaveInstance();
@@ -237,7 +237,7 @@ module UI {
         public LoadInstance(instance: Model.Instance) {
             var me = this;
             me.SaveInstance();
-            ShowNotification("Loading Instance to UI");
+            Log("UI","Loading Instance to UI");
             if (IsNull(me.Instance)) {
                 me.Instance = instance;
                 if (IsNull(me.Instance.FactDictionary)) {
@@ -276,7 +276,7 @@ module UI {
   
         public LoadExtension(li: Model.LayoutItem) {
             var me = this;
-            Log("LoadExtension");
+            //Log("UI","LoadExtension");
             this.CurrentExtension = li;
             var extensionscell = _SelectFirst("#Extension");
             var typeddimensionsofext = this.CurrentExtension.Dimensions.AsLinq<Model.Dimension>().Where(i=> i.IsTyped).ToArray();
@@ -322,7 +322,7 @@ module UI {
 
                 }
             });
-            ShowNotification(Format("{0} cells were populated!", c));
+            Log("UI",Format("{0} cells were populated!", c));
 
         }
 
@@ -581,7 +581,7 @@ module UI {
         }
         
         public SetExtensionByCode(code: string) {
-            Log("SetExtensionByCode "+ code);
+            //Log("UI","SetExtensionByCode "+ code);
             if (this.Extensions.Count() > 0) {
                 var ext = this.Extensions.FirstOrDefault();
                 if (!IsNull(code)) {
@@ -601,7 +601,7 @@ module UI {
         }
 
         public HashChanged() {
-            ShowNotification("Navigation occured: " + window.location.hash);
+            //Log("UI","Navigation occured: " + window.location.hash);
             var me = this;
             var hash = window.location.hash;
             if (hash.length > 0) {
@@ -679,7 +679,7 @@ module UI {
             if (me.UITable == null) { return null; }
             var instance = me.Instance;
 
-            ShowNotification("Saving Instance to UI");
+            Log("UI","Saving Instance to UI");
 
             var c = 0;
             var cells = me.UITable.Cells; //this.Cells;

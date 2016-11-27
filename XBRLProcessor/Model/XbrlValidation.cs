@@ -1,4 +1,5 @@
 ﻿using BaseModel;
+using LogicalModel.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +137,7 @@ namespace XBRLProcessor.Model
             {
                 tmp_rule.Remove(fv);
             }
-            if (logicalrule.ID.Contains("1139"))
+            if (logicalrule.ID.Contains("2909"))
             {
                 //var rulebasequeryX = GetRuleQuery(tmp_rule).FirstOrDefault();
 
@@ -189,6 +190,16 @@ namespace XBRLProcessor.Model
 
 
                
+            }
+            var factparameterqueries= logicalrule.Parameters.Where(i=>!i.IsGeneral).Select(i=>i.BaseQuery).ToArray();
+            var commconparameterquery = FactBaseQuery.GetCommonQuery(factparameterqueries);
+            if (commconparameterquery.HasFilters()) 
+            {
+                FactBaseQuery.MergeQueries(logicalrule.BaseQuery, commconparameterquery);
+                foreach (var pquery in factparameterqueries) 
+                {
+                    FactBaseQuery.RemoveQuery(pquery, commconparameterquery);
+                }
             }
 
             if (valueassertion.Test.Contains("$ReportingLevel"))

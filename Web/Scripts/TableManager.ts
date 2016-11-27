@@ -352,11 +352,11 @@ module Controls {
             var row = this.GetRowByID(rowid);
             var cell: Cell = null;
             if (IsNull(row)) {
-                Log("Row not found " + id);
+                Log("UI","Row not found " + id);
             } else {
                 cell = row.Cells.AsLinq<Cell>().FirstOrDefault(i=> i.ColID == colid);
                 if (IsNull(cell)) {
-                    Log("Cell not found " + id);
+                    Log("UI","Cell not found " + id);
                 }
             }
             return cell;

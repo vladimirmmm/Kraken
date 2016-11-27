@@ -509,6 +509,49 @@ namespace Utilities
 
             return true;
         }
+        public static void testnum() 
+        {
+            var items = new List<string>() { "df","-dsf","11","11.2","123.12.","-15.2","-9","-12.12.12","-12.dds12",""};
+            var result = "";
+            foreach (var item in items) 
+            {
+                result += String.Format("{0}: {1}\r\n", item, IsNumeric(item));
+            }
+        }
+        public static bool IsNumeric(string str)
+        {
+            var ix = str.StartsWith("-") ? 1 : 0;
+            var separatorindex = str.IndexOf('.');
+            for (int i = ix; i < str.Length; i++) 
+            {
+                var c = str[i];
+                if (c < '0' || c > '9')
+                {
+                    if (c=='.' && i==separatorindex) 
+                    {
+                        continue;
+                    }
+                    return false;
+                }
+            }
+
+            return !String.IsNullOrEmpty(str);
+        }
+
+        public static bool IsInteger(string str)
+        {
+            var ix = str.StartsWith("-") ? 1 : 0;
+            for (int i = ix; i < str.Length; i++)
+            {
+                var c = str[i];
+                if (c < '0' || c > '9')
+                {
+                    return false;
+                }
+            }
+
+            return !String.IsNullOrEmpty(str);
+        }
 
         public static string ArrayToString(string[] arr, string delimiter=", ")
         {

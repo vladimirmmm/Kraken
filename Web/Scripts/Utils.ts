@@ -333,7 +333,7 @@ function AjaxResponse(message: General.Message)
     StopProgress("ajax");
     if ( IsNull(message) || !("Id" in message))
     {
-        Log("Message can't be retreieved!");
+        Log("UI","Message can't be retreieved!");
     }
     var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == message.Id);
     if (request != null) {

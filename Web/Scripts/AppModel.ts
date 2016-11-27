@@ -225,7 +225,7 @@ class UITableManager implements Controls.ITableManager {
     }
 
     private SetDynamicRowIds(table: Controls.Table) {
-        ShowNotification("SetDynamicRowIds");
+        Log("UI","SetDynamicRowIds");
         var me = this;
         var fdyndata = (row: Controls.Row) => _HasClass(row.UIElement, "dynamicdata");
         var dynamicrows = table.Rows.AsLinq<Controls.Row>().Where(i=> fdyndata(i)).ToArray();

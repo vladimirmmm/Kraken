@@ -89,9 +89,9 @@ var Control;
         };
         InstanceContainer.prototype.LoadInstance = function (onloaded) {
             var me = this;
-            Log("Instance: Getting facts");
+            //Log("UI","Instance: Getting facts");
             AjaxRequest("Instance/Get", "get", "json", null, function (data) {
-                Log("Instance: Setting facts");
+                //Log("UI","Instance: Setting facts");
                 me.Instance = data;
                 var instdata = data;
                 var ifd = new Model.InstanceFactDictionary();
@@ -124,12 +124,12 @@ var Control;
                         ix++;
                     }
                 }
-                Log("Instance: Facts received: " + ix.toString() + "!");
+                Log("UI", "Instance: Facts received: " + ix.toString() + "!");
                 GC();
                 me.LoadToUI();
                 CallFunction(onloaded);
             }, function (error) {
-                Log("Error: " + error);
+                Log("UI", "Error: " + error);
             });
         };
         InstanceContainer.prototype.GetFactKeyStringFromFactString = function (factstring) {

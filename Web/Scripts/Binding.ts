@@ -213,7 +213,7 @@ function GetBindingTemplate(target: JQuery) {
 function BindX(item: any, data: Object, maxlevel:number=-1) {
     var jitem = $(item);
     if (jitem.length == 0) {
-        ShowNotification("BindX: " + jitem.selector + " has no items!");
+        Log("UI","BindX: " + jitem.selector + " has no items!");
     } else {
         var bt: BindingTemplate = null;
         var templatedictionaryitem = TemplateDictionary.AsLinq<TemplateDictionaryItem>()
@@ -241,7 +241,7 @@ function GetBindingTemplateX(item: any): BindingTemplate
 {
     var jitem = $(item);
     if (jitem.length == 0) {
-        Log("BindX: " + jitem.selector + " has no items!");
+        console.log("BindX: " + jitem.selector + " has no items!");
         return null;
     } else {
         var bt: BindingTemplate = null;
