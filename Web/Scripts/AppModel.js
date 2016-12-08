@@ -306,7 +306,8 @@ var UITableManager = (function () {
         };
         this.OnCellSelected = function (element) {
             var cellid = _Attribute(element, "id");
-            var cell = app.taxonomycontainer.Table.UITable.GetCellByID(cellid);
+            //var cell = app.taxonomycontainer.Table.UITable.GetCellByID(cellid);
+            var cell = app.taxonomycontainer.Table.UITable.GetCellByElement(element);
             if (cell != null) {
                 var cellfs = _Attribute(cell.UIElement, "factstring");
                 var mcell = new Model.Cell;

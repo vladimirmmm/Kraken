@@ -141,9 +141,11 @@ var Control;
             var result = [];
             var parts = factstring.split(',');
             parts.forEach(function (part) {
-                var val = me.GetFactPartKeyFromString(part);
-                if (!IsNull(val)) {
-                    result.push(val);
+                if (part.indexOf(":x0") == -1) {
+                    var val = me.GetFactPartKeyFromString(part);
+                    if (!IsNull(val)) {
+                        result.push(val);
+                    }
                 }
             });
             return result;

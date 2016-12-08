@@ -342,12 +342,39 @@ namespace Model.InstanceModel
 
             if (Taxonomy != null)
             {
+                
+
                 Logger.WriteLine("Validating Instance started");
                 messages.Add(String.Format("Validation started at {0:" + Utilities.Converters.DateTimeFormat + "}", DateTime.Now));
-                var schemaset = new XmlSchemaSet();
-                var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
-                IDictionary<string, string> dic = nsmanager.GetNamespacesInScope(XmlNamespaceScope.All);
-      
+
+                var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(this.XmlDocument);
+
+                var nsitems = nsm.GetNamespacesInScope(XmlNamespaceScope.Local);
+                var schemas = new Dictionary<string, string>();
+                var xbrltaxdoc = (XBRLProcessor.Models.XbrlTaxonomyDocument)Taxonomy.EntryDocument;
+                schemas.Add(xbrltaxdoc.LocalPath, xbrltaxdoc.TargetNamespace);
+                foreach (var nsitem in nsitems)
+                {
+                    var key = nsitem.Value;
+                    var doc = Taxonomy.GetDocumentByTargetNamespace(key);
+                    if (doc != null && !String.IsNullOrEmpty(key))
+                    {
+                        if (!schemas.ContainsKey(doc.LocalPath))
+                        {
+                          
+                                schemas.Add(doc.LocalPath, key);
+                            
+                        }
+
+                    }
+                    else 
+                    {
+
+                    }
+
+                }
+                var schemavalidator = new XBRLProcessor.SchemaValidation();
+                schemavalidator.ValidateInstance(this.XmlDocument, schemas, messages);
 
                 results.AddRange(base.Validate(messages));
 

@@ -352,8 +352,19 @@ namespace LogicalModel
             }
             return result;
         }
-
-
+        public static bool IsTyped(Taxonomy taxonomy, int key)
+        {
+            return taxonomy.IsTyped(key);
+        }
+        public bool IsTyped(int key) 
+        {
+            var result = this.Module.TypedDimensions.ContainsKey(key);
+            return result;
+        }
+        public virtual TaxonomyDocument GetDocumentByTargetNamespace(string targetnamespace) 
+        {
+            return null;
+        } 
         public int GetDimensionDomainPart(int factpartkey) 
         {
             //var maxKey = Array.BinarySearch(MembersOfDimensionDomainsIndex, factpartkey);

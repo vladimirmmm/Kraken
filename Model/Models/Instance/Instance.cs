@@ -281,6 +281,29 @@ namespace LogicalModel
             return null;
         }
 
+        public int[] GetFactKeyByIndexString(string factstring)
+        {
+            if (factstring.StartsWith("I:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (id > -1 && id < this.Facts.Count)
+                {
+                    return this.Facts[id].InstanceKey;
+                }
+            }
+            if (factstring.StartsWith("T:"))
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (Taxonomy.FactsManager.Count > id)
+                {
+                    var key = Taxonomy.FactsManager.GetFactKey(id);
+                    return key;
+                }
+
+            }
+            return null;
+        }
+
 
         public List<string> GetFactStringsByFactIdStrings(List<string> factindexes)
         {
@@ -588,6 +611,19 @@ namespace LogicalModel
             }
             return cellID;
         }
+        public string GetDynamicCellID(string cellID, int[] instancefactkey)
+        {
+            if (this.FactDictionary.FactsByInstanceKey.ContainsKey(instancefactkey))
+            {
+                var ix = this.FactDictionary.FactsByInstanceKey[instancefactkey];
+                var instfact = this.FactDictionary.FactsByIndex[ix];
+                return GetDynamicCellID(cellID, instfact);
+            }
+            else
+            {
+            }
+            return cellID;
+        }
         public string GetDynamicCellID(string cellID, InstanceFact fact) 
         {
             var dynamiccellID = cellID;
@@ -602,12 +638,6 @@ namespace LogicalModel
                 var dynamicdata = DynamicReportCells[reportid];
                 if (dynamicdata != null)
                 {
-                    //if (dynamicdata.CellOfFact.ContainsKey(fact.FactString))
-                    //{
-                    //    var cellid = dynamicdata.CellOfFact[fact.FactString];
-                    //    cellobj.SetFromCellID(cellid);
-
-                    //}
                     if (this.FactDictionary.FactsByInstanceKey.ContainsKey(fact.InstanceKey))
                     {
                         var ifactix = this.FactDictionary.FactsByInstanceKey[fact.InstanceKey];

@@ -36,6 +36,7 @@ namespace XBRLProcessor.Model
             {
                 allfactsintevallist = tableintevallist;
             }
+            var rulehastypeddimension = rule.BaseQuery.DictFilterIndexes.Any(i => Taxonomy.IsTyped(i));
 
             foreach (var parameter in rule.Parameters)
             {
@@ -49,6 +50,11 @@ namespace XBRLProcessor.Model
                         sdata = allfactsintevallist;
                     }
                     parameter.Data = parameter.BaseQuery.ToIntervalList(this.Taxonomy.FactsOfParts, sdata);
+                    parameter.HasTypedDimension = parameter.BaseQuery.DictFilterIndexes.Any(i => Taxonomy.IsTyped(i));
+                    if (!parameter.HasTypedDimension) 
+                    {
+                        parameter.HasTypedDimension = rulehastypeddimension;
+                    }
                 }
             }
             bool hasfacts = false;

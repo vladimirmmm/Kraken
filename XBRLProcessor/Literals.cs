@@ -9,7 +9,8 @@ namespace XBRLProcessor.Literals
     public class Tags
     {
         public static string[] Links = { "link:linkbaseRef", "link:roleRef", "arcroleRef", "link:loc", "link:arcroleRef" };
-        public static string[] Imports = { "xs:import" };
+        public static string[] Imports = { "xs:import", "link:linkbase"};
+        //public static string[] Imports2 = { "xsi:schemaLocation" };
         public static string[] Labels = { "msg:message", "label:label", "xbrlle:label", "eg:label", "fn:label", "link:label", "xbrli:label", "xfi:label", "xbrldi:label", "xbrldt:label", "xl:label", "xlink:label", "xs:label", "xsi:label", "gen:label", "variable:label", "iso4217:label" };
         public static string[] TableContainers = { "xs:appinfo" };
         public static string[] SchemaElements = { "xs:element", "element" };
@@ -42,7 +43,7 @@ namespace XBRLProcessor.Literals
     public class Attributes
     {
         public const string XlinkHref = "xlink:href";
-        public static string SchemaLocation = "schemaLocation";
+        public static string SchemaLocation = "*:schemaLocation";
         public const string ID = "id";
         public const string LabelID = "xlink:label";
         public const string LabelRole = "xlink:role";

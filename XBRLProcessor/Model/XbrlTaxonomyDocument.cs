@@ -132,6 +132,7 @@ namespace XBRLProcessor.Models
         {
             structurehandlers.Add(new XmlNodeHandler(Tags.Links, LoadLink));
             structurehandlers.Add(new XmlNodeHandler(Tags.Imports, LoadImport));
+            //structurehandlers.Add(new XmlNodeHandler(Tags.Imports2, LoadImport2));
         }
 
         public void LoadTaxonomyDocument(string path)
@@ -271,22 +272,56 @@ namespace XBRLProcessor.Models
         public bool LoadLink(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
         {
             var result = true;
-            var path = Xml.Attr(node, Attributes.XlinkHref);
-            AddRelativeReferencedFiles(path);
-
+            var linkpath = Xml.Attr(node, Attributes.XlinkHref);
+            AddRelativeReferencedFiles(linkpath);
+           
             return result;
         }
 
         public bool LoadImport(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
         {
             var result = true;
-            var path = Xml.Attr(node, Attributes.SchemaLocation);
-            AddRelativeReferencedFiles(path);
+            var paths = Xml.Attr(node, Attributes.SchemaLocation);
+            var pathitems = paths.Split(' ');
+            if (taxonomydocument.FileName == "dim-def.xml")
+            {
+
+            }
+
+            foreach (var path in pathitems)
+            {
+                if (Utilities.Strings.IsXMLFile(path))
+                {
+                    //if (!(path.EndsWith(".xml") || path.EndsWith(".xsd")))
+                    //{
+
+                    //}
+                    AddRelativeReferencedFiles(path);
+
+                }
+            }
+            //AddRelativeReferencedFiles(path);
 
             return result;
 
         }
+        public bool LoadImport2(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
+        {
+            var result = true;
+            var paths = Xml.Attr(node, Attributes.SchemaLocation);
+            var pathitems = paths.Split(' ');
+            foreach (var path in pathitems) 
+            {
+                if (path.Contains("."))
+                {
+                    AddRelativeReferencedFiles(path);
 
+                }
+            }
+
+            return result;
+
+        }
        
         public override void LoadDocument()
         {
@@ -297,7 +332,10 @@ namespace XBRLProcessor.Models
         public override void ClearDocument()
         {
             base.ClearDocument();
-            Utilities.Xml.ClearDocument(this.XmlDocument);
+            if (this._XmlDocument != null)
+            {
+                Utilities.Xml.ClearDocument(this.XmlDocument);
+            }
             this._XmlDocument = null;
 
         }

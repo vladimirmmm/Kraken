@@ -376,7 +376,8 @@ class UITableManager implements Controls.ITableManager {
 
         this.OnCellSelected = function (element: Element) {
             var cellid = _Attribute(element, "id");
-            var cell = app.taxonomycontainer.Table.UITable.GetCellByID(cellid);
+            //var cell = app.taxonomycontainer.Table.UITable.GetCellByID(cellid);
+            var cell = app.taxonomycontainer.Table.UITable.GetCellByElement(element);
             if (cell != null) {
                 var cellfs = _Attribute(cell.UIElement, "factstring");
                 var mcell = new Model.Cell;

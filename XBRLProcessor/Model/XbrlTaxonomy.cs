@@ -184,7 +184,10 @@ namespace XBRLProcessor.Models
             }
             return domain;
         }
-        
+        public override LogicalModel.TaxonomyDocument GetDocumentByTargetNamespace(string targetnamespace)
+        {
+            return this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == targetnamespace);
+        } 
         public string FindDimensionDomainString(string dimensionitem) 
         {
             var domain = FindDimensionDomain(dimensionitem);
@@ -242,6 +245,8 @@ namespace XBRLProcessor.Models
                 var existing_entry = this.FindDocument(EntryDocument.LocalRelPath);
                 EntryDocument.ReferencedFiles = existing_entry.ReferencedFiles;
                 EntryDocument.TagNames = existing_entry.TagNames;
+                EntryDocument.TargetNamespace = existing_entry.TargetNamespace;
+                EntryDocument.TargetNamespacePrefix = existing_entry.TargetNamespacePrefix;
                 this.TaxonomyDocuments.Remove(existing_entry);
                 this.TaxonomyDocuments.Insert(0, EntryDocument);
 

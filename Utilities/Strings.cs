@@ -905,5 +905,10 @@ namespace Utilities
        
             return rs.ToString();
         }
+
+        public static bool IsXMLFile(string path)
+        {
+            return (path.EndsWith(".xml") || path.EndsWith(".xsd"));
+        }
     }
 }

@@ -140,6 +140,7 @@ var UI;
         Table.prototype.HighlightCell = function () {
             _RemoveClass(_Select(".highlight"), "highlight");
             var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
+            cellselector = cellselector.replace(/\*/g, "\\\*").toUpperCase();
             var cells = _Select("#" + cellselector);
             _AddClass(cells, "highlight");
             _Focus(cells);

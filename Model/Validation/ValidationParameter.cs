@@ -77,6 +77,7 @@ namespace LogicalModel.Validation
             }
         }
         public bool BindAsSequence { get; set; }
+        public bool HasTypedDimension { get; set; }
 
         public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
