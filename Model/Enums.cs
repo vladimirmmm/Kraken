@@ -12,6 +12,7 @@ namespace LogicalModel
         Numeric,
         String,
         Date,
-        Boolean
+        Boolean,
+        Unknown
     }
 }

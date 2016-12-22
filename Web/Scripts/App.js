@@ -1,6 +1,44 @@
 /// <reference path="typings/signalr/signalr.d.ts" />
 var Applications;
 (function (Applications) {
+    var TaskAction = (function () {
+        function TaskAction() {
+            this.ActiveTasksNr = 0;
+            this.OnCompleted = function () {
+            };
+        }
+        return TaskAction;
+    })();
+    Applications.TaskAction = TaskAction;
+    var Waiter = (function () {
+        function Waiter() {
+            this.Waiters = {};
+        }
+        Waiter.prototype.SetWaiter = function (waiterid, oncompleted) {
+            var me = this;
+            var a = new TaskAction();
+            a.OnCompleted = oncompleted;
+            a.ActiveTasksNr = 0;
+            me.Waiters[waiterid] = a;
+        };
+        Waiter.prototype.StartTask = function (waiterid, task) {
+            var me = this;
+            Log("UI", "StartTask: " + task);
+            me.Waiters[waiterid].ActiveTasksNr++;
+        };
+        Waiter.prototype.EndTask = function (waiterid, task) {
+            var me = this;
+            var waiter = me.Waiters[waiterid];
+            waiter.ActiveTasksNr--;
+            Log("UI", "EndTask: " + task);
+            if (waiter.ActiveTasksNr == 0) {
+                waiter.OnCompleted();
+                Log("UI", "Waiter " + waiterid + " completed.");
+            }
+        };
+        return Waiter;
+    })();
+    Applications.Waiter = Waiter;
     var App = (function () {
         function App() {
             this.instancecontainer = new Control.InstanceContainer();
@@ -24,7 +62,7 @@ var Applications;
                     //Log(Format("command {0} successfull!", lid));
                 }, function (error) {
                     console.log(error);
-                });
+                }, null);
             };
             var handled = false;
             if (In(lid, "o_tax_l", "o_inst")) {
@@ -46,7 +84,7 @@ var Applications;
                     // );
                 }, function (error) {
                     ShowError("Facts were not saved: " + GetErrorObj(error).message);
-                });
+                }, null);
                 handled = true;
             }
             if (In(lid, "validate_folder", "process_folder")) {
@@ -74,7 +112,7 @@ var Applications;
             AjaxRequest("Settings/Save", "post", "json", parameters, function (data) {
                 Log("UI", "Settings were saved succeassfully!");
                 me.CloseWindow(element);
-            }, null);
+            }, null, null);
         };
         App.prototype.Settings_Show = function () {
             var settingscontainer = _SelectFirst("#EngineSettings");
@@ -95,7 +133,7 @@ var Applications;
                 _Html(settingslist, c_html);
                 //_Center(settingscontainer);
                 _Show(settingscontainer);
-            }, null);
+            }, null, null);
         };
         App.prototype.OpenWebPath = function (lid) {
             var me = this;
@@ -122,7 +160,7 @@ var Applications;
             AjaxRequest("App/Info", "get", "text", null, function (data) {
                 var html = Replace(data, "\r\n", "<br/>");
                 _Html(infocontainer, html);
-            }, null);
+            }, null, null);
         };
         App.prototype.CloseWindow = function (element) {
             var control = _Parent(element, ".window");
@@ -168,6 +206,7 @@ var Applications;
                     $item.html(data);
                 }, function () { return waiter.Check(); }], [function (error) {
                     waiter.Check();
+                }], [function (Id) {
                 }]);
                 waiter.Items.push(ajaxrequest);
             });
@@ -198,7 +237,7 @@ var Applications;
                 });
             }, function (error) {
                 Log("UI", errortag + error);
-            });
+            }, null);
         };
         App.prototype.ShowOnBottomTab = function (element, tabselector) {
             var tmpcontainer = _SelectFirst("#tempcontainer");
@@ -212,6 +251,7 @@ var Applications;
             LoadTab("#DetailWindow", tabselector);
         };
         App.prototype.LoadInstance = function () {
+            Log("UI", "Attempt to Load the Instance");
             var me = this;
             if (!me.IsTaxonomyLoading) {
                 me.instancecontainer.SetExternals();
@@ -227,15 +267,17 @@ var Applications;
             GC();
             me.IsTaxonomyLoading = true;
             me.taxonomycontainer.Table.TaxonomyService = new Service.TaxonomyService(me.taxonomycontainer, me.instancecontainer);
-            me.taxonomycontainer.SetExternals();
             me.taxonomycontainer.OnLoaded = function () {
+                Log("UI", "Taxonomy OnLoaded");
                 me.IsTaxonomyLoading = false;
                 if (me.ShouldLoadInstance) {
                     me.ShouldLoadInstance = false;
                     me.LoadInstance();
                 }
             };
+            me.taxonomycontainer.SetExternals();
         };
+        App.Waiters = new Waiter();
         return App;
     })();
     Applications.App = App;

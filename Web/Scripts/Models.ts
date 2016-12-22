@@ -107,6 +107,7 @@
         public Domain: string;
         public DomainMember: string;
         public IsTyped: boolean;
+        public static DefaultMember: string = "x0";
 
         public static DomainMemberFullName(dimension: Dimension): string {
             if ("DomainMemberFullName" in dimension) {
@@ -309,7 +310,7 @@
         {
             var itemstoremove = [];
             fact.Dimensions.forEach((d,ix) => {
-                if (d.DomainMember == "x0") { itemstoremove.push(d); }
+                if (d.DomainMember == Dimension.DefaultMember) { itemstoremove.push(d); }
             });
             itemstoremove.forEach((d, ix) => {
                 RemoveFrom(d, fact.Dimensions);

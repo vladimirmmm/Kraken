@@ -399,12 +399,15 @@ namespace Utilities
             }
             return "";
         }
-
+        public static void test() 
+        {
+            var items = TextsBetween("$a, \"^None$\"", "\"", "\"");
+        }
         public static List<string> TextsBetween(string Text, string BeginTag, string EndTag)
         {
             List<string> StringList = new List<string>();
             string cs = "";
-            var six = 0;
+            var six = Text.IndexOf(BeginTag);
             while (six > -1 && Text.IndexOf(EndTag, six, StringComparison.Ordinal) > -1)
             {
                 cs = TextBetween(Text, BeginTag, EndTag, six);

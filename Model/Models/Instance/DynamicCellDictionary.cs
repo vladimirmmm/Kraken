@@ -286,8 +286,12 @@ namespace LogicalModel.Models
                             var li_new = LayoutItem.Copy(li_original);
                             foreach (var dim in li_new.Dimensions)
                             {
+                            
                                 var instancedim = typedfact.Dimensions.FirstOrDefault(i => i.DimensionItem == dim.DimensionItem && i.Domain == dim.Domain);
-                                dim.DomainMember = instancedim.DomainMember;
+                                if (instancedim != null)
+                                {
+                                    dim.DomainMember = instancedim.DomainMember;
+                                }
                             }
                             var fact = new FactBase();
                             fact.Dimensions = li_new.Dimensions;

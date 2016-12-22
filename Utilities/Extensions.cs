@@ -31,6 +31,19 @@ namespace Utilities
             }
             return false;
         }
+        public static bool In<T>(this T obj, List<String> values)
+        {
+            var stringval = String.Format("{0}", obj);
+            if (obj == null) { obj = (T)new Object(); }
+            for (int i = 0; i < values.Count; i++)
+            {
+                //if (String.Equals(obj, values[i]))
+                //    return true;
+                if (obj.Equals(values[i]))
+                    return true;
+            }
+            return false;
+        }
         public static bool IsAllNull<T>(this List<T> obj)
         {
             return IsAllNull(obj.ToArray());

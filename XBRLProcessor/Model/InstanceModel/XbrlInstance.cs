@@ -69,8 +69,16 @@ namespace Model.InstanceModel
                 {
                     _XmlDocument = new XmlDocument();
                     _XmlDocument.XmlResolver = null;
-                    _XmlDocument.Load(this.FullPath);
-                    _XmlDocument.DocumentElement.SetAttribute("localpath", this.FullPath);
+                    try
+                    {
+                        _XmlDocument.Load(this.FullPath);
+                        _XmlDocument.DocumentElement.SetAttribute("localpath", this.FullPath);
+                    }
+                    catch (Exception ex) 
+                    {
+                        _XmlDocument = null;
+                        Utilities.Logger.WriteLine(ex);
+                    }
 
                 }
                 return _XmlDocument;
@@ -85,8 +93,12 @@ namespace Model.InstanceModel
             this.FullPath = filepath;
         }
         
-        public void LoadSimple()
+        public bool LoadSimple()
         {
+            if (XmlDocument == null || XmlDocument.DocumentElement == null) 
+            {
+                return false;
+            }
             var xbrlnode = Utilities.Xml.SelectSingleNode(XmlDocument.DocumentElement, "//*[ local-name() = 'xbrl']");
 
             Mappings.CurrentMapping.Map<XbrlInstance>(xbrlnode, this);
@@ -103,7 +115,7 @@ namespace Model.InstanceModel
                AddToContext(ctcontainer, ct);
             }
             this.TaxonomyModuleReference = this.SchemaRef.Href;
-
+            return true;
         }
         public void AddToContext(LogicalModel.ContextContainer logicalcontext, XbrlContext xbrlcontext) 
         {
@@ -284,7 +296,7 @@ namespace Model.InstanceModel
             var ix = 0;
             foreach (var xbrlfact in XbrlFacts) 
             {
-                var instancecontext = this.Contexts.Items[xbrlfact.ContextRef];
+                //var instancecontext = this.Contexts.Items[xbrlfact.ContextRef];
                 var logicalfact = new LogicalModel.InstanceFact();
                 logicalfact.IX = ix;
                 ix++;
@@ -374,7 +386,7 @@ namespace Model.InstanceModel
 
                 }
                 var schemavalidator = new XBRLProcessor.SchemaValidation();
-                schemavalidator.ValidateInstance(this.XmlDocument, schemas, messages);
+                //schemavalidator.ValidateInstance(this.XmlDocument, schemas, messages);
 
                 results.AddRange(base.Validate(messages));
 

@@ -156,7 +156,15 @@ namespace LogicalModel.Validation
         public List<ValidationParameter> Parameters { get { return _Parameters; } set { _Parameters = value; } }
 
         public Func<List<ValidationParameter>, bool> Function = null;
-        
+
+
+        private List<int> _TypedDimensions = new List<int>();
+        public List<int> TypedDimensions { get { return _TypedDimensions; } set { _TypedDimensions = value; } }
+
+        private List<int> _CoveredParts = new List<int>();
+        public List<int> CoveredParts { get { return _CoveredParts; } set { _CoveredParts = value; } }
+
+
         private Instance instance = null;
 
         public void Setinstance(Instance instance)
@@ -212,12 +220,12 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().TaxFacts;
-            var aregroupsok = Parameters.Where(i=>!i.IsGeneral).Select(i => i.TaxFacts.Count).Distinct().Count() == 1;
-            if (!aregroupsok) 
-            {
-                Utilities.Logger.WriteLine(String.Format("Rule {0} has factgroup problems", this.ID));
-                return results;
-            }
+            //var aregroupsok = Parameters.Where(i=>!i.IsGeneral).Select(i => i.TaxFacts.Count).Distinct().Count() == 1;
+            //if (!aregroupsok) 
+            //{
+            //    Utilities.Logger.WriteLine(String.Format("Rule {0} has factgroup problems", this.ID));
+            //    return results;
+            //}
             if (this.ID.Contains("de_sprv_vcrs_0030"))
             {
 
@@ -352,18 +360,67 @@ namespace LogicalModel.Validation
             }
             return facts.FirstOrDefault();
         }
-
         public override List<ValidationRuleResult> GetAllInstanceResults(Instance instance)
         {
-            if (this.ID.Contains("0149"))
+            var taxonomy = instance.Taxonomy;
+            var allresults = GetAllResults();
+            var results = new List<ValidationRuleResult>();
+
+            ValidationRuleHelper.LoadTypedFacts(instance, allresults);
+
+            var instanceresults = ValidationRuleHelper.ExecuteImplicitFiltering(instance, allresults);
+
+            results = instanceresults;
+            return results;
+        }
+        public List<ValidationRuleResult> GetAllInstanceResultsOld(Instance instance)
+        {
+            if (this.ID.Contains("de_sprv_vrdp-bi_3260"))
             {
             }
+            var taxonomy = instance.Taxonomy;
             var allresults = GetAllResults();
             var allinstanceresults = new List<ValidationRuleResult>();
             var resultstoremove = new List<ValidationRuleResult>();
             var resultstoadd = new List<ValidationRuleResult>();
-            var hastyped = this.Parameters.Any(i=>i.HasTypedDimension);
-            var waschecked = false;
+            var hastyped = this.Parameters.Any(i => i.TypedDimensions.Count > 0);
+
+
+            //if (taxonomy.TypedIntervals.Intervals.Count == 0)
+            //{
+            //    var typedfactparts = Taxonomy.Module.TypedDimensions.Keys.ToList();
+            //    foreach(var typedfactpart in typedfactparts)
+            //    {
+            //        if (Taxonomy.FactsOfParts.ContainsKey(typedfactpart))
+            //        {
+            //            var typedinterval = Taxonomy.FactsOfParts[typedfactpart];
+            //            foreach (var interval in typedinterval.Intervals)
+            //            {
+            //                foreach (var ix in interval.AsEnumerable())
+            //                {
+            //                    taxonomy.TypedIntervals.Add(ix);
+
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            if (!hastyped)
+            {
+                var allfactsindexes = this.Parameters.SelectMany(i => i.TaxFacts.SelectMany(j => j)).ToList();
+
+                foreach (var factindex in allfactsindexes)
+                {
+                    var factindexintervallist = new IntervalList(factindex);
+                    var existing = Utilities.Objects.IntersectSorted(factindexintervallist, taxonomy.TypedIntervals, null);
+                    if (existing.Intervals.Count > 0)
+                    {
+                        hastyped = true;
+                        break;
+                    }
+                }
+            }
+            //var hastyped = this.Parameters.Any(i => i.TaxFacts.Any(j=>Taxonomy.IsTyped() > 0);
             if (this.Parameters.Count == 1 && this.Parameters.FirstOrDefault().IsGeneral)//.StringValue == "filingindicators") 
             {
                 if (allresults.Count == 1)
@@ -407,19 +464,11 @@ namespace LogicalModel.Validation
 
             foreach (var result in allresults)
             {
-                //var facts = new List<FactBase>();
-                //if (!waschecked)
-                //{
-                //    waschecked = true;
-                //    //facts = result.Parameters.SelectMany(i => i.Facts).Select(i => FactBase.GetFactFrom(i)).ToList();
-                //    facts = result.Parameters.SelectMany(i => i.FactIDs).Select(i => FactBase.GetFactFrom(
-                //        Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(Utilities.Converters.FastParse(i.Substring(2)))
-                //         ))).ToList();
-                //    hastyped = facts.Any(i => i.Dimensions.Any(j => j.IsTyped));
-                //}
+    
                 if (hastyped)
                 {
-                    resultstoadd.AddRange( ValidationRuleHelper.GetTypedResults(instance, this, result));
+                    //resultstoadd.AddRange(ValidationRuleHelper.GetTypedResults(instance, this, result));
+                    resultstoadd.AddRange(ValidationRuleHelper.ResolveTypedFacts(instance, result));
                     resultstoremove.Add(result);
                 
                 }
@@ -440,7 +489,7 @@ namespace LogicalModel.Validation
                     {
                         for (int i = 0; i < p.FactIDs.Count; i++)
                         {
-                            var cells = p.Cells[i];
+                            var cells = p.Cells.Count==p.FactIDs.Count ? p.Cells[i] : p.Cells.FirstOrDefault();
                             var fid = p.FactIDs[i];
                             var fk = instance.GetFactKeyByIndexString(fid);
                             //var dcells = instance.GetDynamicCellID(cells.FirstOrDefault(), fs);
@@ -756,6 +805,11 @@ namespace LogicalModel.Validation
                         rp.StringValue = Utilities.Strings.ArrayToString(rp.DecimalValues);
                         rp.Decimals = decimals;
                     }
+                    if (rp.Type == TypeEnum.Boolean)
+                    {
+                        rp.StringValues = stringvalues.ToArray(); //GetValues(parameterfactgroup.Facts).ToArray();
+                        rp.StringValue = Utilities.Strings.ArrayToString(rp.StringValues);
+                    }
                 }
                 else
                 {
@@ -820,6 +874,9 @@ namespace LogicalModel.Validation
                 }
                 if (!partialresult)
                 {
+                    if (this.ID.Contains("-bi")) 
+                    {
+                    }
                     result.ID = this.ID;
                     result.IsOk = false;
                     var me =this;
@@ -866,6 +923,10 @@ namespace LogicalModel.Validation
             var results = new List<ValidationRuleResult>();
             Setinstance(instance);
             var allinstanceresults = GetAllInstanceResults(instance);
+            if (this.ID.Contains("de_sprv_vrdp-r_1990")) 
+            {
+
+            }
             foreach (var r in allinstanceresults) 
             {
              
@@ -899,8 +960,7 @@ namespace LogicalModel.Validation
     {
         public string Name { get; set; }
 
-        private List<String> _Facts = new List<String>();
-        public List<String> Facts { get { return _Facts; } set { _Facts = value; } }
+        public List<InstanceFact> InstanceFacts = new List<InstanceFact>();
 
         private List<String> _FactIDs = new List<String>();
         public List<String> FactIDs { get { return _FactIDs; } set { _FactIDs = value; } }
@@ -918,7 +978,7 @@ namespace LogicalModel.Validation
 
         internal void Clear()
         {
-            this.Facts.Clear();
+            this.InstanceFacts.Clear();
             this.FactIDs.Clear();
             this.Cells.Clear();
         }

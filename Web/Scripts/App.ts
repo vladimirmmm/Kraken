@@ -2,6 +2,42 @@
 
 module Applications
 {
+    export class TaskAction
+    {
+        public ActiveTasksNr: number = 0;
+        public OnCompleted: Function = () => { };
+    }
+    export class Waiter
+    {
+        private Waiters: Model.Dictionary<TaskAction> = {};
+
+        public SetWaiter(waiterid: string, oncompleted:Function)
+        {
+            var me = this;
+            var a = new TaskAction();
+            a.OnCompleted = oncompleted;
+            a.ActiveTasksNr = 0;
+            me.Waiters[waiterid] = a;
+        }
+        public StartTask(waiterid: string, task?: string)
+        {
+            var me = this;
+            Log("UI","StartTask: " + task);
+
+            me.Waiters[waiterid].ActiveTasksNr++;
+        }
+
+        public EndTask(waiterid: string, task?:string) {
+            var me = this;
+            var waiter = me.Waiters[waiterid];
+            waiter.ActiveTasksNr--;
+            Log("UI","EndTask: " + task);
+            if (waiter.ActiveTasksNr == 0) {
+                waiter.OnCompleted();
+                Log("UI","Waiter " + waiterid + " completed.");
+            }
+        }
+    }
     export class App
     {
         public instancecontainer: Control.InstanceContainer = new Control.InstanceContainer(); 
@@ -15,6 +51,7 @@ module Applications
 
         private MenuAccessorFunction: Function = null;
 
+        public static Waiters: Waiter = new Waiter();
         public MenuCommand(id: string)
         {
             var me = this;
@@ -26,7 +63,8 @@ module Applications
                 parameters["command"] = lid;
                 AjaxRequest("UI/Menu", "get", "json", parameters, function (data) {
                     //Log(Format("command {0} successfull!", lid));
-                }, function (error) { console.log(error); });
+                }, function (error) { console.log(error); },
+                    null);
             }
             var handled = false;
             if (In(lid, "o_tax_l", "o_inst")) {
@@ -52,7 +90,7 @@ module Applications
                     ,
                     (error) => {
                         ShowError("Facts were not saved: " + GetErrorObj(error).message);
-                    });
+                    },null);
                 handled = true;
             }
             if (In(lid, "validate_folder", "process_folder")) {
@@ -84,7 +122,7 @@ module Applications
             AjaxRequest("Settings/Save", "post", "json", parameters, function (data) {
                 Log("UI","Settings were saved succeassfully!");
                 me.CloseWindow(element);
-            }, null);
+            }, null,null);
 
         }
 
@@ -110,7 +148,7 @@ module Applications
                 _Html(settingslist, c_html);
                 //_Center(settingscontainer);
                 _Show(settingscontainer);
-            }, null);
+            }, null,null);
            
 
         }
@@ -146,7 +184,7 @@ module Applications
                 var html = Replace(data, "\r\n", "<br/>");
                 _Html(infocontainer, html);
 
-            },null);
+            },null,null);
         }
 
         public CloseWindow(element: Element)
@@ -201,10 +239,11 @@ module Applications
                 var ajaxrequest = AjaxRequestComplex(Format("Layout/{0}.html", contanerid), "get", "text/html", {}, [function (data) {
                     $item.html(data);
                 },
-                () => waiter.Check()
-                ], [function (error) {
+                () => waiter.Check()],
+                [function (error) {
                         waiter.Check()
-                    }]);
+                    }],
+                [function (Id) { }]);
                 waiter.Items.push(ajaxrequest)
             });
 
@@ -243,7 +282,7 @@ module Applications
 
             }, function (error) {
                     Log("UI",errortag + error);
-                });
+                },null);
 
         }
 
@@ -264,6 +303,7 @@ module Applications
         private ShouldLoadInstance: boolean = false;
         public LoadInstance()
         {
+            Log("UI", "Attempt to Load the Instance");
             var me = this;
             if (!me.IsTaxonomyLoading) {
                 me.instancecontainer.SetExternals();
@@ -286,14 +326,16 @@ module Applications
             me.IsTaxonomyLoading = true;
 
             me.taxonomycontainer.Table.TaxonomyService = new Service.TaxonomyService(me.taxonomycontainer, me.instancecontainer);
-            me.taxonomycontainer.SetExternals();
             me.taxonomycontainer.OnLoaded = () => {
+                Log("UI", "Taxonomy OnLoaded");
                 me.IsTaxonomyLoading = false;
                 if (me.ShouldLoadInstance) {
                     me.ShouldLoadInstance = false;
                     me.LoadInstance();
                 }
             }
+            me.taxonomycontainer.SetExternals();
+            
         }
     }
 } 

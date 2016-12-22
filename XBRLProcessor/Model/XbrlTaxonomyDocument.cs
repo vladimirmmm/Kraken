@@ -325,8 +325,11 @@ namespace XBRLProcessor.Models
        
         public override void LoadDocument()
         {
-            XmlDocument.LoadXml(System.IO.File.ReadAllText(LocalPath));
-            XmlDocument.DocumentElement.SetAttribute("localpath", LocalPath);
+            if (Utilities.FS.FileExists(LocalPath))
+            {
+                XmlDocument.LoadXml(Utilities.FS.ReadAllText(LocalPath));
+                XmlDocument.DocumentElement.SetAttribute("localpath", LocalPath);
+            }
         }
 
         public override void ClearDocument()

@@ -1,6 +1,7 @@
 ﻿using BaseModel;
 using LogicalModel;
 using LogicalModel.Base;
+using LogicalModel.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace XBRLProcessor.Model
     {
         public void SetFacts(LogicalModel.Validation.ValidationRule rule) 
         {
-            if (rule.ID.Contains("2909")) 
+            if (rule.ID.Contains("0147")) 
             {
 
             }
@@ -36,7 +37,7 @@ namespace XBRLProcessor.Model
             {
                 allfactsintevallist = tableintevallist;
             }
-            var rulehastypeddimension = rule.BaseQuery.DictFilterIndexes.Any(i => Taxonomy.IsTyped(i));
+            var ruletypeddimension = rule.BaseQuery.DictFilterIndexes.Where(i => Taxonomy.IsTyped(i));
 
             foreach (var parameter in rule.Parameters)
             {
@@ -50,10 +51,14 @@ namespace XBRLProcessor.Model
                         sdata = allfactsintevallist;
                     }
                     parameter.Data = parameter.BaseQuery.ToIntervalList(this.Taxonomy.FactsOfParts, sdata);
-                    parameter.HasTypedDimension = parameter.BaseQuery.DictFilterIndexes.Any(i => Taxonomy.IsTyped(i));
-                    if (!parameter.HasTypedDimension) 
+                    parameter.TypedDimensions = parameter.BaseQuery.DictFilterIndexes.Where(i => Taxonomy.IsTyped(i)).ToList();
+                    parameter.TypedDimensions = parameter.TypedDimensions.Concat(ruletypeddimension).Distinct().ToList();
+                    parameter.CoveredParts = parameter.BaseQuery.GetAspects(this.Taxonomy);
+                    if (parameter.FallBackValue == "()" 
+                        /*&& parameter.TypedDimensions.Count>0 */
+                        && !parameter.BindAsSequence)
                     {
-                        parameter.HasTypedDimension = rulehastypeddimension;
+                        parameter.BindAsSequence = true;
                     }
                 }
             }
@@ -68,6 +73,8 @@ namespace XBRLProcessor.Model
                 //intervallist.AddInterval(interval);
                 data = allfactsintevallist;
             }
+            rule.TypedDimensions = rule.BaseQuery.DictFilterIndexes.Where(i => Taxonomy.IsTyped(i)).ToList();
+            rule.CoveredParts = rule.BaseQuery.GetAspects(this.Taxonomy);
             var singlefactparameters = rule.Parameters.Where(i => !i.IsGeneral && !i.BindAsSequence).ToList();
             var multifactparameters = rule.Parameters.Where(i => !i.IsGeneral && i.BindAsSequence).ToList();
             var mffnspissue = false;
@@ -88,6 +95,8 @@ namespace XBRLProcessor.Model
                         //    factsq = Utilities.Objects.IntersectSorted(factsq, tableintevallist, null);
                         //}
                         var facts = factsq.ToList();
+
+                        //var facts_domainkeys = facts.Select(i=>Taxonomy.DimensionDomainsOfMembers[i])
                         //var facts = parameter.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, group,null).SelectMany(i => i).ToList();
                         if (!parameter.BindAsSequence && facts.Count > 1)
                         {
@@ -172,6 +181,7 @@ namespace XBRLProcessor.Model
                 //Utilities.Logger.WriteToFile("End joining rule with parameters");
 
             }
+            ValidationRuleHelper.SetParamerterTypes(Taxonomy, rule);
             if (!hasfacts) 
             {
                 Utilities.Logger.WriteLine(String.Format("{0}: Rule has no facts!", rule.ID));
@@ -179,6 +189,7 @@ namespace XBRLProcessor.Model
             var parameterswithissues = singlefactparameters.Where(i => i.TaxFacts.Any(f=>f.Count>1)).ToList();
             if (parameterswithissues.Count > 0) 
             {
+                Utilities.Logger.WriteLine(String.Format("{0}: Rule single factrule has multiple facts!", rule.ID));
 
             }
         }

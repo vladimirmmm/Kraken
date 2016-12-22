@@ -131,6 +131,7 @@ var Model;
         Dimension.GetDomainFullName = function (dimension) {
             return "[" + dimension.DimensionItem + "]" + dimension.Domain;
         };
+        Dimension.DefaultMember = "x0";
         return Dimension;
     })();
     Model.Dimension = Dimension;
@@ -298,7 +299,7 @@ var Model;
         FactBase.RemoveDimensionsWithDefaultMemebr = function (fact) {
             var itemstoremove = [];
             fact.Dimensions.forEach(function (d, ix) {
-                if (d.DomainMember == "x0") {
+                if (d.DomainMember == Dimension.DefaultMember) {
                     itemstoremove.push(d);
                 }
             });

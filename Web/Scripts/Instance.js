@@ -52,6 +52,7 @@ var Control;
             return _SelectFirst(selector, me.Sel(me.s_validation_selector));
         };
         InstanceContainer.prototype.SetExternals = function () {
+            Log("UI", "Loading the Instance");
             var me = this;
             me.Taxonomy = app.taxonomycontainer.Taxonomy;
             me.LoadInstance(null);
@@ -63,7 +64,7 @@ var Control;
                         me.ValidationResults = data.Items;
                         fwc.Callback(data);
                     }
-                }, null);
+                }, null, null);
             });
         };
         InstanceContainer.prototype.HandleAction = function (msg) {
@@ -85,7 +86,7 @@ var Control;
                 CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
-            });
+            }, null);
         };
         InstanceContainer.prototype.LoadInstance = function (onloaded) {
             var me = this;
@@ -130,7 +131,7 @@ var Control;
                 CallFunction(onloaded);
             }, function (error) {
                 Log("UI", "Error: " + error);
-            });
+            }, null);
         };
         InstanceContainer.prototype.GetFactKeyStringFromFactString = function (factstring) {
             var keys = this.GetFactKeyFromFactString(factstring);
@@ -141,7 +142,7 @@ var Control;
             var result = [];
             var parts = factstring.split(',');
             parts.forEach(function (part) {
-                if (part.indexOf(":x0") == -1) {
+                if (!EndsWith(part, Model.Dimension.DefaultMember)) {
                     var val = me.GetFactPartKeyFromString(part);
                     if (!IsNull(val)) {
                         result.push(val);
@@ -368,15 +369,17 @@ var Control;
             if (!IsNull(me.ValidationResults)) {
                 me.ValidationResults.forEach(function (v) {
                     if (IsNull(rule) || rule.ID != v.ID) {
-                        var tax_rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == v.ID; });
-                        rule = new Model.ValidationRule();
-                        rule.ID = tax_rule.ID;
-                        rule.FunctionName = tax_rule.FunctionName;
-                        rule.Title = Truncate(tax_rule.DisplayText, 100);
-                        rule.DisplayText = tax_rule.DisplayText;
-                        rule.OriginalExpression = tax_rule.OriginalExpression;
-                        rule.HasAllFind = v.HasAllFind;
-                        me.ValidationErrors.push(rule);
+                        if (!IsNull(me.Taxonomy)) {
+                            var tax_rule = me.Taxonomy.ValidationRules.AsLinq().FirstOrDefault(function (i) { return i.ID == v.ID; });
+                            rule = new Model.ValidationRule();
+                            rule.ID = tax_rule.ID;
+                            rule.FunctionName = tax_rule.FunctionName;
+                            rule.Title = Truncate(tax_rule.DisplayText, 100);
+                            rule.DisplayText = tax_rule.DisplayText;
+                            rule.OriginalExpression = tax_rule.OriginalExpression;
+                            rule.HasAllFind = v.HasAllFind;
+                            me.ValidationErrors.push(rule);
+                        }
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);

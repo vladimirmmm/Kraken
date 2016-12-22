@@ -204,7 +204,7 @@ namespace Engine.Services
                                     {
                                         foreach (var p in item.Parameters)
                                         {
-                                            p.Facts.Clear();
+                                            p.InstanceFacts.Clear();
                                         }
                                     }
                                     result.Data = json;

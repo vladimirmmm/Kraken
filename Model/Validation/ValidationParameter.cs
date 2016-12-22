@@ -14,13 +14,23 @@ namespace LogicalModel.Validation
     {
         public static bool In(this ValidationParameter obj, params String[] values)
         {
-            var stringval = obj.StringValue;
-            for (int i = 0; i < values.Length; i++)
+            foreach (var stringval in obj.StringValues)
             {
-                if (String.Equals(stringval, values[i]))
-                    return true;
+                var subresult = false;
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (String.Equals(stringval, values[i]))
+                    {
+                        subresult = true;
+                        break;
+                    }
+                }
+                if (!subresult) 
+                {
+                    return false;
+                }
             }
-            return false;
+            return true;
         }
     }
     public class test
@@ -67,7 +77,7 @@ namespace LogicalModel.Validation
                 }
             }
         }
-        private TypeEnum _Type = TypeEnum.String;
+        private TypeEnum _Type = TypeEnum.Unknown;
         public TypeEnum Type
         {
             get { return _Type; }
@@ -77,19 +87,17 @@ namespace LogicalModel.Validation
             }
         }
         public bool BindAsSequence { get; set; }
-        public bool HasTypedDimension { get; set; }
+
+        private List<int> _TypedDimensions = new List<int>();
+        public List<int> TypedDimensions { get { return _TypedDimensions; } set { _TypedDimensions = value; } }
+
+        private List<int> _CoveredParts = new List<int>();
+        public List<int> CoveredParts { get { return _CoveredParts; } set { _CoveredParts = value; } }
+
 
         public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
 
-        public InstanceFact FirstFact 
-        {
-            get 
-            {
-                return CurrentFacts.FirstOrDefault();
-            }
-
-        }
 
         public string TypeString
         {
@@ -157,6 +165,7 @@ namespace LogicalModel.Validation
         {
             this.Name = name;
             this.RuleID = ruleID;
+            this.Type = TypeEnum.Unknown;
         }
 
 
@@ -214,10 +223,15 @@ namespace LogicalModel.Validation
         }
         public override bool Equals(object obj)
         {
+            if (this.StringValues.Length > 1) 
+            {
+                return SequenceEquals(obj);
+            }
             if (typeof(string) == (obj == null ? typeof(object) : obj.GetType())) 
             {
                 return this.StringValue == String.Format("{0}", obj);
             }
+            
             return base.Equals(obj);
         }
 
@@ -250,6 +264,30 @@ namespace LogicalModel.Validation
         }
 
         #endregion
+
+        public bool SequenceEquals(object obj) 
+        {
+            var result = false;
+            foreach (var stringval in this.StringValues) 
+            {
+                if (this.Type == TypeEnum.Boolean) 
+                {
+                    var bval = Utilities.ObjectExtensions.In(stringval, "true", "1");
+                    if (bval.Equals(obj)) 
+                    {
+                        return true;
+                    }
+                }
+                if (this.Type != TypeEnum.Boolean)
+                {
+                    if (stringval.Equals(String.Format("{0}", obj)))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return result;
+        }
 
         public static bool operator ==(ValidationParameter lhs, decimal rhs)
         {

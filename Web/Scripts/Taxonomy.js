@@ -86,7 +86,7 @@ var Control;
                 _Html(_SelectFirst("#DetailTitle"), doc);
             }, function (error) {
                 console.log(error);
-            });
+            }, null);
         };
         TaxonomyContainer.prototype.ShowHierarchy = function (domain, role) {
             var me = this;
@@ -143,6 +143,8 @@ var Control;
             var me = this;
             me.SetHeight();
             me.Table.Taxonomy = me.Taxonomy;
+            Applications.App.Waiters.SetWaiter("Tax", me.OnLoaded);
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/Get");
             AjaxRequest("Taxonomy/Get", "get", "json", null, function (data) {
                 me.Taxonomy.Module = data;
                 var m = me.Taxonomy.Module;
@@ -168,16 +170,21 @@ var Control;
                         counterdict[val].push(parseInt(item));
                     }
                 }
-                me.OnLoaded();
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/Get");
             });
             me.GetTables();
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/Concepts");
             AjaxRequest("Taxonomy/Concepts", "get", "json", null, function (data) {
                 me.Taxonomy.Concepts = data;
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/Concepts");
             });
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/CellIndexes");
             AjaxRequest("Taxonomy/CellIndexes", "get", "text", null, function (data) {
                 var lines = data.split("\n");
                 data = null;
@@ -191,7 +198,10 @@ var Control;
                 //me.Taxonomy.CellIndexDictionary = data;
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/CellIndexes");
             });
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/Documents");
             AjaxRequest("Taxonomy/Documents", "get", "json", null, function (data) {
                 me.Taxonomy.TaxonomyDocuments = data;
                 for (var i = 0; i < me.Taxonomy.TaxonomyDocuments.length; i++) {
@@ -204,8 +214,11 @@ var Control;
                 GC();
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/Documents");
             });
             me.LoadValidationResults(null);
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/Hierarchies");
             AjaxRequest("Taxonomy/Hierarchies", "get", "json", null, function (data) {
                 var hierarchy = new Model.Hierarchy();
                 hierarchy.Item = new Model.QualifiedItem();
@@ -217,6 +230,8 @@ var Control;
                 me.LoadConceptValues();
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/Hierarchies");
             });
             //AjaxRequest("Taxonomy/Labels", "get", "json", null, function (data) {
             //    me.Taxonomy.Labels = data;
@@ -233,7 +248,7 @@ var Control;
                         });
                         fwc.Callback(data);
                     }
-                }, null);
+                }, null, null);
             });
             me.LabelServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
                 var p = args[0];
@@ -247,7 +262,7 @@ var Control;
                         //});
                         fwc.Callback(data);
                     }
-                }, null);
+                }, null, null);
             });
             me.ValidationResultServiceFunction = new General.FunctionWithCallback(function (fwc, args) {
                 var p = args[0];
@@ -259,11 +274,12 @@ var Control;
                         });
                         fwc.Callback(data);
                     }
-                }, null);
+                }, null, null);
             });
         };
         TaxonomyContainer.prototype.GetTables = function () {
             var me = this;
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/Tables");
             AjaxRequest("Taxonomy/Tables", "get", "json", null, function (data) {
                 me.TableStructure = data;
                 ForAll(me.TableStructure, "Children", function (item, parent) {
@@ -277,17 +293,15 @@ var Control;
                     }
                 });
                 BindX($("#tabletreeview"), me.TableStructure, 5);
-                //var itemswithdata = _Select("#tabletreeview .hasdata");
-                //itemswithdata.forEach((e, ix) =>
-                //{
-                //    _AddClass(_Parent(e, "li"), "hasdata");
-                //});
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/Tables");
             });
         };
         TaxonomyContainer.prototype.LoadValidationResults = function (onloaded) {
             var me = this;
+            Applications.App.Waiters.StartTask("Tax", "Taxonomy/ValidationRules");
             AjaxRequest("Taxonomy/ValidationRules", "get", "json", null, function (data) {
                 me.Taxonomy.ValidationRules = IsNull(data) ? [] : data;
                 me.Taxonomy.ValidationRules.forEach(function (v) {
@@ -296,6 +310,8 @@ var Control;
                 CallFunction(onloaded);
             }, function (error) {
                 console.log(error);
+            }, function () {
+                Applications.App.Waiters.EndTask("Tax", "Taxonomy/ValidationRules");
             });
         };
         TaxonomyContainer.prototype.ShowValidationResults = function () {
@@ -584,7 +600,7 @@ var Control;
                 if (parameter.FactItems.length == 0) {
                     parameter.FactIDs.forEach(function (factrefrence, ix) {
                         var fi = new Model.FactItem();
-                        var factstring = parameter.Facts[ix];
+                        //var factstring = parameter.Facts[ix];
                         //var strval = TaxonomyContainer.GetFactValue(factstring);
                         var ids = factrefrence.split(":");
                         var strval = "";
@@ -595,7 +611,7 @@ var Control;
                         else {
                             var strval = TaxonomyContainer.GetFactValueByID(id);
                         }
-                        fi.FactString = factstring;
+                        //fi.FactString = factstring;
                         fi.Value = strval;
                         fi.Cells = parameter.Cells[ix];
                         //var strval = TaxonomyContainer.GetFactValue(factstring);
@@ -636,8 +652,8 @@ var Control;
             return "";
         };
         TaxonomyContainer.GetFactValueByID = function (instancefactix) {
-            //var fact: Model.InstanceFact = app.instancecontainer.Instance.FactDictionary.FactsByIndex[factid];
-            var fact = app.instancecontainer.Instance.Facts[instancefactix];
+            var fact = app.instancecontainer.Instance.FactDictionary.FactsByIndex[instancefactix];
+            //var fact: Model.InstanceFact = app.instancecontainer.Instance.Facts[instancefactix];
             if (fact != null) {
                 return fact.Value;
             }
@@ -654,7 +670,7 @@ var Control;
                 }
             }, function (error) {
                 console.log(error);
-            });
+            }, null);
         };
         TaxonomyContainer.prototype.LoadConceptValues = function () {
             var me = this;
@@ -687,7 +703,7 @@ var Control;
                             }
                             items.forEach(function (item, index) {
                                 Model.QualifiedItem.Set(item);
-                                if (item.Name != "x0") {
+                                if (item.Name != Model.Dimension.DefaultMember) {
                                     var v = {};
                                     var id = Format("{0}:{1}", item.Namespace, item.Name);
                                     clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
@@ -722,7 +738,7 @@ var Control;
                 items.forEach(function (h, index) {
                     var item = h;
                     Model.QualifiedItem.Set(item);
-                    if (item.Name != "x0") {
+                    if (item.Name != Model.Dimension.DefaultMember) {
                         var v = {};
                         var id = Format("{0}:{1}", item.Namespace, item.Name);
                         clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);
@@ -743,7 +759,7 @@ var Control;
                 items.forEach(function (h, index) {
                     var item = h.Item;
                     Model.QualifiedItem.Set(item);
-                    if (item.Name != "x0") {
+                    if (item.Name != Model.Dimension.DefaultMember) {
                         var v = {};
                         var id = Format("{0}:{1}", item.Namespace, item.Name);
                         clkp.Values[id] = Format("({0}) {1}", id, item.Label == null ? "" : item.Label.Content);

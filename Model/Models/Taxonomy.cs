@@ -62,6 +62,37 @@ namespace LogicalModel
         public List<InstanceUnit> Units = new List<InstanceUnit>();
 
         public Dictionary<string, Element> SchemaElementDictionary = new Dictionary<string, Element>();
+
+        private IntervalList _TypedIntervals = null;
+        [JsonIgnore]
+        public IntervalList TypedIntervals
+        {
+            get 
+            {
+                if (_TypedIntervals == null)
+                {
+                    _TypedIntervals = new IntervalList();
+                    var typedfactparts = this.Module.TypedDimensions.Keys.ToList();
+                    foreach (var typedfactpart in typedfactparts)
+                    {
+                        if (this.FactsOfParts.ContainsKey(typedfactpart))
+                        {
+                            var typedinterval = this.FactsOfParts[typedfactpart];
+                            foreach (var interval in typedinterval.Intervals)
+                            {
+                                foreach (var ix in interval.AsEnumerable())
+                                {
+                                    _TypedIntervals.Add(ix);
+
+                                }
+                            }
+                        }
+                    }
+                }
+                return _TypedIntervals;
+            }  
+        }
+
         /*
        private Dictionary<int[], List<Int64>> _Facts = new Dictionary<int[], List<Int64>>(new Utilities.IntArrayEqualityComparer());
        public Dictionary<int[], List<Int64>> Facts 
@@ -263,6 +294,31 @@ namespace LogicalModel
         {
             get { return ModuleFolder + "Layout\\"; }
         }
+
+        public List<string> numericxbrltypes = new List<string>() { 
+                                "xbrli:decimalItemType", 
+                                "xbrli:floatItemType", 
+                                "xbrli:doubleItemType", 
+                                "xbrli:monetaryItemType", 
+                                "xbrli:pureItemType", 
+                                "xbrli:integerItemType",
+                                "xbrli:nonPositiveIntegerItemType",
+                                "xbrli:negativeIntegerItemType",
+                                "xbrli:longItemType",
+                                "xbrli:intItemType",
+                                "xbrli:shortItemType",
+                                "xbrli:byteItemType",
+                                "xbrli:nonNegativeIntegerItemType",
+                                "xbrli:unsignedLongItemType",
+                                "xbrli:unsignedIntItemType",
+                                "xbrli:unsignedShortItemType",
+                                "xbrli:unsignedByteItemType",
+                                "xbrli:positiveIntegerItemType",
+                            };
+        public List<string> datexbrltypes = new List<string>() { "xbrli:dateItemType" };
+        public List<string> stringxbrltypes = new List<string>() { "xbrli:stringItemType" };
+        public List<string> booleanxbrltypes = new List<string>() { "xbrli:booleanItemType" };
+        public List<string> enumerationxbrltypes = new List<string>() { "xbrli:QNameItemType" };
 
         public Taxonomy(string entrypath) 
         {
@@ -1490,7 +1546,10 @@ namespace LogicalModel
                 this.SchemaElements = Utilities.Converters.JsonTo<List<Element>>(jsoncontent);
                 foreach (var schemaelement in this.SchemaElements)
                 {
-                    this.SchemaElementDictionary.Add(schemaelement.Key, schemaelement);
+                    if (!this.SchemaElementDictionary.ContainsKey(schemaelement.Key))
+                    {
+                        this.SchemaElementDictionary.Add(schemaelement.Key, schemaelement);
+                    }
                 }
 
             }

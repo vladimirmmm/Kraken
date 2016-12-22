@@ -77,13 +77,13 @@ var UI;
                     }
                 }, function (error) {
                     console.log(error);
-                });
+                }, null);
             };
             AjaxRequest("Taxonomy/Table", "get", "text/html", { item: "factmap", reportid: reportid }, function (data) {
                 fload(data);
             }, function (error) {
                 console.log(error);
-            });
+            }, null);
         };
         Table.prototype.SetExternals = function () {
             var me = this;
@@ -219,7 +219,7 @@ var UI;
                     var cellelement = cell.UIElement;
                     var cellkey = cell.GetAxisKeys(me.UITable);
                     //cellkey = me.TaxonomyService.MergeKeys(cellkey, extensionkeys, true);
-                    cellkey = me.TaxonomyService.GetFixedKey(cellkey);
+                    cellkey = me.TaxonomyService.OrderKey(cellkey);
                     cell.CurrentFactKey = cellkey;
                 }
             });
@@ -301,7 +301,7 @@ var UI;
                     else {
                         fact.FactKeys = cell.GetAxisKeys(me.UITable);
                     }
-                    fact.FactKeys = me.TaxonomyService.GetFixedKey(fact.FactKeys);
+                    fact.FactKeys = me.TaxonomyService.OrderKey(fact.FactKeys);
                     fact.FactKeys = fact.FactKeys.AsLinq().Distinct().ToArray();
                     var dict = {};
                     for (var i = 0; i < fact.FactKeys.length; i++) {
@@ -333,7 +333,7 @@ var UI;
                     else {
                         fact.FactKeys = cell.GetAxisKeys(me.UITable);
                     }
-                    fact.FactKeys = me.TaxonomyService.GetFixedKey(fact.FactKeys);
+                    fact.FactKeys = me.TaxonomyService.OrderKey(fact.FactKeys);
                     fact.FactKeys = fact.FactKeys.AsLinq().Distinct().ToArray();
                     var dict = {};
                     for (var i = 0; i < fact.FactKeys.length; i++) {

@@ -204,7 +204,10 @@ function EnumerateObject(target: Object, context:any, func:Function)
         }
     }
 }
-
+function EndsWith(text: string, item: string)
+{
+    return text.substring(text.length - item.length) == item;
+}
 function GetLength(data: any) {
 
     if (IsArray(data)) {
@@ -275,9 +278,11 @@ function asyncFunc(func:Function) {
     }, 10);
 }
 
-function AjaxRequest(url: string, method: string, contenttype: string, parameters: Object, success: Function, error: Function): RequestHandler {
 
-    return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
+
+function AjaxRequest(url: string, method: string, contenttype: string, parameters: Object, success: Function, error: Function,completed:Function): RequestHandler {
+
+    return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error], [completed]);
 }
 /*
 function AjaxRequestComplexX(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
@@ -300,12 +305,14 @@ function AjaxRequestComplexX(url: string, method: string, contenttype: string, p
 
 } 
 */
-function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Object, success: [Function], error: [Function]): RequestHandler {
+function AjaxRequestComplex(url: string, method: string, contenttype: string, parameters: Object, success: Function[], error: Function[], completed: Function[]): RequestHandler {
 
 
     var requestid = Guid();
-
-    var requesthandler = <RequestHandler>{ error: error, success: success, Id: requestid, succeded: false };
+    error = error.AsLinq<Function>().Where(i=> !IsNull(i)).ToArray();
+    success = success.AsLinq<Function>().Where(i=> !IsNull(i)).ToArray();
+    completed = completed.AsLinq<Function>().Where(i=> !IsNull(i)).ToArray();
+    var requesthandler = <RequestHandler>{ error: error, success: success, completed:completed, Id: requestid, succeded: false };
     var kv = new General.KeyValue();
     kv.Key = requestid;
     kv.Value = requesthandler;
@@ -338,7 +345,9 @@ function AjaxResponse(message: General.Message)
     var request = requests.AsLinq<General.KeyValue>().FirstOrDefault(i=> i.Key == message.Id);
     if (request != null) {
         var requesthandler = <RequestHandler>request.Value;
-
+        requesthandler.completed.forEach(function (func: Function) {
+            func(message.Id);
+        });
         if (!IsNull(message.Error)) {
             requesthandler.error.forEach(function (func: Function) {
                 func(message.Error);

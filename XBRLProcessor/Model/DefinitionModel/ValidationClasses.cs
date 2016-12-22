@@ -30,7 +30,11 @@ namespace XBRLProcessor.Model.DefinitionModel
 
         public override string ToString()
         {
-            return base.ToString() + (BindAsSequence ? " [SEQ]" : "");
+            var sb = new StringBuilder();
+            sb.Append(base.ToString());
+            sb.Append(BindAsSequence ? " [SEQ]" : "");
+            sb.Append(String.IsNullOrEmpty(_FallbackValue)?"":" Fallback: "+_FallbackValue);
+            return sb.ToString();
         }
 
     }

@@ -62,6 +62,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
             var query = new FactPoolQuery();
+            query.DictFilterIndexes.AddRange(parent.DictFilterIndexes);
             foreach (var child in currentfilter.Children)
             {
                 var filter = child.Item as Filter;

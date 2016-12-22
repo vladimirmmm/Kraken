@@ -69,7 +69,7 @@ function BrowseFile(lid:string, callback: Function)
             var file = <string>data;
             Log("UI","file: " + file);
             CallFunction(callback, [lid, file]);
-        },null);
+        },null,null);
     }
     else {
         var uploader = _SelectFirst("#fileuploader");
@@ -89,7 +89,7 @@ function BrowseFolder(lid: string, callback: Function) {
             var file = <string>data;
             Log("UI","folder: " + file);
             CallFunction(callback, [lid, file]);
-        }, null);
+        }, null,null);
     }
     else {
         var uploader = _SelectFirst("#fileuploader");

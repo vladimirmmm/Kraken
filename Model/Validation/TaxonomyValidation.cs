@@ -65,7 +65,10 @@ namespace LogicalModel.Validation
                 if (conceptelement.Content.Contains(":bi"))
                 {
                     conceptrule.DisplayText = "Fact value with concept " + conceptelement.Content + "  should be " + ConceptHints["bi"];
-                    conceptrule.IsOk = (fact) => fact.Value.In(boolvalues);
+                    conceptrule.IsOk = (fact) => {
+                        return fact.Value.In(boolvalues);
+
+                    };
                     rules.Add(conceptrule);
 
                 }

@@ -139,6 +139,10 @@ namespace XBRLProcessor
 
         public override bool LoadTaxonomy(string filepath) 
         {
+            if (string.IsNullOrEmpty(filepath)) 
+            {
+                return false;
+            }
             TaxLoadStartDate = DateTime.Now;
             if (CurrentTaxonomy != null) 
             {
@@ -223,8 +227,8 @@ namespace XBRLProcessor
             CurrentInstance = new XbrlInstance(filepath);
             CurrentInstanceTaxonomyLoaded = null;
             CurrentInstanceTaxonomyLoadFailed = null;
-            CurrentXbrlInstance.LoadSimple();
             Task t = null;
+
             CurrentInstanceTaxonomyLoaded = (object o, TaxonomyEventArgs e) =>
             {
                 //Trigger_TaxonomyLoaded(CurrentTaxonomy.EntryDocument.LocalPath);
@@ -237,7 +241,7 @@ namespace XBRLProcessor
                     Logger.WriteLine(String.Format("Loading Instance finished in {0:0.0}s", DateTime.Now.Subtract(InstLoadStartDate.Value).TotalSeconds));
                     Logger.Flush();
                     Trigger_InstanceLoaded(filepath);
-                 
+
                 });
 
             };
@@ -248,12 +252,23 @@ namespace XBRLProcessor
 
             };
 
-            Trigger_InstanceLoad(filepath);
-            if (wait && t != null)
+            if (!CurrentXbrlInstance.LoadSimple())
             {
-                t.Wait();
+                Trigger_TaxonomyLoadFailed(filepath);
+                return false;
             }
-            return true;
+            else 
+            {
+                Trigger_InstanceLoad(filepath);
+                if (wait && t != null)
+                {
+                    t.Wait();
+                }
+                return true;
+            }
+        
+
+       
         }
 
 

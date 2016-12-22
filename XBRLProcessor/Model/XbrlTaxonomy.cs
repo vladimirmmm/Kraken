@@ -1285,8 +1285,10 @@ namespace XBRLProcessor.Models
                 logicalelement.FileName = taxonomydocument.LocalRelPath;
           
                 this.SchemaElements.Add(logicalelement);
-           
-                this.SchemaElementDictionary.Add(logicalelement.Key, logicalelement);
+                if (!this.SchemaElementDictionary.ContainsKey(logicalelement.Key))
+                {
+                    this.SchemaElementDictionary.Add(logicalelement.Key, logicalelement);
+                }
             }
             else 
             {

@@ -98,9 +98,12 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             var targetquery = parent;
             var querycontainer = parent;
             var firstmemebr = Members.FirstOrDefault();
+            var domaintag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, firstmemebr.QName.Domain);
+
             if (Members.Count > 1 || (Members.Count == 1 && firstmemebr.QName.Value == Literals.Literal.Defaultmember && this.Complement)) 
             {
                 targetquery = new FactPoolQuery();
+                targetquery.DictFilterIndexes.Add(factparts[domaintag]);
                 querycontainer = targetquery;
                 parent.AddChildQuery(targetquery);
             }
@@ -112,7 +115,6 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                     query =  new FactBaseQuery();
                 }
                 var membertag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Content);
-                var domaintag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, member.QName.Domain);
                 if (member.QName.Value != Literals.Literal.Defaultmember)
                 {
 

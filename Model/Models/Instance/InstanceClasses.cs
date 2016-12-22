@@ -62,41 +62,53 @@ namespace LogicalModel
             fact.IX = ix;
             FactsByIndex.Add(ix, fact);
             //InstIndexToTaxIndex.Add(ix, this.Instance.Taxonomy.FactsManager.GetFactIndex(fact.TaxonomyKey));
-            var instancecontext = Instance.Contexts.Items[fact.ContextID];
-            var partcount = instancecontext.DimensionIds.Count + 1;
-            var taxfactkeylist = new List<int>(partcount);
-            var instfactkeylist = new List<int>(partcount);
-            var conceptid = Instance.GetPartID(fact.Concept.Content);
-            taxfactkeylist.Add(conceptid);
-            instfactkeylist.Add(conceptid);
-            if (instancecontext.DimensionIds != null)
+            if (Instance.Contexts.Items.ContainsKey(fact.ContextID))
             {
-
-                foreach (var id in instancecontext.DimensionIds)
+                var instancecontext = Instance.Contexts.Items[fact.ContextID];
+                var partcount = instancecontext.DimensionIds.Count + 1;
+                var taxfactkeylist = new List<int>(partcount);
+                var instfactkeylist = new List<int>(partcount);
+                var conceptid = Instance.GetPartID(fact.Concept.Content);
+                
+                if (instancecontext.DimensionIds != null)
                 {
-                    instfactkeylist.Add(id);
-                    var taxid = id;
-                    if (Instance.CounterTypedFactMembers.ContainsKey(id)) 
-                    {
-                        taxid = Instance.CounterTypedFactMembers[id];
-                    }
-                    taxfactkeylist.Add(taxid);
-                }
 
+                    foreach (var id in instancecontext.DimensionIds)
+                    {
+                        instfactkeylist.Add(id);
+                        var taxid = id;
+                        if (Instance.CounterTypedFactMembers.ContainsKey(id))
+                        {
+                            taxid = Instance.CounterTypedFactMembers[id];
+                        }
+                        taxfactkeylist.Add(taxid);
+                    }
+
+                }
+                //taxfactkeylist = taxfactkeylist.OrderBy(i => i).ToList();
+                //instfactkeylist = instfactkeylist.OrderBy(i => i).ToList();
+
+                taxfactkeylist.Insert(0,conceptid);
+                instfactkeylist.Insert(0, conceptid);
+
+                var taxfactkey = taxfactkeylist.ToArray();
+                var instfactkey = instfactkeylist.ToArray();
+                if (!this.FactsByInstanceKey.ContainsKey(instfactkey))
+                {
+                    this.FactsByInstanceKey.Add(instfactkey, ix);
+                }
+                if (!this.FactsByTaxonomyKey.ContainsKey(taxfactkey))
+                {
+                    this.FactsByTaxonomyKey.Add(taxfactkey, new List<int>());
+                }
+                this.FactsByTaxonomyKey[taxfactkey].Add(ix);
+                fact.InstanceKey = instfactkey;
+                fact.TaxonomyKey = taxfactkey;
             }
-            var taxfactkey = taxfactkeylist.ToArray();
-            var instfactkey = instfactkeylist.ToArray();
-            if (!this.FactsByInstanceKey.ContainsKey(instfactkey)) 
+            else 
             {
-                this.FactsByInstanceKey.Add(instfactkey, ix);
+                Utilities.Logger.WriteLine(String.Format("Context {0} not found!", fact.ContextID));
             }
-            if (!this.FactsByTaxonomyKey.ContainsKey(taxfactkey))
-            {
-                this.FactsByTaxonomyKey.Add(taxfactkey, new List<int>());
-            }
-            this.FactsByTaxonomyKey[taxfactkey].Add(ix);
-            fact.InstanceKey = instfactkey;
-            fact.TaxonomyKey = taxfactkey;
         }
 
         public bool ContainsKey(string stringkey)

@@ -872,6 +872,32 @@ namespace Utilities
             }
             return x.Length - y.Length;
         }
+
+        public bool Contains(int[] key1, int[] key2)
+        {
+            var foundx=0;
+            for (int i = 0; i < key2.Length; i++) 
+            {
+                foundx = key1.Contains(key2[i]) ? foundx + 1 : foundx;
+            }
+
+            return foundx==key2.Length;
+        }
+    }
+    public class IntListComparer : IComparer<List<int>>
+    {
+
+        int IComparer<List<int>>.Compare(List<int> x, List<int> y)
+        {
+            var minlength = Math.Min(x.Count, y.Count);
+            var val = 0;
+            for (int i = 0; i < minlength; i++)
+            {
+                val = x[i] - y[i];
+                if (val != 0) { return val; }
+            }
+            return x.Count - y.Count;
+        }
     }
     public class IntArrayEqualityComparer : IEqualityComparer<int[]>
     {
@@ -895,6 +921,37 @@ namespace Utilities
         {
             int result = 17;
             for (int i = 0; i < obj.Length; i++)
+            {
+                unchecked
+                {
+                    result = result * 23 + obj[i];
+                }
+            }
+            return result;
+        }
+    }
+    public class IntListEqualityComparer : IEqualityComparer<List<int>>
+    {
+        public bool Equals(List<int> x, List<int> y)
+        {
+            if (x.Count != y.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < x.Count; i++)
+            {
+                if (x[i] != y[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public int GetHashCode(List<int> obj)
+        {
+            int result = 17;
+            for (int i = 0; i < obj.Count; i++)
             {
                 unchecked
                 {

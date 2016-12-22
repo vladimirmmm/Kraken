@@ -213,8 +213,9 @@ namespace LogicalModel
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
                 if (id > -1 && id < this.Facts.Count)
                 {
-                    var fs = this.Facts[id].FactString;
-                    return Taxonomy.GetFactIntKey(fs).ToArray();
+                    var instancefact = this.Facts[id];
+
+                    return instancefact.TaxonomyKey.ToArray();
                 }
             }
             if (factstring.StartsWith("T:"))
@@ -304,7 +305,30 @@ namespace LogicalModel
             return null;
         }
 
+        public List<InstanceFact> GetFactsByIdString(string idstring) 
+        {
+            var ix = Utilities.Converters.FastParse(idstring.Substring(2));
+            var result = new List<InstanceFact>();
+            if (idstring.StartsWith("I:"))
+            {
+                result.Add( this.FactDictionary.FactsByIndex[ix]);
+            }
+            if (idstring.StartsWith("T:"))
+            {
+                var key = Taxonomy.FactsManager.GetFactKey(ix);
+                if (this.FactDictionary.FactsByTaxonomyKey.ContainsKey(key)) 
+                {
+                    var instanceindexes = this.FactDictionary.FactsByTaxonomyKey[key];
+                    foreach (var instanceix in instanceindexes) 
+                    {
+                        result.Add(this.FactDictionary.FactsByIndex[instanceix]);
+                    }
 
+                }
+                
+            }
+            return result;
+        }
         public List<string> GetFactStringsByFactIdStrings(List<string> factindexes)
         {
             var result = new List<string>();
@@ -375,10 +399,18 @@ namespace LogicalModel
                 {
                     //sb.AppendFormat(String.Format("Invalid Fact ({0}, {1}) {2}!\n", fact.Concept, fact.ContextID, fact.FactString));
                     invalidfacts.Add(fact.FactKey);
+                    if (sb_invalidfacts.Length == 0) 
+                    {
+                        sb_invalidfacts.Append("Invalid facts: ");
+                    }
                     sb_invalidfacts.Append(String.Format("<{0} id:\"{1}\" ct:\"{2}\" val:\"{3}\">, ", fact.Concept.FullName, fact.ID, fact.ContextID, fact.Value));
                 }
                 TaxValidation.ValidateByTypedDimension(fact, ValidationRuleResults, invalidtypevalues);
                 TaxValidation.ValidateByConcept(fact, ValidationRuleResults, invalidtypevalues);
+                if (invalidtypevalues.Length > 0) 
+                {
+                    invalidtypevalues.Insert(0, "Invalid Types: ");
+                }
             }
 
             var reports = reportsdictionary.Keys.OrderBy(i => i, StringComparer.Ordinal).ToList();
@@ -392,6 +424,10 @@ namespace LogicalModel
                 {
                     if (!MissingFilingindicators.Contains(table.FilingIndicator))
                     {
+                        if (MissingFilingindicators.Count == 0) 
+                        {
+                            sb_missingfind.Append("Missing Filing Indicators: ");
+                        }
                         MissingFilingindicators.Add(table.FilingIndicator);
                         sb_missingfind.Append(table.FilingIndicator + ", ");
                     }
@@ -399,9 +435,9 @@ namespace LogicalModel
             }
             AddMessage(messages, String.Format("Taxonomy Module Reference: {0}\r\n", this.TaxonomyModuleReference));
             AddMessage(messages, String.Format("Nr of invalid facts: {0}\r\n", invalidfacts.Count));
-            AddMessage(messages, String.Format("Invalid facts: {0}\r\n", sb_invalidfacts.ToString()));
-            AddMessage(messages, String.Format("Facts with no cells: {0}\r\n", factwithoutcells.Count));
-            AddMessage(messages, String.Format("Type Validation: \r\n{0}", invalidtypevalues));
+            AddMessage(messages, sb_invalidfacts.ToString());
+            //AddMessage(messages, String.Format("Facts with no cells: {0}\r\n", factwithoutcells.Count));
+            AddMessage(messages, invalidtypevalues.ToString());
 
             var rsb = new StringBuilder();
             var rsb_full = new StringBuilder();
@@ -450,8 +486,7 @@ namespace LogicalModel
             {
                 AddMessage(messages, String.Format("There is no {0} specified for this Taxonomy", typeof(ValidationFunctionContainer).Name));
             }
-            AddMessage(messages, String.Format("Nr of missing Filing Indicators: {0}\r\n", MissingFilingindicators.Count));
-            AddMessage(messages, String.Format("Missing Filing Indicators: {0}\r\n", sb_missingfind.ToString()));
+            AddMessage(messages, sb_missingfind.ToString());
 
             return ValidationRuleResults;
         }
@@ -597,6 +632,23 @@ namespace LogicalModel
             }
             return result;
         }
+
+        public List<int> GetTypedPartIds(InstanceFact fact, List<int> typeddomains)
+        {
+            var result = new List<int>();
+            for (int i = 0; i < fact.TaxonomyKey.Length; i++)
+            {
+              
+                if (TypedFactMembers.ContainsKey(fact.TaxonomyKey[i]))
+                {
+                    if (typeddomains.Contains(fact.TaxonomyKey[i]))
+                    {
+                        result.Add(fact.InstanceKey[i]);
+                    }
+                }
+            }
+            return result;
+        }
         public string GetDynamicCellID(string cellID, FactBase fact)
         {
             var intkeys = this.GetFactIntKey(fact.FactString);
@@ -655,7 +707,9 @@ namespace LogicalModel
                 }
         
             }
-
+            if (cellobj.CellID == "de_sprv_tRDP-R12<1|600|050>") 
+            {
+            }
             return cellobj.CellID;
         }
         public void SetExtensions() 

@@ -97,6 +97,7 @@
     <Compile Include="Validation\ParameterFunctions.cs" />
     <Compile Include="Validation\TaxonomyValidation.cs" />
     <Compile Include="Validation\ValidationRuleHelper.cs" />
+    <Compile Include="Validation\ValidationRuleImplicitHelper.cs" />
     <Compile Include="Validation\ValidationTest.cs" />
     <Compile Include="Validation\ValidationParameter.cs" />
     <Compile Include="Validation\ValidationRule.cs" />

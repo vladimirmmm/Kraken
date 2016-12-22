@@ -64,6 +64,8 @@
         }
 
         public SetExternals() {
+            Log("UI", "Loading the Instance");
+
             var me = this;
             me.Taxonomy = app.taxonomycontainer.Taxonomy;
 
@@ -80,7 +82,7 @@
                                 me.ValidationResults = <Model.ValidationRuleResult[]>data.Items;
                                 fwc.Callback(data);
                             }
-                        }, null);
+                        }, null,null);
                 });
         }
 
@@ -105,7 +107,7 @@
             AjaxRequest("Instance/Validation", "get", "json", null, function (data) {
                 me.ValidationResults = data;
                 CallFunction(onloaded);
-            }, function (error) { console.log(error); });
+            }, function (error) { console.log(error); },null);
         }
 
         public LoadInstance(onloaded: Function) {
@@ -157,7 +159,7 @@
                 me.LoadToUI();
                 CallFunction(onloaded);
 
-            }, function (error) { Log("UI","Error: "+error); });
+            }, function (error) { Log("UI","Error: "+error); },null);
         }
         public GetFactKeyStringFromFactString(factstring: string): string
         {
@@ -170,7 +172,7 @@
             var parts = factstring.split(',');
             parts.forEach(
                 (part) => {
-                    if (part.indexOf(":x0") == -1) {
+                    if (!EndsWith(part,Model.Dimension.DefaultMember)) {
                         var val = me.GetFactPartKeyFromString(part);
                         if (!IsNull(val)) {
                             result.push(val);
@@ -445,15 +447,17 @@
             if (!IsNull(me.ValidationResults)) {
                 me.ValidationResults.forEach(function (v) {
                     if (IsNull(rule) || rule.ID != v.ID) {
-                        var tax_rule = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == v.ID);
-                        rule = new Model.ValidationRule();
-                        rule.ID = tax_rule.ID;
-                        rule.FunctionName = tax_rule.FunctionName;
-                        rule.Title = Truncate(tax_rule.DisplayText, 100)
-                        rule.DisplayText = tax_rule.DisplayText;
-                        rule.OriginalExpression = tax_rule.OriginalExpression;
-                        rule.HasAllFind = v.HasAllFind;
-                        me.ValidationErrors.push(rule);
+                        if (!IsNull(me.Taxonomy)) {
+                            var tax_rule = me.Taxonomy.ValidationRules.AsLinq<Model.ValidationRule>().FirstOrDefault(i=> i.ID == v.ID);
+                            rule = new Model.ValidationRule();
+                            rule.ID = tax_rule.ID;
+                            rule.FunctionName = tax_rule.FunctionName;
+                            rule.Title = Truncate(tax_rule.DisplayText, 100)
+                            rule.DisplayText = tax_rule.DisplayText;
+                            rule.OriginalExpression = tax_rule.OriginalExpression;
+                            rule.HasAllFind = v.HasAllFind;
+                            me.ValidationErrors.push(rule);
+                        }
                     }
                     if (!IsNull(rule)) {
                         rule.Results.push(v);

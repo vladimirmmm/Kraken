@@ -36,8 +36,8 @@ namespace XBRLProcessor
                 | XmlSchemaValidationFlags.ProcessSchemaLocation
                 ;
             readersettings.ValidationEventHandler += new ValidationEventHandler(SettingsValidationEventHandler);
-            //try
-            //{
+            try
+            {
                 foreach(var item in Schemas){
                     if (!readersettings.Schemas.Contains(item.Value))
                     {
@@ -47,11 +47,11 @@ namespace XBRLProcessor
                 XmlReader xmlReader = XmlReader.Create(nodereader, readersettings);
 
                 while (xmlReader.Read()) { }
-            //}
-            //catch (Exception ex)
-            //{
+            }
+            catch (Exception ex)
+            {
 
-            //}
+            }
             this.messages = null;
         }
 

@@ -40,6 +40,7 @@ interface External {
 interface RequestHandler {
     success: Function[];
     error: Function[];
+    completed: Function[];
     Id: string;
     succeded: boolean;
 

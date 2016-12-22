@@ -1,5 +1,6 @@
 ﻿using BaseModel;
 using LogicalModel.Base;
+using LogicalModel.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,7 +138,7 @@ namespace XBRLProcessor.Model
             {
                 tmp_rule.Remove(fv);
             }
-            if (logicalrule.ID.Contains("2909"))
+            if (logicalrule.ID.Contains("de_sprv_vdbl_0080"))
             {
                 //var rulebasequeryX = GetRuleQuery(tmp_rule).FirstOrDefault();
 
@@ -154,6 +155,10 @@ namespace XBRLProcessor.Model
                 logicalrule.Parameters.Add(parameter);
                 parameter.BindAsSequence = factvariable.BindAsSequence;
                 parameter.FallBackValue = factvariable.FallbackValue;
+                //if (parameter.FallBackValue == "()" && !parameter.BindAsSequence) 
+                //{
+                //    parameter.BindAsSequence = true;
+                //}
 
                 parameter.BaseQuery = GetQuery(fv);
                 parameter.Concept = parameter.BaseQuery.GetConcept();
@@ -166,6 +171,8 @@ namespace XBRLProcessor.Model
                     parameter.IsGeneral = true;
                     parameter.StringValue = "filingindicators";
                 }
+                ValidationRuleHelper.SetParamerterTypes(Taxonomy, logicalrule);
+                /*
                 var type = LogicalModel.TypeEnum.Numeric;
                 if (!parameter.IsGeneral)
                 {
@@ -187,13 +194,13 @@ namespace XBRLProcessor.Model
 
                 }
                 parameter.Type = type; 
-
+                */
 
                
             }
             var factparameterqueries= logicalrule.Parameters.Where(i=>!i.IsGeneral).Select(i=>i.BaseQuery).ToArray();
             var commconparameterquery = FactBaseQuery.GetCommonQuery(factparameterqueries);
-            if (commconparameterquery.HasFilters()) 
+            if (commconparameterquery!=null && commconparameterquery.HasFilters()) 
             {
                 FactBaseQuery.MergeQueries(logicalrule.BaseQuery, commconparameterquery);
                 foreach (var pquery in factparameterqueries) 
@@ -219,7 +226,8 @@ namespace XBRLProcessor.Model
                 logicalrule.Parameters.Add(p_rl2);
             }
             logicalrule.SetTaxonomy(this.Taxonomy);
-            SetFacts(logicalrule);
+            ValidationRuleHelper.ExecuteExplicitFiltering(this.Taxonomy, logicalrule);
+            //SetFacts(logicalrule);
 
             return logicalrule;
         }

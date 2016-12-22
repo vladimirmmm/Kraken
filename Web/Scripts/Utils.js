@@ -174,6 +174,9 @@ function EnumerateObject(target, context, func) {
         }
     }
 }
+function EndsWith(text, item) {
+    return text.substring(text.length - item.length) == item;
+}
 function GetLength(data) {
     if (IsArray(data)) {
         return data.length;
@@ -223,8 +226,8 @@ function asyncFunc(func) {
         func();
     }, 10);
 }
-function AjaxRequest(url, method, contenttype, parameters, success, error) {
-    return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error]);
+function AjaxRequest(url, method, contenttype, parameters, success, error, completed) {
+    return AjaxRequestComplex(url, method, contenttype, parameters, [success], [error], [completed]);
 }
 /*
 function AjaxRequestComplexX(url: string, method: string, contenttype: string, parameters: Dictionary, success: [Function], error: [Function]): RequestHandler {
@@ -247,9 +250,12 @@ function AjaxRequestComplexX(url: string, method: string, contenttype: string, p
 
 }
 */
-function AjaxRequestComplex(url, method, contenttype, parameters, success, error) {
+function AjaxRequestComplex(url, method, contenttype, parameters, success, error, completed) {
     var requestid = Guid();
-    var requesthandler = { error: error, success: success, Id: requestid, succeded: false };
+    error = error.AsLinq().Where(function (i) { return !IsNull(i); }).ToArray();
+    success = success.AsLinq().Where(function (i) { return !IsNull(i); }).ToArray();
+    completed = completed.AsLinq().Where(function (i) { return !IsNull(i); }).ToArray();
+    var requesthandler = { error: error, success: success, completed: completed, Id: requestid, succeded: false };
     var kv = new General.KeyValue();
     kv.Key = requestid;
     kv.Value = requesthandler;
@@ -277,6 +283,9 @@ function AjaxResponse(message) {
     var request = requests.AsLinq().FirstOrDefault(function (i) { return i.Key == message.Id; });
     if (request != null) {
         var requesthandler = request.Value;
+        requesthandler.completed.forEach(function (func) {
+            func(message.Id);
+        });
         if (!IsNull(message.Error)) {
             requesthandler.error.forEach(function (func) {
                 func(message.Error);

@@ -522,6 +522,20 @@ namespace LogicalModel.Base
             }
             return "";
         }
+        public List<int> GetAspects(Taxonomy taxonomy) 
+        {
+            var aspects = new List<int>();
+            aspects.AddRange(this.DictFilterIndexes);
+            //TODO: make rescursive
+            foreach (var pool in this.Pools) 
+            {
+                aspects.AddRange(pool.DictFilterIndexes);
+            }
+            aspects = aspects.Distinct().ToList();
+            aspects = aspects.Select(i => taxonomy.DimensionDomainsOfMembers.ContainsKey(i) ? taxonomy.DimensionDomainsOfMembers[i] : i).ToList();
+            return aspects;
+        }
+
         public List<string> GetDimensions()
         {
             var filterparts = new List<string>();
