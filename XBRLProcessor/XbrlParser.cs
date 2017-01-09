@@ -415,6 +415,7 @@ namespace XBRLProcessor
         public void Test2()
         {
             //matches($a, "[\d\w]+(([_|\.|\-])?[\d\w]+)*@[\d\w]+(([_|\.|\-])?[\d\w]+)*")
+            Testexpression("iaf:numeric-greater-equal-than((for $i in $a return iaf:abs($i)), (for $i in $b return iaf:abs($i)))");
             Testexpression("string-length(string(xfi:fact-typed-dimension-value($a,QName(\"http://www.boi.org.il/xbrl/dict/dim\",\"TDR\")))) <= 20");
             Testexpression("matches($a, \"[\\d\\w]+(([_|\\.|\\-])?[\\d\\w]+)*@[\\d\\w]+(([_|\\.|\\-])?[\\d\\w]+)*\")");
             Testexpression("if ($a ne 0) then (iaf:numeric-equal($b, iaf:sum(($c, $d, $e, iaf:numeric-unary-minus($a))))) else true()");

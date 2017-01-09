@@ -167,11 +167,8 @@ namespace Utilities
             if (relativePath.StartsWith("./")) { 
                 relativePath = relativePath.Substring(2); 
             }
-            var hashix = relativePath.IndexOf("#");
-            if (hashix > -1)
-            {
-                relativePath = relativePath.Remove(hashix);
-            }
+     
+            relativePath = GetUrlWithoutHash(relativePath);
          
 
             Uri uri = new Uri(Path.Combine(referencePath, relativePath));
@@ -187,6 +184,29 @@ namespace Utilities
                 path = uri.AbsoluteUri;
             }
             return path;
+        }
+        public static string ResolveHref(string localbasepath, string referencePath, string href)
+        {
+            var localpath = "";
+            if (Utilities.Strings.IsRelativePath(href))
+            {
+                localpath = Utilities.Strings.ResolveRelativePath(referencePath, href);
+            }
+            else
+            {
+                localpath = Utilities.Strings.GetLocalPath(localbasepath, href);
+                localpath = Utilities.Strings.GetUrlWithoutHash(localpath);
+            }
+            return localpath;
+        }
+        public static string GetUrlWithoutHash(string url) 
+        {
+            var hashix = url.IndexOf("#");
+            if (hashix > -1)
+            {
+                url = url.Remove(hashix);
+            }
+            return url;
         }
         public static bool IsRelativePath(string FilePath) 
         {

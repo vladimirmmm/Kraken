@@ -11,10 +11,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     public class AspectFilter : Filter
     {
 
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            throw new NotImplementedException();
-        }
+   
     }
     public class AspectCoverFilter : AspectFilter
     {

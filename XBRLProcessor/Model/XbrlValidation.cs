@@ -65,8 +65,14 @@ namespace XBRLProcessor.Model
         public Hierarchy<XbrlIdentifiable> ValidationRoot = null;
         private XbrlTaxonomyDocument Document;
 
+        private System.Xml.XmlNamespaceManager NsManager = null;
+        public void SetNamespaceManager(System.Xml.XmlDocument doc) 
+        {
+            NsManager = Utilities.Xml.GetTaxonomyNamespaceManager(doc);
+        }
         public void LoadValidationHierarchy() 
         {
+
             Arcs.Clear();
             Arcs.AddRange(this.VariableArcs);
             Arcs.AddRange(this.VariableFilterArcs);
@@ -83,7 +89,30 @@ namespace XBRLProcessor.Model
             Identifiables.AddRange(this.AspectFilters);
             Identifiables.AddRange(this.FactVariables);
             Identifiables.AddRange(this.Filters);
+            foreach (var identifiable in Identifiables)
+            {
+                  var df = identifiable as DimensionFilter;
+                  if (df != null)
+                  {
+                      var nsuri = NsManager.LookupNamespace(df.Dimension.QName.Domain);
+                      df.Dimension.QName.Domain = Taxonomy.FindNamespacePrefix(nsuri, df.Dimension.QName.Domain);
+                      var exdf = df as ExplicitDimensionFilter;
+                      if (exdf != null)
+                      {
+                          foreach (var m in exdf.Members)
+                          {
+                              nsuri = NsManager.LookupNamespace(m.QName.Domain);
+                              m.QName.Domain = Taxonomy.FindNamespacePrefix(nsuri, m.QName.Domain);
+                          }
+                      }
+                      var tydf = df as TypedDimensionFilter;
+                      if (tydf != null)
+                      {
+                          //tydf.
+                      }
+                  }
 
+            }
             ValidationRoot = Hierarchy<XbrlIdentifiable>.GetHierarchy(Arcs, Identifiables,
                 (i, a) => i.Item.LabelID == a.From, (i, a) => i.Item.LabelID == a.To,
                 (i, a) => {
@@ -144,8 +173,8 @@ namespace XBRLProcessor.Model
 
             }
             logicalrule.BaseQuery = GetQuery(tmp_rule);
-            
-         
+
+            logicalrule.BaseQuery.GetString(Taxonomy);
 
             foreach (var fv in factvariables)
             {

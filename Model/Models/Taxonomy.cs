@@ -794,6 +794,14 @@ namespace LogicalModel
             dimension.DomMapID = GetMapID(dimension.DimensionDomain);
         }
 
+        public virtual void FixNamespace(QualifiedName qname, string namespaceuri) 
+        {
+            
+        }
+        public virtual string FindNamespacePrefix(string namespaceuri,string namespaceprefix)
+        {
+            return "";
+        }
         public void SetMapID(Concept concept)
         {
             concept.MapID = GetMapID(concept.Content);
@@ -1783,16 +1791,28 @@ namespace LogicalModel
             }
             else
             {
-                element = this.SchemaElements.FirstOrDefault(i => i.ID == item && i.Type == "model:explicitDomainType");
+                var domains = this.SchemaElements.Where(i => i.Type == "model:explicitDomainType");
+                element = domains.FirstOrDefault(i => i.ID == item);
+                if (element == null)
+                {
+                }
             }
             return element;
         }
 
         public Label GetLabelForDomain(string domain)
         {
-            var element = GetDomain(domain);
-            var labelkey = Label.GetKey("dom", element.ID);
+            var labelkey = Label.GetKey("dom", domain);
             var label = this.FindLabel(labelkey);
+            if (label == null)
+            {
+                var element = GetDomain(domain);
+                if (element != null) 
+                {
+                    labelkey = Label.GetKey("dom", element.ID);
+                    label = this.FindLabel(labelkey);
+                }
+            }
             var content = label != null ? label : new Label();
             return content;
         }

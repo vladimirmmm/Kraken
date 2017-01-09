@@ -11,9 +11,6 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     {
         public string Test { get; set; }
 
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            return (fs) => true;
-        }
+
     }
 }

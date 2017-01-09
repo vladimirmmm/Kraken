@@ -210,7 +210,16 @@ namespace LogicalModel.Expressions
             return String.Format("{0} - {1}",this.GetType() , this.Name);
         }
     }
-
+    public class ForExpression : LoopExpression 
+    {
+        public string VariableName = "";
+        public Action<Object> AfterAction = (o) => { };
+    }
+    public class LoopExpression : FunctionExpression
+    {
+        public Expression Action = null;
+        public Func<Boolean> Condition = () => false;
+    }
     public class IfExpression : FunctionExpression
     {
         public Expression condition = null;

@@ -15,10 +15,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     public class ConceptFilter : Filter 
     {
 
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            return (fs)=>true;
-        }
+
 
  
     }
@@ -30,7 +27,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         {
             return String.Format("{0} >> {1}", base.ToString(), this.Concept.QName.Content);
         }
-
+        /*
         public override Func<string, bool> GetFunc(FactBaseQuery fbq)
         {
             Func<string, bool> f = null;
@@ -64,20 +61,8 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             return f;
         }
-        public List<FactBaseQuery> GetQueries2(Taxonomy taxonomy, int level = 0)
-        {
-            var queries = new List<FactBaseQuery>();
-            var query = new FactBaseQuery();
-
-            var ff = GetFunc(query);
-            var originalfilter = query.Filter;
-            query.Filter = null;
-            query.Filter = (s) => originalfilter(s) && ff(s);
-
-
-            queries.Add(query);
-            return queries;
-        }
+        */
+        /*
         public override List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level = 0)
         {
             var queries = new List<FactBaseQuery>();
@@ -110,12 +95,14 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             return queries;
         }
-
+        */
         public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
+            Console.WriteLine(String.Format("ConceptFilter.GetQuery( {0} ) ", currentfilter.Item));
+
             var factparts = taxonomy.FactParts;
             var factsofparts = taxonomy.FactsOfParts;
-            var query = parent;
+            var query = new FactBaseQuery();
 
 
             var tag = Concept.QName.Content;

@@ -13,7 +13,14 @@ namespace XBRLProcessor.Model.DefinitionModel
         private string _Content= "";
         public string Content
         {
-            get { return _Content; }
+            get 
+            {
+                if (String.IsNullOrEmpty(_Content)) 
+                {
+                    _Content = String.Format("{0}:{1}", this.Domain, this.Value);
+                }
+                return _Content;
+            }
             set
             {
                 _Content = value;
@@ -27,10 +34,17 @@ namespace XBRLProcessor.Model.DefinitionModel
         }
 
         private string _Domain = "";
-        public string Domain { get { return _Domain; } set { _Domain = value; } }
+        public string Domain { get { return _Domain; } set { 
+            _Domain = value;
+            _Content = "";
+
+        } }
 
         private string _Value = "";
-        public string Value { get { return _Value; } set { _Value = value; } }
+        public string Value { get { return _Value; } set {
+            _Value = value;
+            _Content = "";
+        } }
 
         public QName()
         {

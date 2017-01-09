@@ -319,13 +319,36 @@ namespace XBRLProcessor.Model
                     if (!d_con.ContainsKey(nsprefix))
                     {
                         var ns = nsmanager.LookupNamespace(nsprefix);
-                        var nsdoc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
+                        var nsdoc = Taxonomy.TaxonomyDocumentNSDictionary.ContainsKey(ns)?Taxonomy.TaxonomyDocumentNSDictionary[ns]:null;
                         if (nsdoc != null)
                         {
                             d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
                         }
                     }
                     concept.Namespace = d_con[nsprefix];
+                }
+                foreach(var dimension in li.Item.Dimensions)
+                {
+       
+                    var dimqname =new QName( dimension.DimensionItem);
+                    var nsuri = nsmanager.LookupNamespace(dimqname.Domain);
+                    dimqname.Domain = Taxonomy.FindNamespacePrefix(nsuri, dimqname.Domain);                
+                    dimension.DimensionItem = dimqname.Content;
+
+                    string domnsuri;
+                
+                    if (dimension.IsTyped)
+                    {
+                        var domqname = new QName(dimension.Domain);
+                        domnsuri = nsmanager.LookupNamespace(domqname.Domain);
+                        domqname.Domain = Taxonomy.FindNamespacePrefix(domnsuri, domqname.Domain);
+                        dimension.Domain = domqname.Content;
+                    }
+                    else 
+                    {
+                        domnsuri = nsmanager.LookupNamespace(dimension.Domain);
+                        dimension.Domain = Taxonomy.FindNamespacePrefix(domnsuri, dimension.Domain);
+                    }
                 }
             }
 
@@ -464,8 +487,10 @@ namespace XBRLProcessor.Model
                         {
                             var se_dim_doc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == hypercubeitem.Item.Element.Namespace);
                             //TODO
-                            var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
-                            var localrelpath = Utilities.Strings.GetRelativePath(LogicalModel.TaxonomyEngine.LocalFolder, path);
+                            var localrelpath = Utilities.Strings.ResolveHref(LogicalModel.TaxonomyEngine.LocalFolder, se_dim_doc.LocalFolder, domainref);
+
+                            //var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
+                            //var localrelpath = Utilities.Strings.GetRelativePath(LogicalModel.TaxonomyEngine.LocalFolder, path);
                             var se_domain_doc = this.Taxonomy.FindDocument(localrelpath);
 
                             var refid = domainref.Substring(domainref.IndexOf("#") + 1);

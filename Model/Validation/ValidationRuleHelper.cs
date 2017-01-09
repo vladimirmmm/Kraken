@@ -256,7 +256,7 @@ namespace LogicalModel.Validation
             {
                 if (String.IsNullOrEmpty(p.Concept))
                 {
-                    var firstfactgroup = p.TaxFacts.FirstOrDefault();
+                    var firstfactgroup = p.TaxFacts.FirstOrDefault(i => i.Count > 0);
                     int firstfactindex = firstfactgroup != null ? firstfactgroup[0] : -2;
                     if (firstfactindex != -2)
                     {

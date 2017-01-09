@@ -22,18 +22,18 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         }
 
 
-        public abstract Func<string, bool> GetFunc(FactBaseQuery fbq);
-        public virtual List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level) 
-        {
-            var queries = new List<FactBaseQuery>();
-            return queries;
-        }
+        //public abstract Func<string, bool> GetFunc(FactBaseQuery fbq);
+        //public virtual List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level) 
+        //{
+        //    var queries = new List<FactBaseQuery>();
+        //    return queries;
+        //}
 
-        public virtual FactBaseQuery GetQuery(Taxonomy taxonomy, int level)
-        {
-            var queries = new FactBaseQuery();
-            return null;
-        }
+        //public virtual FactBaseQuery GetQuery(Taxonomy taxonomy, int level)
+        //{
+        //    var queries = new FactBaseQuery();
+        //    return null;
+        //}
 
         public virtual FactBaseQuery GetQuery(Taxonomy taxonomy,Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
@@ -76,10 +76,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             return query;
         }
 
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            throw new NotImplementedException();
-        }
+
     }
     
     public class AndFilter : Filter
@@ -93,15 +90,13 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 if (filter != null)
                 {
                     var childquery = filter.GetQuery(taxonomy, child, query);
+                    query.AddChildQuery(childquery);
                     //FactBaseQuery.Merge(childquery, query);
                 }
             }
             return query;
         }
 
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

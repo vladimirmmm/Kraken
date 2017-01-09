@@ -10,10 +10,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     public class TupleFilter : Filter
     {
 
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            return (fs) => true;
-        }
+
     }
 
     public class ParentFilter : TupleFilter 

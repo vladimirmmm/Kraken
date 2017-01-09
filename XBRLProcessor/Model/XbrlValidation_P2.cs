@@ -202,8 +202,8 @@ namespace XBRLProcessor.Model
                 var filter = child.Item as Filter;
                 if (filter != null) 
                 {
-                
-                    filter.GetQuery(this.Taxonomy,child, query);
+                    Console.WriteLine(String.Format("GetQuery({0}, {1}) at child {2}", item, level, child));
+                    filter.GetQuery(this.Taxonomy, child, query);
                 }
 
             }
@@ -358,7 +358,7 @@ namespace XBRLProcessor.Model
             }
             return sb.ToString();
         }
-        
+        /*
         public List<FactBaseQuery> GetRuleQuery(Hierarchy<XbrlIdentifiable> item)
         {
             //root level
@@ -393,7 +393,8 @@ namespace XBRLProcessor.Model
             }
             return allqueries;
         }
-
+        */
+        /*
         public List<FactBaseQuery> GetRuleBaseQuery(Hierarchy<XbrlIdentifiable> item)
         {
             //root level
@@ -429,7 +430,8 @@ namespace XBRLProcessor.Model
             }
             return allqueries;
         }
-    
+    */
+        /*
         public List<FactBaseQuery> GetFactQuery(Hierarchy<XbrlIdentifiable> item,int level=0)
         {
             //or queries
@@ -488,7 +490,8 @@ namespace XBRLProcessor.Model
             }
             return allqueries;
         }
-        
+        */
+        /*
         public List<int> GetFactIDsByDict(FactBaseQuery fbq, List<int> IdList)
         {
             IEnumerable<int> ids = null;
@@ -519,7 +522,7 @@ namespace XBRLProcessor.Model
             }
             return ids.ToList();
         }
-        
+        */
         public List<String> GetFactsByIds(IEnumerable<int> ids) 
         {
             var factlist = new List<String>();//ids.Count());

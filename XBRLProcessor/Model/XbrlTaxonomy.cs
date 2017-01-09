@@ -43,6 +43,7 @@ namespace XBRLProcessor.Models
             }
         }
         protected Dictionary<string, XbrlTaxonomyDocument> TaxonomyDocumentDictionary = new Dictionary<string, XbrlTaxonomyDocument>();
+        public Dictionary<string, XbrlTaxonomyDocument> TaxonomyDocumentNSDictionary = new Dictionary<string, XbrlTaxonomyDocument>();
 
         public new XbrlTaxonomyDocument EntryDocument
         {
@@ -77,11 +78,17 @@ namespace XBRLProcessor.Models
             if (!this.TaxonomyDocumentDictionary.ContainsKey(document.LocalRelPath))
             {
                 this.TaxonomyDocumentDictionary.Add(document.LocalRelPath.ToLower(), document);
+                if (!String.IsNullOrEmpty(document.TargetNamespace))
+                {
+                    this.TaxonomyDocumentNSDictionary.Add(document.TargetNamespace, document);
+
+                }
                 return true;
             }
             else
             {
                 this.TaxonomyDocumentDictionary[document.LocalRelPath] = document;
+
             }
             return false;
         }
@@ -174,7 +181,8 @@ namespace XBRLProcessor.Models
                 var domainref = se.TypedDomainRef;
                 var se_dim_doc = this.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespacePrefix == se.Namespace);
                 //TODO
-                var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
+                //var path = Utilities.Strings.ResolveRelativePath(se_dim_doc.LocalFolder, domainref);
+                var path = Utilities.Strings.ResolveHref(XbrlEngine.LocalFolder, se_dim_doc.LocalFolder, domainref);
                 var se_domain_doc = FindDocument(path);
                 var refid = domainref.Substring(domainref.IndexOf("#") + 1);
                 var se_domain_key = se_domain_doc.TargetNamespacePrefix + ":" + refid;
@@ -404,18 +412,25 @@ namespace XBRLProcessor.Models
                             foreach (var item in dlink.DefinitionRoot.Children)
                             {
                                 var dimelement = this.DimensionItems.FirstOrDefault(i => i.ID == item.Item.ID);
-                                var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
-                                var children = item.Children.Where(i =>
+                                if (dimelement != null)
                                 {
-                                    //i.Item.Locate();
-                                    return i.Item.RoleType == "dimension_domain";
-                                }).ToList();
-                                if (!dimdict.ContainsKey(key))
+                                    var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
+                                    var children = item.Children.Where(i =>
+                                    {
+                                        //i.Item.Locate();
+                                        return i.Item.RoleType == "dimension_domain";
+                                    }).ToList();
+                                    if (!dimdict.ContainsKey(key))
+                                    {
+
+                                        dimdict.Add(key, new List<string>());
+                                    }
+                                    dimdict[key].AddRange(children.Select(i => i.Item.ID));
+                                }
+                                else 
                                 {
 
-                                    dimdict.Add(key, new List<string>());
                                 }
-                                dimdict[key].AddRange(children.Select(i => i.Item.ID));
 
                             }
                             domtodimdefinitions.Add(dlink);
@@ -517,7 +532,7 @@ namespace XBRLProcessor.Models
                 }
                 dimlist.AddRange(Concepts.Select(i => i.Key));
 
-                dimlist = dimlist.OrderBy(i => i, StringComparer.Ordinal).ToList();
+                dimlist = dimlist.Distinct().OrderBy(i => i, StringComparer.Ordinal).ToList();
 
                 var sb = new StringBuilder();
                 var ix = 0;
@@ -547,7 +562,14 @@ namespace XBRLProcessor.Models
                     var int_dimdommemberlist = dimdomembers.Select(i => FactParts[i]).ToList();
                     foreach (var memberkey in int_dimdommemberlist) 
                     {
-                        DimensionDomainsOfMembers.Add(memberkey, int_dimdomkey);
+                        if (!DimensionDomainsOfMembers.ContainsKey(memberkey))
+                        {
+                            DimensionDomainsOfMembers.Add(memberkey, int_dimdomkey);
+                        }
+                        else 
+                        {
+                            //TODO
+                        }
                     }
                     DimensionDomainsOfMembers.Add(int_dimdomkey, int_dimdomkey);
                 }
@@ -589,7 +611,35 @@ namespace XBRLProcessor.Models
             var sb = new StringBuilder();
             return sb.ToString();
         }
-
+        public override void FixNamespace(LogicalModel.Base.QualifiedName qname, string namespaceuri)
+        {
+            var nsdoc = TaxonomyDocumentNSDictionary.ContainsKey(namespaceuri)?TaxonomyDocumentNSDictionary[namespaceuri]:null;
+            if (nsdoc != null)
+            {
+                qname.Namespace = nsdoc.TargetNamespacePrefix;
+            }
+        }
+        public override string FindNamespacePrefix(string namespaceuri,string namespaceprefix)
+        {
+            if (namespaceuri != null)
+            {
+                var nsdoc = TaxonomyDocumentNSDictionary.ContainsKey(namespaceuri) ? TaxonomyDocumentNSDictionary[namespaceuri] : null;
+                if (nsdoc != null)
+                {
+                    return nsdoc.TargetNamespacePrefix;
+                }
+            }
+            return namespaceprefix;
+        }
+        //public override void FixNamespace(LogicalModel.Dimension dimension, string namespaceuri)
+        //{
+        //    var nsdoc = TaxonomyDocumentNSDictionary.ContainsKey(namespaceuri) ? TaxonomyDocumentNSDictionary[namespaceuri] : null;
+        //    if (nsdoc != null)
+        //    {
+        //        dimension.DimensionItem.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+        //        qname.Namespace = nsdoc.TargetNamespacePrefix;
+        //    }
+        //}
         public override void LoadHierarchy()
         {
             Logger.WriteLine("Load Hierarchies");
@@ -611,8 +661,17 @@ namespace XBRLProcessor.Models
                         deflink.LoadHierarchy();
                         foreach (var loc in deflink.Locators)
                         {
-                            var path = Utilities.Strings.ResolveRelativePath(hierdefdoc.LocalFolder, loc.Href);
-                            var loc_doc = FindDocument(path);
+                            var localpath = Utilities.Strings.ResolveHref(XbrlEngine.LocalFolder, hierdefdoc.LocalFolder, loc.Href);
+                            //if (Utilities.Strings.IsRelativePath(loc.Href))
+                            //{
+                            //    localpath = Utilities.Strings.ResolveRelativePath(hierdefdoc.LocalFolder, loc.Href);
+                            //}
+                            //else 
+                            //{
+                            //    localpath = Utilities.Strings.GetLocalPath(XbrlEngine.LocalFolder, loc.Href);
+                            //    localpath = Utilities.Strings.GetUrlWithoutHash(localpath);
+                            //}
+                            var loc_doc = FindDocument(localpath);
                             ns = loc_doc.TargetNamespacePrefix;
                             loc.Namespace = ns;
                             loc.Locate();
@@ -879,6 +938,7 @@ namespace XBRLProcessor.Models
                         var validation = new XbrlValidation();
                         validation.Taxonomy = this;
                         Mappings.CurrentMapping.Map<XbrlValidation>(node, validation);
+                        validation.SetNamespaceManager(validdoc.XmlDocument);
                         validation.LoadValidationHierarchy();
                         var assertions = new List<Hierarchy<XbrlIdentifiable>>();
                         if (validation.ValidationRoot != null)
