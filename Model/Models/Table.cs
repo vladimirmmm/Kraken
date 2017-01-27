@@ -158,8 +158,8 @@ namespace LogicalModel
             get;
             set;
         }
-        private IList<int> _FactindexList = new IntervalList();
-        public IList<int> FactindexList 
+        private IntervalList _FactindexList = new IntervalList();
+        public IntervalList FactindexList 
         {
             get { return _FactindexList; }
             set { _FactindexList = value; }
@@ -876,7 +876,7 @@ namespace LogicalModel
             var unmappednr = 0;
             if (factsmapped != FactindexList.Count)
             {
-                foreach (var factindex in FactindexList)
+                foreach (var factindex in FactindexList.AsEnumerable())
                 {
                     //;
                     if (this.Taxonomy.GetCellsOfFact(factindex).Count == 0)

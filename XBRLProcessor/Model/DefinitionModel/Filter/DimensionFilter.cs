@@ -91,7 +91,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
         public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
-            Console.WriteLine(String.Format("ExplicitDimensionFilter.GetQuery( {0} ) ", currentfilter.Item));
+            //Console.WriteLine(String.Format("ExplicitDimensionFilter.GetQuery( {0} ) ", currentfilter.Item));
 
             var _complement = Complement;
             var factsofparts = taxonomy.FactsOfParts;
@@ -486,7 +486,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         public String Test { get { return _Test; } set { _Test = value; } }
         public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
-            Console.WriteLine(String.Format("TypedDimensionFilter.GetQuery( {0} ) ", currentfilter.Item));
+            //Console.WriteLine(String.Format("TypedDimensionFilter.GetQuery( {0} ) ", currentfilter.Item));
 
             var query = parent;
             var factparts = taxonomy.FactParts;

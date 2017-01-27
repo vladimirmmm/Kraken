@@ -52,9 +52,20 @@ namespace LogicalModel.Validation
         [JsonIgnore]
         public IList<int> Data = null;
         public string Concept = "";
-
+        /*
         private List<List<int>> _TaxFacts = new List<List<int>>();
         public List<List<int>> TaxFacts
+        {
+            get { return _TaxFacts; }
+            set
+            {
+                _TaxFacts = value;
+
+            }
+        }
+        */
+        private List<IntervalList> _TaxFacts = new List<IntervalList>();
+        public List<IntervalList> TaxFacts
         {
             get { return _TaxFacts; }
             set
@@ -97,6 +108,7 @@ namespace LogicalModel.Validation
 
         public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
+
 
 
         public string TypeString
@@ -168,7 +180,19 @@ namespace LogicalModel.Validation
             this.Type = TypeEnum.Unknown;
         }
 
-
+        public void AddTaxFacts(IList<int> list)
+        {
+            IntervalList intervals = list as IntervalList;
+            if (intervals == null) 
+            {
+                intervals = new IntervalList();
+                foreach (var item in list) 
+                {
+                    intervals.Add(item);
+                }
+            }
+            this.TaxFacts.Add(intervals);
+        }
 
 
         internal void Clear()

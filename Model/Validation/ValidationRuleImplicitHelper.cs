@@ -75,8 +75,8 @@ namespace LogicalModel.Validation
                 {
                     if (!parameter.IsGeneral)
                     {
-                        var factsq = Utilities.Objects.IntersectSorted(parameter.Data, group, null);
-                        var facts = factsq.ToList();
+                        IntervalList facts = (IntervalList)Utilities.Objects.IntersectSorted(parameter.Data, group, null);
+                        //var facts = factsq.ToList();
                         if (facts.Count > 0)
                         {
                             hasfacts = true;

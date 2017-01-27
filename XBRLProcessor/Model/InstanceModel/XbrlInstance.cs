@@ -193,7 +193,7 @@ namespace Model.InstanceModel
             var domainnsdictionary = new Dictionary<string, string>();
 
             var lastfactpartid = Taxonomy.CounterFactParts.Keys.Max();
-
+            var ctdimdict = new Dictionary<string, string>();
             foreach (var ct in Contexts.Items.Values) 
             {
                 FixContextNamespaces(ct, nsm, domainnsdictionary, dimensionnamespaces);
@@ -248,8 +248,18 @@ namespace Model.InstanceModel
                     }
                 }
                 ct.SetContent();
+                var key = Utilities.Strings.ListToString(ct.DimensionIds, ",");
+                if (!ctdimdict.ContainsKey(key))
+                {
+                    ctdimdict.Add(key, ct.Content);
+                }
+                else 
+                {
+                    Utilities.Logger.WriteLine(String.Format("Duplicate context found {0} vs {1}", ctdimdict[key], ct.Content));
+                }
                 ct.Dimensions.Clear();
             }
+       
             var conceptnsurilist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.NamespaceURI).Distinct().ToList();
             foreach (var conceptnsuri in conceptnsurilist)
             {
@@ -602,13 +612,17 @@ namespace Model.InstanceModel
             {
                 var dimfact = new LogicalModel.Base.FactBase();
                 dimfact.Dimensions.AddRange(fact.Dimensions);
-           
-                if (!dict.ContainsKey(dimfact.FactString)) 
-                { 
+
+                if (!dict.ContainsKey(dimfact.FactString))
+                {
                     var context = GetContext(fact);
-                    dict.Add(dimfact.FactString,context.ID);
+                    dict.Add(dimfact.FactString, context.ID);
                     AddToContext(this.Contexts, context);
                     //this.Contexts.Add(context);
+                }
+                else 
+                {
+
                 }
                 fact.ContextID = dict[dimfact.FactString];
              

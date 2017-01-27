@@ -21,6 +21,10 @@ namespace LogicalModel.Expressions
         public string StringDelimiter = "";
         public string StringDelimiter2 = "";
         public string Spacing = "";
+        public string For = "";
+        public string ForEach = "";
+        public string In = "";
+        public string Return = "";
         public string If = "";
         public string Then = "";
         public string Else = "";

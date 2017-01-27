@@ -25,6 +25,10 @@ namespace LogicalModel.Expressions
             this.Syntax.StringDelimiter = "\"";
             this.Syntax.StringDelimiter2 = "\"";
             this.Syntax.Spacing = " ";
+            this.Syntax.For = "for";
+            this.Syntax.ForEach = "foreach";
+            this.Syntax.In = "in";
+            this.Syntax.Return = "return";
             this.Syntax.If = "if";
             this.Syntax.Then = "";
             this.Syntax.Else = "else";

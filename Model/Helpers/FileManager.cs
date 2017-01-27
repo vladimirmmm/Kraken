@@ -80,6 +80,8 @@ namespace LogicalModel.Helpers
 
         public static void SaveToJson<T>(IEnumerable<T> items, string pathformat, int itemsperpart=20) 
         {
+            GC.Collect();
+
             int pageCount = (items.Count() + itemsperpart - 1) / itemsperpart;
             for (int i = 0; i < pageCount; i++) 
             {

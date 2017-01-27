@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -59,13 +60,16 @@ namespace Utilities
         {
         }
     }
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Interval:IComparable<Interval>
     {
-        public int Start = -1;
-        public int End = -1;
+        private int _Start = -1;
+        private int _End = -1;
         //private int _End = -1;
-
-        //public int End { get { return _End == -1 ? Start : _End; } set { _End = value; } }
+        [JsonProperty]
+        public int End { get { return _End; } set { _End = value; } }
+        [JsonProperty]
+        public int Start { get { return _Start; } set { _Start = value; } }
 
         public Interval()
         {
@@ -642,7 +646,7 @@ namespace Utilities
         }
     }
 
-
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class IntervalList : IList<int>
     {
         public IntervalList() 
@@ -652,18 +656,23 @@ namespace Utilities
         public IntervalList(int value)
         {
             var interval = new Interval(value);
-            this.Intervals.Add(interval);
+            AddIntervalToEnd(interval);
+     
         }
         public IntervalList(int start,int end)
         {
             var interval = new Interval(start,end);
-            this.Intervals.Add(interval);
+            AddIntervalToEnd(interval);
+      
         }
         public IntervalList(Interval interval)
         {
-            this.Intervals.Add(interval);
+     
+            AddIntervalToEnd(interval);
         }
-        public List<Interval> Intervals = new List<Interval>();
+        private List<Interval> _Intervals = new List<Interval>();
+        [JsonProperty]
+        public List<Interval> Intervals { get { return _Intervals; } set { _Intervals = value; } }
         protected Dictionary<int, Interval> StartValues = new Dictionary<int, Interval>();
 
         public void TrimExcess() 
@@ -672,9 +681,17 @@ namespace Utilities
         }
         public void Sort() { }
 
+        private Interval _LastInterval = null;
         public Interval LastInterval
         {
-            get { return Intervals.LastOrDefault(); }
+            get 
+            {
+                if (_LastInterval == null)
+                {
+                    _LastInterval = Intervals.LastOrDefault();
+                }
+                return _LastInterval;
+            }
         }
 
         public Interval FirstInterval
@@ -685,13 +702,22 @@ namespace Utilities
         {
             _Count = -1;
             var interval = new Interval(value);
+            if (ix == this.Intervals.Count) 
+            {
+                _LastInterval = interval;
+            }
             this.Intervals.Insert(ix, interval);
+        }
+        public void AddIntervalToEnd(Interval interval) 
+        {
+            _LastInterval = interval;
+            this.Intervals.Add(interval);
         }
         private void AddNewInterval(int value)
         {
             _Count = -1;
             var interval = new Interval(value);
-            this.Intervals.Add(interval);
+            AddIntervalToEnd(interval);
         }
         public void AddInterval(Interval interval)
         {
@@ -704,14 +730,29 @@ namespace Utilities
                     return;
                 }
             }
-            this.Intervals.Add(interval);
+            AddIntervalToEnd(interval);
         }
         public void AddRange(IEnumerable<int> values)
         {
+            if (values is IntervalList) 
+            {
+                AddRange(values as IntervalList);
+                return;
+            }
             _Count = -1;
             foreach (var value in values)
             {
                 this.Add(value);
+            }
+        }
+        public void AddRange(IntervalList values)
+        {
+            _Count = -1;
+            var merged = Utilities.Objects.MergeSorted(this, values, null);
+            this.Clear();
+            foreach (var interval in merged.Intervals) 
+            {
+                this.Intervals.Add(interval);
             }
         }
         public static IntervalComparer ic = new IntervalComparer();

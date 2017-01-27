@@ -98,7 +98,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
         */
         public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
-            Console.WriteLine(String.Format("ConceptFilter.GetQuery( {0} ) ", currentfilter.Item));
+            //Console.WriteLine(String.Format("ConceptFilter.GetQuery( {0} ) ", currentfilter.Item));
 
             var factparts = taxonomy.FactParts;
             var factsofparts = taxonomy.FactsOfParts;

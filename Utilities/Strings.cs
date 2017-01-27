@@ -11,11 +11,11 @@ using System.Web;
 
 namespace Utilities
 {
-    public partial class KeyWord
+    public partial class KeyWord2
     {
         public String Name;
         public int Density;
-        public KeyWord(String pName, int pDensity)
+        public KeyWord2(String pName, int pDensity)
         {
             this.Name = pName;
             this.Density = pDensity;
@@ -797,7 +797,7 @@ namespace Utilities
             int totalwordcount = words.Length;
             List<List<string>> phrases = new List<List<string>>();
             phrases = GetPhrases(text, 3);
-            List<KeyWord> keywordlist = new List<KeyWord>();
+            List<KeyWord2> keywordlist = new List<KeyWord2>();
 
             int counter = 0;
             int counter2 = 0;
@@ -809,7 +809,7 @@ namespace Utilities
                     if (ContainsCount(" " + phrase + " ", " " + text + " ") > 1)
                     {
                         //result += phrase + "," ' ":" + ContainsCount(" " + phrase + " ", " " + text + " ").ToString + ", "
-                        KeyWord kw = new KeyWord(phrase.Trim(), ContainsCount(" " + phrase + " ", " " + text + " ") + phrases.Count - counter);
+                        KeyWord2 kw = new KeyWord2(phrase.Trim(), ContainsCount(" " + phrase + " ", " " + text + " ") + phrases.Count - counter);
 
                         //GetGoogleCount(phrase)
 

@@ -251,7 +251,7 @@ namespace LogicalModel.Validation
                     vruleresult.Parameters.Add(sp);
                     
                     //TODO
-                    List<int> facts=null;
+                    IList<int> facts=null;
                     if (i >= p.TaxFacts.Count && p.TaxFacts.Count==1)
                     {
                         facts = p.TaxFacts[0];
@@ -286,7 +286,8 @@ namespace LogicalModel.Validation
                     {
                         if (facts.Count > 1)
                         {
-                            Logger.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
+                            //TODO
+                            //Logger.WriteLine("Issue with " + this.ID + " parameter " + p.Name);
                         }
                         else
                         {
@@ -386,25 +387,6 @@ namespace LogicalModel.Validation
             var hastyped = this.Parameters.Any(i => i.TypedDimensions.Count > 0);
 
 
-            //if (taxonomy.TypedIntervals.Intervals.Count == 0)
-            //{
-            //    var typedfactparts = Taxonomy.Module.TypedDimensions.Keys.ToList();
-            //    foreach(var typedfactpart in typedfactparts)
-            //    {
-            //        if (Taxonomy.FactsOfParts.ContainsKey(typedfactpart))
-            //        {
-            //            var typedinterval = Taxonomy.FactsOfParts[typedfactpart];
-            //            foreach (var interval in typedinterval.Intervals)
-            //            {
-            //                foreach (var ix in interval.AsEnumerable())
-            //                {
-            //                    taxonomy.TypedIntervals.Add(ix);
-
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
             if (!hastyped)
             {
                 var allfactsindexes = this.Parameters.SelectMany(i => i.TaxFacts.SelectMany(j => j)).ToList();

@@ -325,7 +325,7 @@ namespace XBRLProcessor.Model
                             d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
                         }
                     }
-                    concept.Namespace = d_con[nsprefix];
+                    concept.Namespace = d_con.ContainsKey(nsprefix) ? d_con[nsprefix] : concept.Namespace;
                 }
                 foreach(var dimension in li.Item.Dimensions)
                 {

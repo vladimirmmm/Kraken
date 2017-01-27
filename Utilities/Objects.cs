@@ -29,6 +29,22 @@ namespace Utilities
 
     public class Objects
     {
+        public static bool IsOfType<T>(Object item)
+        {
+            if (item != null) 
+            {
+                return item.GetType() == typeof(T);
+            }
+            return false;
+        }
+        public static bool IsOf<T>(Object item) 
+        {
+            if (item != null)
+            {
+                return typeof(T).IsAssignableFrom(item.GetType());
+            }
+            return false;
+        }
         public static string GetFullException(Exception ex) 
         {
             var sb = new StringBuilder();
@@ -198,7 +214,8 @@ namespace Utilities
                    
                         if (except.Count == 2)
                         {
-                            result.Intervals.Add(except[0]);
+                            //result.Intervals.Add(except[0]);
+                            result.AddIntervalToEnd(except[0]);
                             snext = except[1];
                             continue;
                         }
@@ -218,7 +235,8 @@ namespace Utilities
                     }
                     else
                     {
-                        result.Intervals.Add(s);
+                       // result.Intervals.Add(s);
+                        result.AddIntervalToEnd(s);
                         six++;
                         snext = six < sc ? smaller.Intervals[six] : null;
 
@@ -228,7 +246,8 @@ namespace Utilities
                 }
                 if (r < 0)
                 {
-                    result.Intervals.Add(s);
+                    //result.Intervals.Add(s);
+                    result.AddIntervalToEnd(s);
                     six++;
                     snext = six < sc ? smaller.Intervals[six] : null;
 
@@ -701,7 +720,8 @@ namespace Utilities
                 var r = s.Compare(b);
                 if (r == 0) 
                 {
-                    result.Intervals.Add(s.Intersect(b));
+                    //result.Intervals.Add(s.Intersect(b));
+                    result.AddIntervalToEnd(s.Intersect(b));
                     if (s.End > b.End)
                     {
                         bix++;

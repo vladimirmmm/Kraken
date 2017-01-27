@@ -90,14 +90,10 @@ namespace XBRLProcessor.Model
                     if (!parameter.IsGeneral)
                     {
                         var factsq = Utilities.Objects.IntersectSorted(parameter.Data, group, null);
-                        //if (hastableinfo) 
-                        //{
-                        //    factsq = Utilities.Objects.IntersectSorted(factsq, tableintevallist, null);
-                        //}
-                        var facts = factsq.ToList();
+                    
+                        //var facts = factsq.ToList();
+                        var facts = factsq;
 
-                        //var facts_domainkeys = facts.Select(i=>Taxonomy.DimensionDomainsOfMembers[i])
-                        //var facts = parameter.BaseQuery.EnumerateIntervals(this.Taxonomy.FactsOfParts, 0, group,null).SelectMany(i => i).ToList();
                         if (!parameter.BindAsSequence && facts.Count > 1)
                         {
                             mffnspissue = true;
@@ -107,7 +103,7 @@ namespace XBRLProcessor.Model
                         {
                             hasfacts = true;
                         }
-                        parameter.TaxFacts.Add(facts);
+                        parameter.AddTaxFacts(facts);
                     }
 
                 
@@ -122,9 +118,9 @@ namespace XBRLProcessor.Model
                         var p = singlefactparameters.FirstOrDefault();
                         var lasttaxfact = p.TaxFacts.LastOrDefault();
                         p.TaxFacts.Remove(lasttaxfact);
-                        foreach (var fact in lasttaxfact)
+                        foreach (var fact in lasttaxfact.AsEnumerable())
                         {
-                            p.TaxFacts.Add(new List<int>() { fact });
+                            p.AddTaxFacts(new List<int>() { fact });
                         }
                     }
                     if ((distinctfactcounts.Count == 2 && distinctfactcounts[1].Key == 1))
@@ -136,9 +132,9 @@ namespace XBRLProcessor.Model
                         var facts = theparameter.TaxFacts.LastOrDefault();
                         theparameter.TaxFacts.Clear();
                         var run = 0;
-                        foreach (var fact in facts)
+                        foreach (var fact in facts.AsEnumerable())
                         {
-                            theparameter.TaxFacts.Add(new List<int>() { fact });
+                            theparameter.AddTaxFacts(new List<int>() { fact });
 
                             foreach (var p in parameterstocomplete)
                             {
@@ -162,9 +158,9 @@ namespace XBRLProcessor.Model
                         {
                             var lasttaxfact = p.TaxFacts.LastOrDefault();
                             p.TaxFacts.Remove(lasttaxfact);
-                            foreach (var fact in lasttaxfact)
+                            foreach (var fact in lasttaxfact.AsEnumerable())
                             {
-                                p.TaxFacts.Add(new List<int>() { fact });
+                                p.AddTaxFacts(new List<int>() { fact });
                             }
                         }
 
@@ -202,7 +198,7 @@ namespace XBRLProcessor.Model
                 var filter = child.Item as Filter;
                 if (filter != null) 
                 {
-                    Console.WriteLine(String.Format("GetQuery({0}, {1}) at child {2}", item, level, child));
+                    //Console.WriteLine(String.Format("GetQuery({0}, {1}) at child {2}", item, level, child));
                     filter.GetQuery(this.Taxonomy, child, query);
                 }
 
@@ -245,7 +241,7 @@ namespace XBRLProcessor.Model
             var log = false;
             foreach (var factgroup in parameter.TaxFacts) 
             {
-                foreach (var factid in factgroup)
+                foreach (var factid in factgroup.AsEnumerable())
                 {
                     var cellslist = new List<List<String>>();
                     var factkey = Taxonomy.FactsManager.GetFactKey(factid);

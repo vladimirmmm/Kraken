@@ -705,7 +705,7 @@ namespace XBRLProcessor.Models
                     this.Hierarchies.Add(h);
 
 
-                    var members = this.GetMembersOf(domain).Select(i=>new Hierarchy<LogicalModel.Base.QualifiedItem>(i));
+                    var members = this.GetMembersOf(domain).Select(i => new Hierarchy<LogicalModel.Base.QualifiedItem>(i));
                     h.Children.AddRange(members);
                 }
                 var jsoncontent = Utilities.Converters.ToJson(this.Hierarchies);
