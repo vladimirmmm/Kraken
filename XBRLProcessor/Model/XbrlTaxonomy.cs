@@ -80,7 +80,10 @@ namespace XBRLProcessor.Models
                 this.TaxonomyDocumentDictionary.Add(document.LocalRelPath.ToLower(), document);
                 if (!String.IsNullOrEmpty(document.TargetNamespace))
                 {
-                    this.TaxonomyDocumentNSDictionary.Add(document.TargetNamespace, document);
+                    if (!this.TaxonomyDocumentNSDictionary.ContainsKey(document.TargetNamespace))
+                    {
+                        this.TaxonomyDocumentNSDictionary.Add(document.TargetNamespace, document);
+                    }
 
                 }
                 return true;
@@ -927,6 +930,9 @@ namespace XBRLProcessor.Models
                     validationdocuments = validationdocuments.OrderBy(i => i.FileName).ToList();
                     MoveToFirst("vr-bv34-1.xml", validationdocuments);
                     MoveToFirst("vr-v0600_m.xml", validationdocuments);
+                    MoveToFirst("vr-v0336_m.xml", validationdocuments);
+                    MoveToFirst("vr-v3081_m", validationdocuments);
+                    
                     
 
 

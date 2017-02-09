@@ -227,6 +227,26 @@ namespace LogicalModel
             }
             return null;
         }
+        public int GetTaxFactID(string factidstring) 
+        {
+            if (factidstring.StartsWith("I:"))
+            {
+                var id = Utilities.Converters.FastParse(factidstring.Substring(2));
+                if (id > -1 && id < this.Facts.Count)
+                {
+                    var fact = this.Facts[id];
+                    var taxfactid = Taxonomy.FactsManager.GetFactIndex(fact.TaxonomyKey);
+                    return taxfactid;
+                }
+            }
+            if (factidstring.StartsWith("T:"))
+            {
+                var id = Utilities.Converters.FastParse(factidstring.Substring(2));
+                return id;
+
+            }
+            return -2;
+        }
         public InstanceFact GetFactByIDString(string factstring)
         {
             if (factstring.StartsWith("I:"))
@@ -649,6 +669,7 @@ namespace LogicalModel
             }
             return result;
         }
+        
         public string GetDynamicCellID(string cellID, FactBase fact)
         {
             var intkeys = this.GetFactIntKey(fact.FactString);
@@ -663,6 +684,7 @@ namespace LogicalModel
             }
             return cellID;
         }
+        
         public string GetDynamicCellID(string cellID, int[] instancefactkey)
         {
             if (this.FactDictionary.FactsByInstanceKey.ContainsKey(instancefactkey))
@@ -676,6 +698,7 @@ namespace LogicalModel
             }
             return cellID;
         }
+        
         public string GetDynamicCellID(string cellID, InstanceFact fact) 
         {
             var dynamiccellID = cellID;
@@ -696,6 +719,10 @@ namespace LogicalModel
                         var ifact = this.FactDictionary.FactsByIndex[ifactix];
                         var cells = ifact.Cells;
                         var cellid = cells.FirstOrDefault();
+                        if (string.IsNullOrEmpty(cellid)) 
+                        {
+                            return "";
+                        }
                         cellobj.SetFromCellID(cellid);
 
                     }
@@ -707,11 +734,36 @@ namespace LogicalModel
                 }
         
             }
-            if (cellobj.CellID == "de_sprv_tRDP-R12<1|600|050>") 
-            {
-            }
+         
             return cellobj.CellID;
         }
+
+        public List<string> GetCells(string factidstring) 
+        {
+            var taxfactid = GetTaxFactID(factidstring);
+            var instancefact = GetFactByIDString(factidstring);
+            var cells = Taxonomy.GetCellsOfFact(taxfactid);
+            var result = new List<string>();
+            foreach (var cell in cells) 
+            {
+                String instancecell = "";
+                if (instancefact != null) 
+                {
+                    instancecell = GetDynamicCellID(cell, instancefact);
+                }
+            
+                if (!String.IsNullOrEmpty(instancecell))
+                {
+                    result.Add(instancecell);
+                }
+                else 
+                {
+                    result.Add(cell);
+                }
+            }
+            return result;
+        }
+
         public void SetExtensions() 
         {
             foreach (var table in Taxonomy.Tables) 

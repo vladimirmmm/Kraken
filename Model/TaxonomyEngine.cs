@@ -63,7 +63,18 @@ namespace LogicalModel
                 _LocalFolder = value;
             }
         }
-
+        public static string _LogFolder = "";
+        public static string LogFolder
+        { 
+            get
+            {
+                if (String.IsNullOrEmpty(_LogFolder))
+                {
+                    _LogFolder=string.Format("{0}Log\\",LocalFolder);
+                }
+                return _LogFolder;
+            }
+        }
         public TaxonomyEngine() 
         {
 
@@ -72,7 +83,7 @@ namespace LogicalModel
                 CurrentEngine = this;
             }
             var filename = Utilities.Strings.GetStringForFilename( Utilities.Converters.DateTimeToString(DateTime.Now));
-            Logger.LogPath = LocalFolder + "Log\\" + String.Format("{0}.txt", filename);
+            Logger.LogPath = LogFolder + String.Format("{0}.txt", filename);
             Logger.WriteLine(LocalFolder);
         }
         public virtual bool LoadInstance(string filepath, bool wait) 

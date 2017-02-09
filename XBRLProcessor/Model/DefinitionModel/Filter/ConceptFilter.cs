@@ -102,7 +102,8 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
             var factparts = taxonomy.FactParts;
             var factsofparts = taxonomy.FactsOfParts;
-            var query = new FactBaseQuery();
+            //var query = new FactBaseQuery();
+            var query = parent;
 
 
             var tag = Concept.QName.Content;

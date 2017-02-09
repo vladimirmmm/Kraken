@@ -372,8 +372,9 @@
             if (!IsNull(f_factstring)) {
                 var factparts = f_factstring.split(" ");
                 factparts.forEach(function (factpart, ix) {
-                    if (!IsNull(factpart)) {
-                        query = query.Where(i=> i.FactString.toLowerCase().indexOf(factpart) > -1);
+                    var fp = factpart.trim();
+                    if (!IsNull(fp)) {
+                        query = query.Where(i=> i.FactString.toLowerCase().indexOf(fp) > -1);
                     }
                 });
             }
@@ -403,6 +404,7 @@
                         cellobj.SetFromCellID(cell);
                         var reportid = cellobj.Report;
                         var dynmicdata = me.Instance.DynamicReportCells[reportid];
+
                         if (IsNull(cellobj.Column) || IsNull(cellobj.Row) || IsNull(cellobj.Extension))
                         {
                             var celldictionary = IsNull(dynmicdata) ? null : dynmicdata.CellOfFact;

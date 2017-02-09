@@ -158,7 +158,7 @@ namespace XBRLProcessor.Model
             sb.AppendLine(logicalrule.DisplayText);
             sb.AppendLine(valueassertion.Test);
             var rawval = document.FileName + "\r\n" + document.LocalPath + "\r\n" + logicalrule.DisplayText + "\r\n" + logicalrule.OriginalExpression + "\r\n" + hrule.ToHierarchyString(i => i.ToString()) + "\r\n";
-
+            logicalrule.RawInfo = rawval;
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
 
@@ -184,10 +184,7 @@ namespace XBRLProcessor.Model
                 logicalrule.Parameters.Add(parameter);
                 parameter.BindAsSequence = factvariable.BindAsSequence;
                 parameter.FallBackValue = factvariable.FallbackValue;
-                //if (parameter.FallBackValue == "()" && !parameter.BindAsSequence) 
-                //{
-                //    parameter.BindAsSequence = true;
-                //}
+        
 
                 parameter.BaseQuery = GetQuery(fv);
                 parameter.Concept = parameter.BaseQuery.GetConcept();
@@ -201,29 +198,7 @@ namespace XBRLProcessor.Model
                     parameter.StringValue = "filingindicators";
                 }
                 ValidationRuleHelper.SetParamerterTypes(Taxonomy, logicalrule);
-                /*
-                var type = LogicalModel.TypeEnum.Numeric;
-                if (!parameter.IsGeneral)
-                {
-                    if (parameter.Concept != null
-                        && (parameter.Concept.Contains(":ei")
-                        || parameter.Concept.Contains(":si")))
-                    {
-                        type = LogicalModel.TypeEnum.String;
-                    }
-                    if (parameter.Concept != null
-                        && (parameter.Concept.Contains(":di")))
-                    {
-                        type = LogicalModel.TypeEnum.Date;
-                    }
-                }
-                else
-                {
-                    type = LogicalModel.TypeEnum.String;
-
-                }
-                parameter.Type = type; 
-                */
+         
 
                
             }
@@ -256,6 +231,10 @@ namespace XBRLProcessor.Model
             }
             logicalrule.SetTaxonomy(this.Taxonomy);
             ValidationRuleHelper.ExecuteExplicitFiltering(this.Taxonomy, logicalrule);
+            ValidationRuleHelper.ExecuteImplicitFiltering(this.Taxonomy, logicalrule);
+            ValidationRuleHelper.ExecuteMatching(this.Taxonomy, logicalrule);
+            ValidationRuleHelper.CheckConsistency(this.Taxonomy, logicalrule);
+
             //SetFacts(logicalrule);
 
             return logicalrule;

@@ -603,7 +603,8 @@ namespace Utilities
             var six = 0;
             if (IsTheSame(sequence1, sequence2))
             {
-                return sequence1;
+                result.Intervals.AddRange(sequence1.Intervals);
+                return result;
             }
        
             var sc = smaller.Intervals.Count;

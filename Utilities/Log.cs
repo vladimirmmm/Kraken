@@ -4,15 +4,37 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Utilities
 {
+    public enum LogArea 
+    {
+        Info,
+        Error,
+        Warning
+    }
     public class Logger
     {
         public static Action<string> action = null;
         public static string LogPath = "";
         private static StringBuilder logbuilder = new StringBuilder();
         private static StreamWriter _logwriter = null;
+
+        public static Timer timer = new Timer();
+
+        public static void Initialize()
+        {
+            timer.Elapsed += OnTimedEvent;
+            timer.Enabled = true;
+            timer.Interval = 5000;
+            timer.Start();
+        }
+
+        private static void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            Flush();
+        }
         public static StreamWriter logwriter
         {
             get 
@@ -64,8 +86,14 @@ namespace Utilities
 
         public static void Flush() 
         {
-            Utilities.FS.AppendAllText(LogPath, logbuilder.ToString());
-            logbuilder.Clear();
+            lock (logbuilder)
+            {
+                if (logbuilder.Length > 0)
+                {
+                    Utilities.FS.AppendAllText(LogPath, logbuilder.ToString());
+                    logbuilder.Clear();
+                }
+            }
         }
         public static void WriteToFile(string item)
         {

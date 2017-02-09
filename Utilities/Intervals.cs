@@ -734,27 +734,27 @@ namespace Utilities
         }
         public void AddRange(IEnumerable<int> values)
         {
-            if (values is IntervalList) 
-            {
-                AddRange(values as IntervalList);
-                return;
-            }
+            //if (values is IntervalList) 
+            //{
+            //    AddRange(values as IntervalList);
+            //    return;
+            //}
             _Count = -1;
             foreach (var value in values)
             {
                 this.Add(value);
             }
         }
-        public void AddRange(IntervalList values)
-        {
-            _Count = -1;
-            var merged = Utilities.Objects.MergeSorted(this, values, null);
-            this.Clear();
-            foreach (var interval in merged.Intervals) 
-            {
-                this.Intervals.Add(interval);
-            }
-        }
+        //public void AddRange(IntervalList values)
+        //{
+        //    _Count = -1;
+        //    var merged = Utilities.Objects.MergeSorted(this, values, null);
+        //    this.Clear();
+        //    foreach (var interval in merged.Intervals) 
+        //    {
+        //        this.Intervals.Add(interval);
+        //    }
+        //}
         public static IntervalComparer ic = new IntervalComparer();
         public static IntervalStartComparer startcomparer = new IntervalStartComparer();
         public static IntervalEndComparer endcomparer = new IntervalEndComparer();
@@ -1003,6 +1003,36 @@ namespace Utilities
         {
             var intterval = this.FirstInterval == null ? "" : String.Format("{0}..{1}", this.FirstInterval.Start, this.LastInterval.End);
             return string.Format("{0}/{1} [{2}]", this.Count, this.Intervals.Count, intterval);
+        }
+
+        public IntervalList Copy()
+        {
+            var il = new IntervalList();
+            foreach (var i in this.Intervals) 
+            {
+                il.Intervals.Add(i);
+            }
+            return il;
+        }
+        public bool IsConsistent() 
+        {
+            var max = -1;
+            foreach (var i in Intervals) 
+            {
+                if (i.End == 172) 
+                {
+
+                }
+                if (i.Start < max) 
+                {
+                    return false;
+                }
+                if (i.End > max) 
+                {
+                    max = i.End;
+                }
+            }
+            return true;
         }
     }
 

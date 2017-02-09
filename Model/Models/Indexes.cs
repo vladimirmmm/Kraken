@@ -665,15 +665,26 @@ namespace LogicalModel
         {
             foreach (var item in this) 
             {
+                //if (item.Key == 11529) 
+                //{ 
+
+                //}
                 if (!target.ContainsKey(item.Key)) 
                 {
                     target.Add(item.Key, new IntervalList());
                 }
-                target[item.Key].AddRange(this[item.Key]);
+                var targetitem = target[item.Key];
+                //IntervalList t = targetitem.Copy();
+                //t.AddRange(this[item.Key]);
+                //if (!t.IsConsistent()) 
+                //{
+
+                //}
+                targetitem.AddRange(this[item.Key]);
              
                 //target[item.Key] = target[item.Key].Distinct().ToList();
-                
-                target[item.Key].TrimExcess();
+
+                targetitem.TrimExcess();
                 this[item.Key].Clear();
             }
         }
@@ -690,7 +701,8 @@ namespace LogicalModel
                 }
                 else 
                 {
-                    return new List<int>();
+                    //Utilities.Logger.WriteLine(String.Format("SearchFactsIndexByKey: memberkey {0} was not found!", memberkey));
+                    return new IntervalList();
                 }
             }
             var partcount = memberfactspool.Count;

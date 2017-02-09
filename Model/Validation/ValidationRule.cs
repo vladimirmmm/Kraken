@@ -74,6 +74,7 @@ namespace LogicalModel.Validation
             this.DisplayText = rule.DisplayText;
             this.OriginalExpression = rule.OriginalExpression;
             this.Tables = rule.Tables;
+      
            
         }
 
@@ -99,6 +100,8 @@ namespace LogicalModel.Validation
         public Expression RootExpression = null;
         public FactBaseQuery BaseQuery = null;
 
+        [JsonIgnore]
+        public string RawInfo = "";
         [JsonIgnore]
         public override string OriginalExpression { get; set; }
         [JsonIgnore]
@@ -220,19 +223,11 @@ namespace LogicalModel.Validation
         {
             var results = new List<ValidationRuleResult>();
             var factgroups = Parameters.FirstOrDefault().TaxFacts;
-            //var aregroupsok = Parameters.Where(i=>!i.IsGeneral).Select(i => i.TaxFacts.Count).Distinct().Count() == 1;
-            //if (!aregroupsok) 
-            //{
-            //    Utilities.Logger.WriteLine(String.Format("Rule {0} has factgroup problems", this.ID));
-            //    return results;
-            //}
-            if (this.ID.Contains("de_sprv_vcrs_0030"))
-            {
-
-            }
+  
             for (int i = 0; i < factgroups.Count; i++)
             {
                 var vruleresult = new ValidationRuleResult();
+                vruleresult.Rule = this;
                 results.Add(vruleresult);
                 vruleresult.ID = this.ID;
 
@@ -240,7 +235,7 @@ namespace LogicalModel.Validation
                 {
                     if (p.IsGeneral) { continue; }
                     p.Clear();
-                    p.CurrentCells.Clear();
+                    //p.CurrentCells.Clear();
                     var itemfacts = new List<string>();
                     var itemfactids = new List<int>();
                   
@@ -260,7 +255,7 @@ namespace LogicalModel.Validation
                     {
                         facts = p.TaxFacts[i];
                     }
-
+                  
                     if (p.BindAsSequence)
                     {
                         //set the cells
@@ -268,16 +263,16 @@ namespace LogicalModel.Validation
                         itemfacts.AddRange(facts.Select(f => Taxonomy.GetFactStringKey(Taxonomy.FactsManager.GetFactKey(f))));
                         foreach (var tax_fact in itemfactids)
                         {
-                            var cellist = new List<string>();
-                            sp.Cells.Add(cellist);
-                            var taxfactkey = Taxonomy.FactsManager.GetFactKey(tax_fact);
-                            if (Taxonomy.HasFact(taxfactkey))
-                            {
+                            //var cellist = new List<string>();
+                            //sp.Cells.Add(cellist);
+                            //var taxfactkey = Taxonomy.FactsManager.GetFactKey(tax_fact);
+                            //if (Taxonomy.HasFact(taxfactkey))
+                            //{
 
-                                var cells = Taxonomy.GetCellsOfFact(taxfactkey);
+                            //    var cells = Taxonomy.GetCellsOfFact(taxfactkey);
 
-                                cellist.AddRange(cells);
-                            }
+                            //    cellist.AddRange(cells);
+                            //}
                       
                         }
 
@@ -298,12 +293,12 @@ namespace LogicalModel.Validation
                                 var factid = facts.FirstOrDefault();
                                 itemfactids.Add(factid);
                                 //set the cells
-                                var cells = new List<String>();
-                                sp.Cells.Add(cells); ;
-                                if (Taxonomy.HasFact(factkey))
-                                {
-                                    cells.AddRange(Taxonomy.GetCellsOfFact(factkey));
-                                }
+                                //var cells = new List<String>();
+                                //sp.Cells.Add(cells); ;
+                                //if (Taxonomy.HasFact(factkey))
+                                //{
+                                //    cells.AddRange(Taxonomy.GetCellsOfFact(factkey));
+                                //}
                                 
                             }
                         }
@@ -317,8 +312,9 @@ namespace LogicalModel.Validation
                 }
             }
 
-           
-
+            //results = ValidationRuleHelper.ExecuteImplicitFiltering(Taxonomy, results);
+            //Taxonomy.SetCells(results);
+            ValidationRuleHelper.SetCells(Taxonomy, results);
             return results;
         }
 
@@ -371,9 +367,12 @@ namespace LogicalModel.Validation
 
             var instanceresults = ValidationRuleHelper.ExecuteImplicitFiltering(instance, allresults);
 
+            ValidationRuleHelper.SetCells(instance, instanceresults);
+            
             results = instanceresults;
             return results;
         }
+        /*
         public List<ValidationRuleResult> GetAllInstanceResultsOld(Instance instance)
         {
             if (this.ID.Contains("de_sprv_vrdp-bi_3260"))
@@ -505,7 +504,7 @@ namespace LogicalModel.Validation
 
             return allinstanceresults;
         }
-
+        */
         /*
         public List<ValidationRuleResult> GetAllInstanceResultsOld(Instance instance)
         {
@@ -816,8 +815,8 @@ namespace LogicalModel.Validation
                             {
                                 if (rp.StringValue.Length > 29 || !Utilities.Strings.IsNumeric(rp.StringValue))
                                 {
-                                    var cells = Utilities.Strings.ArrayToString(rp.CurrentCells.ToArray());
-                                    Logger.WriteLine(String.Format("Invalid Value Detected at {2}: {0} Cells: {1}", rp.StringValue, cells, this.ID));
+                                    //var cells = Utilities.Strings.ArrayToString(rp.CurrentCells.ToArray());
+                                    Logger.WriteLine(String.Format("Invalid Value Detected at {2}: {0} Cells: {1}", rp.StringValue, "", this.ID));
                                     rp.StringValue = "";
                                     return;
                                 }

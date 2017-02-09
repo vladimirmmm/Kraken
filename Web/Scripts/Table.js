@@ -41,6 +41,7 @@ var UI;
             this.TemplateRow = null;
             this.TemplateCol = null;
             this.UITable = null;
+            this.DynamicPageSize = 100;
             this.HtmlTemplate = "";
             this.HtmlTemplatePath = "";
             this.Current_CellID = "";
@@ -138,12 +139,36 @@ var UI;
             var hash = window.location.hash;
         };
         Table.prototype.HighlightCell = function () {
+            var me = this;
+            var cellid = me.Current_CellID.replace(/_/g, "|");
+            var fullcellid = Format("{0}<{1}|{2}>", me.Current_ReportID, me.Current_ExtensionCode, cellid);
+            var reportid = me.Current_ReportID;
+            var cellobj = new Model.Cell();
+            cellobj.SetFromCellID(fullcellid);
+            if (!IsNull(me.UITable.Manager.TemplateRow)) {
+                var rowid = cellobj.Row;
+                if (IsNull(me.UITable.GetRowByID(rowid))) {
+                    var dynamicdatacontainer = me.Instance.DynamicReportCells[reportid];
+                    var rows = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.RowDictionary);
+                    var ix = 0;
+                    for (var i = 0; i < rows.length; i++) {
+                        if (rows[i].Value == rowid) {
+                            ix = i;
+                            break;
+                        }
+                    }
+                    var page = Math.floor(ix / me.DynamicPageSize);
+                    me.LoadRows(rows, page, me.DynamicPageSize);
+                    me.PopulateCells();
+                }
+            }
             _RemoveClass(_Select(".highlight"), "highlight");
-            var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
-            cellselector = cellselector.replace(/\*/g, "\\\*").toUpperCase();
-            var cells = _Select("#" + cellselector);
-            _AddClass(cells, "highlight");
-            _Focus(cells);
+            var cell = me.UITable.GetCellByID(cellid);
+            if (!IsNull(cell)) {
+                var element = cell.UIElement;
+                _AddClass(element, "highlight");
+                _Focus(element);
+            }
         };
         Table.prototype.LoadCellsFromHtml = function () {
             var me = this;
@@ -317,7 +342,7 @@ var UI;
                 //    var row = me.UITable.AddRow(-1, rowitem.Value);
                 //    me.SetDataCells2(row, rowitem, me.templatefacts, me.templatedicts);
                 //});
-                me.LoadRows(rows, 0, 100);
+                me.LoadRows(rows, 0, me.DynamicPageSize);
                 //me.UITable.CanManageRows = true;
                 me.UITable.Manager.ManageRows(me.UITable);
             }

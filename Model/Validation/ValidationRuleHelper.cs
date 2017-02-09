@@ -24,11 +24,32 @@ namespace LogicalModel.Validation
             foreach (var rulefactparameter in rulefactparameters)
             {
                 var p = ruleresult.Parameters.FirstOrDefault(i => i.Name == rulefactparameter.Name);
+                
                 p.InstanceFacts = p.FactIDs.SelectMany(i => instance.GetFactsByIdString(i)).ToList();
-                p.FactIDs = p.InstanceFacts.Select(i => String.Format("I:{0}", i.IX)).ToList();
+                var newfactids = new List<string>();
+                foreach (var factid in p.FactIDs) 
+                {
+                    var facts = instance.GetFactsByIdString(factid);
+                    if (facts.Count> 0)
+                    {
+                        foreach (var fact in facts) 
+                        {
+                            newfactids.Add(String.Format("I:{0}", fact.IX));
+
+                        }
+                    }
+                    else 
+                    {
+                        newfactids.Add(factid);
+                    }
+                }
+                p.FactIDs = newfactids;
+                //p.InstanceFacts = p.FactIDs.SelectMany(i => instance.GetFactsByIdString(i)).ToList();
+                //p.FactIDs = p.InstanceFacts.Select(i => String.Format("I:{0}", i.IX)).ToList();
             }
             
         }
+        /*
         public static List<ValidationRuleResult> ResolveTypedFacts(Instance instance, ValidationRuleResult ruleresult)
         {
             var results = new List<ValidationRuleResult>();
@@ -80,7 +101,8 @@ namespace LogicalModel.Validation
             //var firstfactid = p.FactIDs.FirstOrDefault();
             //var pkey = instance.GetFactKeyByIdString(firstfactid).ToList().ToArray();
         }
-
+        */
+        /*
         public static List<ValidationRuleResult> ExecuteImplicitFilter(Instance instance, ValidationRuleResult ruleresult) 
         {
             var result = new List<ValidationRuleResult>();
@@ -183,7 +205,7 @@ namespace LogicalModel.Validation
             //}
             return result;
         }
-
+        */
         public static List<ValidationRuleIssue> GetIssues(List<ValidationRuleResult> results) 
         {
             var issues = new List<ValidationRuleIssue>();
@@ -344,12 +366,60 @@ namespace LogicalModel.Validation
             return TypeEnum.Unknown; 
 
         }
-
-        public static void SetCells(Instance instance, ValidationRuleResult result) 
+        public static void SetCells(Taxonomy taxonomy, List<ValidationRuleResult> results)
         {
-
+            foreach (var result in results)
+            {
+                SetCells(taxonomy, result);
+            }
+        }
+        public static void SetCells(Taxonomy taxonomy, ValidationRuleResult result)
+        {
             foreach (var p in result.Parameters)
             {
+                p.Cells.Clear();
+                foreach (var factid in p.FactIDs)
+                {
+                    var taxfactid = Utilities.Converters.FastParse(factid.Substring(2));
+
+                    var cells = taxonomy.GetCellsOfFact(taxfactid);
+                    p.Cells.Add(cells);
+
+                }
+            }
+        }
+        public static void SetCells(Instance instance, List<ValidationRuleResult> results)
+        {
+            foreach (var result in results)
+            {
+                SetCells(instance, result);
+            }
+        }
+        public static void SetCells(Instance instance, ValidationRuleResult result) 
+        {
+            var p_i=0;
+            //result.Rule = instance.Taxonomy.ValidationRules result.ID
+            foreach (var p in result.Parameters)
+            {
+                p.Cells.Clear();
+                foreach (var factid in p.FactIDs) 
+                {
+                    var cells = instance.GetCells(factid);
+                    p.Cells.Add(cells);
+                    var instancefact = instance.GetFactByIDString(factid);
+                    if (instancefact != null) 
+                    {
+                        p.Value = instancefact.Value + ",";
+                    }
+
+                }
+                if (string.IsNullOrEmpty(p.Value)) 
+                {
+                    p.Value = result.Rule.Parameters[p_i].FallBackValue;
+                }
+                p.Value = p.Value.TrimEnd(',');
+
+                /*
                 var facts = p.InstanceFacts;
                 if (facts.Count > 0)
                 {
@@ -369,9 +439,11 @@ namespace LogicalModel.Validation
                     //p.FactIDs.AddRange(facts.Select(i => String.Format("I:{0}", i.IX)));
                     p.Cells.AddRange(newcelllist);
                 }
+                */
+                p_i++;
             }
         }
-        
+        /*
         public static List<ValidationRuleResult> GetTypedResults(Instance instance, ValidationRule rule, ValidationRuleResult ruleresult) 
         {
             if (rule.ID.Contains("de_sprv_vrdp-bi_3260")) 
@@ -520,7 +592,7 @@ namespace LogicalModel.Validation
             }
             return result;
         }
-
+        */
 
         //public static bool IsTyped(Taxonomy taxonomy, int key)
         //{

@@ -308,8 +308,9 @@ var Control;
             if (!IsNull(f_factstring)) {
                 var factparts = f_factstring.split(" ");
                 factparts.forEach(function (factpart, ix) {
-                    if (!IsNull(factpart)) {
-                        query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(factpart) > -1; });
+                    var fp = factpart.trim();
+                    if (!IsNull(fp)) {
+                        query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(fp) > -1; });
                     }
                 });
             }

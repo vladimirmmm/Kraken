@@ -458,8 +458,14 @@ namespace LogicalModel.Base
 
         public void AddChildQuery(FactBaseQuery qry) 
         {
-            qry.Parent = this;
-            ChildQueries.Add(qry);
+            if (qry != this)
+            {
+                qry.Parent = this;
+                if (!ChildQueries.Contains(qry))
+                {
+                    ChildQueries.Add(qry);
+                }
+            }
         }
      
         public FactBaseQuery(List<FactBaseQuery> queries)
@@ -937,6 +943,134 @@ namespace LogicalModel.Base
                 sb.AppendLine(child.GetCompareString(Literals.Tab + pad));
             }
             return sb.ToString();
+        }
+
+        public static FactBaseQuery GetQuery(string filterstring, Dictionary<string, int> factparts) 
+        {
+            var factstrings = filterstring.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            //TODO
+            IList<int> idlist = new List<int>();
+            var keys = new List<int>();
+            var qry = new LogicalModel.Base.FactBaseQuery();
+            foreach (var fs in factstrings)
+            {
+                var ors = fs.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+                if (ors.Length == 1)
+                {
+                    var oritem = ors.FirstOrDefault();
+                    var isnegative = false;
+                    if (oritem.StartsWith("!"))
+                    {
+                        isnegative = true;
+                        oritem = oritem.Substring(1);
+                    }
+                    oritem = oritem.Trim();
+                    if (factparts.ContainsKey(oritem))
+                    {
+                        qry.AddIndex(factparts[oritem], isnegative);
+                    }
+                    else
+                    {
+                        var partkeys = factparts.Keys.Where(i => i.IndexOf(oritem, StringComparison.InvariantCultureIgnoreCase) > -1).ToList();
+                        if (partkeys.Count > 0)
+                        {
+                            if (isnegative)
+                            {
+                                foreach (var partkey in partkeys)
+                                {
+                                    var partqry = new LogicalModel.Base.FactBaseQuery();
+                                    qry.AddIndex(factparts[partkey], isnegative);
+                                }
+                            }
+                            else
+                            {
+                                var qrypool = new LogicalModel.Base.FactPoolQuery();
+                                foreach (var partkey in partkeys)
+                                {
+                                    var partqry = new LogicalModel.Base.FactBaseQuery();
+                                    partqry.AddIndex(factparts[partkey], isnegative);
+                                    qrypool.AddChildQuery(partqry);
+                                }
+                                qry.AddChildQuery(qrypool);
+                            }
+
+
+                        }
+                        else
+                        {
+                            qry.DictFilterIndexes.Add(-1);
+                        }
+
+                    }
+                }
+                else
+                {
+                    var qrypool = new LogicalModel.Base.FactPoolQuery();
+                    var isnegative = false;
+
+                    for (int i = 0; i < ors.Length; i++)
+                    {
+                        var oritem = ors[i];
+                        if (oritem.StartsWith("!"))
+                        {
+                            isnegative = true;
+                            oritem = oritem.Substring(1);
+                        }
+                        oritem = oritem.Trim();
+                        LogicalModel.Base.FactBaseQuery subquery = null;
+                        if (factparts.ContainsKey(oritem))
+                        {
+                            subquery = new LogicalModel.Base.FactBaseQuery();
+                            subquery.AddIndex(factparts[oritem], isnegative);
+                        }
+                        else
+                        {
+
+                            var partkeys = factparts.Keys.Where(k => k.IndexOf(oritem, StringComparison.InvariantCultureIgnoreCase) > -1).ToList();
+                            if (partkeys.Count > 0 && !String.IsNullOrEmpty(oritem))
+                            {
+                                if (isnegative)
+                                {
+                                    subquery = new LogicalModel.Base.FactBaseQuery();
+
+                                    foreach (var partkey in partkeys)
+                                    {
+                                        var partqry = new LogicalModel.Base.FactBaseQuery();
+                                        subquery.AddIndex(factparts[partkey], isnegative);
+                                    }
+                                }
+                                else
+                                {
+                                    subquery = new LogicalModel.Base.FactPoolQuery();
+                                    foreach (var partkey in partkeys)
+                                    {
+                                        var partqry = new LogicalModel.Base.FactBaseQuery();
+                                        partqry.AddIndex(factparts[partkey], isnegative);
+                                        subquery.AddChildQuery(partqry);
+                                    }
+                                }
+
+
+
+                            }
+                            else
+                            {
+                                qry.DictFilterIndexes.Add(-1);
+                            }
+                        }
+                        qrypool.AddChildQuery(subquery);
+                    }
+                    qry.AddChildQuery(qrypool);
+                }
+
+
+
+
+            }
+            if (qry.IsEmpty()) { return null; } else 
+            {
+                return qry;
+            }
         }
 
         public override string ToString()

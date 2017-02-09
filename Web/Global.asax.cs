@@ -40,6 +40,8 @@ namespace Web
             RegisterRoutes(RouteTable.Routes);
             var ui = new WebUIService();
             Utilities.Logger.action = ui.Log;
+            Utilities.Logger.Initialize();
+
             engine.Start(ui);
             var folder = HttpContext.Current.Server.MapPath("~");
             System.IO.Directory.SetCurrentDirectory(folder);

@@ -97,15 +97,17 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             var factsofparts = taxonomy.FactsOfParts;
             var factparts = taxonomy.FactParts;
             var targetquery = parent;
-            var querycontainer = parent;
+            //var querycontainer = parent;
             var firstmemebr = Members.FirstOrDefault();
             var domaintag = String.Format("[{0}:{1}]{2}", this.Dimension.QName.Domain, this.Dimension.QName.Value, firstmemebr.QName.Domain);
-            FactBaseQuery resultquery = new FactBaseQuery();
+            //FactBaseQuery resultquery = new FactBaseQuery();
+            FactBaseQuery resultquery = parent;
             if (Members.Count > 1 || (Members.Count == 1 && firstmemebr.QName.Value == Literals.Literal.Defaultmember && this.Complement)) 
             {
                 resultquery = new FactPoolQuery();
                 resultquery.DictFilterIndexes.Add(factparts[domaintag]);
-                querycontainer = resultquery;
+
+                //querycontainer = resultquery;
             }
             foreach (var member in Members)
             {
@@ -117,7 +119,14 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                     {
                         if (factparts.ContainsKey(membertag))
                         {
-                            resultquery.DictFilterIndexes.Add(factparts[membertag]);
+                            var xquery = resultquery;
+                            if (xquery is FactPoolQuery) 
+                            {
+                                var fbq = new FactBaseQuery();
+                                xquery.AddChildQuery(fbq);
+                                xquery = fbq;
+                            }
+                            xquery.DictFilterIndexes.Add(factparts[membertag]);
                         }
                     }
                     else

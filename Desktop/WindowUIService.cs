@@ -32,7 +32,7 @@ namespace Desktop
             BrowseFolder = (folder) => { return BrowsForFolder(""); };
             ToUI = (Message m) => ToWindowUI(m);
             Utilities.Logger.action = Log;
-
+            Utilities.Logger.Initialize();
 
         }
         private object BrowserLocker = new Object();

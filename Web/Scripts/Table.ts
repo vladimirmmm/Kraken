@@ -43,7 +43,7 @@ module UI {
         public TemplateRow: Element = null;
         public TemplateCol: Element = null;
         public UITable: Controls.Table = null;
-
+        private DynamicPageSize: number = 100;
 
         public HtmlTemplate: string = "";
         public HtmlTemplatePath: string = "";
@@ -191,13 +191,39 @@ module UI {
 
         public HighlightCell()
         {
+            var me = this;
+
+            var cellid = me.Current_CellID.replace(/_/g, "|");
+            var fullcellid = Format("{0}<{1}|{2}>", me.Current_ReportID, me.Current_ExtensionCode, cellid);
+            var reportid = me.Current_ReportID;
+            var cellobj = new Model.Cell();
+            cellobj.SetFromCellID(fullcellid);
+            if (!IsNull(me.UITable.Manager.TemplateRow)) {
+                var rowid = cellobj.Row;
+                if (IsNull(me.UITable.GetRowByID(rowid))) {
+                    var dynamicdatacontainer = me.Instance.DynamicReportCells[reportid];
+                    var rows = IsNull(dynamicdatacontainer) ? [] : GetProperties(dynamicdatacontainer.RowDictionary);
+                    var ix = 0;
+                    for (var i = 0; i < rows.length; i++) {
+                        if (rows[i].Value == rowid) {
+                            ix = i;
+                            break;
+                        }
+                    }
+                    var page = Math.floor(ix / me.DynamicPageSize);
+
+                    me.LoadRows(rows, page, me.DynamicPageSize);
+                    me.PopulateCells();
+                }
+            }
             _RemoveClass(_Select(".highlight"), "highlight");
 
-            var cellselector = this.Current_CellID.replace(/_/g, "\\|").toUpperCase();
-            cellselector = cellselector.replace(/\*/g, "\\\*").toUpperCase();
-            var cells = _Select("#" + cellselector);
-            _AddClass(cells, "highlight");
-            _Focus(cells);
+            var cell = me.UITable.GetCellByID(cellid);
+            if (!IsNull(cell)) {
+                var element = cell.UIElement;
+                _AddClass(element, "highlight");
+                _Focus(element);
+            }
         }
 
         public LoadCellsFromHtml()
@@ -427,7 +453,7 @@ module UI {
                 //    me.SetDataCells2(row, rowitem, me.templatefacts, me.templatedicts);
                    
                 //});
-                me.LoadRows(rows, 0, 100);
+                me.LoadRows(rows, 0, me.DynamicPageSize);
                 //me.UITable.CanManageRows = true;
                 me.UITable.Manager.ManageRows(me.UITable);
 
@@ -615,6 +641,7 @@ module UI {
                 var extcode = TextBetween(hash, "ext=", ";");
                 if (!IsNull(reportid)) {
                     if (extcode == "000") { extcode = "000"; }
+                    
 
                     me.Current_CellID = cellid;
                     if (me.Current_ExtensionCode != extcode) {

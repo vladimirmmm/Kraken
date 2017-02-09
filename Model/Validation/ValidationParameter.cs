@@ -52,7 +52,7 @@ namespace LogicalModel.Validation
         [JsonIgnore]
         public IList<int> Data = null;
         public string Concept = "";
-        /*
+        
         private List<List<int>> _TaxFacts = new List<List<int>>();
         public List<List<int>> TaxFacts
         {
@@ -63,7 +63,8 @@ namespace LogicalModel.Validation
 
             }
         }
-        */
+        
+        /*
         private List<IntervalList> _TaxFacts = new List<IntervalList>();
         public List<IntervalList> TaxFacts
         {
@@ -74,7 +75,7 @@ namespace LogicalModel.Validation
 
             }
         }
-
+        */
         private string _FallBackValue ="0";
         [DefaultValue("0")]
         public string FallBackValue
@@ -106,7 +107,7 @@ namespace LogicalModel.Validation
         public List<int> CoveredParts { get { return _CoveredParts; } set { _CoveredParts = value; } }
 
 
-        public List<String> CurrentCells = new List<String>();
+        //public List<String> CurrentCells = new List<String>();
         public List<InstanceFact> CurrentFacts = new List<InstanceFact>();
 
 
@@ -191,7 +192,8 @@ namespace LogicalModel.Validation
                     intervals.Add(item);
                 }
             }
-            this.TaxFacts.Add(intervals);
+            //this.TaxFacts.Add(intervals);
+            this.TaxFacts.Add((List<int>)list);
         }
 
 
@@ -201,7 +203,7 @@ namespace LogicalModel.Validation
             this.StringValues = new string[] { };
             this.DecimalValues = new decimal[] { };
             this.CurrentFacts.Clear();
-            this.CurrentCells.Clear();
+            //this.CurrentCells.Clear();
         }
 
         public bool IsGeneral { get; set; }

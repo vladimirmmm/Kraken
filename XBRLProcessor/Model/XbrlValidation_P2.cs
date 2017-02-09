@@ -199,10 +199,22 @@ namespace XBRLProcessor.Model
                 if (filter != null) 
                 {
                     //Console.WriteLine(String.Format("GetQuery({0}, {1}) at child {2}", item, level, child));
-                    filter.GetQuery(this.Taxonomy, child, query);
+                    var chquery = filter.GetQuery(this.Taxonomy, child, query);
+                    //FactBaseQuery.Merge(chquery, query);
+                    if (chquery != null)
+                    {
+                        query.AddChildQuery(chquery);
+                    }
+                    else 
+                    {
+                        //GetQuery not implemented for the filter
+                    }
                 }
 
             }
+         
+
+
             return query;
         }
        
