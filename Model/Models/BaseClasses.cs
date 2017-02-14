@@ -1067,7 +1067,7 @@ namespace LogicalModel.Base
 
 
             }
-            if (qry.IsEmpty()) { return null; } else 
+            if (!qry.HasFilters()) { return null; } else 
             {
                 return qry;
             }

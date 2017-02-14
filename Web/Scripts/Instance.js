@@ -306,11 +306,21 @@ var Control;
                 query = query.Where(function (i) { return i.ContextID.toLowerCase().indexOf(context_id) > -1; });
             }
             if (!IsNull(f_factstring)) {
-                var factparts = f_factstring.split(" ");
+                var factparts = f_factstring.split(",");
                 factparts.forEach(function (factpart, ix) {
                     var fp = factpart.trim();
+                    var isnegative = false;
+                    if (fp.indexOf("!") == 0) {
+                        fp = fp.substring(1);
+                        isnegative = true;
+                    }
                     if (!IsNull(fp)) {
-                        query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(fp) > -1; });
+                        if (!isnegative) {
+                            query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(fp) > -1; });
+                        }
+                        else {
+                            query = query.Where(function (i) { return i.FactString.toLowerCase().indexOf(fp) == -1; });
+                        }
                     }
                 });
             }

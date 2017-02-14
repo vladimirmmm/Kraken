@@ -974,7 +974,7 @@ namespace LogicalModel.Validation
 
             }
             //sp.Facts.AddRange(_Facts);
-            sp.FactIDs.AddRange(_FactIDs.ToArray().ToList());
+            sp.FactIDs = new List<string>(_FactIDs.ToArray());
             sp.Name = this.Name;
             sp.Value = this.Value;
             sp.BindAsSequence = this.BindAsSequence;      

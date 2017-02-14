@@ -90,8 +90,8 @@ namespace LogicalModel
         private Dictionary<string, int> _FactParts = new Dictionary<string, int>();
         [JsonProperty]
         public Dictionary<string, int> FactParts { get { return _FactParts; } set { _FactParts = value; } }
-
-        protected Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
+        [JsonIgnore]
+        public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
 
 
         private Dictionary<int, HashSet<int>> _TypedFactMembers = new Dictionary<int, HashSet<int>>();
@@ -247,9 +247,10 @@ namespace LogicalModel
             }
             return -2;
         }
-        public InstanceFact GetFactByIDString(string factstring)
-        {
-            if (factstring.StartsWith("I:"))
+        public InstanceFact GetFactByIDStringForCell(string factstring)
+        { 
+                        var t = factstring[0];
+            if (t=='I')
             {
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
                 if (id > -1 && id < this.Facts.Count)
@@ -257,11 +258,11 @@ namespace LogicalModel
                     return this.Facts[id];
                 }
             }
-            if (factstring.StartsWith("T:"))
+            else
             {
                 var id = Utilities.Converters.FastParse(factstring.Substring(2));
                 var key = Taxonomy.FactsManager.GetFactKey(id);
-                var stringkey = Taxonomy.GetFactStringKey(key);
+          
                 if (FactDictionary.FactsByTaxonomyKey.ContainsKey(key))
                 {
                     var facts = FactDictionary.FactsByTaxonomyKey[key];
@@ -271,7 +272,37 @@ namespace LogicalModel
                         return FactDictionary.FactsByIndex[ix];
                     }
                 }
-
+                var taxfact = new InstanceFact();
+                taxfact.TaxonomyKey = key;
+                return taxfact;
+            }
+            return null;
+        }
+        public InstanceFact GetFactByIDString(string factstring)
+        {
+            var t = factstring[0];
+            if (t=='I')
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                if (id > -1 && id < this.Facts.Count)
+                {
+                    return this.Facts[id];
+                }
+            }
+            else
+            {
+                var id = Utilities.Converters.FastParse(factstring.Substring(2));
+                var key = Taxonomy.FactsManager.GetFactKey(id);
+          
+                if (FactDictionary.FactsByTaxonomyKey.ContainsKey(key))
+                {
+                    var facts = FactDictionary.FactsByTaxonomyKey[key];
+                    if (facts.Count == 1)
+                    {
+                        var ix = facts.FirstOrDefault();
+                        return FactDictionary.FactsByIndex[ix];
+                    }
+                }
             }
             return null;
         }
@@ -577,6 +608,7 @@ namespace LogicalModel
                     fact.Cells = this.Taxonomy.GetCellsOfFact(factix);
                     var Cells = fact.Cells.ToList();
                     fact.Cells.Clear();
+                  
                     foreach (var cell in Cells)
                     {
                 
@@ -705,65 +737,76 @@ namespace LogicalModel
 
             var cellobj = new Cell();
             cellobj.SetFromCellID(cellID);
-
-            var reportid = cellobj.Report;
-
-            if (DynamicReportCells.ContainsKey(reportid))
+            if (cellobj.IsDynamic)
             {
-                var dynamicdata = DynamicReportCells[reportid];
-                if (dynamicdata != null)
+                var reportid = cellobj.Report;
+
+                if (DynamicReportCells.ContainsKey(reportid))
                 {
-                    if (this.FactDictionary.FactsByInstanceKey.ContainsKey(fact.InstanceKey))
+                    var dynamicdata = DynamicReportCells[reportid];
+                    if (dynamicdata != null)
                     {
-                        var ifactix = this.FactDictionary.FactsByInstanceKey[fact.InstanceKey];
-                        var ifact = this.FactDictionary.FactsByIndex[ifactix];
-                        var cells = ifact.Cells;
-                        var cellid = cells.FirstOrDefault();
-                        if (string.IsNullOrEmpty(cellid)) 
+                        if (this.FactDictionary.FactsByInstanceKey.ContainsKey(fact.InstanceKey))
                         {
-                            return "";
+                            var ifactix = this.FactDictionary.FactsByInstanceKey[fact.InstanceKey];
+                            var ifact = this.FactDictionary.FactsByIndex[ifactix];
+                            var cells = ifact.Cells;
+                            var cellid = "";
+                            var cellobjs = cells.Select(s => { var cellobject = new Cell(); cellobject.SetFromCellID(s); return cellobject; }).ToList();
+                            cellobjs = cellobjs.Where(i => i.Report == cellobj.Report).ToList();
+                            cellid = cellobjs.Count > 0 ? cellobjs.FirstOrDefault().CellID : "";
+                            if (string.IsNullOrEmpty(cellid))
+                            {
+                                return "";
+                            }
+                            cellobj.SetFromCellID(cellid);
+
                         }
-                        cellobj.SetFromCellID(cellid);
 
                     }
-              
+                    else
+                    {
+                        Logger.WriteLine("No Dynamic Data found for " + reportid);
+                    }
+
                 }
-                else 
-                {
-                    Logger.WriteLine("No Dynamic Data found for " + reportid);
-                }
-        
             }
-         
             return cellobj.CellID;
         }
-
+        public List<string> GetCellsByTaxFactIndex(int[] taxfactkey)
+        {
+             var cells = Taxonomy.GetCellsOfFact(taxfactkey);
+             return cells;
+        }
         public List<string> GetCells(string factidstring) 
         {
-            var taxfactid = GetTaxFactID(factidstring);
-            var instancefact = GetFactByIDString(factidstring);
-            var cells = Taxonomy.GetCellsOfFact(taxfactid);
+            var instancefact = GetFactByIDStringForCell(factidstring);
+            return GetCells(instancefact);
+        }
+        public List<string> GetCells(InstanceFact fact)
+        {
+            var taxfactkey = fact.TaxonomyKey;
+            var cells = Taxonomy.GetCellsOfFact(taxfactkey);
             var result = new List<string>();
-            foreach (var cell in cells) 
+            foreach (var cell in cells)
             {
                 String instancecell = "";
-                if (instancefact != null) 
+                if (fact != null)
                 {
-                    instancecell = GetDynamicCellID(cell, instancefact);
+                    instancecell = GetDynamicCellID(cell, fact);
                 }
-            
+
                 if (!String.IsNullOrEmpty(instancecell))
                 {
                     result.Add(instancecell);
                 }
-                else 
+                else
                 {
                     result.Add(cell);
                 }
             }
             return result;
         }
-
         public void SetExtensions() 
         {
             foreach (var table in Taxonomy.Tables) 

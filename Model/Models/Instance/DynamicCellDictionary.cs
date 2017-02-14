@@ -53,8 +53,134 @@ namespace LogicalModel.Models
         {
             this.Instance = instance;
         }
+        public List<int> GetOpenAspects(Taxonomy taxonomy, int[] key) 
+        {
+            var result = new List<int>();
+            foreach (var aspect in key) 
+            {
+                var domainid = taxonomy.GetDimensionDomainPart(aspect);
+                if (domainid != -1 && domainid==aspect) 
+                {
+                    result.Add(aspect);
+                }
+            }
+            return result;
+        }
+        public List<int> GetInstanceAspects(Instance instance,InstanceFact fact, List<int> domains) 
+        {
+            var result = new List<int>();
+            var taxonomy = instance.Taxonomy;
+            for (int i=0;i<fact.InstanceKey.Length;i++)
+            {
+                var taxaspect = fact.TaxonomyKey[i];
+                var instaspect = fact.InstanceKey[i];
+                var domainid = taxonomy.GetDimensionDomainPart(taxaspect);
+                if (domains.Contains(domainid)) 
+                {
+                    result.Add(instaspect);
+                }
+            }
+            return result;
+        }
+        public string GetString(List<int> aspects) 
+        {
+            var taxonomy = Instance.Taxonomy;
+            var sb = new StringBuilder();
+            foreach (var aspect in aspects) 
+            {
+                var aspectstring = "";
+                if (Instance.CounterFactParts.ContainsKey(aspect))
+                {
+                    aspectstring = Instance.CounterFactParts[aspect] + ",";
 
+                }
+                else 
+                {
+                    aspectstring = taxonomy.CounterFactParts[aspect] + ",";
+
+                }
+                sb.Append(aspectstring);
+            }
+            return sb.ToString();
+        }
         public Cell AddCells(Cell cell, InstanceFact fact, Table table)
+        {
+            var dynamiccell = new Cell();
+            dynamiccell.Report = cell.Report;
+            dynamiccell.Extension = cell.Extension;
+            dynamiccell.Row = cell.Row;
+            dynamiccell.Column = cell.Column;
+
+            if (cell.Extension == Literals.DynamicCode)
+            {
+                var ext = table.Extensions.Children.FirstOrDefault();
+
+                var opendimensions = ext.Item.Dimensions.Where(i=>i.MapID==i.DomMapID).Select(i => i.MapID).ToList();
+
+                var instanceopendimensions = GetInstanceAspects(Instance, fact, opendimensions);
+                var openfactstring = GetString(instanceopendimensions);
+
+                if (!ExtDictionary.ContainsKey(openfactstring))
+                {
+                    var extnr = String.Format("{0}", ExtDictionary.Count + 1);
+                    ExtDictionary.Add(openfactstring, extnr);
+                }
+                dynamiccell.Extension = ExtDictionary[openfactstring];
+
+
+            }
+            if (cell.Row == Literals.DynamicCode)
+            {
+                // var cell = table.Rows
+
+                var row = table.Rows.FirstOrDefault(i => i.Item.LabelCode == cell.Row);
+
+                var opendimensions = row.Item.Dimensions.Where(i => i.MapID == i.DomMapID).Select(i => i.MapID).ToList();
+
+                var instanceopendimensions = GetInstanceAspects(Instance, fact, opendimensions);
+                var openfactstring = GetString(instanceopendimensions);
+
+                if (!RowDictionary.ContainsKey(openfactstring))
+                {
+                    var rownr = String.Format("{0}", RowDictionary.Count + 1);
+                    RowDictionary.Add(openfactstring, rownr);
+                }
+                dynamiccell.Row = RowDictionary[openfactstring];
+
+            }
+            if (cell.Column == Literals.DynamicCode)
+            {
+                // var cell = table.Rows
+
+                var col = table.Columns.FirstOrDefault(i => i.Item.LabelCode == cell.Row);
+
+                var opendimensions = col.Item.Dimensions.Where(i => i.MapID == i.DomMapID).Select(i => i.MapID).ToList();
+
+                var instanceopendimensions = GetInstanceAspects(Instance, fact, opendimensions);
+                var openfactstring = GetString(instanceopendimensions);
+
+                if (!ColDictionary.ContainsKey(openfactstring))
+                {
+                    var rownr = String.Format("{0}", RowDictionary.Count + 1);
+                    ColDictionary.Add(openfactstring, rownr);
+                }
+                dynamiccell.Column = ColDictionary[openfactstring];
+
+            }
+            if (dynamiccell.CellID != cell.CellID)
+            {
+              
+            }
+            else
+            {
+
+            }
+            fact.Cells.Add(dynamiccell.CellID);
+
+            return dynamiccell;
+        }
+
+        public Cell AddCells_Old(Cell cell, InstanceFact fact, Table table)
         {
             var dynamiccell = new Cell();
             dynamiccell.Report = cell.Report;
@@ -153,8 +279,7 @@ namespace LogicalModel.Models
             return dynamiccell;
         }
 
-
-        public Cell AddCells_Old(Cell cell,InstanceFact fact, Table table) 
+        public Cell AddCells_Old_2(Cell cell,InstanceFact fact, Table table) 
         {
             var dynamiccell=new Cell();
             dynamiccell.Report = cell.Report;

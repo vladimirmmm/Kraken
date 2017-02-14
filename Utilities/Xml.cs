@@ -94,17 +94,27 @@ namespace Utilities
                         manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
                         //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
                         //var linkbasenode = doc.DocumentElement;
-                        var content = XmlToString(doc);
-                        var nss = Utilities.Strings.TextsBetween(content, "xmlns:", "\" ");
+                        var attributes = doc.DocumentElement.Attributes;
+                        var nss = new List<KeyValue>();
+                        foreach (var attribute in attributes) 
+                        {
+                            var attr=(XmlAttribute)attribute;
+                            if (attr.Prefix == "xmlns") 
+                            {
+                                nss.Add(new KeyValue(attr.LocalName, attr.Value));
+                            }
+                        }
+                        //var content = XmlToString(doc);
+                        //var nss = Utilities.Strings.TextsBetween(content, "xmlns:", "\" ");
                         foreach (var ns in nss) 
                         {
-                            var parts = ns.Split(new string[] {"="," ","\"" }, StringSplitOptions.RemoveEmptyEntries);
-                            var name = parts[0].Trim();
-                            var uri = parts[1].Trim();
-                            manager.AddNamespace(name, uri);
-                            if (!Namespaces.ContainsKey(name)) 
+                            //var parts = ns.Split(new string[] {"="," ","\"" }, StringSplitOptions.RemoveEmptyEntries);
+                            //var name = parts[0].Trim();
+                            //var uri = parts[1].Trim();
+                            manager.AddNamespace(ns.Key, ns.Value.ToString());
+                            if (!Namespaces.ContainsKey(ns.Key)) 
                             {
-                                Namespaces.Add(name, uri);
+                                Namespaces.Add(ns.Key, ns.Value.ToString());
                             }
                         }
                  

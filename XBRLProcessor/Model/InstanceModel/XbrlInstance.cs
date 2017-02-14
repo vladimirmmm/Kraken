@@ -236,7 +236,7 @@ namespace Model.InstanceModel
                                 this.CounterTypedFactMembers.Add(typedmemberid, dimdompartid);
                             }
                         }
-                     
+                        
                         dimension.MapID = GetPartID(dimstr);
                         ct.DimensionIds.Add(dimension.MapID);
 

@@ -333,7 +333,22 @@ namespace LogicalModel
         {
             LayoutRoot.SetParents();
             this.LayoutItems = this.LayoutRoot.All();
-            this.LayoutItems.ForEach(i => i.Item.Table = this);
+            this.LayoutItems.ForEach(i => 
+            { 
+                i.Item.Table = this;
+                foreach (var dim in i.Item.Dimensions) 
+                {
+                    Taxonomy.SetMapID(dim);
+                }
+            });
+            var allaxisvalues = this.Extensions.Children.Union(this.Rows).Union(this.Columns).ToList();
+            allaxisvalues.ForEach(i =>
+            {
+                foreach (var dim in i.Item.Dimensions)
+                {
+                    Taxonomy.SetMapID(dim);
+                }
+            });
         }
         public void Reload() 
         {

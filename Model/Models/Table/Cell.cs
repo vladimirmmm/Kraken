@@ -127,6 +127,14 @@ namespace LogicalModel
         {
             return String.Format("{0} - R{1}|C{2}",Report, Row, Column);
         }
-        
+
+
+        public bool IsDynamic
+        {
+            get
+            {
+                return this.Extension == Literals.DynamicCode || this.Row == Literals.DynamicCode || this.Column == Literals.DynamicCode;
+            }
+        }
     }
 }

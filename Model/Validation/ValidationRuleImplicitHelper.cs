@@ -232,7 +232,7 @@ namespace LogicalModel.Validation
         {
             var result = new List<int>();
             var taxonomy = instance.Taxonomy;
-            var rule = taxonomy.ValidationRules.FirstOrDefault(i => i.ID == ruleresult.ID);
+            var rule = ruleresult.Rule;
             var ruleparameterdictionary = rule.Parameters.ToDictionary(i => i.Name);
             var ruleresultparameterdictionary = ruleresult.Parameters.ToDictionary(i => i.Name);
             var factparameterids = ruleparameterdictionary.Where(i=>!i.Value.IsGeneral).Select(i=>i.Key).ToList();
@@ -410,7 +410,7 @@ namespace LogicalModel.Validation
         {
             var result = new List<ValidationRuleResult>();
             var taxonomy = instance.Taxonomy;
-            var rule = taxonomy.ValidationRules.FirstOrDefault(i => i.ID == ruleresult.ID);
+            var rule = ruleresult.Rule;
             var ruleparameterdictionary = rule.Parameters.ToDictionary(i => i.Name);
             var ruleresultparameterdictionary = ruleresult.Parameters.ToDictionary(i => i.Name);
             var factparameterids = ruleparameterdictionary.Where(i => !i.Value.IsGeneral).Select(i => i.Key).ToList();
