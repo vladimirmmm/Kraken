@@ -633,6 +633,10 @@ namespace LogicalModel
                 {
                     LoadPage(page);
                 }
+                if (!page.LookupOfIndexes.ContainsKey(index)) 
+                {
+                    Utilities.Logger.WriteLine(String.Format("Page {0} has no key {1}; IsLoaded {2}", page.ID, index, page.IsLoaded));
+                }
                 page.LookupOfIndexes[index].CellIndexes.Add(cellix);
                 page.IsDirty = true;
 

@@ -18,6 +18,6 @@ namespace LogicalModel
         public const string Quote = "\"";
         public const string DefaultMember = "x0";
         public const string NewLine = "\r\n";
-        public const string PlaceholderMark = "<PH!";
+        public const string PlaceholderFormat = "<PH!{0}>";
     }
 }

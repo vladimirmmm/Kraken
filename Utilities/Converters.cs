@@ -44,8 +44,9 @@ namespace Utilities
             var startix = str[0]==45?1:0;
             for (int i = startix; i < str.Length; i++)
             {
-                
+                if (str[i] == ' ') { break; }
                 value = value * 10 + (str[i] - '0');
+
             }
             if (startix == 1) { value = value * -1; }
             return value;

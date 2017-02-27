@@ -173,7 +173,31 @@ namespace LogicalModel
         }
 
 
+        public int[] GetAspectKeys() 
+        {
+            var result = new List<int>();
+            if (Concept != null && Concept.MapID != -1) { result.Add(Concept.MapID); }
+            result.AddRange(Dimensions.Where(i => !i.IsDefaultMember 
+               /* && i.MapID != i.DomMapID*/
+                ).Select(i => i.MapID));
+            return result.ToArray();
+        }
+        public int[] GetAspectKeysWithoutDomains()
+        {
+            var result = new List<int>();
+            if (Concept != null && Concept.MapID != -1) { result.Add(Concept.MapID); }
+            result.AddRange(Dimensions.Where(i => !i.IsDefaultMember
+                 && i.MapID != i.DomMapID
+                ).Select(i => i.MapID));
+            return result.ToArray();
+        }
+        public List<int> GetDimensionDomains() 
+        {
+            var result = new List<int>();
+            result.AddRange(Dimensions.Where(i => !i.IsDefaultMember).Select(i => i.DomMapID));
 
+            return result;
+        }
         public void LoadLabel(Taxonomy Taxonomy)
         {
             var folder = _Table.FolderName;

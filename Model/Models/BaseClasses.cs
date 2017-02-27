@@ -794,7 +794,7 @@ namespace LogicalModel.Base
 
             return _DictFilterCount;
         }
-        public IEnumerable<FactBaseQueryResult> EnumerateResults(FactsPartsDictionary FactsOfParts, int ix, IList<int> data,FactBaseQuery currentquery)
+        public IEnumerable<FactBaseQueryResult> EnumerateResults(FactsPartsDictionary FactsOfParts, int ix, IList<int> data,FactBaseQuery currentquery,bool skipinitialfiltering=false)
         {
             var items = data;
             //CurrentLength = GetDictFilterCount();
@@ -802,7 +802,7 @@ namespace LogicalModel.Base
             {
                 currentquery = new FactBaseQuery();
                 currentquery.DictFilterIndexes = this.DictFilterIndexes;
-                if (DictFilterIndexes.Count > 0)
+                if (DictFilterIndexes.Count > 0 && !skipinitialfiltering)
                 {
                     items = FactsOfParts.SearchFactsIndexByKey(DictFilterIndexes.ToArray(), data);
                 }

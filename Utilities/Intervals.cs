@@ -734,27 +734,27 @@ namespace Utilities
         }
         public void AddRange(IEnumerable<int> values)
         {
-            //if (values is IntervalList) 
-            //{
-            //    AddRange(values as IntervalList);
-            //    return;
-            //}
+            if (values is IntervalList)
+            {
+                AddRange(values as IntervalList);
+                return;
+            }
             _Count = -1;
             foreach (var value in values)
             {
                 this.Add(value);
             }
         }
-        //public void AddRange(IntervalList values)
-        //{
-        //    _Count = -1;
-        //    var merged = Utilities.Objects.MergeSorted(this, values, null);
-        //    this.Clear();
-        //    foreach (var interval in merged.Intervals) 
-        //    {
-        //        this.Intervals.Add(interval);
-        //    }
-        //}
+        public void AddRange(IntervalList values)
+        {
+            _Count = -1;
+            var merged = Utilities.Objects.MergeSorted(this, values, null);
+            this.Clear();
+            foreach (var interval in merged.Intervals)
+            {
+                this.Intervals.Add(interval);
+            }
+        }
         public static IntervalComparer ic = new IntervalComparer();
         public static IntervalStartComparer startcomparer = new IntervalStartComparer();
         public static IntervalEndComparer endcomparer = new IntervalEndComparer();
@@ -1034,6 +1034,25 @@ namespace Utilities
             }
             return true;
         }
+
+        public void Normalize()
+        {
+            if (this.Intervals.Count > 1)
+            {
+                var il = new IntervalList();
+                foreach (var i in this.AsEnumerable())
+                {
+                    il.Add(i);
+                }
+
+                this.Intervals = il.Intervals;
+            }
+            
+            //foreach (var interval in this.Intervals)
+            //{ 
+            //    il.AddInterval(interval);
+            //}
+        }
     }
 
     public class TestInterval
@@ -1200,9 +1219,37 @@ namespace Utilities
             list2.Add(7);
             list2.Add(8);
             list2.Add(9);
+            var list3 = new IntervalList();
+            list3.Intervals.Add(new Interval(0, 5));
+            list3.Intervals.Add(new Interval(7, 9));
+            list3.Intervals.Add(new Interval(11));
+            list3.Intervals.Add(new Interval(12));
+
+            var list4 = new IntervalList();
+            list4.Intervals.Add(new Interval(-1, 5));
+            list4.Intervals.Add(new Interval(6, 8));
+
+
+            var list5 = new IntervalList();
+            list5.Intervals.Add(new Interval(-1, 6));
+            list5.Intervals.Add(new Interval(7, 9));
+
+            var list6 = new IntervalList();
+            list6.Intervals.Add(new Interval(0, 5));
+            list6.Intervals.Add(new Interval(7, 9));
+
+            var list7 = new IntervalList();
+            list7.Intervals.Add(new Interval(0, 6));
+            list7.Intervals.Add(new Interval(11, 12));
 
             var result = Utilities.Objects.MergeSorted(list1, list2, null);
             var result2 = Utilities.Objects.MergeSorted(list2, list1, null);
+
+            var results = new List<IntervalList>();
+            results.Add(Utilities.Objects.MergeSorted(list3, list4, null));
+            results.Add(Utilities.Objects.MergeSorted(list3, list5, null));
+            results.Add(Utilities.Objects.MergeSorted(list3, list6, null));
+            results.Add(Utilities.Objects.MergeSorted(list3, list7, null));
 
         }
     }

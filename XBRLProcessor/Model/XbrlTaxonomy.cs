@@ -1402,7 +1402,7 @@ namespace XBRLProcessor.Models
             this.ValidationRules.Clear();
             this.Tables.Clear();
             this.TaxonomyDocumentDictionary.Clear();
-
+            this.TaxonomyDocumentNSDictionary.Clear();
             this.SchemaElements.Clear();
             this.SchemaElementDictionary.Clear();
             this.TaxonomyLabels.Clear();

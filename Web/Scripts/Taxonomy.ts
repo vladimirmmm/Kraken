@@ -824,11 +824,24 @@
                             && i.Item.Namespace == concept.Domain.Namespace
                             && 
                         */
-                        var hiers = me.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
+                        /*
+                          var hiers = me.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
                             .Where(i=>
                                 i.Item.Content == concept.Domain.Content && (i.Item.Role == concept.HierarchyRole || IsNull(concept.HierarchyRole))
                             );
-                        var hier = hiers.FirstOrDefault();
+                        */
+                      
+                        var hier:Model.Hierarchy<Model.QualifiedItem> = null;
+                        if (IsNull(concept.HierarchyRole)) {
+                            hier = me.Taxonomy.Hierarchies;
+                        }
+                        else
+                        {
+                            var hiers = me.Taxonomy.Hierarchies.Children.AsLinq<Model.Hierarchy<Model.QualifiedItem>>()
+                                .Where(i=> i.Item.Role == concept.HierarchyRole);
+                            hier = hiers.FirstOrDefault();
+                        }
+                         
                         if (!IsNull(hier)) {
                             var clkp = new Model.ConceptLookUp();
                             clkp.Concept = Format("{0}:{1}", concept.Namespace, concept.Name);

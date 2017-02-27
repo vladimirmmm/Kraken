@@ -23,17 +23,16 @@ var Applications;
         };
         Waiter.prototype.StartTask = function (waiterid, task) {
             var me = this;
-            Log("UI", "StartTask: " + task);
+            //Log("UI","StartTask: " + task);
             me.Waiters[waiterid].ActiveTasksNr++;
         };
         Waiter.prototype.EndTask = function (waiterid, task) {
             var me = this;
             var waiter = me.Waiters[waiterid];
             waiter.ActiveTasksNr--;
-            Log("UI", "EndTask: " + task);
+            //Log("UI","EndTask: " + task);
             if (waiter.ActiveTasksNr == 0) {
                 waiter.OnCompleted();
-                Log("UI", "Waiter " + waiterid + " completed.");
             }
         };
         return Waiter;

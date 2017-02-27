@@ -83,15 +83,17 @@ namespace XBRLProcessor
             var matchlist = new List<Match>();
             foreach (Match m in regExpr.Matches(fixedstring))
             {
+            
                 matchlist.Insert(0, m);
 
             }
             var mix = 0;
             foreach (var m in matchlist)
             {
-                strings.Add(m.Value);
+                var literal = m.Value.Trim('"');
+                strings.Add(literal);
                 fixedstring = fixedstring.Remove(m.Index, m.Value.Length);
-                fixedstring = fixedstring.Insert(m.Index, "\"#!" + mix + "\"");
+                fixedstring = fixedstring.Insert(m.Index, "\"literal_" + mix + "\"");
                 mix++;
             }
 
@@ -118,10 +120,10 @@ namespace XBRLProcessor
             fixedstring = fixedstring.Replace("&spc_", " ");
             fixedstring = fixedstring.Replace("@-", "@ ").Replace("-@", " @");
 
-            for (int i = 0; i < strings.Count; i++)
-            {
-                fixedstring = fixedstring.Replace("\"#!" + i + "\"", strings[i]);
-            }
+            //for (int i = 0; i < strings.Count; i++)
+            //{
+            //    fixedstring = fixedstring.Replace("\"#!" + i + "\"", strings[i]);
+            //}
 
 
             var items = fixedstring.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries);
@@ -164,8 +166,25 @@ namespace XBRLProcessor
                 var simpleexpression = GetSimpleExpression(Syntax.Operators[OperatorEnum.Subtraction] + items[1]);
                 expression = simpleexpression;
             }
-
+            SetLiteralsBack(expression, strings);
             return expression;
+        }
+
+        public void SetLiteralsBack(Expression expression, List<string> strings)
+        {
+            if (expression.IsString)
+            {
+                var strval = expression.StringValue;
+                for (int i = 0; i < strings.Count; i++)
+                {
+                    strval = strval.Replace("literal_" + i + "", strings[i]);
+                }
+                expression.Value = strval;
+            }
+            foreach (var expr in expression.ChildExpressions()) 
+            {
+                SetLiteralsBack(expr, strings);
+            }
         }
 
         public string MarkLoops(string expressionstring)

@@ -94,7 +94,8 @@ namespace LogicalModel.Validation
     public class ValidationRule:SimpleValidationRule
     {
         internal Taxonomy Taxonomy = null;
-        public String FunctionString= "";
+        private String _FunctionString= "";
+        public String FunctionString { get { return _FunctionString; } set { _FunctionString = value; } }
         public String ID { get; set; }
         public String FunctionName { get { return Utilities.Strings.AlfaNumericOnly(this.ID); } }
         public Expression RootExpression = null;
@@ -102,8 +103,8 @@ namespace LogicalModel.Validation
 
         [JsonIgnore]
         public string RawInfo = "";
-        [JsonIgnore]
-        public override string OriginalExpression { get; set; }
+        //[JsonIgnore]
+        //public override string OriginalExpression { get; set; }
         [JsonIgnore]
         public override List<string> Tables
         {

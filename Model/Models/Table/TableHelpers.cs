@@ -15,10 +15,80 @@ namespace LogicalModel
     }
     public class TableHelpers
     {
-       
-     
+        public static Hierarchy<LayoutItem> GetExpandedExtensions(Hierarchy<LayoutItem> axisnode, Table table)
+        {
+            var result = new Hierarchy<LayoutItem>(new LayoutItem());
+            var taxonomy = table.Taxonomy;
+            //get the domain ids of the extensions
+            var domains = new List<int>();
+            var layoutnodes = axisnode.All().Where(i => i.Item.IsLayout).ToList();
+            foreach (var lnode in layoutnodes)
+            {
+                var dimensions = lnode.Item.Dimensions.Select(i => i.DomMapID).ToList();
+                domains.AddRange(dimensions);
+            }
+            domains = domains.Distinct().ToList();
+
+            //get the factindexes for a given cell
+            var firstcellix = int.Parse(table.LayoutCellDictionary.FirstOrDefault().Key);
+            var indexes = new List<int>();
+            for (int i = 0; i < table.FactIndexToCells.Count; i++)
+            {
+                var item = table.FactIndexToCells[i];
+                if (item.v2 != firstcellix) 
+                {
+                    break;
+                }
+                indexes.Add(item.v1);
+
+            }
+            //extract the keyparts of the domains of the extensions
+            var extensionskeys = new List<int[]>();
+            foreach (var ix in indexes) 
+            {
+                var key = table.Taxonomy.FactsManager.GetFactKey(ix);
+                var xkey = table.Taxonomy.GetPartsOfDomains(key, domains);
+                extensionskeys.Add(xkey.ToArray());
+            }
+            //set the labels
+            foreach (var extensionkey in extensionskeys) 
+            {
+                var sbtitle = new StringBuilder();
+                var sbdescription = new StringBuilder();
+                var aggregatelabel = new Label();
+                foreach (var keypart in extensionkey) 
+                {
+                    var l = taxonomy.GetLabelForAspect(keypart);
+                    aggregatelabel.Code = aggregatelabel.Code + "|" + l.Code;
+                    aggregatelabel.Content = aggregatelabel.Content + "|" + l.Content;
+                }
+                result.Item.Label = aggregatelabel;
+                var li = new LayoutItem();
+                li.Category = LayoutItemCategory.Rule;
+                li.Label = aggregatelabel;
+                var h = new Hierarchy<LayoutItem>(li);
+                result.AddChild(h);
+            }
+            return result;
+        }
+        public static void ExpandExtensions(Hierarchy<LayoutItem> axisnode, Table table) 
+        {
+         
+            var layoutnodes = axisnode.All().Where(i => i.Item.IsLayout).ToList();
+            if (layoutnodes.Count == 0) 
+            {
+                var items = GetExpandedExtensions(axisnode, table);
+                axisnode.Children = items.Children;
+            }
+           
+        }
+
         public static Hierarchy<LayoutItem> GetExtensions3(Hierarchy<LayoutItem> axisnode, Table table)
         {
+            if (table.ID.Contains("09.04")) 
+            {
+
+            }
             var extensions = new Hierarchy<LayoutItem>(table.GetRootExtension());
             //Getting the layout nodes
             var nodes = axisnode.All().Where(i => i.Item.IsLayout).ToList();
@@ -468,14 +538,11 @@ namespace LogicalModel
             if (nodes.Count > 0)
             {
                 var basenode = nodes.FirstOrDefault();
-                //var basenodelist = new List<Hierarchy<LayoutItem>>();
-                //basenodelist.Add(basenode);
 
                 for (int i = 1; i < nodes.Count; i++)
                 {
                     var node = nodes[i];
                     var baseleafs = basenode.GetLeafs();
-                    //List<LayoutItem> projectionnodes = null;
 
                     var projectionnodes = node.GetLeafs();
                     foreach (var leaf in baseleafs)
@@ -485,17 +552,7 @@ namespace LogicalModel
                             var copynode = projectionnode.Copy();
                             copynode.All().ForEach(n => n.Item = new LayoutItem(n.Item));
                             leaf.AddChild(copynode);
-                            //var hi = new Hierarchy<LayoutItem>(projectionnode.Item);
-                            //hi.Parent = projectionnode.Parent;
-                            //var targetparent = leaf;
-                            //var targetchild = hi;
-                            //if (leaf.Parent.Children.Count == 1)
-                            //{
-                            //    targetparent = leaf.Parent;
-                            //    targetchild = hi.Parent;
-                            //}
-                            //targetchild.Parent.Remove(targetchild);
-                            //targetparent.AddChild(targetchild);
+                            leaf.Item.IsAbstract = true;
                         }
                     }
                 }
@@ -511,9 +568,7 @@ namespace LogicalModel
                     axisnode.Clear();
                     axisnode.AddChild(hli);
                 }
-                //axisnode.Clear();
-                //axisnode.AddChild(basenode);
-                //basenode.Item.Category = LayoutItemCategory.BreakDown;
+                
             }
         }
 

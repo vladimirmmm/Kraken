@@ -872,6 +872,11 @@ namespace Utilities
             return name;
         }
 
+        public static string HtmlDecode(string text) 
+        {
+            return System.Net.WebUtility.HtmlDecode(text);
+        }
+
         public static string HtmlEncode(string text)
         {
             if (text == null)

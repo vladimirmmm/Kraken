@@ -35,8 +35,9 @@ namespace LogicalModel.Validation
 
                 if (conceptelement.Content.Contains(":ei"))
                 {
-                    var hierarchy = taxonomy.Hierarchies.Where(i => i.Item.Role == conceptelement.HierarchyRole)
-                      .FirstOrDefault(i => i.Item.Content == conceptelement.Domain.Content);
+                    var hierarchies = taxonomy.Hierarchies.Where(i => i.Item.Role == conceptelement.HierarchyRole).FirstOrDefault();
+
+                    var hierarchy = hierarchies.FirstOrDefault(i => i.Item.Content == conceptelement.Domain.Content);
                     if (hierarchy != null)
                     {
                         //if (conceptelement.Content.Contains("218")) 

@@ -583,8 +583,12 @@ namespace LogicalModel
         }
 
      
-        public IList<int> SearchFactsGetIndex4(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
+        public IList<int> SearchFactsGetIndex4(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts, bool ensurefactnr=true,bool skip=false)
         {
+            if (factkey.Length == 0) 
+            {
+                return facts;
+            }
             var result = new IntervalList();// new List<int>();
             var domainkeys = factkey.Where(i => this.DimensionDomainsOfMembers.ContainsKey(i) && this.DimensionDomainsOfMembers[i] == i).ToList();
             var memberkeys = factkey.Except(domainkeys).ToList();
@@ -609,18 +613,36 @@ namespace LogicalModel
                 positivequery.DictFilterIndexes.Add(domainkey);
          
             }
-            //.Where(i=>this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i]==)
-            //Func<int,int,bool> filter = (int i, int dictnr) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == dictnr;
-            Func<FactBaseQuery,int,bool> filter = (FactBaseQuery q, int ix) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[ix] == q.GetDictFilterCount();
-            //qry.KeyCountGetter = (int ix) => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[ix];
-            var resultquery = qry.EnumerateResults(factsOfParts, 0, null,null);
+            var resultquery = qry.EnumerateResults(factsOfParts, 0, facts, null,skip);//null null
             foreach (var qr in resultquery) 
             {
-                result.AddRange(qr.Items.Where(i => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == qr.Query.DictFilterIndexes.Count));
+                IEnumerable<int> data = qr.Items;
+                if (ensurefactnr) 
+                {
+                    data = data.Where(i => this.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == qr.Query.DictFilterIndexes.Count);
+                }
+                result.AddRange(data);
             }
             //result = resultquery.ToList();
             return result;
         }
+
+        public IList<int> SearchFactsGetIndexX(int[] factkey, FactsPartsDictionary factsOfParts, IList<int> facts)
+        {
+            if (factkey.Length == 0)
+            {
+                return facts;
+            }
+            var result = factsOfParts.ContainsKey(factkey[0]) ? factsOfParts[factkey[0]] : new IntervalList();
+            for (int i = 1; i < factkey.Length; i++)
+            {
+                var keyresult = factsOfParts.ContainsKey(factkey[i]) ? factsOfParts[factkey[i]] : new IntervalList();
+                result = Utilities.Objects.IntersectSorted(result, keyresult, null);
+            }
+
+            return result;
+        }
+
 
         private List<Tuple<int,int>> GetIndexlength(IList<int> items)
         {
@@ -1478,7 +1500,19 @@ namespace LogicalModel
 
             }
         }
-
+        public List<int> GetPartsOfDomains(int[] key, List<int> domains) 
+        {
+            Dictionary<int,int> result = domains.ToDictionary(i=>i,i=>i );
+            foreach (var keypart in key) 
+            {
+                var domkey = GetDimensionDomainPart(keypart);
+                if (domains.Contains(domkey))
+                {
+                    result[domkey]=keypart;
+                }
+            }
+            return result.Select(i=>i.Value).ToList();
+        }
         public virtual string GetDomainID(QualifiedName domain) 
         {
             return "";
@@ -1815,6 +1849,30 @@ namespace LogicalModel
             }
             var content = label != null ? label : new Label();
             return content;
+        }
+
+        public Label GetLabelForAspect(int aspectid) 
+        {
+            Label result=null;
+            var str = this.CounterFactParts[aspectid];
+            if (this.Concepts.ContainsKey(str))
+            {
+
+            }
+            else 
+            {
+                var domainid = DimensionDomainsOfMembers[aspectid];
+                if (domainid == aspectid)
+                {
+                    result = GetLabelForDomain(str);
+                }
+                else 
+                {
+                    result = GetLabelForMember(str);
+                }
+            }
+            return result;
+
         }
 
         public Label GetLabelForMember(string domainandmember)

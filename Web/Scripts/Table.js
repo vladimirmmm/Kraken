@@ -317,11 +317,13 @@ var UI;
                 me.UITable.Manager.ClearDynamicItems(me.UITable);
                 //s
                 me.UITable.CanManageRows = false;
+                var domainkeys = [];
                 templaterow.Cells.forEach(function (cell, ix) {
                     var fact = new Model.FactBase();
                     if (cell.IsKey()) {
                         var column = Controls.Cell.GetColumn(cell, me.UITable);
                         fact.FactKeys = Controls.Cell.GetKeysFromElement(column.HeaderCell.UIElement);
+                        domainkeys = domainkeys.concat(fact.FactKeys);
                     }
                     else {
                         fact.FactKeys = cell.GetAxisKeys(me.UITable);
@@ -331,7 +333,10 @@ var UI;
                     var dict = {};
                     for (var i = 0; i < fact.FactKeys.length; i++) {
                         var key = fact.FactKeys[i];
-                        if (me.TaxonomyService.IsTyped(key)) {
+                        var domainkey = me.TaxonomyService.GetDomain(key);
+                        if (domainkeys.indexOf(domainkey) > -1) {
+                            //if (me.TaxonomyService.IsTyped(key))
+                            //{
                             dict[key] = i;
                         }
                     }

@@ -500,6 +500,7 @@ namespace LogicalModel
             {
                 foreach (var rule in Taxonomy.ValidationRules)
                 {
+                    //TODO
                     rule.Function = Taxonomy.ValidationFunctionContainer.FunctionDictionary[rule.FunctionName];
                     var ruleresults = rule.Validate(this);
                     if (ruleresults.Count > 0) 

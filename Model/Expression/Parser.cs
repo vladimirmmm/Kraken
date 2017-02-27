@@ -213,6 +213,7 @@ namespace LogicalModel.Expressions
 
         public virtual BaseModel.Hier<String> GetTreeString(string expression)
         {
+            expression = Utilities.Strings.HtmlDecode(expression);
             var thenelses = Utilities.Strings.TextsBetween(expression, Syntax.Then, Syntax.Else);
             foreach (var thenelse in thenelses) 
             {
@@ -234,7 +235,7 @@ namespace LogicalModel.Expressions
             var c = 0;
             foreach (var str in strings) 
             {
-                var key = String.Format(Literals.PlaceholderMark + "{0}", c);
+                var key = String.Format(Literals.PlaceholderFormat, c);
                 var value = Literals.Quote + str + Literals.Quote;
                 expression = expression.Replace(value, key);
                 stringdictionary.Add(key, value);
