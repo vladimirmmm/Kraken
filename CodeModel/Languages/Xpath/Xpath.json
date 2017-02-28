@@ -1,0 +1,57 @@
+﻿{
+    "Operators": {
+        "Cast": "cast",
+        "Addition": "+",
+        "Subtraction": "-",
+        "IntegerDivision": "/",
+        "Division": "dic",
+        "Modulo": "\\",
+        "Multiplication": "*",
+        "And": "and",
+        "AndAlso": "and",
+        "Not": "!",
+        "Or": "or",
+        "OrAlso": "or",
+        "GreaterOrEqual": ">=",
+        "LessOrEqual": "<=",
+        "NotEquals": "!=",
+        "Equals": "=",
+        "Greater": ">",
+        "Less": "<",
+        "VGreaterOrEqual": "ge",
+        "VLessOrEqual": "le",
+        "VNotEquals": "ne",
+        "VEquals": "eq",
+        "VGreater": "gt",
+        "VLess": "lt"
+    },
+    "Keywords": {
+        "If": "if",
+        "Then": "then",
+        "Else": "else",
+        "Case": "case",
+        "Switch": "switch",
+        "Return": "return",
+        "For": "for",
+        "ForEach": "for",
+        "While": "while",
+        "in": "in"
+    },
+    "Boundaries": {
+        "Block": {"Name": "Block", "Left": "(", "Right": ")" },
+        "Array": {"Name": "Array",  "Left": "(", "Right": ")" },
+        "Enumeration": {"Name": "Enumeration",  "Left": "(", "Right": ")" }
+    },
+    "Separators": {
+        "Literal": "\"",
+        "Literal2": "'",
+        "Enumeration": ",",
+        "Logical": " ",
+        "Block": "\n"
+    },
+    "Implementations": {
+        "Glyph": " " ,
+        "Block": "\n" 
+
+    }
+}
