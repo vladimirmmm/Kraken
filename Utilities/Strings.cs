@@ -377,6 +377,60 @@ namespace Utilities
             return result;
         }
 
+        public static void test()
+        {
+            var nr = new List<List<int>>();
+            var filepath = "xf.dat";
+            for (int i = 0; i < 10000000; i++)
+            {
+                var l = new List<int>();
+                l.Add(1);
+                l.Add(1123534671);
+                l.Add(-123534671);
+                nr.Add(l);
+            }
+            var fs = File.OpenWrite(filepath);
+            var writer = new BinaryWriter(fs);
+            for (int i = 0; i < nr.Count; i++)
+            {
+                var l = nr[i];
+                var b1 = BitConverter.GetBytes(l[0]);
+                var b2 = BitConverter.GetBytes(l[1]);
+                var b3 = BitConverter.GetBytes(l[2]);
+                writer.Write(b1);
+                writer.Write(b2);
+                writer.Write(b3);
+
+
+            }
+            writer.Close();
+
+        }
+        public static void test22()
+        {
+            var nr = new List<List<int>>();
+            var filepath = "xf.dat";
+            var fs2 = File.OpenRead(filepath);
+            using (Stream source = fs2)
+            {
+                byte[] buffer = new byte[12];
+                int bytesRead;
+                while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    var b1 = new byte[4];
+                    var b2 = new byte[4];
+                    var b3 = new byte[4];
+                    Array.Copy(buffer, 0, b1, 0, 4);
+                    Array.Copy(buffer, 4, b2, 0, 4);
+                    Array.Copy(buffer, 8, b3, 0, 4);
+                    var i1 = BitConverter.ToInt32(b1, 0);
+                    var i2 = BitConverter.ToInt32(b2, 0);
+                    var i3 = BitConverter.ToInt32(b3, 0);
+                    //dest.Write(buffer, 0, bytesRead);
+                }
+            }
+        }
+
         public static IEnumerable<string> GetSplit(string s, char c)
         {
             int l = s.Length;
@@ -419,7 +473,7 @@ namespace Utilities
             }
             return "";
         }
-        public static void test() 
+        public static void testz() 
         {
             var items = TextsBetween("$a, \"^None$\"", "\"", "\"");
         }

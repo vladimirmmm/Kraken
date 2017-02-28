@@ -132,7 +132,8 @@ namespace LogicalModel
         private Hierarchy<LayoutItem> extensionnode = null;
 
         protected FactsPartsDictionary FactsOfParts = new FactsPartsDictionary();
-        protected Dictionary<int, List<int>> FactsOfPartsTemp = new Dictionary<int, List<int>>();
+        protected Dictionary<int, List<int>> FactsOfPartsTemp_Old = new Dictionary<int, List<int>>();
+        protected Dictionary<int, IntervalList> FactsOfPartsTemp = new Dictionary<int, IntervalList>();
         //private List<String> _FactList = new List<string>();
         //public List<String> FactList 
         //{
@@ -405,30 +406,21 @@ namespace LogicalModel
             var factcounter = 0;
             foreach (var hypercube in HyperCubes)
             {
-                var cubeslices = GetCubeSlices2(hypercube);
+                var domainids = new List<int>();
+                var cubeslices = GetCubeSlices2(hypercube, domainids);
+                EnsureDomainKeyParts(domainids);
+
                 foreach (var slice in cubeslices)
                 {
-                    var childslices = slice.ToList();
-                    var intkeys = new List<int>(childslices.Count);
-                    var conceptslicechild = childslices[0];
-                    intkeys.Add(conceptslicechild);
-                    childslices.Remove(conceptslicechild);
-                    childslices.Sort();
+                    int[] key = null;
 
-                   // var dimkeyparts = new List<int>(key.Length-1);
-                    for (int i = 0; i < childslices.Count; i++)
-                    {
-                   
-                        var slicechild = childslices[i];
-                        if (slicechild != -2)
-                        {
-                            intkeys.Add(slicechild);
-                        }
+                    
 
-
-                    }
-                    var key = intkeys.ToArray();
-
+                    key = slice.ToArray();
+                    var concept = key[0];
+                    key[0] = -3;
+                    Array.Sort(key);
+                    key[0] = concept;
                     var factix = 0;
 
                     var hashkeys = this.Taxonomy.FactsManager.GetHashKeys(key);
@@ -436,38 +428,12 @@ namespace LogicalModel
 
                     if (factix == -1)
                     {
-                        //var oldhaskey = this.Taxonomy.HasFact(key);
-                        //if (oldhaskey) 
-                        //{
-
-                        //}
+                
                         factix = this.Taxonomy.AddFactKey(key, hashkeys);
 
                     }
-                    //else 
-                    //{
-                    //    var factkeys = this.Taxonomy.FactsManager.GetFactKey(factix);
-                    //    if (!ic.Equals(factkeys, key)) 
-                    //    {
-
-                    //    }
-                    //}
-                    //if (this.ID.Contains("s2md_tS.05.01.13.01"))
-                    //{
-                    //    if ("23479, 2417, 4943, 8222, 17646, 21080" == Utilities.Strings.ListToString(key)) 
-                    //    {
-                    //    }
-                    //    if (factix == 35783) 
-                    //    {
-
-                    //    }
-                    //}
-                    //var fis = Utilities.Strings.ArrayToString(key);
-                    //if (fis == "17145, 191, 274, 4182, 11355, 12403, 16181") 
-                    //{
-
-                    //}
-                    this.AddFactKeyParts(key,factix);
+            
+                    this.AddFactKeyParts(key, domainids, factix);
 
                
                     FactindexList.Add(factix);
@@ -475,47 +441,65 @@ namespace LogicalModel
                     //sb_fact.AppendLine();
                 }
             }
-            //if (this.ID.Contains("s2md_tS.05.01.13.01"))
-            //{
-            //    if (factcounter != FactindexList.Count) 
-            //    {
-
-            //    }
-            //}
-
+     
             this.HyperCubes.Clear();
             foreach (var item in this.FactsOfPartsTemp) 
             {
-                var il = new IntervalList();
-                item.Value.Sort();
-                foreach (var i in item.Value)
-                {
-                    il.Add(i);
-                }
-                this.FactsOfParts.Add(item.Key, il);
+         
+                this.FactsOfParts.Add(item.Key, item.Value);
 
-                item.Value.Clear();
-
-                //item.Value.Sort();
-                //item.Value.TrimExcess();
             }
             this.FactsOfPartsTemp.Clear();
-            //Logger.WriteLine(String.Format("Facts: {0}", this.Taxonomy.Facts.Count));
-            //var factpath = HtmlPath.Replace(".html", "-facts.txt");
-            //var cubepath = HtmlPath.Replace(".html", "-cubes.txt");
-            //Utilities.FS.WriteAllText(FactPath, sb_fact.ToString());
-            //if (this.ID.Contains("07"))
-            //{
-            //    var six = this.FactList.Where(i => i.Length == 6);
-
-            //}
-            //var jsonfacts = Utilities.Converters.ToJson(this.FactList);
+      
             System.IO.File.WriteAllText(FactsPath, sb_fact.ToString());
             sb_fact.Clear();
             FactIndexToCells = new List<Tintint>(FactindexList.Count);
 
         }
+        public void EnsureDomainKeyParts(List<int> domainids) 
+        {
+            foreach (var domainid in domainids)
+            {
+                if (!this.FactsOfPartsTemp.ContainsKey(domainid))
+                {
+                    this.FactsOfPartsTemp.Add(domainid, new IntervalList());
+                }
 
+            }
+        }
+        public void AddFactKeyParts(int[] key,List<int> domainids, int factix)
+        {
+            foreach (var domainid in domainids) 
+            {
+                //if (!this.FactsOfPartsTemp.ContainsKey(domainid))
+                //{
+                //    this.FactsOfPartsTemp.Add(domainid, new IntervalList());
+                //}
+                this.FactsOfPartsTemp[domainid].Add(factix);
+
+            }
+            foreach (var part in key)
+            {
+                //var dimensiondomainpart = this.Taxonomy.GetDimensionDomainPart(part);
+                //if (dimensiondomainpart != -1)
+                //{
+                //    if (!this.FactsOfPartsTemp.ContainsKey(dimensiondomainpart))
+                //    {
+                //        this.FactsOfPartsTemp.Add(dimensiondomainpart, new List<int>());
+                //    }
+                //    this.FactsOfPartsTemp[dimensiondomainpart].Add(factix);
+                //    //this.FactsOfParts.AddIfNotExists(dimensiondomainpart, factix);
+                //}
+                if (!this.FactsOfPartsTemp.ContainsKey(part))
+                {
+                    this.FactsOfPartsTemp.Add(part, new IntervalList());
+                }
+                this.FactsOfPartsTemp[part].Add(factix);
+                //this.FactsOfParts.AddIfNotExists(part, factix);
+
+
+            }
+        }
         public void AddFactKeyParts(int[] key, int factix) 
         {
             foreach (var part in key)
@@ -525,14 +509,14 @@ namespace LogicalModel
                 {
                     if (!this.FactsOfPartsTemp.ContainsKey(dimensiondomainpart)) 
                     {
-                        this.FactsOfPartsTemp.Add(dimensiondomainpart, new List<int>());
+                        this.FactsOfPartsTemp_Old.Add(dimensiondomainpart, new List<int>());
                     }
                     this.FactsOfPartsTemp[dimensiondomainpart].Add(factix);
                     //this.FactsOfParts.AddIfNotExists(dimensiondomainpart, factix);
                 }
                 if (!this.FactsOfPartsTemp.ContainsKey(part))
                 {
-                    this.FactsOfPartsTemp.Add(part, new List<int>());
+                    this.FactsOfPartsTemp_Old.Add(part, new List<int>());
                 }
                 this.FactsOfPartsTemp[part].Add(factix);
                 //this.FactsOfParts.AddIfNotExists(part, factix);
@@ -1016,14 +1000,16 @@ namespace LogicalModel
             }
             //TableHelpers.ExpandExtensions(this.Extensions, this);
             FactIndexToCells.TrimExcess();
-
-            FactIndexToCells = FactIndexToCells.OrderBy(i => i.v1).ToList();
+            var fics = FactIndexToCells.OrderBy(i => i.v1);
+            //FactIndexToCells = FactIndexToCells.OrderBy(i => i.v1).ToList();
             var factsmapped=0;
-            foreach (var tuple in FactIndexToCells)
+            //Utilities.Logger.WriteLine("Saving Cells of Facts");
+            foreach (var tuple in fics)
             {
                 this.Taxonomy.AddCellToFact(tuple.v1, tuple.v2, null);
                 factsmapped++;
             }
+            //Utilities.Logger.WriteLine("Saving Cells of Facts finished");
 
             if (factsmapped != FactindexList.Count)
             {
@@ -1338,17 +1324,19 @@ namespace LogicalModel
             return combinations;
 
         }
-        public IEnumerable<IEnumerable<int>> GetCubeSlices2(HyperCube cube)
+        public IEnumerable<IEnumerable<int>> GetCubeSlices2(HyperCube cube, List<int> domainids)
         {
             var cubelist = new List<List<int>>();
 
             cubelist.Add(cube.Concepts.Select(i=>Taxonomy.FactParts[i.FullName]).ToList());
             //var domains = cube.DimensionItems.OrderBy(i => i.FullName, StringComparer.Ordinal).Select(i => i.Domains.FirstOrDefault()).OrderBy(i => i.FullName, StringComparer.Ordinal).ToList();
-            var domains = cube.DimensionItems.Select(i => i.Domains.FirstOrDefault()).ToList();
+            //var domains = cube.DimensionItems.Select(i => i.Domains.FirstOrDefault()).OrderBy(i => i.DimensionItem.Content + i.Content).ToList();
+            var domains = cube.DimensionItems.Select(i => i.Domains.FirstOrDefault()).OrderBy(i => i.DomainMembers.Count).ToList();
+    
             foreach (var domain in domains)
             {
                 //.Where(i=>!i.IsDefaultMember)
-                cubelist.Add(domain.DomainMembers.Select(i =>
+                cubelist.Add(domain.DomainMembers.OrderBy(i=>i.Content).Select(i =>
                 {
                     if (i.IsDefaultMember) 
                     {
@@ -1358,7 +1346,17 @@ namespace LogicalModel
                     return Taxonomy.FactParts[dimitem];
                 }).ToList());
             }
-            var combinations = Utilities.MathX.CartesianProduct(cubelist);
+            for (int i = 0; i < cubelist.Count; i++)
+            {
+                var firstitem = cubelist[i].FirstOrDefault();
+                var domainid = Taxonomy.GetDimensionDomainPart(firstitem);
+                if (domainid > -1) 
+                {
+                    domainids.Add(domainid);
+                }
+            }
+      
+            var combinations = Utilities.MathX.CartesianProduct(cubelist,-2);
 
             return combinations;
 

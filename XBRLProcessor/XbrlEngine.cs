@@ -150,10 +150,13 @@ namespace XBRLProcessor
                 CurrentTaxonomy = null;
             }
             var isloaded = false;
-            Logger.WriteLine("Loading Taxonomy ");
+            Logger.WriteLine("Loading Taxonomy " + filepath);
             var taxonomydocument = new XbrlTaxonomyDocument();
             if (taxonomydocument.LoadTaxonomyDocument(filepath, null))
             {
+                var processedfolder = taxonomydocument.LocalPath.Remove(taxonomydocument.LocalPath.LastIndexOf("."));
+                Logger.WriteLine("Processed Taxonomy Folder: " + processedfolder);
+
                 taxonomydocument.ClearDocument();
                 Trigger_TaxonomyLoad(filepath);
 
@@ -212,7 +215,7 @@ namespace XBRLProcessor
             }
             else 
             {
-                Logger.WriteLine("Can't Load Taxonomy");
+                Logger.WriteLine("Can't Load Taxonomy " + filepath);
                 Trigger_TaxonomyLoadFailed(filepath);
 
             }

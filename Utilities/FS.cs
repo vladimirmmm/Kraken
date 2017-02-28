@@ -181,6 +181,7 @@ namespace Utilities
         public static void DictionaryToFile(string filepath, IDictionary<Tintint, int> dict)
         {
             EnsurePath(filepath);
+            /*
             using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath, false))
             {
                 foreach (var item in dict)
@@ -190,28 +191,77 @@ namespace Utilities
                 }
                 fsw.Close();
             }
+            */
+            var fs = File.OpenWrite(filepath);
+            var writer = new BinaryWriter(fs);
+            foreach (var item in dict)
+            {
+           
+                var b1 = BitConverter.GetBytes(item.Key.v1);
+                var b2 = BitConverter.GetBytes(item.Key.v2);
+                var b3 = BitConverter.GetBytes(item.Value);
+                writer.Write(b1);
+                writer.Write(b2);
+                writer.Write(b3);
+
+
+            }
+            writer.Close();
+            fs.Close();
 
         }
+
+
         public static bool DictionaryFromFile(string filepath, IDictionary<Tintint, int> dict)
         {
             if (FileExists(filepath))
-            {   // Open the text file using a stream reader.
+            {  
+                /*
+                // Open the text file using a stream reader.
                 using (StreamReader sr = new StreamReader(filepath, Encoding.ASCII, true, 4096))
                 {
                     while (sr.Peek() >= 0)
                     {
                         String line = sr.ReadLine();
-                        var parts = Utilities.Strings.GetSplit(line, ':').ToArray();
-                        var key = Utilities.Strings.GetSplit(parts[0], ',').Select(i => Utilities.Converters.FastParse(i)).ToArray();
+                        var parts = line.Split(',', ':');
+                        //var parts = Utilities.Strings.GetSplit(line, ':').ToArray();
+                        //var key = Utilities.Strings.GetSplit(parts[0], ',').Select(i => Utilities.Converters.FastParse(i)).ToArray();
 
                         //var parts = line.Split(new string[]{":"},StringSplitOptions.RemoveEmptyEntries);
                         //var key = parts[0].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(i => Utilities.Converters.FastParse(i)).ToArray();
-                        var value = Utilities.Converters.FastParse(parts[1]);
-                        dict.Add(new Tintint(key[0],key[1]), value);
+                        var k1 = Utilities.Converters.FastParse(parts[0]);
+                        var k2 = Utilities.Converters.FastParse(parts[1]);
+                        var value = Utilities.Converters.FastParse(parts[2]);
+                        dict.Add(new Tintint(k1,k2), value);
 
                     }
                     // Read the stream to a string, and write the string to the console.
+              
+
                 }
+                 */
+                var fs2 = File.OpenRead(filepath);
+                using (Stream source = fs2)
+                {
+                    byte[] buffer = new byte[12];
+                    int bytesRead;
+                    while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        var b1 = new byte[4];
+                        var b2 = new byte[4];
+                        var b3 = new byte[4];
+                        Array.Copy(buffer, 0, b1, 0, 4);
+                        Array.Copy(buffer, 4, b2, 0, 4);
+                        Array.Copy(buffer, 8, b3, 0, 4);
+                        var key = new Tintint();
+                        key.v1 = BitConverter.ToInt32(b1, 0);
+                        key.v2 = BitConverter.ToInt32(b2, 0);
+                        var value = BitConverter.ToInt32(b3, 0);
+                        dict.Add(key, value);
+                        //dest.Write(buffer, 0, bytesRead);
+                    }
+                }
+                fs2.Close();
                 return true;
 
             }

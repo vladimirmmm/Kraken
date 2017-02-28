@@ -450,6 +450,10 @@ namespace LogicalModel
                 {
                     //sb.AppendFormat(String.Format("Invalid Fact ({0}, {1}) {2}!\n", fact.Concept, fact.ContextID, fact.FactString));
                     invalidfacts.Add(fact.FactKey);
+                    if (fact.Value.Contains("1920"))
+                    {
+
+                    }
                     if (sb_invalidfacts.Length == 0) 
                     {
                         sb_invalidfacts.Append("Invalid facts: ");
@@ -608,6 +612,10 @@ namespace LogicalModel
                 {
                     fact.Cells = this.Taxonomy.GetCellsOfFact(factix);
                     var Cells = fact.Cells.ToList();
+                    if (Cells.Count == 0) 
+                    {
+
+                    }
                     fact.Cells.Clear();
                   
                     foreach (var cell in Cells)

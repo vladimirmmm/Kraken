@@ -29,10 +29,13 @@ namespace LogicalModel
 
     public enum PeristenceEnum 
     {
-        Loaded,
-        Unloading,
-        Saving,
+        Initial,
         Loading,
+        Loaded,
+        Saving,
+        Unloading,
+        Unloaded,
+    
     }
 
     public class FactKeyDictionary : LogicalModel.Models.IFactDictionary
@@ -43,25 +46,17 @@ namespace LogicalModel
         public int IndexEndAt = 0;
         public Dictionary<int, FactKeyWithCells> LookupOfIndexes = new Dictionary<int, FactKeyWithCells>();
         public bool IsDirty = false;
-
-        public bool IsPersisting = false;
-        private bool _IsLoaded = false;
+        public PeristenceEnum PeristenceState = PeristenceEnum.Initial;
+        //public bool IsPersisting = false;
+        //private bool _IsLoaded = false;
 
         public object Locker = new Object();
         public bool IsLoaded
         {
             get
             {
-                return _IsLoaded;
+                return PeristenceState == PeristenceEnum.Loaded || PeristenceState == PeristenceEnum.Initial;
             }
-        }
-        public void UnLoad()
-        {
-            this._IsLoaded = false;
-        }
-        public void Load()
-        {
-            this._IsLoaded = true;
         }
         public FactKeyDictionary()
         {
@@ -100,7 +95,7 @@ namespace LogicalModel
             kv.Value = new FactKeyWithCells(intkeys, cells);
             //var kvp = new KeyValuePair<int, List<int>>(intkeys[0], cells);
             //return kvp;
-            _IsLoaded = true;
+      
             return kv;
         }
         public string Content()
@@ -237,11 +232,8 @@ namespace LogicalModel
         {
             if (!LookupOfIndexes.ContainsKey(index))
             {
-                //if (index == 2117299) 
-                //{ 
-                //}
+
                 LookupOfIndexes.Add(index, new FactKeyWithCells(key, CellIndexes));
-                _IsLoaded = true;
             }
             IsDirty = true;
             return index;
@@ -310,23 +302,22 @@ namespace LogicalModel
         }
 
 
-        public void Clear()
+        public void Clear(Action<string> Log)
         {
             Log("Clearing page" + this.ID.ToString());
             LookupOfIndexes.Clear();
-            _IsLoaded = false;
        
 
         }
 
-        protected void Log(string item)
-        {
-            var debug = true;
-            if (debug)
-            {
-                Console.WriteLine(Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ": " + item);
-            }
-        }
+        //protected void Log(string item)
+        //{
+        //    var debug = true;
+        //    if (debug)
+        //    {
+        //        Console.WriteLine(Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ": " + item);
+        //    }
+        //}
 
         public bool ContainsKey(int[] key)
         {
@@ -358,6 +349,8 @@ namespace LogicalModel
         {
             throw new NotImplementedException();
         }
+
+        public bool IsPersisting { get { return this.PeristenceState == PeristenceEnum.Saving; } }
     }
     
 }

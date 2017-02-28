@@ -18,6 +18,7 @@ namespace Utilities
                     from accseq in accumulator
                     from item in sequence
                     select accseq.Concat(new[] { item })
+                    
                 );
             if (result.Count() == 1 && result.FirstOrDefault().Count() == 0) 
             {
@@ -25,7 +26,24 @@ namespace Utilities
             }
             return result;
         }
+        public static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences, T neutral)
+        {
+            IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
+            var result = sequences.Aggregate(
+                emptyProduct,
+                (accumulator, sequence) =>
+                    from accseq in accumulator
+                    from item in sequence
+                    where !item.Equals(neutral)
+                    select accseq.Concat(new[] { item })
 
+                );
+            if (result.Count() == 1 && result.FirstOrDefault().Count() == 0)
+            {
+                result = new List<IEnumerable<T>>();
+            }
+            return result;
+        }
         public static List<List<T>> CartesianProductList<T>(IEnumerable<IEnumerable<T>> sequences)
         {
             var result = new List<List<T>>();

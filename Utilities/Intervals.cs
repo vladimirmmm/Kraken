@@ -228,12 +228,25 @@ namespace Utilities
         public static Interval GetInstanceFromString(string content)
         {
             if (string.IsNullOrEmpty(content)) { return null; }
-            var parts = content.Split(new string[] { ".." }, StringSplitOptions.RemoveEmptyEntries);
-            var interval = new Interval(Utilities.Converters.FastParse(parts[0]));
-            if (parts.Length == 2)
+            var ix = content.IndexOf("..",StringComparison.Ordinal);
+            Interval interval = null;
+            if (ix == -1)
             {
-                interval.End = Utilities.Converters.FastParse(parts[1]);
+                interval = new Interval(Utilities.Converters.FastParse(content));
             }
+            else 
+            {
+                var start = content.Substring(0, ix);
+                ix = ix + 2;
+                var end = content.Substring(ix, content.Length - ix);
+                interval = new Interval(Utilities.Converters.FastParse(start), Utilities.Converters.FastParse(end));
+            }
+            //var parts = content.Split(new string[] { ".." }, StringSplitOptions.RemoveEmptyEntries);
+            //var interval = new Interval(Utilities.Converters.FastParse(parts[0]));
+            //if (parts.Length == 2)
+            //{
+            //    interval.End = Utilities.Converters.FastParse(parts[1]);
+            //}
             return interval;
         }
         public override string ToString()
@@ -758,9 +771,11 @@ namespace Utilities
         public static IntervalComparer ic = new IntervalComparer();
         public static IntervalStartComparer startcomparer = new IntervalStartComparer();
         public static IntervalEndComparer endcomparer = new IntervalEndComparer();
-        
+        private int LastAdded = -1;
         public void AddX(int value)
         {
+            if (LastAdded == value ){return;}
+            LastAdded = value;
             _Count = -1;
             if (LastInterval == null)
             {
@@ -768,6 +783,10 @@ namespace Utilities
                 return;
 
             }
+            //if (value == LastInterval.End)
+            //{
+            //    return;
+            //}
             if (LastInterval.IsNext(value)) 
             {
                 LastInterval.End++;
@@ -778,6 +797,17 @@ namespace Utilities
                 AddNewInterval(value);
                 return;
             }
+            if (FirstInterval.IsPrev(value))
+            {
+                FirstInterval.Start--;
+                return;
+            }
+            if (value < FirstInterval.Start) 
+            {
+                AddNewInterval(value,0);
+                return;
+            }
+      
             var vi = Intervals.BinarySearch(new Interval(value), ic);
            
             if (vi > -1 && vi < Intervals.Count)

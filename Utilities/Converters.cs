@@ -29,15 +29,32 @@ namespace Utilities
 
         }
     }
-    
+    public class testc 
+    {
+        public void test()
+        {
+            var r = new Random();
+            //var nr = r.Next(int.MinValue, int.MaxValue).ToString();
+            var nr = "-123123     ";
+            var dt = DateTime.Now;
+            for (int i = 0; i < 50000; i++)
+            {
+                var x = Utilities.Converters.FastParse(nr);
+            }
+            Console.WriteLine(DateTime.Now.Subtract(dt).TotalMilliseconds);
+            dt = DateTime.Now;
+            for (int i = 0; i < 50000; i++)
+            {
+                var x = int.Parse(nr);
+            }
+            Console.WriteLine(DateTime.Now.Subtract(dt).TotalMilliseconds);
+
+        }
+    }
     public class Converters
     {
         private static CultureInfo dci = new CultureInfo("en-US");
-        public static void test() 
-        {
-            var x = FastParse("-23");
-            var y= FastParse("123423");
-        }
+
         public static int FastParse(string str) 
         {
             int value = 0;

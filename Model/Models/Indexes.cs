@@ -90,7 +90,7 @@ namespace LogicalModel
         public string FileNameFormat = Tag+"{0}.dat";
         public string FileNamePattern = Tag+"*.dat";
         public int NrItemsPerPage=100000;
-        public int NrLoadedPages = 10;
+        public int NrLoadedPages = 15;
         public FactDictionaryCollection() 
         {
 
@@ -124,7 +124,7 @@ namespace LogicalModel
             foreach (var file in files) 
             {
 
-                var page = CreatePage();
+                var page = CreatePage(PeristenceEnum.Unloaded);
                 //var filename = Utilities.Strings.GetFileName(file);
                 //var ix = Utilities.Converters.FastParse(Utilities.Strings.TextBetween(filename, Tag, "."));
                 //page.ID = ix;
@@ -148,6 +148,7 @@ namespace LogicalModel
         }
         public FactKeyDictionary CreatePage() 
         {
+            Log("Creating Page " + this.Pages.Count);
             var page = new FactKeyDictionary();
             page.ID = this.Pages.Count;
             page.NrMaxItems = this.NrItemsPerPage;
@@ -155,6 +156,19 @@ namespace LogicalModel
             page.IndexEndAt = page.IndexStartAt + page.NrMaxItems;
             this.Pages.Add(page);
             AddIDToLoadedPages(page.ID);
+            LastPage = page;
+            return page;
+        }
+
+        public FactKeyDictionary CreatePage(PeristenceEnum peristence)
+        {
+            var page = new FactKeyDictionary();
+            page.ID = this.Pages.Count;
+            page.NrMaxItems = this.NrItemsPerPage;
+            page.IndexStartAt = page.ID * page.NrMaxItems;
+            page.IndexEndAt = page.IndexStartAt + page.NrMaxItems;
+            this.Pages.Add(page);
+            page.PeristenceState = peristence;
             LastPage = page;
             return page;
         }
@@ -167,7 +181,8 @@ namespace LogicalModel
         public void LoadPage(FactKeyDictionary page)
         {
             Log("Loading page" + page.ID);
-            page.IsPersisting = true;
+            //Utilities.Logger.WriteLine("Loading page" + page.ID);
+            page.PeristenceState = PeristenceEnum.Loading;
             var filepath = GetFilePath(page.ID);
 
             lock (page.Locker)
@@ -187,18 +202,23 @@ namespace LogicalModel
 
                 }
                 // Read the stream to a string, and write the string to the console.
+
+
+                page.PeristenceState = PeristenceEnum.Loaded;
+
+
+                if (NrLoadedPages != 0 && LoadedPages.Count > NrLoadedPages)
+                {
+                    var ix = 0;
+                    if (LoadedPages[ix] == page.ID)
+                    {
+                        ix++;
+                    }
+                    Unload(ix);
+                }
+                AddIDToLoadedPages(page.ID);
+                LastPage = page;
             }
-
-            page.IsPersisting = false;
-
-
-            if (NrLoadedPages != 0 && LoadedPages.Count > NrLoadedPages)
-            {
-                Unload(0);
-            }
-            AddIDToLoadedPages(page.ID);
-            LastPage = page;
-
 
         }
 
@@ -219,13 +239,15 @@ namespace LogicalModel
             Log(String.Format("page{0} was added to LoadedPages", pageid));
         }
 
-        
+        private StringBuilder sb_log = new StringBuilder();
         protected void Log(string item) 
         {
             var debug = true;
             if (debug)
             {
-                Console.WriteLine(Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ": " + item);
+                var msg = Utilities.Converters.DateTimeToString(DateTime.Now, Utilities.Converters.DateTimeFormat) + ":" + item;
+                sb_log.AppendLine(msg);
+                Console.WriteLine(msg);
             }
         }
  
@@ -468,7 +490,10 @@ namespace LogicalModel
         {
             return Save(key, new List<int>(1));
         }
-
+        protected bool LimitReached()
+        {
+            return NrLoadedPages != 0 && LoadedPages.Count > NrLoadedPages; 
+        }
         public int Save(int[] key, List<int> value)
         {
             var lastpage = Pages.LastOrDefault();
@@ -476,13 +501,17 @@ namespace LogicalModel
             {
                 lastpage = CreatePage();
             }
+            var limitreached = LimitReached();
             if (lastpage.Count == NrItemsPerPage)
             {
-                SaveToFS(lastpage);
+                if (lastpage.IsDirty)
+                {
+                    SaveToFS(lastpage, false);
+                }
                 lastpage = CreatePage();
 
             }
-            if (NrLoadedPages != 0 && LoadedPages.Count > NrLoadedPages)
+            if (limitreached)
             {
                 Unload(0);
 
@@ -510,44 +539,51 @@ namespace LogicalModel
                 }
                 page = this.Pages[pageid % this.Pages.Count];
             }
-            Unload(page);
+            if (page.PeristenceState != PeristenceEnum.Unloading) 
+            { 
+                Unload(page); 
+            }
         }
         private void Unload(FactKeyDictionary page)
         {
+            page.PeristenceState = PeristenceEnum.Unloading;
+            if (page.ID == 11) 
+            {
 
-
+            }
             Log("UnLoading page" + page.ID);
-            if (page.ID == 8) 
-            {
 
-            }
-            if (page.IsDirty)
+            lock (page.Locker)
             {
-                SaveToFS(page);
-            }
-            else 
-            {
-                lock (page.Locker)
+                if (page.IsDirty)
                 {
-                    page.Clear();
-                    RemoveIDFromLoadedPages(page.ID);
-
+                    SaveToFS(page);
                 }
-
+                else
+                {
+                    page.Clear(Log);
+                }
+                RemoveIDFromLoadedPages(page.ID);
+                page.PeristenceState = PeristenceEnum.Unloaded;
             }
+
 
 
         }
         //public object Locker = new Object();
-        public void SaveToFS(FactKeyDictionary page)
+        public void SaveToFS(FactKeyDictionary page, Boolean unload = true)
         {
-            page.IsPersisting = true;
+
             Task.Run(
                 () =>
                 {
                     lock (page.Locker)
                     {
-                        Log(String.Format("Saveing page{0} to FS", page.ID));
+                        var state = page.PeristenceState;
+                        page.PeristenceState = PeristenceEnum.Saving;
+                        var msg = String.Format("Saveing page{0} to FS", page.ID);
+                        Log(msg);
+                        //Utilities.Logger.WriteLine(msg);      
 
                         var path = GetFilePath(page.ID);
                         Utilities.FS.EnsurePath(path);
@@ -559,14 +595,20 @@ namespace LogicalModel
                             {
                                 fsw.WriteLine(FactKeyDictionary.Content(item));
                             }
+                            page.PeristenceState = state;
+
                         }
 
                         Log(String.Format("page{0} was saved to FS", page.ID));
 
                         page.IsDirty = false;
-                        page.Clear();
-                        RemoveIDFromLoadedPages(page.ID);
-                        page.IsPersisting = false;
+                        if (unload)
+                        {
+                            page.Clear(Log);
+                            RemoveIDFromLoadedPages(page.ID);
+                            page.PeristenceState = PeristenceEnum.Unloaded;
+                        }
+
 
                     }
                 });
@@ -629,13 +671,19 @@ namespace LogicalModel
             }
             else
             {
+                var loadrequired = false;
                 if (!page.IsLoaded)
                 {
+                    loadrequired = true;
                     LoadPage(page);
                 }
-                if (!page.LookupOfIndexes.ContainsKey(index)) 
+                if (!page.LookupOfIndexes.ContainsKey(index))
                 {
-                    Utilities.Logger.WriteLine(String.Format("Page {0} has no key {1}; IsLoaded {2}", page.ID, index, page.IsLoaded));
+                    var msg = String.Format("Page {0}[{4}] has no key {1}; IsLoaded {2} LoadRequired: {3}", page.ID, index, page.IsLoaded, loadrequired, page.LookupOfIndexes.Count);
+                    Utilities.Logger.WriteLine(msg);
+                    Utilities.Logger.WriteLine(sb_log.ToString());
+                    Log(msg);
+
                 }
                 page.LookupOfIndexes[index].CellIndexes.Add(cellix);
                 page.IsDirty = true;
