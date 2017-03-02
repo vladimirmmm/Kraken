@@ -594,6 +594,88 @@ namespace Utilities
             }
             return null;
         }
+        public static IntervalList MergeSorted_New(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
+        {
+            var result = new IntervalList();
+           
+            var smaller = sequence1.Intervals.Count < sequence2.Intervals.Count ? sequence1 : sequence2;
+            var bigger = smaller == sequence1 ? sequence2 : sequence1;
+            result.Intervals = bigger.Intervals.ToList();
+            var ix = 0;
+            foreach (var interval in smaller.Intervals) 
+            {
+                if (interval.Start == interval.End) 
+                {
+                    result.Add(interval.Start);
+                    continue;
+                }
+                var startix = bigger.SearchByStartIndexBefore(interval, ix);
+
+            }
+            var bix = 0;
+            var six = 0;
+            if (IsTheSame(sequence1, sequence2))
+            {
+                result.Intervals.AddRange(sequence1.Intervals);
+                return result;
+            }
+
+            var sc = smaller.Intervals.Count;
+            var bc = bigger.Intervals.Count;
+
+            Interval s = smaller.Intervals.FirstOrDefault();
+            Interval b = bigger.Intervals.FirstOrDefault();
+            int r = 0;
+            while (s != null || b != null)
+            {
+
+                if (s != null && b != null)
+                {
+                    r = s.Compare(b);
+                }
+                else
+                {
+                    r = s == null ? 1 : -1;
+                }
+                if (r == 0)
+                {
+                    var interval = s.Merge(b);
+
+                    result.AddInterval(interval);
+
+
+                    if (interval.End >= b.End)
+                    {
+                        bigger.SetNextInterval(ref b, ref bix);
+                    }
+                    if (interval.End >= s.End)
+                    {
+                        smaller.SetNextInterval(ref s, ref six);
+
+                    }
+
+                }
+                if (r < 0)
+                {
+                    result.AddInterval(s);
+
+                    smaller.SetNextInterval(ref s, ref six);
+
+
+                }
+                if (r > 0)
+                {
+                    result.AddInterval(b);
+
+                    bigger.SetNextInterval(ref b, ref bix);
+
+                }
+            }
+
+            return result;
+        }
+
+
         public static IntervalList MergeSorted(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
             var result = new IntervalList();

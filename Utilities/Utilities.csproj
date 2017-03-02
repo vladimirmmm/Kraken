@@ -60,6 +60,7 @@
     <Compile Include="Threading.cs" />
     <Compile Include="Web.cs" />
     <Compile Include="Xml.cs" />
+    <Compile Include="XmlAttr.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

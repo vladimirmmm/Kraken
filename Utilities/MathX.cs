@@ -34,7 +34,7 @@ namespace Utilities
                 (accumulator, sequence) =>
                     from accseq in accumulator
                     from item in sequence
-                    where !item.Equals(neutral)
+                    //where !accseq.Equals(neutral)
                     select accseq.Concat(new[] { item })
 
                 );

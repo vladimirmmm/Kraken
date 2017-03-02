@@ -209,7 +209,7 @@ namespace XBRLProcessor.Models
             {
                 Utilities.Strings.CopyToLocal(sourcepath, localpath, false);
                 LoadDocument();
-
+                XbrlTaxonomy.SetTargetNamespace(this);
             }
             catch (Exception ex) 
             {
@@ -227,7 +227,7 @@ namespace XBRLProcessor.Models
             {
                 var tags = XmlDocument.GetElementsByTagName("*").Cast<XmlNode>();
                 _TagNames = tags.Select(i => i.Name).Distinct().ToArray();
-                this.Taxonomy.SetTargetNamespace(this);
+                //XbrlTaxonomy.SetTargetNamespace(this);
                 foreach (var handler in structurehandlers)
                 {
                     var subtags = tags.Where(i => i.Name.ToLower().In(handler.XmlTagNames));

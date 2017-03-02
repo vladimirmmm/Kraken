@@ -62,6 +62,7 @@ namespace Utilities
         {
             Namespaces.Clear();
             NamespaceDictionary.Clear();
+            XmlAttr.NodeAttributeMap.Clear();
 
         }
 
@@ -193,10 +194,73 @@ namespace Utilities
 
         //    return doc;
         //}
-
         public static string Attr(XmlNode node, string Name)
         {
+            var a1 = Attr_New(node, Name);
+            //var a2 = Attr_Old(node, Name);
+            //if (a1 != a2) 
+            //{
+
+            //}
+            return a1;
+        }
+        public static string Attr_Old(XmlNode node, string Name)
+        {
+
             var lowername = Name.ToLower();
+
+            if (lowername.StartsWith("#"))
+            {
+                return lowername.Substring(1);
+            }
+            if (lowername.StartsWith("@"))
+            {
+                if (lowername == "@content")
+                {
+                    return Content(node);
+                }
+                if (lowername == "@name")
+                {
+                    return node.Name;
+                }
+            }
+
+
+            if (node.Attributes != null)
+            {
+                var attributes = node.Attributes.Cast<XmlAttribute>();
+                if (lowername.StartsWith("*:"))
+                {
+                    var localname = lowername.Substring(2);
+                    var attr = attributes.FirstOrDefault(i => i.LocalName.Equals(localname, StringComparison.OrdinalIgnoreCase));
+                    if (attr != null)
+                    {
+
+                        return attr.Value;
+                    }
+
+                    //return GetValueFrom(localname, node);
+
+                }
+                else
+                {
+                    var attr = attributes.FirstOrDefault(i => i.Name.Equals(lowername, StringComparison.OrdinalIgnoreCase));
+                    if (attr != null)
+                    {
+                        return attr.Value;
+                    }
+                   
+                    //return GetValueFrom(lowername, node);
+
+                }
+            }
+            return "";
+        }
+        public static string Attr_New(XmlNode node, string Name)
+        {
+          
+            var lowername = Name.ToLower();
+   
             if (lowername.StartsWith("#"))
             {
                 return lowername.Substring(1);
@@ -212,30 +276,70 @@ namespace Utilities
                     return node.Name;
                 }
             }
-
+            
+            
             if (node.Attributes != null)
             {
-                var attributes = node.Attributes.Cast<XmlAttribute>();
+                //var attributes = node.Attributes.Cast<XmlAttribute>();
                 if (lowername.StartsWith("*:"))
                 {
                     var localname = lowername.Substring(2);
-                    var attr = attributes.FirstOrDefault(i => i.LocalName.Equals(localname, StringComparison.OrdinalIgnoreCase));
-                    if (attr != null)
-                    {
-                        return attr.Value;
-                    }
+                    //var attr = attributes.FirstOrDefault(i => i.LocalName.Equals(localname, StringComparison.OrdinalIgnoreCase));
+                    //if (attr != null)
+                    //{
+
+                    //    return attr.Value;
+                    //}
+
+                    return GetValueFrom(localname, node);
+                    //return lastnode.Item2.ContainsKey(localname) ? lastnode.Item2[localname] : "";
+                   
                 }
                 else
                 {
                     //var attr = node.Attributes[Name];
-                    var attr = attributes.FirstOrDefault(i => i.Name.Equals(lowername, StringComparison.OrdinalIgnoreCase));
-                    if (attr != null)
-                    {
-                        return attr.Value;
-                    }
+                    //var attr = attributes.FirstOrDefault(i => i.Name.Equals(lowername, StringComparison.OrdinalIgnoreCase));
+                    //if (attr != null)
+                    //{
+                    //    return attr.Value;
+                    //}
+                    return GetValueFrom(lowername,node);
+                    //return lastnode.Item2.ContainsKey(lowername) ? lastnode.Item2[lowername] : "";
+                 
                 }
             }
             return "";
+        }
+
+        private static string GetValueFrom(string name, XmlNode node) 
+        {
+            var mappedattributename = XmlAttr.MapAttr(node, name);
+            if (!String.IsNullOrEmpty(mappedattributename)) 
+            {
+                var attr = node.Attributes[mappedattributename];
+                if (attr != null) { return attr.Value; }
+
+            }
+            return "";
+           
+            /*
+            var mappedname =name;
+            if (!mapcontainer.ContainsKey(name)) 
+            {
+                var xname = valuecontainer.Keys.FirstOrDefault(i => i.Equals(name, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(xname))
+                {
+                    mapcontainer.Add(name, xname);
+                }
+            }
+            else
+            {
+                mappedname= mapcontainer[name];
+            }
+
+            //var mappedname = mapcontainer[name];
+            return valuecontainer.ContainsKey(mappedname) ? valuecontainer[mappedname] : "";
+             * */
         }
 
         public static string Content(XmlNode node)

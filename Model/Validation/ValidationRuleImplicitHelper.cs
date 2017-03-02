@@ -30,10 +30,12 @@ namespace LogicalModel.Validation
                     if (!p.BindAsSequence && factgroup.Count > 1) 
                     {
                         inconsistent = true;
+                        //sb.AppendLine(taxonomy.GetFactStringKeys(p.TaxFacts));
+
                         break;
                     }
                 }
-                sb.AppendLine(taxonomy.GetFactStringKeys(p.TaxFacts));
+  
             }
             sb.AppendLine("___________");
             if (inconsistent) 

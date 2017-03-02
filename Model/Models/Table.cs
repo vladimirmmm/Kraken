@@ -406,17 +406,36 @@ namespace LogicalModel
             var factcounter = 0;
             foreach (var hypercube in HyperCubes)
             {
-                var domainids = new List<int>();
-                var cubeslices = GetCubeSlices2(hypercube, domainids);
+                var domainiddict = new Dictionary<int, IntervalList>();
+                var cubeslices = GetCubeSlices2(hypercube, domainiddict);
+                var domainids = domainiddict.Keys.ToList();
+               
                 EnsureDomainKeyParts(domainids);
+
+                var domaininterval = new IntervalList();
 
                 foreach (var slice in cubeslices)
                 {
                     int[] key = null;
+                    var items = new List<int>(domainids.Count + 1);
+                    var slicedomainids = new List<int>(domainids.Count);
+                    var ix=0;
+                    foreach (var k in slice)
+                    {
+                        if (k != -2) 
+                        {
+                            items.Add(k);
+                            if (ix != 0)
+                            {
+                                slicedomainids.Add(domainids[ix - 1]);
+                            }
 
-                    
+                        }
+                       
+                        ix++;
+                    }
 
-                    key = slice.ToArray();
+                    key = items.ToArray();
                     var concept = key[0];
                     key[0] = -3;
                     Array.Sort(key);
@@ -432,14 +451,17 @@ namespace LogicalModel
                         factix = this.Taxonomy.AddFactKey(key, hashkeys);
 
                     }
-            
-                    this.AddFactKeyParts(key, domainids, factix);
+
+                    domaininterval.Add(factix);
+
+                    this.AddFactKeyParts(key, slicedomainids, factix);
 
                
                     FactindexList.Add(factix);
                     factcounter++;
                     //sb_fact.AppendLine();
                 }
+                //
             }
      
             this.HyperCubes.Clear();
@@ -456,7 +478,7 @@ namespace LogicalModel
             FactIndexToCells = new List<Tintint>(FactindexList.Count);
 
         }
-        public void EnsureDomainKeyParts(List<int> domainids) 
+        public void EnsureDomainKeyParts(IEnumerable<int> domainids) 
         {
             foreach (var domainid in domainids)
             {
@@ -551,22 +573,7 @@ namespace LogicalModel
             }
         }
 
-        private void FixNamespaces(List<Hierarchy<LayoutItem>> items)
-        {
-            foreach (var hli in items)
-            {
-                if (hli.Item.Concept != null)
-                {
-                    var concept = hli.Item.Concept;
-                   
-                    var ce = this.Taxonomy.Concepts.Values.FirstOrDefault(i=>i.Name==concept.Name);
-                    if (ce != null && concept.Namespace!=ce.Namespace)
-                    {
-                        concept.Namespace = ce.Namespace;
-                    }
-                }
-            }
-        }
+
 
         public LayoutItem GetDefaultExtension() 
         {
@@ -1324,7 +1331,7 @@ namespace LogicalModel
             return combinations;
 
         }
-        public IEnumerable<IEnumerable<int>> GetCubeSlices2(HyperCube cube, List<int> domainids)
+        public IEnumerable<IEnumerable<int>> GetCubeSlices2(HyperCube cube, Dictionary<int,IntervalList> domainids)
         {
             var cubelist = new List<List<int>>();
 
@@ -1348,11 +1355,11 @@ namespace LogicalModel
             }
             for (int i = 0; i < cubelist.Count; i++)
             {
-                var firstitem = cubelist[i].FirstOrDefault();
+                var firstitem = cubelist[i].FirstOrDefault(k => k > -1);
                 var domainid = Taxonomy.GetDimensionDomainPart(firstitem);
                 if (domainid > -1) 
                 {
-                    domainids.Add(domainid);
+                    domainids.Add(domainid, new IntervalList());
                 }
             }
       

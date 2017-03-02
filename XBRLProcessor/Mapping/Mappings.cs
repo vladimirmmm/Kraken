@@ -355,6 +355,33 @@ namespace XBRLProcessor.Mapping
         public Expression<Func<TClass, PropertyType>> PropertyAccessor = null;
         public Func<TClass, PropertyType> Getter = null;
         public Action<TClass, PropertyType> Setter = null;
+        private bool? _IsComplex;
+        private PropertyInfo _Property=null;
+        public PropertyInfo Property 
+        {
+            get 
+            {
+                if (_Property == null) 
+                {
+                    _Property= (PropertyInfo)((MemberExpression)PropertyAccessor.Body).Member;
+                }
+                return _Property;
+            }
+        }
+        public bool IsComplex 
+        {
+            get {
+                if (!_IsComplex.HasValue) 
+                {
+                    _IsComplex =
+                   (Property.PropertyType.BaseType != typeof(StringEnum)
+                    && Property.PropertyType.IsClass
+                    && Property.PropertyType.Name != "String");
+                   
+                }
+                return _IsComplex.Value;
+            }
+        }
 
 
         public PropertyMapping()
@@ -400,17 +427,17 @@ namespace XBRLProcessor.Mapping
 
         public override T Map<T>(IEnumerable<XmlNode> nodes, T instance)
         {
-            var prop = (PropertyInfo)((MemberExpression)PropertyAccessor.Body).Member;
-            var IsComplexType = false;
-            var propertyTypeName = prop.PropertyType.Name;
-            if (prop.PropertyType.BaseType!= typeof(StringEnum)
-                && prop.PropertyType.IsClass && propertyTypeName != "String")
+            //var prop = (PropertyInfo)((MemberExpression)PropertyAccessor.Body).Member;
+            //var IsComplexType = false;
+            var propertyTypeName = Property.PropertyType.Name;
+            //if (prop.PropertyType.BaseType!= typeof(StringEnum)
+            //    && prop.PropertyType.IsClass && propertyTypeName != "String")
+            //{
+            //    IsComplexType=true;
+            //}
+            if (Property.PropertyType.IsGenericType && Property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                IsComplexType=true;
-            }
-            if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                propertyTypeName = prop.PropertyType.GetGenericArguments()[0].Name;
+                propertyTypeName = Property.PropertyType.GetGenericArguments()[0].Name;
             }
             object existingvalue = Getter(instance as TClass);
             var node = nodes.FirstOrDefault();
@@ -421,7 +448,7 @@ namespace XBRLProcessor.Mapping
 
 
  
-            if (!String.IsNullOrEmpty(tagname) && IsComplexType)
+            if (!String.IsNullOrEmpty(tagname) && IsComplex)
             {
  
                 foreach (XmlNode childnode in Utilities.Xml.SelectChildNodes(node,XPathContainer))
@@ -454,7 +481,7 @@ namespace XBRLProcessor.Mapping
             else
             {
                 var stringval = "";
-                if (!String.IsNullOrEmpty(tagname) && !IsComplexType)
+                if (!String.IsNullOrEmpty(tagname) && !IsComplex)
                 {
                     //var childnode = Utilities.Xml.SelectChildNode(node, "//" + tagname);
                     var childnode = Utilities.Xml.SelectChildNode(node, XPathContainer);
@@ -498,9 +525,9 @@ namespace XBRLProcessor.Mapping
 
                     }
 
-                    if (prop.PropertyType.BaseType == typeof(StringEnum))
+                    if (Property.PropertyType.BaseType == typeof(StringEnum))
                     {
-                        value = StringEnum.Get(prop.PropertyType, stringval);
+                        value = StringEnum.Get(Property.PropertyType, stringval);
 
                     }
 

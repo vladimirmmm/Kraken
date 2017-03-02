@@ -732,8 +732,21 @@ namespace LogicalModel
                 //{
 
                 //}
+              
+                //var ct = targetitem.Count;
+                //var cs = this[item.Key].Count;
+                //if (item.Key == 4179)
+                //{
+                //}
                 targetitem.AddRange(this[item.Key]);
-             
+                //if (item.Key == 4179)
+                //{
+
+                //    if (targetitem.Count != cs + ct)
+                //    {
+
+                //    }
+                //}
                 //target[item.Key] = target[item.Key].Distinct().ToList();
 
                 targetitem.TrimExcess();

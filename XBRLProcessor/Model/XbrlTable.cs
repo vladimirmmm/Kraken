@@ -315,17 +315,22 @@ namespace XBRLProcessor.Model
                 var concept = li.Item.Concept;
                 if (concept != null)
                 {
-                    var nsprefix = concept.Namespace;
-                    if (!d_con.ContainsKey(nsprefix))
-                    {
-                        var ns = nsmanager.LookupNamespace(nsprefix);
-                        var nsdoc = Taxonomy.TaxonomyDocumentNSDictionary.ContainsKey(ns)?Taxonomy.TaxonomyDocumentNSDictionary[ns]:null;
-                        if (nsdoc != null)
-                        {
-                            d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
-                        }
-                    }
-                    concept.Namespace = d_con.ContainsKey(nsprefix) ? d_con[nsprefix] : concept.Namespace;
+                    //var nsprefix = concept.Namespace;
+                    //if (!d_con.ContainsKey(nsprefix))
+                    //{
+                    //    var ns = nsmanager.LookupNamespace(nsprefix);
+                    //    var nsdoc = Taxonomy.TaxonomyDocumentNSDictionary.ContainsKey(ns)?Taxonomy.TaxonomyDocumentNSDictionary[ns]:null;
+                    //    if (nsdoc != null)
+                    //    {
+                    //        d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
+                    //    }
+                    //}
+                    //concept.Namespace = d_con.ContainsKey(nsprefix) ? d_con[nsprefix] : concept.Namespace;
+                    
+                    var nsuri = nsmanager.LookupNamespace(concept.Namespace);
+                    concept.Namespace = Taxonomy.FindNamespacePrefix(nsuri, concept.Namespace);                
+
+
                 }
                 foreach(var dimension in li.Item.Dimensions)
                 {

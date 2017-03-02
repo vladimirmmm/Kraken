@@ -747,9 +747,10 @@ namespace Utilities
         }
         public void AddRange(IEnumerable<int> values)
         {
-            if (values is IntervalList)
+            var ivalues =values as IntervalList;
+            if (ivalues!=null && this.Intervals.Count<200)
             {
-                AddRange(values as IntervalList);
+                AddRange(ivalues);
                 return;
             }
             _Count = -1;
@@ -760,13 +761,15 @@ namespace Utilities
         }
         public void AddRange(IntervalList values)
         {
-            _Count = -1;
             var merged = Utilities.Objects.MergeSorted(this, values, null);
             this.Clear();
-            foreach (var interval in merged.Intervals)
-            {
-                this.Intervals.Add(interval);
-            }
+            this.Intervals = merged.Intervals;
+            //foreach (var interval in merged.Intervals)
+            //{
+            //    this.Intervals.Add(interval);
+            //}
+            _Count = -1;
+
         }
         public static IntervalComparer ic = new IntervalComparer();
         public static IntervalStartComparer startcomparer = new IntervalStartComparer();
@@ -977,7 +980,17 @@ namespace Utilities
                 throw new NotImplementedException();
             }
         }
+        //public int SearchByStart(Interval interval, int startix)
+        //{
+        //    var ix=0;
+        //    var c = this.Intervals.Count;
 
+        //    var tix = this.Intervals.BinarySearch(startix, c - startix, interval, IntervalList.startcomparer);
+        //    if (tix < 0) 
+        //    {
+        //        ix = ~tix;
+        //    }
+        //}
         public int SearchByStartIndexBefore(Interval interval, int startix) 
         {
             var ix = startix;
@@ -1217,6 +1230,104 @@ namespace Utilities
 
             var result = Utilities.Objects.SortedExcept(list1, list2, null);
             var result2 = Utilities.Objects.SortedExcept(list2, list1, null);
+            var ls = new IntervalList();
+            ls.Intervals = new List<Interval>() { 
+                new Interval(6337,6384)
+            };
+            var lb = new IntervalList();
+            lb.Intervals = new List<Interval>() { 
+                new Interval(131 , 147),
+new Interval(149 , 169),
+new Interval(158 , 165),
+new Interval(196 , 198),
+new Interval(206 , 206),
+new Interval(232 , 232),
+new Interval(238 , 240),
+new Interval(609 , 672),
+new Interval(801 , 928),
+new Interval(993 , 1056),
+new Interval(1121 , 1184),
+new Interval(1313 , 1440),
+new Interval(1921 , 2400),
+new Interval(2737 , 3072),
+new Interval(3193 , 3312),
+new Interval(3433 , 3552),
+new Interval(3793 , 4032),
+new Interval(4065 , 4096),
+new Interval(4577 , 5056),
+new Interval(5121 , 5184),
+new Interval(5217 , 5248),
+new Interval(5281 , 5312),
+new Interval(5345 , 5376),
+new Interval(5385 , 5392),
+new Interval(5409 , 5424),
+new Interval(5433 , 5440),
+new Interval(5449 , 5456),
+new Interval(5473 , 5488),
+new Interval(5513 , 5536),
+new Interval(5545 , 5552),
+new Interval(5569 , 5584),
+new Interval(5593 , 5600),
+new Interval(5609 , 5616),
+new Interval(5633 , 5648),
+new Interval(5673 , 5696),
+new Interval(5705 , 5712),
+new Interval(5729 , 5744),
+new Interval(5753 , 5760),
+new Interval(5769 , 5776),
+new Interval(5793 , 5808),
+new Interval(5833 , 5856),
+new Interval(5865 , 5872),
+new Interval(5889 , 5904),
+new Interval(5913 , 5920),
+new Interval(5929 , 5936),
+new Interval(5953 , 5968),
+new Interval(5993 , 6016),
+new Interval(6033 , 6048),
+new Interval(6081 , 6112),
+new Interval(6129 , 6144),
+new Interval(6161 , 6176),
+new Interval(6209 , 6240),
+new Interval(6289 , 6336),
+new Interval(6361 , 6384),
+new Interval(6433 , 6480),
+new Interval(6505 , 6528),
+new Interval(6553 , 6576),
+new Interval(6625 , 6672),
+new Interval(6745 , 6816),
+new Interval(6865 , 6912),
+new Interval(7033 , 7152),
+new Interval(7169 , 7184),
+new Interval(7193 , 7200),
+new Interval(7209 , 7216),
+new Interval(7225 , 7232),
+new Interval(7233 , 7400),
+new Interval(7401 , 7554),
+new Interval(7555 , 12416),
+new Interval(12417 , 13045),
+new Interval(13046 , 13572),
+new Interval(13573 , 22572),
+new Interval(29573 , 34072),
+new Interval(37573 , 39822),
+new Interval(52823 , 109072),
+new Interval(109323 , 109353),
+new Interval(109354 , 109359),
+new Interval(109392 , 110177),
+new Interval(110178 , 110188),
+new Interval(110225 , 110640),
+new Interval(110677 , 110794),
+new Interval(110807 , 110853),
+new Interval(110950 , 111262),
+new Interval(111275 , 111679),
+new Interval(111692 , 111937),
+new Interval(111950 , 111988),
+new Interval(118085 , 118108),
+new Interval(118111 , 118130),
+new Interval(118131 , 118170),
+new Interval(118175 , 118178),
+
+            };
+            var result3= Utilities.Objects.SortedExcept(ls, lb, null);
 
         }
 

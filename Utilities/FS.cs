@@ -95,7 +95,7 @@ namespace Utilities
         public static void DictionaryToFile(string filepath, IDictionary<int, int> dict)
         {
             EnsurePath(filepath);
-
+            /*
             using (System.IO.StreamWriter fsw = new System.IO.StreamWriter(filepath, false))
             {
                 foreach (var item in dict)
@@ -104,12 +104,29 @@ namespace Utilities
                 }
                 fsw.Close();
             }
+            */
+            var fs = File.OpenWrite(filepath);
+            var writer = new BinaryWriter(fs);
+            foreach (var item in dict)
+            {
+
+                var b1 = BitConverter.GetBytes(item.Key);
+                var b2 = BitConverter.GetBytes(item.Value);
+                writer.Write(b1);
+                writer.Write(b2);
+
+
+            }
+            writer.Close();
+            fs.Close();
 
         }
         public static bool DictionaryFromFile(string filepath, IDictionary<int, int> dict)
         {
             if (FileExists(filepath))
-            {   // Open the text file using a stream reader.
+            {   
+                /*
+                // Open the text file using a stream reader.
                 using (StreamReader sr = new StreamReader(filepath))
                 {
                     while (sr.Peek() >= 0)
@@ -123,8 +140,27 @@ namespace Utilities
                     }
                     // Read the stream to a string, and write the string to the console.
                 }
+                 * */
+                var fs2 = File.OpenRead(filepath);
+                using (Stream source = fs2)
+                {
+                    byte[] buffer = new byte[8];
+                    int bytesRead;
+                    while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        var b1 = new byte[4];
+                        var b2 = new byte[4];
+                        Array.Copy(buffer, 0, b1, 0, 4);
+                        Array.Copy(buffer, 4, b2, 0, 4);
+                        var key = BitConverter.ToInt32(b1, 0);
+                        var value = BitConverter.ToInt32(b2, 0);
+                        dict.Add(key, value);
+                        //dest.Write(buffer, 0, bytesRead);
+                    }
+                }
+                fs2.Close();
                 return true;
-
+                
             }
             else
             {

@@ -111,6 +111,17 @@ namespace XBRLProcessor.Model
                           //tydf.
                       }
                   }
+                  var cf = identifiable as ConceptFilter;
+                  if (cf != null)
+                  {
+                      var cfn = cf as ConceptNameFilter;
+                      if (cfn != null) 
+                      {
+                          var nsprefix = cfn.Concept.QName.Domain;
+                          var nsuri = NsManager.LookupNamespace(nsprefix);
+                          cfn.Concept.QName.Domain = Taxonomy.FindNamespacePrefix(nsuri, nsprefix);
+                      }
+                  }
 
             }
             ValidationRoot = Hierarchy<XbrlIdentifiable>.GetHierarchy(Arcs, Identifiables,
@@ -145,7 +156,7 @@ namespace XBRLProcessor.Model
             this.Document = document;
 
             var tmp_rule = hrule.Copy();
-            FixRule(tmp_rule);
+            //FixRule(tmp_rule);
             var logicalrule = new LogicalModel.Validation.ValidationRule();
             var valueassertion = tmp_rule.Item as ValueAssertion;
             logicalrule.ID = valueassertion.ID;

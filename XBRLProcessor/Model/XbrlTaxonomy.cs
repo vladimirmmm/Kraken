@@ -1311,8 +1311,44 @@ namespace XBRLProcessor.Models
             
             return element;
         }
-        
-        public void SetTargetNamespace(XbrlTaxonomyDocument xbrltaxdoc) 
+        /*
+        private void FixNamespaces(List<Hierarchy<LayoutItem>> items)
+        {
+            foreach (var hli in items)
+            {
+                if (hli.Item.Concept != null)
+                {
+                    var concept = hli.Item.Concept;
+                   
+                    var ce = this.Taxonomy.Concepts.Values.FirstOrDefault(i=>i.Name==concept.Name);
+                    if (ce != null && concept.Namespace!=ce.Namespace)
+                    {
+                        concept.Namespace = ce.Namespace;
+                    }
+                }
+            }
+        }
+         */
+        private Dictionary<string, string>  targetnamespacedictionary = new Dictionary<string, string>();
+
+        private void FixNamespaces(LogicalModel.Base.QualifiedItem qi, XbrlTaxonomyDocument contextdoc)
+        {
+            var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(contextdoc.XmlDocument);
+
+            var nsprefix = qi.Namespace;
+            if (!targetnamespacedictionary.ContainsKey(nsprefix))
+            {
+                var ns = nsmanager.LookupNamespace(nsprefix);
+                var nsdoc = TaxonomyDocumentNSDictionary.ContainsKey(ns) ? TaxonomyDocumentNSDictionary[ns] : null;
+                if (nsdoc != null)
+                {
+                    targetnamespacedictionary.Add(nsprefix, nsdoc.TargetNamespacePrefix);
+                }
+            }
+            qi.Namespace = targetnamespacedictionary.ContainsKey(nsprefix) ? targetnamespacedictionary[nsprefix] : qi.Namespace;
+         
+        }
+        public static void SetTargetNamespace(XbrlTaxonomyDocument xbrltaxdoc) 
         {
             var ns = "";
             var doc = xbrltaxdoc.XmlDocument;

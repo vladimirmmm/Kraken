@@ -31,12 +31,17 @@ namespace BaseModel
             get { return _LocalRelPath; }
             set { _LocalRelPath = value; }
         }
+        private string _LocalPath = "";
         public string LocalPath
         {
             get 
             {
+                if (string.IsNullOrEmpty(_LocalPath))
+                {
+                    _LocalPath = Utilities.Strings.ResolveRelativePath(GetEngineLocalFolder(), LocalRelPath);
+                }
                 //return String.Format("{0}{1}", GetEngineLocalFolder(), LocalRelPath);
-                return Utilities.Strings.ResolveRelativePath( GetEngineLocalFolder(), LocalRelPath); 
+                return _LocalPath; 
             }
     
         }
