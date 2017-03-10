@@ -370,14 +370,14 @@ namespace XBRLProcessor.Models
                 foreach (var defdoc in defdocs)
                 {
                     var defarcs = Utilities.Xml.SelectNodes(defdoc.XmlDocument.DocumentElement, "//link:arcroleRef");
-                    var defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/dimension-domain");
+                    var defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, arcroleuriattributeselector) == "http://xbrl.org/int/dim/arcrole/dimension-domain");
                     if (defarc != null)
                     {
                         domtodim_docs.Add(defdoc);
                     }
                     else
                     {
-                        defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, "arcroleURI") == "http://xbrl.org/int/dim/arcrole/domain-member");
+                        defarc = defarcs.FirstOrDefault(i => Utilities.Xml.Attr(i, arcroleuriattributeselector) == "http://xbrl.org/int/dim/arcrole/domain-member");
                         if (defarc != null)
                         {
                             memtodom_docs.Add(defdoc);
@@ -389,14 +389,14 @@ namespace XBRLProcessor.Models
                 var domtodimdefinitions = new List<DefinitionLink>();
                 var dimdict = new Dictionary<string, List<string>>();
                 domdict.Clear();
-
+                var roleattributeselector = new AttributeSelector("xlink:role");
                 foreach (var doc in domtodim_docs)
                 {
 
                     var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
                     foreach (var deflink in deflinks)
                     {
-                        if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                        if (Utilities.Xml.Attr(deflink, roleattributeselector) == "http://www.xbrl.org/2003/role/link")
                         {
                             var dlink = mapping.Map<DefinitionLink>(deflink);
                             // dlink.DefinitionArcs = dlink.DefinitionArcs.Where(i => i.RoleType == "dimension_domain").ToList();
@@ -471,7 +471,7 @@ namespace XBRLProcessor.Models
                     var deflinks = Utilities.Xml.SelectNodes(doc.XmlDocument.DocumentElement, "//link:definitionLink").ToList();
                     foreach (var deflink in deflinks)
                     {
-                        if (Utilities.Xml.Attr(deflink, "xlink:role") == "http://www.xbrl.org/2003/role/link")
+                        if (Utilities.Xml.Attr(deflink, roleattributeselector) == "http://www.xbrl.org/2003/role/link")
                         {
                             var dlink = mapping.Map<DefinitionLink>(deflink);
                             dlink.LoadHierarchy();
@@ -740,11 +740,12 @@ namespace XBRLProcessor.Models
                     var genlinknode = Utilities.Xml.SelectSingleNode(filingindicatorsdoc.XmlDocument.DocumentElement, xpathcontainer);
                     if (genlinknode != null)
                     {
+                        var selectattributeselector = new AttributeSelector("select");
                         foreach (XmlNode node in genlinknode)
                         {
                             if (node.Name.ToLower() == "variable:parameter")
                             {
-                                var select = Utilities.Xml.Attr(node, "select");
+                                var select = Utilities.Xml.Attr(node, selectattributeselector);
                                 var find = select.TextBetween("'", "'");
                                 filingindicators.Add(find);
                             }
@@ -1075,14 +1076,16 @@ namespace XBRLProcessor.Models
 
         
         #region Handlers
-
+        public AttributeSelector l_id = new AttributeSelector(Attributes.LabelID);
+        public AttributeSelector l_role = new AttributeSelector(Attributes.LabelRole);
+        public AttributeSelector l_language = new AttributeSelector(Attributes.Language);
         public bool HandleLabel(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)
         {
             var result = true;
-            var labelid = Utilities.Xml.Attr(node,Attributes.LabelID);
+            var labelid = Utilities.Xml.Attr(node, l_id);
             var labeltext = node.InnerText;
-            var role = Utilities.Xml.Attr(node,Attributes.LabelRole);
-            var lang = Utilities.Xml.Attr(node,Attributes.Language);
+            var role = Utilities.Xml.Attr(node, l_role);
+            var lang = Utilities.Xml.Attr(node, l_language);
             var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
             if (taxonomydocument.FileName == "tab-lab-codes.xml") 
             { 
@@ -1348,11 +1351,12 @@ namespace XBRLProcessor.Models
             qi.Namespace = targetnamespacedictionary.ContainsKey(nsprefix) ? targetnamespacedictionary[nsprefix] : qi.Namespace;
          
         }
+        private static AttributeSelector targetnsattributeselector = new AttributeSelector(Literals.Attributes.TargetNamespace);
         public static void SetTargetNamespace(XbrlTaxonomyDocument xbrltaxdoc) 
         {
             var ns = "";
             var doc = xbrltaxdoc.XmlDocument;
-            var targetnamespace = Utilities.Xml.Attr(doc.DocumentElement, Literals.Attributes.TargetNamespace);
+            var targetnamespace = Utilities.Xml.Attr(doc.DocumentElement, targetnsattributeselector);
             xbrltaxdoc.TargetNamespace = targetnamespace;
             if (targetnamespace != null)
             {
@@ -1369,11 +1373,13 @@ namespace XBRLProcessor.Models
             }
        
         }
-        
+
+        private static AttributeSelector arcroleuriattributeselector = new AttributeSelector(Literals.Attributes.arcroleURI);
+        private static AttributeSelector idattributeselector = new AttributeSelector(Literals.Attributes.ID);
         public bool HandleElements(XmlNode node, XbrlTaxonomyDocument taxonomydocument) 
         {
             var element = new Element();
-            if (!String.IsNullOrEmpty(Utilities.Xml.Attr(node, Literals.Attributes.ID)))
+            if (!String.IsNullOrEmpty(Utilities.Xml.Attr(node, idattributeselector)))
             {
                 Mappings.CurrentMapping.Map(node, element);
             
@@ -1480,7 +1486,7 @@ namespace XBRLProcessor.Models
 
             var docelement = doc.CreateElement("xbrli:xbrl");
             doc.AppendChild(docelement);
-            doc.DocumentElement.SetAttribute("localpath", "emptyinstance");
+            //doc.DocumentElement.SetAttribute("localpath", "emptyinstance");
 
             instance.SetDocument(doc);
             //set the period

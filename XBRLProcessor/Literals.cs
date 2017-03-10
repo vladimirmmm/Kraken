@@ -49,6 +49,7 @@ namespace XBRLProcessor.Literals
         public const string LabelRole = "xlink:role";
         public const string Language = "xml:lang";
         public const string TargetNamespace = "targetNamespace";
+        public const string arcroleURI = "arcroleURI";
     }
 }
  

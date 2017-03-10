@@ -77,19 +77,19 @@ namespace Utilities
         }
         public Interval(int start)
         {
-            this.Start = start;
-            this.End = start;
+            _Start = start;
+            _End = start;
         }
         public Interval(int start, int end)
         {
-            this.Start = start;
-            this.End = end;
+            _Start = start;
+            _End = end;
         }
 
         public IEnumerable<int> AsEnumerable()
         {
             //if (Start == End) { yield return Start; }
-            for (int i = Start; i <= End; i++)
+            for (int i = _Start; i <= _End; i++)
             {
                 yield return i;
             }
@@ -97,24 +97,24 @@ namespace Utilities
 
         public int Count
         {
-            get { return Start == -1 ? 0 : End - Start + 1; }
+            get { return _Start == -1 ? 0 : _End - _Start + 1; }
         }
 
         public string Content()
         {
-            if (End == Start)
+            if (_End == _Start)
             {
-                return Start.ToString();
+                return _Start.ToString();
             }
             else
             {
-                return string.Format("{0}..{1}", Start, End);
+                return string.Format("{0}..{1}", _Start, _End);
             }
         }
         public Interval Intersect(Interval interval) 
         {
-            var minend = Math.Min(interval.End, this.End);
-            var maxstart = Math.Max(interval.Start, this.Start);
+            var minend = Math.Min(interval.End, _End);
+            var maxstart = Math.Max(interval.Start, _Start);
             if (maxstart <= minend)
             {
                 return new Interval(maxstart, minend);
@@ -123,8 +123,8 @@ namespace Utilities
         }
         public Interval Merge(Interval interval)
         {
-            var minstart = Math.Min(interval.Start, this.Start);
-            var maxend = Math.Max(interval.End, this.End);
+            var minstart = Math.Min(interval.Start, _Start);
+            var maxend = Math.Max(interval.End, _End);
             if (minstart <= maxend)
             {
                 return new Interval(minstart, maxend);
@@ -137,20 +137,20 @@ namespace Utilities
             var intersection = Intersect(interval);
             if (intersection == null) 
             { 
-                result.Add(this);
+                result.Add(this.Copy());
                 return result;
             }
-            var x = intersection.Start - this.Start;
+            var x = intersection.Start - _Start;
             var y = this.End - intersection.End;
             if (x > 0) 
             {
-                var i1 = new Interval(this.Start, intersection.Start - 1);
+                var i1 = new Interval(_Start, intersection.Start - 1);
                 result.Add(i1);
 
             }
             if (y > 0) 
             {
-                var i2=new Interval(intersection.End + 1, this.End);
+                var i2=new Interval(intersection.End + 1, _End);
                 result.Add(i2);
 
             }
@@ -161,8 +161,8 @@ namespace Utilities
         {
             //var minend = Math.Min(interval.End, this.End);
             //var maxstart = Math.Max(interval.Start, this.Start);
-            var diff1 = this.End - interval.Start;
-            var diff2 = this.Start - interval.End;
+            var diff1 = _End - interval.Start;
+            var diff2 = _Start - interval.End;
             return (diff1 + diff2) - Math.Max(diff1, diff2);
             //if (diff < 0)
             //{
@@ -183,14 +183,14 @@ namespace Utilities
         {
             //var minend = Math.Min(interval.End, this.End);
             //var maxstart = Math.Max(interval.Start, this.Start);
-            var diff = this.End - interval.Start;
+            var diff = _End - interval.Start;
             if (diff < 0)
             {
                 return -1;
             }
             else
             {
-                diff = this.Start - interval.End;
+                diff = _Start - interval.End;
                 if (diff > 0)
                 {
                     return 1;
@@ -203,27 +203,27 @@ namespace Utilities
         {
             //var minend = Math.Min(interval.End, this.End);
             //var maxstart = Math.Max(interval.Start, this.Start);
-            if (this.End < interval.Start)
+            if (_End < interval.Start)
             {
-                return this.End - interval.Start;
+                return _End - interval.Start;
             }
-            if (this.Start > interval.End)
+            if (_Start > interval.End)
             {
-                return this.Start - interval.End;
+                return _Start - interval.End;
             }
             return 0;
         }
         public bool IsNext(int value)
         {
-            return this.End + 1 == value;
+            return _End + 1 == value;
         }
         public bool IsPrev(int value)
         {
-            return this.Start - 1 == value;
+            return _Start - 1 == value;
         }
         public bool IsInThis(int value) 
         {
-            return this.Start >= value && value <= this.End;
+            return _Start >= value && value <= _End;
         }
         public static Interval GetInstanceFromString(string content)
         {
@@ -262,99 +262,13 @@ namespace Utilities
         {
             return this.Compare(other);
         }
+
+        public Interval Copy()
+        {
+            return new Interval(_Start, _End);
+        }
     }
-    //public class IntervalDictionary : IDictionary<int, int> 
-    //{
-    //    public IntervalList _Keys = new IntervalList();
-    //    public List<int> _Values = new List<int>();
-    //    public void Add(int key, int value)
-    //    {
-    //        _Keys.AddX(key)
-    //    }
-
-    //    public bool ContainsKey(int key)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public ICollection<int> Keys
-    //    {
-    //        get { throw new NotImplementedException(); }
-    //    }
-
-    //    public bool Remove(int key)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public bool TryGetValue(int key, out int value)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public ICollection<int> Values
-    //    {
-    //        get { throw new NotImplementedException(); }
-    //    }
-
-    //    public int this[int key]
-    //    {
-    //        get
-    //        {
-    //            throw new NotImplementedException();
-    //        }
-    //        set
-    //        {
-    //            throw new NotImplementedException();
-    //        }
-    //    }
-
-    //    public void Add(KeyValuePair<int, int> item)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void Clear()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public bool Contains(KeyValuePair<int, int> item)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void CopyTo(KeyValuePair<int, int>[] array, int arrayIndex)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public int Count
-    //    {
-    //        get { throw new NotImplementedException(); }
-    //    }
-
-    //    public bool IsReadOnly
-    //    {
-    //        get { throw new NotImplementedException(); }
-    //    }
-
-    //    public bool Remove(KeyValuePair<int, int> item)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public IEnumerator<KeyValuePair<int, int>> GetEnumerator()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
+ 
     public class IntervalListLookup<TLookup> : IList<int>
     {
         public List<IntervalLookup<TLookup>> Intervals = new List<IntervalLookup<TLookup>>();
@@ -745,30 +659,73 @@ namespace Utilities
             }
             AddIntervalToEnd(interval);
         }
-        public void AddRange(IEnumerable<int> values)
+        public void AddRange_O(IEnumerable<int> values)
         {
-            var ivalues =values as IntervalList;
-            if (ivalues!=null && this.Intervals.Count<200)
-            {
-                AddRange(ivalues);
-                return;
-            }
-            _Count = -1;
+
             foreach (var value in values)
             {
                 this.Add(value);
             }
+            _Count = -1;
+            this.Normalize();
+        }
+        public void AddRange(IEnumerable<int> values)
+        {
+            var t = this;
+            var ivalues = values as IntervalList;
+            if (ivalues != null && ivalues.Intervals.Count > 25)
+            {
+                t.AddRange(ivalues);
+                return;
+            }
+            foreach (var value in values)
+            {
+                this.Add(value);
+            }
+            _Count = -1;
+        }
+        public void AddRange_X(IEnumerable<int> values)
+        {
+            var t = this.Copy();
+            var t2 = this.Copy();
+            //var t = this;
+            //var sb = new StringBuilder();
+            //sb.AppendLine(t.GetString());
+            //sb.AppendLine();
+
+            var ivalues = values as IntervalList;
+            if (ivalues != null)
+            {
+                t2.AddRange(ivalues);
+                //return;
+            }
+
+            //_Count = -1;
+            foreach (var value in values)
+            {
+                this.Add(value);
+            }
+            _Count = -1;
+
+            if (this.Count != t2.Count)
+            {
+                //    var bigger = this.Count > t.Count ? this : t;
+                //    var smaller = bigger == this ? t : this;
+                //    var diff = Utilities.Objects.SortedExcept(bigger, smaller);
+            }
+
         }
         public void AddRange(IntervalList values)
         {
-            var merged = Utilities.Objects.MergeSorted(this, values, null);
+            var merged = Utilities.Objects.MergeSorted_New(this, values, null);
+            //merged.Normalize();
             this.Clear();
             this.Intervals = merged.Intervals;
             //foreach (var interval in merged.Intervals)
             //{
             //    this.Intervals.Add(interval);
             //}
-            _Count = -1;
+            //_Count = -1;
 
         }
         public static IntervalComparer ic = new IntervalComparer();
@@ -777,7 +734,10 @@ namespace Utilities
         private int LastAdded = -1;
         public void AddX(int value)
         {
-            if (LastAdded == value ){return;}
+
+            if (LastAdded == value ){
+                return;
+            }
             LastAdded = value;
             _Count = -1;
             if (LastInterval == null)
@@ -939,6 +899,8 @@ namespace Utilities
         public new void Clear()
         {
             Intervals.Clear();
+            _LastInterval = null;
+            _Count = -1;
         }
 
         public int IndexOf(int item)
@@ -1053,7 +1015,7 @@ namespace Utilities
             var il = new IntervalList();
             foreach (var i in this.Intervals) 
             {
-                il.Intervals.Add(i);
+                il.Intervals.Add(i.Copy());
             }
             return il;
         }
@@ -1080,6 +1042,7 @@ namespace Utilities
 
         public void Normalize()
         {
+            var ic1 = this.Intervals.Count;
             if (this.Intervals.Count > 1)
             {
                 var il = new IntervalList();
@@ -1090,7 +1053,11 @@ namespace Utilities
 
                 this.Intervals = il.Intervals;
             }
-            
+            _Count = -1;
+            if (this.Intervals.Count != ic1) 
+            {
+
+            }
             //foreach (var interval in this.Intervals)
             //{ 
             //    il.AddInterval(interval);
@@ -1330,7 +1297,31 @@ new Interval(118175 , 118178),
             var result3= Utilities.Objects.SortedExcept(ls, lb, null);
 
         }
+        public void mergetest() 
+        {
+            IntervalList list1 = new IntervalList();
+            list1.Intervals=new List<Interval>(){ 
+                new Interval(10,12),
+                new Interval(20,50),
+                new Interval(60,70),
+                new Interval(71,80),
+                new Interval(100,120),
+                new Interval(180,210)
+            };
 
+            IntervalList list2 = new IntervalList();
+            list2.Intervals = new List<Interval>(){ 
+                new Interval(11,15),
+                new Interval(16,20),
+                new Interval(21,25),
+                new Interval(30,130),
+                new Interval(200,202),
+                new Interval(205,208)
+            };
+
+            IntervalList result = Utilities.Objects.MergeSorted_New(list1, list2, null);
+
+        }
         public void test4()
         {
             IntervalList list1 = new IntervalList();

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Utilities;
 using XBRLProcessor.Model.Base;
 
 namespace XBRLProcessor.Model
@@ -16,14 +17,20 @@ namespace XBRLProcessor.Model
         public List<Arc> Arcs = new List<Arc>();
         public Hierarchy<TClass> DefinitionRoot { get; set; }
 
+        private AttributeSelector idattributeselector = new AttributeSelector("id");
+        private AttributeSelector labelattributeselector = new AttributeSelector("*:label");
+        private AttributeSelector hrefattributeselector = new AttributeSelector("*:href");
+        private AttributeSelector fromattributeselector = new AttributeSelector("*:from");
+        private AttributeSelector toattributeselector = new AttributeSelector("*:to");
+
         public void LoadFromXml(XmlNode node)
         {
             var allchilds = Utilities.Xml.SelectChildNodes(node, "*").ToList();
-            var arcnodes = allchilds.Where(i => 
-                !String.IsNullOrEmpty(Utilities.Xml.Attr(i,"*:from")) //i.Attributes["from"] != null 
-                &&  !String.IsNullOrEmpty(Utilities.Xml.Attr(i,"*:to")) //i.Attributes["to"] != null
+            var arcnodes = allchilds.Where(i =>
+                !String.IsNullOrEmpty(Utilities.Xml.Attr(i, fromattributeselector)) //i.Attributes["from"] != null 
+                && !String.IsNullOrEmpty(Utilities.Xml.Attr(i, toattributeselector)) //i.Attributes["to"] != null
                 ).ToList();
-            var identifiables = allchilds.Where(i => !String.IsNullOrEmpty(Utilities.Xml.Attr( i,"*:label"))).ToList();
+            var identifiables = allchilds.Where(i => !String.IsNullOrEmpty(Utilities.Xml.Attr(i, labelattributeselector))).ToList();
 
             var arcmapping = Mapping.Mappings.CurrentMapping.MappingCollection.FirstOrDefault(i => i.ClassType == typeof(Arc));
             foreach (var arcnode in arcnodes) 
@@ -34,9 +41,9 @@ namespace XBRLProcessor.Model
             foreach (var identifiable in identifiables)
             {
                 var item = new IdentifiablewithLabel();
-                item.ID = Utilities.Xml.Attr(identifiable, "id");
-                item.LabelID = Utilities.Xml.Attr(identifiable, "*:label");
-                item.HRef = Utilities.Xml.Attr(identifiable, "*:href");
+                item.ID = Utilities.Xml.Attr(identifiable, idattributeselector);
+                item.LabelID = Utilities.Xml.Attr(identifiable, labelattributeselector);
+                item.HRef = Utilities.Xml.Attr(identifiable, hrefattributeselector);
                 Items.Add(item as TClass);
             }
         }

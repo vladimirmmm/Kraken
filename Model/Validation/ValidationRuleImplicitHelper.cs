@@ -30,7 +30,7 @@ namespace LogicalModel.Validation
                     if (!p.BindAsSequence && factgroup.Count > 1) 
                     {
                         inconsistent = true;
-                        //sb.AppendLine(taxonomy.GetFactStringKeys(p.TaxFacts));
+                        sb.AppendLine(taxonomy.GetFactStringKeys(p.TaxFacts));
 
                         break;
                     }
@@ -38,6 +38,10 @@ namespace LogicalModel.Validation
   
             }
             sb.AppendLine("___________");
+            if (rule.ID == "eba_v0204_m") 
+            {
+
+            }
             if (inconsistent) 
             {
                 Logger.WriteLine(String.Format("Can't resolve rule {0}", rule.ID));
@@ -594,16 +598,21 @@ namespace LogicalModel.Validation
                         foreach (var p in otherfactparameters)
                         {
                             var factids = p.TaxFacts[groupix];
+                            //if (factids.Count > 1) 
+                            //{
+
+                            //}
                             foreach (var p_factid in factids) 
                             {
-                                AddFactToGroup(p_factid, p.Name, groupkey, groupdictionary, factkeydict);
-
+                                //AddFactToGroup(p_factid, p.Name, groupkey, groupdictionary, factkeydict);
+                                AddFactToGroup(p_factid, p.Name, taxonomy, groupaspects, groupdictionary, factkeydict);
                             }
                             if (factids.Count == 0) 
                             {
                                 AddEmptyFactToGroup(p.Name, groupkey, groupdictionary, factkeydict);
 
                             }
+                            factids.Clear();
                         }
                     }
                     foreach (var group in groupdictionary) 

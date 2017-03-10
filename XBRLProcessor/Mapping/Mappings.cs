@@ -350,8 +350,8 @@ namespace XBRLProcessor.Mapping
 
     public class PropertyMapping<TClass, PropertyType> : PropertyMapping<TClass> where TClass : class
     {
-     
 
+        public AttributeSelector AttributeSelector = null;
         public Expression<Func<TClass, PropertyType>> PropertyAccessor = null;
         public Func<TClass, PropertyType> Getter = null;
         public Action<TClass, PropertyType> Setter = null;
@@ -391,6 +391,10 @@ namespace XBRLProcessor.Mapping
         {
             this.XmlSelector = XmlSelector;
             this.XPathContainer = Utilities.Xml.GetXPath(XmlSelector);
+            if (!this.XPathContainer.IsComplex)
+            {
+                this.AttributeSelector = new AttributeSelector(this.XmlSelector);
+            }
             this.PropertyAccessor = PropertyAccessor;
             this.Getter = PropertyAccessor.Compile();
             this.Setter = GetSetter(PropertyAccessor);
@@ -424,7 +428,7 @@ namespace XBRLProcessor.Mapping
 
             return action;
         }
-
+        private AttributeSelector conentattributeselector = new AttributeSelector("@content");
         public override T Map<T>(IEnumerable<XmlNode> nodes, T instance)
         {
             //var prop = (PropertyInfo)((MemberExpression)PropertyAccessor.Body).Member;
@@ -444,7 +448,7 @@ namespace XBRLProcessor.Mapping
 
             LoadNameSpaces(node.OwnerDocument);
             Object value = null;
-            var tagname = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
+            var tagname = XPathContainer.TagName;// Utilities.Strings.TextBetween(XmlSelector, "<", ">");
 
 
  
@@ -492,24 +496,25 @@ namespace XBRLProcessor.Mapping
                     }
                     if (childnode != null)
                     {
-                        stringval = Utilities.Xml.Attr(childnode, "@content");
+                        stringval = Utilities.Xml.Attr(childnode, conentattributeselector);
                     }
 
                 }
-                if (XmlSelector.StartsWith("/")) 
+                //if (XmlSelector.StartsWith("/")) 
+                if (!XPathContainer.IsComplex && AttributeSelector.FirtstChildSpecifier)
                 {
                     XmlNode firstchild = Utilities.Xml.FirstChild(node);
                     if (firstchild != null) 
                     {
                         var selector = XmlSelector.Substring(1);
-                        stringval = Utilities.Xml.Attr(firstchild, selector);
+                        stringval = Utilities.Xml.Attr(firstchild, AttributeSelector);
 
                     }
                 }
                 //else
-                if (String.IsNullOrEmpty(stringval)) //default case
+                if (String.IsNullOrEmpty(stringval) && AttributeSelector!=null) //default case
                 {
-                    stringval = Utilities.Xml.Attr(node, XmlSelector);
+                    stringval = Utilities.Xml.Attr(node, AttributeSelector);
                 }
    
                 if (!String.IsNullOrEmpty(stringval))

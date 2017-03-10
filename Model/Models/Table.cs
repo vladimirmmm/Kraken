@@ -452,7 +452,7 @@ namespace LogicalModel
 
                     }
 
-                    domaininterval.Add(factix);
+                    //domaininterval.Add(factix);
 
                     this.AddFactKeyParts(key, slicedomainids, factix);
 
@@ -516,36 +516,40 @@ namespace LogicalModel
                 {
                     this.FactsOfPartsTemp.Add(part, new IntervalList());
                 }
+                //if (part == 6041) 
+                ////{
+
+                //}
                 this.FactsOfPartsTemp[part].Add(factix);
                 //this.FactsOfParts.AddIfNotExists(part, factix);
 
 
             }
         }
-        public void AddFactKeyParts(int[] key, int factix) 
-        {
-            foreach (var part in key)
-            {
-                var dimensiondomainpart = this.Taxonomy.GetDimensionDomainPart(part);
-                if (dimensiondomainpart != -1)
-                {
-                    if (!this.FactsOfPartsTemp.ContainsKey(dimensiondomainpart)) 
-                    {
-                        this.FactsOfPartsTemp_Old.Add(dimensiondomainpart, new List<int>());
-                    }
-                    this.FactsOfPartsTemp[dimensiondomainpart].Add(factix);
-                    //this.FactsOfParts.AddIfNotExists(dimensiondomainpart, factix);
-                }
-                if (!this.FactsOfPartsTemp.ContainsKey(part))
-                {
-                    this.FactsOfPartsTemp_Old.Add(part, new List<int>());
-                }
-                this.FactsOfPartsTemp[part].Add(factix);
-                //this.FactsOfParts.AddIfNotExists(part, factix);
+        //public void AddFactKeyParts(int[] key, int factix) 
+        //{
+        //    foreach (var part in key)
+        //    {
+        //        var dimensiondomainpart = this.Taxonomy.GetDimensionDomainPart(part);
+        //        if (dimensiondomainpart != -1)
+        //        {
+        //            if (!this.FactsOfPartsTemp.ContainsKey(dimensiondomainpart)) 
+        //            {
+        //                this.FactsOfPartsTemp_Old.Add(dimensiondomainpart, new List<int>());
+        //            }
+        //            this.FactsOfPartsTemp[dimensiondomainpart].Add(factix);
+        //            //this.FactsOfParts.AddIfNotExists(dimensiondomainpart, factix);
+        //        }
+        //        if (!this.FactsOfPartsTemp.ContainsKey(part))
+        //        {
+        //            this.FactsOfPartsTemp_Old.Add(part, new List<int>());
+        //        }
+        //        this.FactsOfPartsTemp[part].Add(factix);
+        //        //this.FactsOfParts.AddIfNotExists(part, factix);
       
 
-            }
-        }
+        //    }
+        //}
         private void SetExtensions()
         {
             if (this.ID.Contains("09.04")) 

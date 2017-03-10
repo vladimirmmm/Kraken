@@ -54,35 +54,48 @@ namespace XBRLProcessor.Models
             {
                 if (_XmlDocument == null && System.IO.File.Exists(this.LocalPath))
                 {
-                    _XmlDocument = new XmlDocument();
-
-                    //var textReader = System.IO.File.OpenText(this.LocalPath);
-                    //XmlTextReader xmlReader = new XmlTextReader(textReader);
-                 
-                    //var xmlreadersettings = new XmlReaderSettings();
-                    //xmlreadersettings.ValidationType = ValidationType.None;
-                    //xmlreadersettings.DtdProcessing = DtdProcessing.Parse;
-                    //xmlreadersettings.XmlResolver = null;
-                    //XmlReader xmlReader = XmlReader.Create(this.LocalPath, xmlreadersettings);
-                    ////extract and flatten data from the xml doc
-                    //XmlDocument xmlDoc = new XmlDocument();
-                    //xmlDoc.XmlResolver = null;
-                    //xmlDoc.Load(xmlReader);
-
-
-                    _XmlDocument.Load(this.LocalPath);
-                    _XmlDocument.DocumentElement.SetAttribute("localpath", this.LocalPath);
-                    var localpath = _XmlDocument.DocumentElement.GetAttribute("localpath");
-                    if (String.IsNullOrEmpty(localpath))
-                    {
-
-                    }
+                    LoadXmlDocument();
 
                 }
                 return _XmlDocument;
             }
         }
+        private static XmlReaderSettings _XmlReaderSettings = null;
+        public static XmlReaderSettings XmlReaderSettings
+        {
+            get
+            {
+                if (_XmlReaderSettings == null)
+                {
+                    _XmlReaderSettings = new XmlReaderSettings();
+                    _XmlReaderSettings.ValidationType = ValidationType.None;
+                    _XmlReaderSettings.DtdProcessing = DtdProcessing.Ignore;
+                    _XmlReaderSettings.XmlResolver = null;
+                    _XmlReaderSettings.ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.None;
+                    _XmlReaderSettings.IgnoreComments = true;
+                    _XmlReaderSettings.IgnoreProcessingInstructions = true;
+                    _XmlReaderSettings.IgnoreWhitespace = true;
+                }
+                return _XmlReaderSettings;
+            }
+        }
+        public void LoadXmlDocument() 
+        {
+    
+            XmlReader xmlReader = XmlReader.Create(this.LocalPath, XmlReaderSettings);
+            ////extract and flatten data from the xml doc
+            //XmlDocument xmlDoc = new XmlDocument();
+            //xmlDoc.XmlResolver = null;
+            //xmlDoc.Load(xmlReader);
+            //var xmlReader = XmlReader.Create(LocalPath, settings);
+            //var xpathd = new System.Xml.XPath.XPathDocument();
+            //var nav = xpathd.CreateNavigator();
+            //nav.
+            _XmlDocument = new XmlDocument();
+            //_XmlDocument.Load(this.LocalPath);
+            _XmlDocument.Load(xmlReader);
 
+        }
         //public void test()
         //{
         //    var xmlreadersettings = new XmlReaderSettings();
@@ -185,10 +198,10 @@ namespace XBRLProcessor.Models
 
         public bool LoadTaxonomyDocument(string filepath, XbrlTaxonomyDocument parent) 
         {
-            if (filepath.Contains("header-rend.xml")) 
-            {
+            //if (filepath.Contains("header-rend.xml")) 
+            //{
 
-            }
+            //}
             var result = true;
             MarkupPath = filepath;
             var sourcepath = filepath;
@@ -269,10 +282,12 @@ namespace XBRLProcessor.Models
             }
         }
         //TODO
+        private AttributeSelector schemalocationattributeselector = new AttributeSelector(Attributes.SchemaLocation);
+        private AttributeSelector xlinkrefattributeselector = new AttributeSelector(Attributes.XlinkHref);
         public bool LoadLink(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
         {
             var result = true;
-            var linkpath = Xml.Attr(node, Attributes.XlinkHref);
+            var linkpath = Xml.Attr(node, xlinkrefattributeselector);
             AddRelativeReferencedFiles(linkpath);
            
             return result;
@@ -281,7 +296,7 @@ namespace XBRLProcessor.Models
         public bool LoadImport(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
         {
             var result = true;
-            var paths = Xml.Attr(node, Attributes.SchemaLocation);
+            var paths = Xml.Attr(node, schemalocationattributeselector);
             var pathitems = paths.Split(' ');
             if (taxonomydocument.FileName == "dim-def.xml")
             {
@@ -305,30 +320,27 @@ namespace XBRLProcessor.Models
             return result;
 
         }
-        public bool LoadImport2(XmlNode node, XbrlTaxonomyDocument taxonomydocument)
-        {
-            var result = true;
-            var paths = Xml.Attr(node, Attributes.SchemaLocation);
-            var pathitems = paths.Split(' ');
-            foreach (var path in pathitems) 
-            {
-                if (path.Contains("."))
-                {
-                    AddRelativeReferencedFiles(path);
-
-                }
-            }
-
-            return result;
-
-        }
        
         public override void LoadDocument()
         {
             if (Utilities.FS.FileExists(LocalPath))
             {
-                XmlDocument.LoadXml(Utilities.FS.ReadAllText(LocalPath));
-                XmlDocument.DocumentElement.SetAttribute("localpath", LocalPath);
+                /*
+                var settings = new XmlReaderSettings();
+                settings.CheckCharacters = false;
+                settings.DtdProcessing = DtdProcessing.Ignore;
+                settings.IgnoreComments = true;
+                settings.ValidationFlags = System.Xml.Schema.XmlSchemaValidationFlags.None;
+                settings.ValidationType = ValidationType.None;
+       
+                var xmlReader = XmlReader.Create(LocalPath, settings);
+
+                XmlDocument.Load(xmlReader);
+                */
+
+                //XmlDocument.LoadXml(Utilities.FS.ReadAllText(LocalPath));
+                LoadXmlDocument();
+                //XmlDocument.DocumentElement.SetAttribute("localpath", LocalPath);
             }
         }
 

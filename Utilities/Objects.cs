@@ -147,7 +147,7 @@ namespace Utilities
             var se = smaller.LastInterval == null ? 0 : smaller.LastInterval.End;
             var be = bigger.LastInterval == null ? 0 : bigger.LastInterval.End;
 
-            if (bc == 0 || se<b1 || be<s1) { return smaller; }
+            if (bc == 0 || se<b1 || be<s1) { return smaller.Copy(); }
 
             var limit = 10;
 
@@ -165,7 +165,7 @@ namespace Utilities
                 }
                 for (int i = 0; i < six; i++) 
                 {
-                    result.AddInterval(smaller.Intervals[i]);
+                    result.AddInterval(smaller.Intervals[i].Copy());
                 }
             }
             if (bc > limit) 
@@ -236,7 +236,7 @@ namespace Utilities
                     else
                     {
                        // result.Intervals.Add(s);
-                        result.AddIntervalToEnd(s);
+                        result.AddIntervalToEnd(s.Copy());
                         six++;
                         snext = six < sc ? smaller.Intervals[six] : null;
 
@@ -247,7 +247,7 @@ namespace Utilities
                 if (r < 0)
                 {
                     //result.Intervals.Add(s);
-                    result.AddIntervalToEnd(s);
+                    result.AddIntervalToEnd(s.Copy());
                     six++;
                     snext = six < sc ? smaller.Intervals[six] : null;
 
@@ -597,80 +597,91 @@ namespace Utilities
         public static IntervalList MergeSorted_New(IntervalList sequence1, IntervalList sequence2, IComparer<int> comparer)
         {
             var result = new IntervalList();
-           
-            var smaller = sequence1.Intervals.Count < sequence2.Intervals.Count ? sequence1 : sequence2;
-            var bigger = smaller == sequence1 ? sequence2 : sequence1;
-            result.Intervals = bigger.Intervals.ToList();
-            var ix = 0;
-            foreach (var interval in smaller.Intervals) 
+            result.Intervals.Capacity = sequence1.Intervals.Count + sequence2.Intervals.Count;
+            if (sequence1.Intervals.Count == 0) 
             {
-                if (interval.Start == interval.End) 
-                {
-                    result.Add(interval.Start);
-                    continue;
-                }
-                var startix = bigger.SearchByStartIndexBefore(interval, ix);
-
+                result.Intervals.AddRange(sequence2.Intervals);
+                return result;
             }
-            var bix = 0;
-            var six = 0;
-            if (IsTheSame(sequence1, sequence2))
+            if (sequence2.Intervals.Count == 0)
             {
                 result.Intervals.AddRange(sequence1.Intervals);
                 return result;
             }
-
-            var sc = smaller.Intervals.Count;
-            var bc = bigger.Intervals.Count;
-
-            Interval s = smaller.Intervals.FirstOrDefault();
-            Interval b = bigger.Intervals.FirstOrDefault();
+            var smaller = sequence1.FirstInterval.Start < sequence2.FirstInterval.Start ? sequence1 : sequence2;
+            var bigger = smaller == sequence1 ? sequence2 : sequence1;
+            var s_c = smaller.Intervals.Count;
+            var b_c = bigger.Intervals.Count;     
+            var start_ref_interval = smaller.FirstInterval;
+            var end_ref_interval = smaller.LastInterval.Start < bigger.LastInterval.Start ? bigger.LastInterval : smaller.LastInterval;
+            Interval current = start_ref_interval.Copy();
+            result.Intervals.Add(current);
+            var ix_s = 1; var ix_b = 0;
             int r = 0;
-            while (s != null || b != null)
+            Interval next_s = null;
+            Interval next_b = null;
+            while (current != null)
             {
-
-                if (s != null && b != null)
+                //if (ix_s == s_c)
+                //{
+                //    result.Intervals.AddRange(bigger.Intervals.Skip(ix_b));
+                //    break;
+                //}
+                //if (ix_b == b_c)
+                //{
+               
+                //}
+                next_s = ix_s < s_c ? smaller.Intervals[ix_s] : null;
+                next_b = ix_b < b_c ? bigger.Intervals[ix_b] : null;
+                if (next_s==null && next_b==null) 
                 {
-                    r = s.Compare(b);
+                    break;
                 }
-                else
+                Interval next = null;
+                if (next_b == null || (next_s != null && next_s.Start < next_b.Start))
                 {
-                    r = s == null ? 1 : -1;
+                    next = next_s;
+                    ix_s++;
                 }
-                if (r == 0)
+                else 
                 {
-                    var interval = s.Merge(b);
-
-                    result.AddInterval(interval);
-
-
-                    if (interval.End >= b.End)
+                    next = next_b;
+                    ix_b++;
+                }
+                r = current.Compare(next);
+            
+                if (r < 0) 
+                {
+                    if (r==-1)
                     {
-                        bigger.SetNextInterval(ref b, ref bix);
+                        current.End = next.End;
                     }
-                    if (interval.End >= s.End)
+                    else
                     {
-                        smaller.SetNextInterval(ref s, ref six);
+                        var il = next.Copy();
+                        result.Intervals.Add(il);
+                        current = il;
+                    }
+                }
+                if (r > 0) 
+                {
+                   
+                }
+                if (r == 0) 
+                {
+                    if (next.End > current.End) 
+                    {
+                        current.End = next.End;
 
                     }
 
                 }
-                if (r < 0)
-                {
-                    result.AddInterval(s);
+           
+          
+               
 
-                    smaller.SetNextInterval(ref s, ref six);
-
-
-                }
-                if (r > 0)
-                {
-                    result.AddInterval(b);
-
-                    bigger.SetNextInterval(ref b, ref bix);
-
-                }
             }
+            
 
             return result;
         }
@@ -762,19 +773,6 @@ namespace Utilities
             var bix = 0;
             var six = 0;
 
-            //if (sc > 50 && bigger.FirstInterval!=null)
-            //{
-            //    var tsix = smaller.Intervals.BinarySearch(bigger.FirstInterval, IntervalList.startcomparer);
-            //    if (tsix > sc)
-            //    {
-            //        six = sc - 1;
-            //    }
-            //    if (tsix < 0)
-            //    {
-            //        six = ~tsix;
-            //        six = six > 1 ? six-1 : six;
-            //    }
-            //}
 
 
             Interval s = null;

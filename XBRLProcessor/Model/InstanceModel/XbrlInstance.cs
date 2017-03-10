@@ -72,7 +72,7 @@ namespace Model.InstanceModel
                     try
                     {
                         _XmlDocument.Load(this.FullPath);
-                        _XmlDocument.DocumentElement.SetAttribute("localpath", this.FullPath);
+                        //_XmlDocument.DocumentElement.SetAttribute("localpath", this.FullPath);
                     }
                     catch (Exception ex) 
                     {
@@ -147,37 +147,50 @@ namespace Model.InstanceModel
             }
             logicalcontext.Items.Add(context.ID, context);
         }
-        private void FixContextNamespaces(LogicalModel.InstanceContext ct, XmlNamespaceManager nsm, Dictionary<string, string> domainnsdictionary, List<string> dimensionnamespaces)
+        private void FixContextNamespaces(LogicalModel.InstanceContext ct, XmlNamespaceManager nsm, Dictionary<string, string> domainnsdictionary, List<string> dimensionnamespaces, StringBuilder logger)
         {
 
-
+            var sb = new StringBuilder();
             foreach (var dim in ct.Dimensions)
             {
                 var dparts = dim.DimensionItem.Split(':');
-                var dimnsuri = Utilities.Xml.Namespaces[dparts[0]];
-                var dimelement = Taxonomy.DimensionItems.FirstOrDefault(i => i.NamespaceURI == dimnsuri);
-                dim.DimensionItem = string.Format("{0}:{1}", dimelement.Namespace, dparts[1]);
-
-                if (dim.IsTyped)
+                if (Utilities.Xml.Namespaces.ContainsKey(dparts[0]))
                 {
-                    var parts = dim.Domain.Split(':');
+                    var dimnsuri = Utilities.Xml.Namespaces[dparts[0]];
+                    var dimelement = Taxonomy.DimensionItems.FirstOrDefault(i => i.NamespaceURI == dimnsuri);
+                    dim.DimensionItem = string.Format("{0}:{1}", dimelement.Namespace, dparts[1]);
 
-                    var nsuri = Utilities.Xml.Namespaces[parts[0]];
-                    var tdecontainer = this.Taxonomy.TypedDimensions.FirstOrDefault(i => i.Value.FirstOrDefault(t => t.NamespaceURI == nsuri) != null);
-                    var tde = tdecontainer.Value.FirstOrDefault(t => t.NamespaceURI == nsuri);
-                    dim.Domain = string.Format("{0}:{1}", tde.Namespace, parts[1]);
-
-                }
-                else
-                {
-                    if (!domainnsdictionary.ContainsKey(dim.Domain))
+                    if (dim.IsTyped)
                     {
-                        var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
-                        domainnsdictionary.Add(dim.Domain, domainelement.Namespace);
+                        var parts = dim.Domain.Split(':');
+
+                        var nsuri = Utilities.Xml.Namespaces[parts[0]];
+                        var tdecontainer = this.Taxonomy.TypedDimensions.FirstOrDefault(i => i.Value.FirstOrDefault(t => t.NamespaceURI == nsuri) != null);
+                        var tde = tdecontainer.Value.FirstOrDefault(t => t.NamespaceURI == nsuri);
+                        dim.Domain = string.Format("{0}:{1}", tde.Namespace, parts[1]);
+
                     }
-                    dim.Domain = domainnsdictionary[dim.Domain];
+                    else
+                    {
+                        if (!domainnsdictionary.ContainsKey(dim.Domain))
+                        {
+                            var domainelement = this.Taxonomy.SchemaElements.FirstOrDefault(i => i.NamespaceURI == Utilities.Xml.Namespaces[dim.Domain]);
+                            domainnsdictionary.Add(dim.Domain, domainelement.Namespace);
+                        }
+                        dim.Domain = domainnsdictionary[dim.Domain];
+                    }
+                }
+                else 
+                {
+                    sb.Append(String.Format("{0},",  dim.DimensionItem));
                 }
 
+            }
+            if (sb.Length > 0) 
+            {
+                sb.Insert(0,String.Format( "Context: {0} Dimensions: ",ct.ID));
+                sb.Append("; ");
+                logger.Append(sb.ToString());
             }
             ct.Dimensions = ct.Dimensions.OrderBy(i => i.DomainMemberFullName, StringComparer.Ordinal).ToList();
 
@@ -194,9 +207,10 @@ namespace Model.InstanceModel
 
             var lastfactpartid = Taxonomy.CounterFactParts.Keys.Max();
             var ctdimdict = new Dictionary<string, string>();
+            var sb_ctlog = new StringBuilder();
             foreach (var ct in Contexts.Items.Values) 
             {
-                FixContextNamespaces(ct, nsm, domainnsdictionary, dimensionnamespaces);
+                FixContextNamespaces(ct, nsm, domainnsdictionary, dimensionnamespaces, sb_ctlog);
 
                 if (ct.Dimensions != null)
                 {
@@ -259,7 +273,12 @@ namespace Model.InstanceModel
                 }
                 ct.Dimensions.Clear();
             }
-       
+            if (sb_ctlog.Length > 0)
+            {
+                sb_ctlog.Insert(0, "Incorrect Dimension(s) at FixContextNamespaces:\r\n");
+                Utilities.Logger.WriteLine(sb_ctlog.ToString());
+                sb_ctlog.Clear();
+            }
             var conceptnsurilist = Taxonomy.Concepts.Select(i => i.Value).Select(i => i.NamespaceURI).Distinct().ToList();
             foreach (var conceptnsuri in conceptnsurilist)
             {

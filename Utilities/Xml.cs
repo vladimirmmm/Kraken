@@ -8,11 +8,62 @@ using System.Xml;
 
 namespace Utilities
 {
+    public enum AttributeSelectTypeEnum
+    {
+        Unspecified,
+        Content,
+        Tagname,
+        Name,
+        LocalName,
+    }
+    public class AttributeSelector 
+    {
+        public string Expression = "";
+        public AttributeSelectTypeEnum Type = AttributeSelectTypeEnum.Name;
+        public string Value = "";
+        public bool FirtstChildSpecifier = false;
+        public AttributeSelector(string selector) 
+        {
+            var lowername = selector.ToLower();
+            if (lowername.StartsWith("/"))
+            {
+                FirtstChildSpecifier = true;
+                lowername = lowername.Substring(1);
+            }
+            if (lowername.StartsWith("#"))
+            {
+                Type = AttributeSelectTypeEnum.Unspecified;
+                Value = lowername.Substring(1);
+            }
+            if (lowername.StartsWith("@"))
+            {
+                if (lowername == "@content")
+                {
+                    Type = AttributeSelectTypeEnum.Content;
+
+                }
+                if (lowername == "@name")
+                {
+                    Type = AttributeSelectTypeEnum.Tagname;
+                }
+            }
+            if (lowername.StartsWith("*:"))
+            {
+                Type = AttributeSelectTypeEnum.LocalName;
+                Value = lowername.Substring(2);
+            }
+            else 
+            {
+                Value = lowername;
+            }
+        }
+    }
     public class XPathContainer
     {
         public string XPath = "";
         public List<string> Namespaces = new List<string>();
-
+        public bool IsComplex = false;
+        public string TagName = "";
         public XPathContainer() { }
 
         public XPathContainer(string XPath)
@@ -54,7 +105,7 @@ namespace Utilities
             return doc.GetElementsByTagName("*").Cast<XmlNode>().ToList();
         }
 
-        public static Dictionary<string, XmlNamespaceManager> NamespaceDictionary = new Dictionary<string, XmlNamespaceManager>();
+        public static Dictionary<int, XmlNamespaceManager> NamespaceDictionary = new Dictionary<int, XmlNamespaceManager>();
         //public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
         public static Dictionary<String, String> Namespaces = new Dictionary<String,String>();
 
@@ -71,10 +122,11 @@ namespace Utilities
         {
             if (document != null)
             {
-                var localpath = document.DocumentElement.GetAttribute("localpath");
-                if (NamespaceDictionary.ContainsKey(localpath))
+                var hashcode = document.GetHashCode();
+                //var localpath = document.DocumentElement.GetAttribute("localpath");
+                if (NamespaceDictionary.ContainsKey(hashcode))
                 {
-                    NamespaceDictionary.Remove(localpath);
+                    NamespaceDictionary.Remove(hashcode);
                 }
             }
         }
@@ -83,13 +135,13 @@ namespace Utilities
         public static XmlNamespaceManager GetTaxonomyNamespaceManager(XmlDocument doc)
         {
             XmlNamespaceManager manager = null;
-            var localpath = doc.DocumentElement.GetAttribute("localpath");
+            var hashcode = doc.GetHashCode();
 
-            if (!NamespaceDictionary.ContainsKey(localpath))
+            if (!NamespaceDictionary.ContainsKey(hashcode))
             {
                 lock (DictionaryLocker)
                 {
-                    if (!NamespaceDictionary.ContainsKey(localpath))
+                    if (!NamespaceDictionary.ContainsKey(hashcode))
                     {
                         manager = new XmlNamespaceManager(doc.NameTable);
                         manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
@@ -132,68 +184,18 @@ namespace Utilities
                         string s = doc.GetNamespaceOfPrefix("");
                         manager.AddNamespace("ns", s);
                         //manager.AsQueryable().
-                        NamespaceDictionary.Add(localpath, manager);
+                        NamespaceDictionary.Add(hashcode, manager);
                     }
                 }
             }
             else
             {
-                manager = NamespaceDictionary[localpath];
+                manager = NamespaceDictionary[hashcode];
             }
             return manager;
         }
 
-        //public static XmlNamespaceManager GetTaxonomyNamespaceManager2(XmlDocument doc)
-        //{
-        //    XmlNamespaceManager manager = null;
-
-        //    if (!NamespaceDictionary.ContainsKey(doc))
-        //    {
-        //        lock (DictionaryLocker)
-        //        {
-        //            if (!NamespaceDictionary.ContainsKey(doc))
-        //            {
-        //                manager = new XmlNamespaceManager(doc.NameTable);
-        //                manager.AddNamespace("link", "http://www.xbrl.org/2003/linkbase");
-        //                //var linkbasenode = doc.SelectSingleNode("link:linkbase", manager);
-        //                var linkbasenode = doc.DocumentElement;
-        //                var content = XmlToString(doc);
-        //                var nss = Utilities.Strings.TextsBetween(content, "xmlns:", "\" ");
-        //                foreach (var ns in nss)
-        //                {
-        //                    var parts = ns.Split(new string[] { "=", " ", "\"" }, StringSplitOptions.RemoveEmptyEntries);
-        //                    var name = parts[0].Trim();
-        //                    var uri = parts[1].Trim();
-        //                    manager.AddNamespace(name, uri);
-        //                    if (!Namespaces.ContainsKey(name))
-        //                    {
-        //                        Namespaces.Add(name, uri);
-        //                    }
-        //                }
-        //                string s = doc.DocumentElement.GetNamespaceOfPrefix("");
-        //                manager.AddNamespace("ns", s);
-        //                //manager.AsQueryable().
-        //                NamespaceDictionary.Add(doc, manager);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        manager = NamespaceDictionary[doc];
-        //    }
-        //    return manager;
-        //}
-     
-        //public static XmlDocument GetXmlDocumentFromString(string xml)
-        //{
-        //    var doc = new XmlDocument();
-
-        //    using (var sr = new StringReader(xml))
-        //    using (var xtr = new XmlTextReader(sr) { Namespaces = false })
-        //        doc.Load(xtr);
-
-        //    return doc;
-        //}
+      
         public static string Attr(XmlNode node, string Name)
         {
             var a1 = Attr_New(node, Name);
@@ -203,6 +205,10 @@ namespace Utilities
 
             //}
             return a1;
+        }
+        public static string Attr(XmlNode node, AttributeSelector selector)
+        {
+            return Attr_New(node, selector);
         }
         public static string Attr_Old(XmlNode node, string Name)
         {
@@ -256,6 +262,39 @@ namespace Utilities
             }
             return "";
         }
+
+        public static string Attr_New(XmlNode node, AttributeSelector selector)
+        {
+
+            if (node.Attributes != null)
+            {
+                if (selector.Type == AttributeSelectTypeEnum.Content) 
+                {
+                    return Content(node);
+                }
+                if (selector.Type == AttributeSelectTypeEnum.Tagname)
+                {
+                    return node.Name;
+                }
+                if (selector.Type == AttributeSelectTypeEnum.LocalName)
+                {
+                    return GetValueFrom(selector.Value, node);
+
+                }
+                if (selector.Type == AttributeSelectTypeEnum.Name)
+                {
+                    return GetValueFrom(selector.Value, node);
+                }
+                if (selector.Type == AttributeSelectTypeEnum.Unspecified)
+                {
+                    return selector.Value.Substring(1);
+                }
+                return "";
+            }
+            return "";
+        }
+
+
         public static string Attr_New(XmlNode node, string Name)
         {
           
@@ -313,6 +352,8 @@ namespace Utilities
 
         private static string GetValueFrom(string name, XmlNode node) 
         {
+            var attrx = node.Attributes[name];
+            if (attrx != null) { return attrx.Value; }
             var mappedattributename = XmlAttr.MapAttr(node, name);
             if (!String.IsNullOrEmpty(mappedattributename)) 
             {
@@ -376,10 +417,13 @@ namespace Utilities
         public static XPathContainer GetXPath(string XmlSelector) 
         {
             var xpathcontainer = new XPathContainer();
-            var xpath = XmlSelector.IndexOf("<") > -1 ? Utilities.Strings.TextBetween(XmlSelector, "<", ">") : XmlSelector;
+            xpathcontainer.IsComplex = XmlSelector.IndexOf("<") > -1;
+            xpathcontainer.TagName = Utilities.Strings.TextBetween(XmlSelector, "<", ">");
+            var xpath = xpathcontainer.IsComplex ? xpathcontainer.TagName : XmlSelector;
             var ix = xpath.IndexOf(":", StringComparison.Ordinal);
             if (ix > -1)
             {
+                
                 var ns = xpath;
                 ns = ns.Remove(ix);
                 if (ns.StartsWith("//", StringComparison.Ordinal))
