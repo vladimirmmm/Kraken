@@ -10,7 +10,7 @@ namespace LogicalModel.Dimensions
     public class DimensionMember : QualifiedName, ILabeled
     {
         private Label _Label;
-        Label ILabeled.Label { get { return _Label; } set { _Label = value; } }
+        public Label Label { get { return _Label; } set { _Label = value; } }
 
         public string LabelContent
         {

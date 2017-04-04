@@ -141,6 +141,10 @@ namespace Utilities
             var six = 0;
             var sc = smaller.Intervals.Count;
             var bc = bigger.Intervals.Count;
+            if (sc == 0) 
+            {
+                return result;
+            }
 
             var s1 = smaller.FirstInterval == null ? 0 : smaller.FirstInterval.Start;
             var b1 = bigger.FirstInterval == null ? 0 : bigger.FirstInterval.Start;

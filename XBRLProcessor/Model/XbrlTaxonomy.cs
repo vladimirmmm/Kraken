@@ -420,7 +420,15 @@ namespace XBRLProcessor.Models
                                     var key = String.Format("{0}:{1}", dimelement.Namespace, dimelement.Name);
                                     var children = item.Children.Where(i =>
                                     {
-                                        //i.Item.Locate();
+                                        i.Item.Locate(doc);
+                                        if (i.Item.ID.Contains("es_MC")) 
+                                        {
+
+                                        }
+                                        if (this.TaxonomyDocumentDictionary.ContainsKey(i.Item.Element.FileName))
+                                        {
+                                            var docx = this.TaxonomyDocumentDictionary[i.Item.Element.FileName];
+                                        }
                                         return i.Item.RoleType == "dimension_domain";
                                     }).ToList();
                                     if (!dimdict.ContainsKey(key))
@@ -465,6 +473,8 @@ namespace XBRLProcessor.Models
                 }
               
                 var memtodomdefinitions = new List<DefinitionLink>();
+                var sbx = new StringBuilder();
+        
                 foreach (var doc in memtodom_docs)
                 {
 
@@ -486,7 +496,9 @@ namespace XBRLProcessor.Models
                                 dlink.DefinitionRoot = hroot;
 
                             }
+                            sbx.AppendLine(dlink.ToString());
                             var domkey = dlink.DefinitionRoot.Item.ID;
+                            var ix1 = 0;
                             foreach (var item in dlink.DefinitionRoot.Children)
                             {
                                 item.Item.Locate(doc);
@@ -494,12 +506,40 @@ namespace XBRLProcessor.Models
                                 if (item.Item.Element != null)
                                 {
                                     var key = item.Item.Element.Name;
+                                    var nsuri = item.Item.Element.FileName;
+                                   
+                       
                                     if (!domdict.ContainsKey(domkey))
                                     {
                                         domdict.Add(domkey, new List<string>());
                                     }
+                                    if (ix1 == 0)
+                                    {
+                                        if (this.TaxonomyDocumentDictionary.ContainsKey(nsuri))
+                                        {
+                                            var nsdoc = this.TaxonomyDocumentDictionary[nsuri];
+                                            if (nsdoc != null)
+                                            {
+                                                var ns = nsdoc.TargetNamespacePrefix;
+                                                if (!domdict.ContainsKey(ns)) 
+                                                {
+                                                    domdict.Add(ns, new List<string>());
+                                                    var dimensions = dimdict.Where(i => i.Value.Any(j => j == domkey));
+                                                    foreach (var dimkv in dimensions)
+                                                    {
+                                                        dimkv.Value.Add(ns);
+                                                    }
+                                                }
+                                                domkey = ns;
+                                                //ix1++;
+                                            }
+
+                                        }
+                                
+                                    }
                                     domdict[domkey].Add(key);
                                 }
+                            
 
                             }
 
@@ -515,8 +555,16 @@ namespace XBRLProcessor.Models
                     foreach (var dom in dim.Value)
                     {
                         var dimdom = String.Format("[{0}]{1}", dim.Key, dom);
-                      
-                        memebrsofdomain.Add(dimdom,new List<string>(){});
+
+                        if (!DomainsofDimensions.ContainsKey(dim.Key)) 
+                        {
+                            DomainsofDimensions.Add(dim.Key, new List<string>());
+                        }
+                        DomainsofDimensions[dim.Key].Add(dom);
+                        if (!memebrsofdomain.ContainsKey(dimdom))
+                        {
+                            memebrsofdomain.Add(dimdom, new List<string>() { });
+                        }
                         var dimdomkvp = memebrsofdomain[dimdom];
                         if (domdict.ContainsKey(dom))
                         {
@@ -580,6 +628,7 @@ namespace XBRLProcessor.Models
                 fd.CounterFactParts = CounterFactParts;
                 fd.FactParts = FactParts;
                 fd.DimensionDomainsOfMembers = DimensionDomainsOfMembers;
+                fd.DomainsOfDimensions = DomainsofDimensions;
                 Utilities.FS.WriteAllText(this.TaxonomyDimensionPath, Utilities.Converters.ToJson(fd));
 
             }
@@ -590,6 +639,7 @@ namespace XBRLProcessor.Models
                 this.CounterFactParts = fd.CounterFactParts;
                 this.FactParts = fd.FactParts;
                 this.DimensionDomainsOfMembers = fd.DimensionDomainsOfMembers == null ? new Dictionary<int, int>() : fd.DimensionDomainsOfMembers;
+                this.DomainsofDimensions = fd.DomainsOfDimensions == null ? new Dictionary<string, List<string>>() : fd.DomainsOfDimensions;
             }
             //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
             //foreach (var item in dimensiondomainparts) 
@@ -605,6 +655,7 @@ namespace XBRLProcessor.Models
             public Dictionary<int, string> CounterFactParts { get; set; }
             //public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
             public Dictionary<int, int> DimensionDomainsOfMembers { get; set; }
+            public Dictionary<string, List<string>> DomainsOfDimensions { get; set; }
 
 
         }
@@ -708,7 +759,12 @@ namespace XBRLProcessor.Models
                     this.Hierarchies.Add(h);
 
 
-                    var members = this.GetMembersOf(domain).Select(i => new Hierarchy<LogicalModel.Base.QualifiedItem>(i));
+                    var members = this.GetMembersOf(domain).Select(i => {
+                        var qi = new LogicalModel.Base.QualifiedItem();
+                        qi.Content=i.Content;
+                        qi.Label= i.Label.ToSimpleLabel() ;
+                        return new Hierarchy<LogicalModel.Base.QualifiedItem>(qi);
+                    });
                     h.Children.AddRange(members);
                 }
                 var jsoncontent = Utilities.Converters.ToJson(this.Hierarchies);
@@ -932,10 +988,33 @@ namespace XBRLProcessor.Models
                     MoveToFirst("vr-bv34-1.xml", validationdocuments);
                     MoveToFirst("vr-v0600_m.xml", validationdocuments);
                     MoveToFirst("vr-v0336_m.xml", validationdocuments);
-                    MoveToFirst("vr-v3081_m", validationdocuments);
-                    
-                    
+                    MoveToFirst("v356", validationdocuments);
+                    MoveToFirst("v354", validationdocuments);
 
+
+                    var parameterdocs = TaxonomyDocuments.Where(i => i.TagNames.Contains("variable:parameter")).ToList();
+                    foreach (var parameterdoc in parameterdocs) 
+                    {
+                        var pnodes = Utilities.Xml.SelectNodes(parameterdoc.XmlDocument.DocumentElement, "//variable:parameter");
+                        foreach (var pnode in pnodes) 
+                        {
+                            var name = pnode.Attributes["name"]!=null?pnode.Attributes["name"].Value:"";
+                            var xpath = pnode.Attributes["select"] != null ? pnode.Attributes["select"].Value : "";
+                            var type = pnode.Attributes["as"] != null ? pnode.Attributes["as"].Value : "";
+                            if (!ValidationParameters.ContainsKey(name)) 
+                            {
+                                var gp = new LogicalModel.Validation.GeneralValidationParameter();
+                                gp.Name = name;
+                                gp.TranslatedName = "p_" + name;
+                                gp.XPathName = "$" + name;
+                                gp.XPath = xpath;
+                                gp.XPathType = type;
+                                ValidationParameters.Add(name, gp);
+                            }
+                            //var 
+
+                        }
+                    }
 
                     foreach (var validdoc in validationdocuments)
                     {
@@ -1081,12 +1160,15 @@ namespace XBRLProcessor.Models
         public AttributeSelector l_language = new AttributeSelector(Attributes.Language);
         public bool HandleLabel(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)
         {
+
             var result = true;
             var labelid = Utilities.Xml.Attr(node, l_id);
             var labeltext = node.InnerText;
             var role = Utilities.Xml.Attr(node, l_role);
             var lang = Utilities.Xml.Attr(node, l_language);
             var FileID = Utilities.Strings.GetFolderName(taxonomydocument.LocalPath);
+            
+            //var locator = Utilities.Xml.SelectSingleNode(node.ParentNode, "gen:arc[@xlink:to=" +  + "]");
             if (taxonomydocument.FileName == "tab-lab-codes.xml") 
             { 
             }
@@ -1099,6 +1181,28 @@ namespace XBRLProcessor.Models
             newlabel.LabelID = labelid;
             newlabel.Lang = lang;
             newlabel.FileName = FileID;
+            if (role.In(Roles.LabelCodeRoles))
+            {
+                var xpathexpr = new XPathContainer("gen:arc[@xlink:to='" + labelid + "']", new List<string>() { "gen","xlink"});
+                var locatorarc = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr).FirstOrDefault();
+                if (locatorarc != null)
+                {
+                    var locfrom = Utilities.Xml.Attr(locatorarc,"xlink:from");
+                    var xpathexpr2 = new XPathContainer("link:loc[@xlink:label='" + locfrom + "']", new List<string>() { "link", "xlink" });
+
+                    var locator = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr2).FirstOrDefault();
+                    if (locator != null)
+                    {
+                        var href = Utilities.Xml.Attr(locator, "xlink:href");
+                        var hrefid = href.Substring(href.LastIndexOf("#") + 1);
+                        var loclabelid = hrefid;
+                        if (!string.IsNullOrEmpty(loclabelid))
+                        {
+                            newlabel.LocalID = loclabelid;
+                        }
+                    }
+                }
+            }
 
             var label = FindLabel(newlabel.Key, false);
 
@@ -1250,7 +1354,7 @@ namespace XBRLProcessor.Models
                 taxonomydocument.ClearDocument();
                 //this.TaxonomyTables.Add(table);
             }
-        
+            
             return result;
 
         }
@@ -1495,6 +1599,11 @@ namespace XBRLProcessor.Models
             instance.SchemaRef = link;
             instance.Taxonomy = this;
             return instance;
+        }
+
+        public bool IsDefaultMember(QName qName)
+        {
+            return IsDefaultMember(qName.Domain, qName.Value);
         }
     }
 }

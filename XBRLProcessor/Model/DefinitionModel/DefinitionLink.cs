@@ -71,5 +71,10 @@ namespace Model.DefinitionModel
                 RoleType = DefinitionRoot.Children.FirstOrDefault().Item.RoleType;
             }
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0}: {1}",this.GetType().Name, this.DefinitionRoot);
+        }
     }
 }

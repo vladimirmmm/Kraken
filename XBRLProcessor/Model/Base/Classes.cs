@@ -37,8 +37,8 @@ namespace XBRLProcessor.Model.Base
         private string _To = "";
         public string To { get { return _To; } set { _To = value; } }
 
-        private int _Order = 0;
-        public int Order { get { return _Order; } set { _Order = value; } }
+        private decimal _Order = 0;
+        public decimal Order { get { return _Order; } set { _Order = value; } }
 
     }
 
@@ -114,7 +114,7 @@ namespace XBRLProcessor.Model.Base
         }
         public void Locate(XBRLProcessor.Models.XbrlTaxonomyDocument doc)
         {
-            var key = String.Format("{0}:{1}", this.Namespace, this.ID);
+            //var key = String.Format("{0}:{1}", this.Namespace, this.ID);
             if (LocatorFunction != null)
             {
                 _Element = LocatorFunction2(doc,Href);

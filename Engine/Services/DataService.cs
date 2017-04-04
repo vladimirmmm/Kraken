@@ -117,7 +117,7 @@ namespace Engine.Services
                         }
                         if (part0 == "instance")
                         {
-                            if (Engine.CurrentInstance != null)
+                            if (Engine.CurrentInstance != null && Engine.CurrentTaxonomy!=null)
                             {
                                 if (part1 == "get")
                                 {

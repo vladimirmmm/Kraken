@@ -70,6 +70,7 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 {
                     var childquery = filter.GetQuery(taxonomy, child, query);
                     query.AddChildQuery(childquery);
+
                 }
             }
             parent.AddChildQuery(query);
@@ -90,7 +91,8 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
                 if (filter != null)
                 {
                     var childquery = filter.GetQuery(taxonomy, child, query);
-                    query.AddChildQuery(childquery);
+                    FactBaseQuery.MergeQueries(query, childquery);
+                    //query.AddChildQuery(childquery);
                     //FactBaseQuery.Merge(childquery, query);
                 }
             }

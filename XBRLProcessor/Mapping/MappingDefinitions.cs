@@ -167,7 +167,8 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<df:qnameExpression>", (DimensionMember i) => i.QNameExpression),
                     Mappings.PropertyMap("<df:linkrole>", (DimensionMember i) => i.LinkRole),
                     Mappings.PropertyMap("<df:arcrole>", (DimensionMember i) => i.ArcRole),
-                    Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.Axis)
+                    Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.Axis),
+                    Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.IsDefaultMember)
                  ),
                  Mappings.Map<VariableArc>("<variable:variableArc>",
                     Mappings.PropertyMap("name", (VariableArc i) => i.Name)
@@ -190,7 +191,7 @@ namespace XBRLProcessor.Mapping
                  ),
 
                  Mappings.Map<ConceptNameFilter>("<cf:conceptName>",
-                    Mappings.PropertyMap("<cf:concept>", (ConceptNameFilter i) => i.Concept)
+                    Mappings.PropertyMap("<cf:concept>", (ConceptNameFilter i) => i.Concepts)
                  ),
 
                    Mappings.Map<AspectCoverFilter>("<acf:aspectCover>",
@@ -365,15 +366,20 @@ namespace XBRLProcessor.Mapping
             return toitem;
         }
 
-        public static LogicalModel.Concept ToLogical(ConceptFilter item)
+        public static List<LogicalModel.Concept> ToLogical(ConceptFilter item)
         {
-            var toitem = new LogicalModel.Concept();
+            var result = new List<LogicalModel.Concept>();
             if (item is ConceptNameFilter)
             {
                 var citem = item as ConceptNameFilter;
-                toitem.Content = citem.Concept.QName.Content;
+                foreach (var concept in citem.Concepts)
+                {
+                    var toitem = new LogicalModel.Concept();
+                    toitem.Content = concept.QName.Content;
+                    result.Add(toitem);
+                }
             }
-            return toitem;
+            return result;
         }
 
         public static LogicalModel.InstanceUnit ToLogical(XbrlUnit item)

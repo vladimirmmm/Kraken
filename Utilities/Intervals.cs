@@ -63,8 +63,8 @@ namespace Utilities
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Interval:IComparable<Interval>
     {
-        private int _Start = -1;
-        private int _End = -1;
+        private int _Start = 0;
+        private int _End = 0;
         //private int _End = -1;
         [JsonProperty]
         public int End { get { return _End; } set { _End = value; } }
@@ -415,7 +415,7 @@ namespace Utilities
         }
 
 
-        public new IEnumerable<int> GetEnumerator()
+        public IEnumerable<int> GetEnumerator()
         {
             return this.AsEnumerable();
         }
@@ -470,7 +470,7 @@ namespace Utilities
             return sb.ToString();
         }
 
-        public new void Clear()
+        public void Clear()
         {
             Intervals.Clear();
         }

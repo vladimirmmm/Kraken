@@ -163,8 +163,19 @@ namespace XBRLProcessor
             }
             if (items.Length == 2 && items[0] == Syntax.Operators[OperatorEnum.Subtraction])
             {
-                var simpleexpression = GetSimpleExpression(Syntax.Operators[OperatorEnum.Subtraction] + items[1]);
-                expression = simpleexpression;
+                var item1expression = GetSimpleExpression(items[1]);
+                if (item1expression.IsParameter)
+                {
+                    expression.SubExpressions.Add(new Expression());
+                    expression.Operators.Add(OperatorEnum.Subtraction);
+                    expression.SubExpressions.Add(item1expression);
+
+                }
+                else
+                {
+                    var simpleexpression = GetSimpleExpression(Syntax.Operators[OperatorEnum.Subtraction] + items[1]);
+                    expression = simpleexpression;
+                }
             }
             SetLiteralsBack(expression, strings);
             return expression;

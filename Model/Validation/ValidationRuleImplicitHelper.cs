@@ -54,16 +54,17 @@ namespace LogicalModel.Validation
         }
         public static void ExecuteExplicitFiltering(Taxonomy taxonomy, ValidationRule rule)
         {
-            if (rule.ID.Contains("eba_v0336_m"))
+            if (rule.ID.Contains("es_v308"))
             {
 
             }
             var tables = rule.Tables.Select(i => taxonomy.Tables.FirstOrDefault(t => t.ID == i)).ToList();
-            IList<int> tableintevallist = null;
+            IntervalList tableintevallist = null;
             foreach (var table in tables)
             {
                 tableintevallist = tableintevallist == null ? new IntervalList() : tableintevallist;
                 tableintevallist = Utilities.Objects.MergeSorted(tableintevallist, table.FactindexList, null);
+                //tableintevallist.Clear();
             }
             var hastableinfo = tableintevallist != null ? tableintevallist.Count > 0 : false;
             IList<int> allfactsintevallist = new IntervalList(0, taxonomy.FactsManager.FactsOfPages.Count);
@@ -589,8 +590,6 @@ namespace LogicalModel.Validation
                 {
                     var groupdictionary = new Dictionary<int[], Dictionary<string, List<int>>>(new IntArrayEqualityComparer());
 
-                    //if (factgroup.Count > 1)
-                    //{
                     foreach (var factid in factgroup.AsEnumerable())
                     {
                         var groupkey = AddFactToGroup(factid, p1.Name, taxonomy, groupaspects, groupdictionary, factkeydict);
@@ -620,6 +619,10 @@ namespace LogicalModel.Validation
                         foreach (var item in group.Value) 
                         {
                             var il = new List<int>();
+                            if (item.Key == "a" && paramtaxfactdict[item.Key].Count > 0) 
+                            {
+
+                            }
                             paramtaxfactdict[item.Key].Add(il);
                             foreach (var fact in item.Value) 
                             {
@@ -655,7 +658,12 @@ namespace LogicalModel.Validation
             {
                 group.Add(parametername, new List<int>());
             }
+            if (parametername == "a" && group[parametername].Count > 0)
+            {
+
+            }
             group[parametername].Add(factid);
+          
             return groupkey;
 
         }

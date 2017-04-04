@@ -203,7 +203,9 @@ namespace XBRLProcessor.Model
                     //FactBaseQuery.Merge(chquery, query);
                     if (chquery != null)
                     {
+
                         query.AddChildQuery(chquery);
+                        //FactBaseQuery.MergeQueries(query, chquery);
                     }
                     else 
                     {
@@ -553,43 +555,43 @@ namespace XBRLProcessor.Model
             return factlist;
         }
 
-        public void FixRule(Hierarchy<XbrlIdentifiable> rule) 
-        {
-            var conceptfilters = rule.Where(i => i.Item is ConceptNameFilter).Select(i => i.Item as ConceptNameFilter).ToList();
-            foreach (var conceptfilter in conceptfilters) 
-            {
-                var conceptval = conceptfilter.Concept.QName.Content;
-                var conceptns = conceptfilter.Concept.QName.Domain;
-                var conceptname = conceptfilter.Concept.QName.Value;
-                var conceptsfound = new List<LogicalModel.Concept>();
+        //public void FixRule(Hierarchy<XbrlIdentifiable> rule) 
+        //{
+        //    var conceptfilters = rule.Where(i => i.Item is ConceptNameFilter).Select(i => i.Item as ConceptNameFilter).ToList();
+        //    foreach (var conceptfilter in conceptfilters) 
+        //    {
+        //        var conceptval = conceptfilter.Concept.QName.Content;
+        //        var conceptns = conceptfilter.Concept.QName.Domain;
+        //        var conceptname = conceptfilter.Concept.QName.Value;
+        //        var conceptsfound = new List<LogicalModel.Concept>();
 
-                if (this.Taxonomy.Concepts.ContainsKey(conceptval))
-                {
-                    //var existingconcept = this.Taxonomy.Concepts[conceptval];
-                    //conceptsfound.Add(existingconcept);
-                }
-                else
-                {
-                    var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(Document.XmlDocument);
-                    var ns = nsm.LookupNamespace(conceptns);
-                    var nsdocument = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
-                    if (nsdocument != null)
-                    {
-                        var nsprefix = nsdocument.TargetNamespacePrefix;
-                        var lookupconcept = new LogicalModel.Base.QualifiedName();
-                        lookupconcept.Namespace = nsprefix;
-                        lookupconcept.Name = conceptname;
-                        if (this.Taxonomy.Concepts.ContainsKey(lookupconcept.Content))
-                        {
-                            var existingconcept = this.Taxonomy.Concepts[lookupconcept.Content];
-                            conceptfilter.Concept.QName.Content = existingconcept.Content;
-                            //conceptsfound.Add(existingconcept);
-                        }
-                    }
+        //        if (this.Taxonomy.Concepts.ContainsKey(conceptval))
+        //        {
+        //            //var existingconcept = this.Taxonomy.Concepts[conceptval];
+        //            //conceptsfound.Add(existingconcept);
+        //        }
+        //        else
+        //        {
+        //            var nsm = Utilities.Xml.GetTaxonomyNamespaceManager(Document.XmlDocument);
+        //            var ns = nsm.LookupNamespace(conceptns);
+        //            var nsdocument = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.TargetNamespace == ns);
+        //            if (nsdocument != null)
+        //            {
+        //                var nsprefix = nsdocument.TargetNamespacePrefix;
+        //                var lookupconcept = new LogicalModel.Base.QualifiedName();
+        //                lookupconcept.Namespace = nsprefix;
+        //                lookupconcept.Name = conceptname;
+        //                if (this.Taxonomy.Concepts.ContainsKey(lookupconcept.Content))
+        //                {
+        //                    var existingconcept = this.Taxonomy.Concepts[lookupconcept.Content];
+        //                    conceptfilter.Concept.QName.Content = existingconcept.Content;
+        //                    //conceptsfound.Add(existingconcept);
+        //                }
+        //            }
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
         
         public List<String> GetFactsByIdListCollection(IEnumerable<IEnumerable<int>> ids)
         {

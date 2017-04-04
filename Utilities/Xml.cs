@@ -107,11 +107,13 @@ namespace Utilities
 
         public static Dictionary<int, XmlNamespaceManager> NamespaceDictionary = new Dictionary<int, XmlNamespaceManager>();
         //public static Dictionary<XmlDocument, XmlNamespaceManager> NamespaceDictionary = new Dictionary<XmlDocument, XmlNamespaceManager>();
-        public static Dictionary<String, String> Namespaces = new Dictionary<String,String>();
+        public static Dictionary<String, String> Namespaces = new Dictionary<String, String>();
+        public static Dictionary<String, String> NamespaceUris = new Dictionary<String, String>();
 
         public static void ClearNamespaceCache() 
         {
             Namespaces.Clear();
+            NamespaceUris.Clear();
             NamespaceDictionary.Clear();
             XmlAttr.NodeAttributeMap.Clear();
 
@@ -164,7 +166,8 @@ namespace Utilities
                         }
                         */
                         //var content = XmlToString(doc);
-                        var nss = Utilities.Strings.TextsBetween(doc.OuterXml, "xmlns:", "\" ");
+                        var xml = String.IsNullOrEmpty(doc.OuterXml) ? doc.InnerXml : doc.OuterXml;
+                        var nss = Utilities.Strings.TextsBetween(xml, "xmlns:", "\" ");
                         foreach (var ns in nss) 
                         {
                             var parts = ns.Split(new string[] { "=", " ", "\"" }, StringSplitOptions.RemoveEmptyEntries);
@@ -178,6 +181,17 @@ namespace Utilities
                             {
                                 Namespaces.Add(name,uri);
                             }
+                            //if (!NamespaceUris.ContainsKey(uri))
+                            //{
+                            //    NamespaceUris.Add(uri, name);
+                            //}
+                            //else 
+                            //{
+                            //    if (NamespaceUris[uri] != name) 
+                            //    {
+
+                            //    }
+                            //}
                         }
                  
                         //string s = doc.DocumentElement.GetNamespaceOfPrefix("");
@@ -506,7 +520,45 @@ namespace Utilities
             }
             return result;
         }
+        public static List<XmlNode> SelectNodes(XmlNode node, XPathContainer xpathcontainer)
+        {
+            var result = new List<XmlNode>();
+            XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
+            foreach(var ns in xpathcontainer.Namespaces)
+            {
+                if (!manager.HasNamespace(ns))
+                {
+                    return result;
+                }
+            }
+            //if (XPath.Contains(":"))
+            //{
+            //    var ns = XPath;
+            //    if (XPath.StartsWith("//"))
+            //    {
+            //        ns = XPath.Substring(2);
+            //    }
+            //    ns = ns.Remove(ns.IndexOf(":"));
+            //    if (!manager.HasNamespace(ns) )
+            //    {
+            //        return result;
+            //        //return node.OwnerDocument.SelectNodes("xffgh");
+            //    }
+            //}
+            //try
+            //{
+            var nodes = node.SelectNodes(xpathcontainer.XPath, manager);
+            foreach (XmlNode xnode in nodes)
+            {
+                result.Add(xnode);
+            }
+            //}
+            //catch (Exception ex) 
+            //{
 
+            //}
+            return result;
+        }
         public static List<XmlNode> SelectNodes(XmlNode node, string XPath)
         {
             var result = new List<XmlNode>();
@@ -525,11 +577,18 @@ namespace Utilities
             //        //return node.OwnerDocument.SelectNodes("xffgh");
             //    }
             //}
-            var nodes = node.SelectNodes(XPath, manager);
-            foreach (XmlNode xnode in nodes)
-            {
-                result.Add(xnode);
-            }
+            //try
+            //{
+                var nodes = node.SelectNodes(XPath, manager);
+                foreach (XmlNode xnode in nodes)
+                {
+                    result.Add(xnode);
+                }
+            //}
+            //catch (Exception ex) 
+            //{
+
+            //}
             return result;
         }
 

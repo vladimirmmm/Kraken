@@ -52,6 +52,7 @@ namespace LogicalModel
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
         //public SortedDictionary<int, List<int>> MembersOfDimensionDomains = new SortedDictionary<int, List<int>>();
         public Dictionary<int, int> DimensionDomainsOfMembers = new Dictionary<int, int>();
+        public Dictionary<string, List<string>> DomainsofDimensions = new Dictionary<string, List<string>>();
 
         public Dictionary<int, string> CellIndexDictionary = new Dictionary<int, string>();
 
@@ -125,6 +126,8 @@ namespace LogicalModel
 
         private List<ValidationRule> _ValidationRules = new List<ValidationRule>();
         public List<ValidationRule> ValidationRules { get { return _ValidationRules; } set { _ValidationRules = value; } }
+        private Dictionary<string, GeneralValidationParameter> _ValidationParameters = new Dictionary<string, GeneralValidationParameter>();
+        public Dictionary<string, GeneralValidationParameter> ValidationParameters { get { return _ValidationParameters; } set { _ValidationParameters = value; } }
 
         public IEnumerable<int> FactIndexEnumerable() 
         {
@@ -387,6 +390,22 @@ namespace LogicalModel
                     TypedDimensions.Add(element.Namespace, new List<Element>());
                 }
                 TypedDimensions[element.Namespace].Add(element);
+            }
+        }
+
+        public Dictionary<string, List<Element>> DomainMembers = new Dictionary<string, List<Element>>();
+        public virtual void LoadDomainMembers()
+        {
+            DomainMembers.Clear();
+            var elements = this.SchemaElements.Where(i => i.Type == "nonnum:domainItemType").ToList();
+            foreach (var element in elements)
+            {
+                var key = String.Format("{0}:{1}", element.Namespace, element.Name);
+                if (!DomainMembers.ContainsKey(key))
+                {
+                    DomainMembers.Add(key, new List<Element>());
+                }
+                DomainMembers[key].Add(element);
             }
         }
 
@@ -1258,6 +1277,16 @@ namespace LogicalModel
                 LoadGeneral();
 
                 TableHandler.HandleTaxonomy(this);
+
+                var sbt = new StringBuilder();
+                foreach (var t in this.Tables) 
+                {
+                    sbt.AppendLine(Utilities.FS.ReadAllText(t.MappingTextPath));
+                }
+
+                Utilities.FS.WriteAllText(this.TaxonomyLayoutFolder + "Mappings.txt",sbt.ToString());
+                sbt.Clear();
+
                 GC.Collect();
 
                 Module.FactParts = this.FactParts;
@@ -1596,6 +1625,7 @@ namespace LogicalModel
 
             }
             LoadTypedDimensions();
+            LoadDomainMembers();
             Logger.WriteLine("Load Elements completed");
 
         }
@@ -1638,8 +1668,10 @@ namespace LogicalModel
                     concept.Namespace = conceptelement.Namespace;
                     concept.NamespaceURI = conceptelement.NamespaceURI;
                     concept.ItemType = conceptelement.Type.IndexOf(":") > -1 ? conceptelement.Type.Substring(conceptelement.Type.IndexOf(":") + 1) : conceptelement.Type;
-
-                    this.Concepts.Add(concept.Content, concept);
+                    if (!this.Concepts.ContainsKey(concept.Content))
+                    {
+                        this.Concepts.Add(concept.Content, concept);
+                    }
                 }
 
 
@@ -1784,7 +1816,22 @@ namespace LogicalModel
             dimensiondomainitems = dimensiondomainitems.Except(exceptmembers).ToList();
             return dimensiondomainitems;
         }
-        public List<QualifiedItem> GetMembersOf(string domain)
+        public List<LogicalModel.Dimensions.DimensionMember> GetMembersOf(string domain)
+        {
+            var result = new List<LogicalModel.Dimensions.DimensionMember>();
+            var members = SchemaElements.Where(i => i.Namespace == domain && i.Type == "nonnum:domainItemType").ToList();//(i => i.Namespace + ":" + i.Name).Distinct().ToList();
+
+            foreach (var member in members)
+            {
+                var qi = new LogicalModel.Dimensions.DimensionMember();
+                qi.Content = member.Namespace + ":" + member.Name;
+                qi.IsDefaultMember = member.IsDefaultMember;
+                qi.Label = GetLabelForMember(qi.Content);
+                result.Add(qi);
+            }
+            return result;
+        }
+        public List<QualifiedItem> GetMembersOfOld(string domain)
         {
             var result = new List<QualifiedItem>();
             var members = SchemaElements.Where(i => i.Namespace == domain && i.Type == "nonnum:domainItemType").ToList();//(i => i.Namespace + ":" + i.Name).Distinct().ToList();
@@ -1985,6 +2032,24 @@ namespace LogicalModel
             return factstring.IndexOf(fs,StringComparison.OrdinalIgnoreCase)>=0;
         }
 
-  
+
+        public bool IsDefaultMember(Dimensions.DimensionMember i)
+        {
+            return IsDefaultMember(i.Namespace, i.Name);
+        }
+        public bool IsDefaultMember(string ns,string name)
+        {
+            var key = String.Format("{0}:{1}", ns, name);
+            if (this.DomainMembers.ContainsKey(key)) 
+            {
+                var se = this.DomainMembers[key];
+                var firstmember = se.FirstOrDefault();
+                //if (firstmember != null)
+                //{
+                    return firstmember.IsDefaultMember;
+                //}
+            }
+            return false;
+        }
     }
 }

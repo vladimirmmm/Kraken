@@ -92,8 +92,12 @@
     <Compile Include="Models\XbrlValue.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TaxonomyEngine.cs" />
+    <Compile Include="Validation\CMF.cs" />
+    <Compile Include="Validation\XFI.cs" />
+    <Compile Include="Validation\EFN.cs" />
     <Compile Include="Validation\FactFunctions.cs" />
     <Compile Include="Validation\Functions.cs" />
+    <Compile Include="Validation\IAF.cs" />
     <Compile Include="Validation\ParameterFunctions.cs" />
     <Compile Include="Validation\TaxonomyValidation.cs" />
     <Compile Include="Validation\ValidationRuleHelper.cs" />

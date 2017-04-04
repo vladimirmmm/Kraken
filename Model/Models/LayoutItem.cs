@@ -28,7 +28,7 @@ namespace LogicalModel
         public string ColSpan = "";
         public string CssClass = "";
         private Table _Table = null;
-        public int Order = 0;   
+        public decimal Order = 0;   
 
         private string _Axis = "";
         public string Axis { get { return _Axis; } set { _Axis = value; } }

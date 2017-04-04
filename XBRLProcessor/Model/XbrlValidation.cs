@@ -103,6 +103,7 @@ namespace XBRLProcessor.Model
                           {
                               nsuri = NsManager.LookupNamespace(m.QName.Domain);
                               m.QName.Domain = Taxonomy.FindNamespacePrefix(nsuri, m.QName.Domain);
+                              m.IsDefaultMember = Taxonomy.IsDefaultMember(m.QName);
                           }
                       }
                       var tydf = df as TypedDimensionFilter;
@@ -117,9 +118,12 @@ namespace XBRLProcessor.Model
                       var cfn = cf as ConceptNameFilter;
                       if (cfn != null) 
                       {
-                          var nsprefix = cfn.Concept.QName.Domain;
-                          var nsuri = NsManager.LookupNamespace(nsprefix);
-                          cfn.Concept.QName.Domain = Taxonomy.FindNamespacePrefix(nsuri, nsprefix);
+                          foreach (var concept in cfn.Concepts)
+                          {
+                              var nsprefix = concept.QName.Domain;
+                              var nsuri = NsManager.LookupNamespace(nsprefix);
+                              concept.QName.Domain = Taxonomy.FindNamespacePrefix(nsuri, nsprefix);
+                          }
                       }
                   }
 
@@ -160,7 +164,7 @@ namespace XBRLProcessor.Model
             var logicalrule = new LogicalModel.Validation.ValidationRule();
             var valueassertion = tmp_rule.Item as ValueAssertion;
             logicalrule.ID = valueassertion.ID;
-            Utilities.Logger.WriteLine("Getting rule for " + logicalrule.ID);
+            //Utilities.Logger.WriteLine("Getting rule for " + logicalrule.ID);
             logicalrule.LabelID = valueassertion.LabelID;
             logicalrule.OriginalExpression = valueassertion.Test.Replace("\r\n", " ").Replace("\r", " ").Replace("\n", " ");
             logicalrule.SetTaxonomy(this.Taxonomy);
@@ -172,17 +176,18 @@ namespace XBRLProcessor.Model
             logicalrule.RawInfo = rawval;
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
+            if (logicalrule.ID.Contains("es_v354"))/*,"es_v354"*/
+            {
+
+            }
 
             var factvariables = tmp_rule.Where(i => i.Item is FactVariable);
             foreach (var fv in factvariables)
             {
                 tmp_rule.Remove(fv);
             }
-            if (logicalrule.ID.Contains("de_sprv_vdbl_0080"))
-            {
-                //var rulebasequeryX = GetRuleQuery(tmp_rule).FirstOrDefault();
+     
 
-            }
             logicalrule.BaseQuery = GetQuery(tmp_rule);
 
             logicalrule.BaseQuery.GetString(Taxonomy);
@@ -223,7 +228,53 @@ namespace XBRLProcessor.Model
                     FactBaseQuery.RemoveQuery(pquery, commconparameterquery);
                 }
             }
+            var sbquery = new StringBuilder();
 
+            if (1 == 1)
+            {
+                sbquery.AppendLine("RuleQuery: ");
+                sbquery.AppendLine(logicalrule.BaseQuery !=null? logicalrule.BaseQuery.ToString():"");
+                sbquery.AppendLine();
+                foreach (var p in logicalrule.Parameters) 
+                {
+                    sbquery.AppendLine(p+" Query: ");
+                    if (p.BaseQuery != null) 
+                    {
+                        sbquery.AppendLine(p.BaseQuery != null ? p.BaseQuery.ToString() : "");
+
+                    }
+                }
+            }
+            foreach (var gp in Taxonomy.ValidationParameters) 
+            {
+                if (valueassertion.Test.Contains(gp.Value.XPathName)) 
+                {
+                    if (gp.Key == "ReportingLevel") 
+                    {
+                        var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel", logicalrule.ID);
+                        p_rl1.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("_con") ? "con" : "ind";
+                        p_rl1.Type = LogicalModel.TypeEnum.String;
+                        p_rl1.IsGeneral = true;
+                        logicalrule.Parameters.Add(p_rl1);
+                        continue;
+                    }
+                    if (gp.Key == "AccountingStandard")
+                    {
+                        var p_rl2 = new LogicalModel.Validation.ValidationParameter("AccountingStandard", logicalrule.ID);
+                        p_rl2.StringValue = this.Taxonomy.EntryDocument.FileName.Contains("GAAP") ? "GAAP" : "IFRS";
+                        p_rl2.Type = LogicalModel.TypeEnum.String;
+                        p_rl2.IsGeneral = true;
+                        logicalrule.Parameters.Add(p_rl2);
+                        continue;
+                    }
+                    var p_rl = new LogicalModel.Validation.ValidationParameter(gp.Key, logicalrule.ID);
+                    p_rl.StringValue = "Unresolved";
+                    p_rl.Type = LogicalModel.TypeEnum.String;
+                    p_rl.IsGeneral = true;
+                    logicalrule.Parameters.Add(p_rl);
+                }
+            }
+            /*
             if (valueassertion.Test.Contains("$ReportingLevel"))
             {
                 var p_rl1 = new LogicalModel.Validation.ValidationParameter("ReportingLevel", logicalrule.ID);
@@ -240,6 +291,7 @@ namespace XBRLProcessor.Model
                 p_rl2.IsGeneral = true;
                 logicalrule.Parameters.Add(p_rl2);
             }
+            */
             logicalrule.SetTaxonomy(this.Taxonomy);
             ValidationRuleHelper.ExecuteExplicitFiltering(this.Taxonomy, logicalrule);
             ValidationRuleHelper.ExecuteImplicitFiltering(this.Taxonomy, logicalrule);
@@ -252,19 +304,19 @@ namespace XBRLProcessor.Model
         }
 
      
-        private void AddDimensionIfNotExists(LogicalModel.Dimension dimension, LogicalModel.Base.FactBase fact)
-        {
-            var existingdim = fact.Dimensions.FirstOrDefault(i => i.DimensionItem == dimension.DimensionItem);
-            if (existingdim == null && !dimension.IsDefaultMember)
-            {
-                fact.Dimensions.Add(dimension);
-            }
-        } 
+        //private void AddDimensionIfNotExists(LogicalModel.Dimension dimension, LogicalModel.Base.FactBase fact)
+        //{
+        //    var existingdim = fact.Dimensions.FirstOrDefault(i => i.DimensionItem == dimension.DimensionItem);
+        //    if (existingdim == null && !dimension.IsDefaultMember)
+        //    {
+        //        fact.Dimensions.Add(dimension);
+        //    }
+        //} 
      
 
         public List<LogicalModel.Concept> GetConcepts(Hierarchy<XbrlIdentifiable> item) 
         {
-            var items= item.Where(i => i.Item is ConceptFilter).Select(s => Mapping.Mappings.ToLogical(s.Item as ConceptFilter)).ToList();
+            var items= item.Where(i => i.Item is ConceptFilter).SelectMany(s => Mapping.Mappings.ToLogical(s.Item as ConceptFilter)).ToList();
             return items;
         }
 

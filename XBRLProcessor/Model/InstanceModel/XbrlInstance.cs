@@ -460,10 +460,22 @@ namespace Model.InstanceModel
 
         private void Test() 
         {
-            var instancepath = @"C:\Users\vladimir.balacescu\Desktop\Delivery\C08 reports_10_28_2014.xbrl";
-            var instance = new XbrlInstance(instancepath);
-            instance.LoadSimple();
-            instance.LoadComplex();
+            var instancepath = @"C:\My\Tasks\!Other\fromqa\SBP_CONSO_FRS_6_30_2017.xbrl";
+            var xpath = "if(contains(link:schemaRef/@xlink:href, 'con')) then 'con' else 'ind'";
+            var xmldoc = new XmlDocument();
+            xmldoc.Load(instancepath);
+            var nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(xmldoc);
+
+            var xpd = new System.Xml.XPath.XPathDocument(instancepath);
+            var xnav = xpd.CreateNavigator();
+            var vv = xnav.Evaluate("link:schemaRef/@xlink:href", nsmanager);
+
+            var s = xmldoc.DocumentElement.SelectSingleNode("link:schemaRef/@xlink:href", nsmanager);
+
+            var v = xnav.Evaluate(xpath, nsmanager);
+            //var instance = new XbrlInstance(instancepath);
+            //instance.LoadSimple();
+            //instance.LoadComplex();
 
         }
 
@@ -739,6 +751,11 @@ namespace Model.InstanceModel
         internal void SetDocument(System.Xml.XmlDocument doc)
         {
             _XmlDocument = doc;
+        }
+
+        public override string ExecuteXPath(string XPath)
+        {
+            return "";
         }
     }
 }

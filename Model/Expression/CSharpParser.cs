@@ -91,6 +91,16 @@ namespace LogicalModel.Expressions
             this.Syntax.AddFunction("iaf:max", (Functions i) => i.IAF_max(0));
             this.Syntax.AddFunction("iaf:min", (Functions i) => i.IAF_min(0));
 
+            this.Syntax.AddFunction("efn:iff", (Functions i) => i.EFN_IFF(true,true));
+            this.Syntax.AddFunction("efn:imp", (Functions i) => i.EFN_IMP(true,true));
+
+            this.Syntax.AddFunction("cmf:numeric-equal", (Functions i) => i.CMF_N_Equal(1, 1, 1));
+            this.Syntax.AddFunction("cmf:numeric-less-than", (Functions i) => i.CMF_N_Less(1, 1, 1));
+            this.Syntax.AddFunction("cmf:numeric-less-equal-than", (Functions i) => i.CMF_N_LessEqual(1, 1, 1));
+            this.Syntax.AddFunction("cmf:numeric-greater-than", (Functions i) => i.CMF_N_Greater(1, 1, 1));
+            this.Syntax.AddFunction("cmf:numeric-greater-equal-than", (Functions i) => i.CMF_N_GreaterEqual(1, 1, 1));
+        
+
             this.Syntax.AddFunction("xfi:fact-typed-dimension-value", (Functions i) => i.XFI_Fact_Typed_Dimension_Value(null, ""));
             this.Syntax.AddFunction("xfi:fact-explicit-dimension-value", (Functions i) => i.XFI_Fact_Explicit_Dimension_Value(null, ""));
             this.Syntax.AddFunction("xfi:period", (Functions i) => i.XFI_Period(null));

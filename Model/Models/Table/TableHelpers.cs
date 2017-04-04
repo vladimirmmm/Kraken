@@ -187,22 +187,22 @@ namespace LogicalModel
         }
 
 
-        public static List<int> GetOptionalItems(int[] factintkey,Table table) 
-        {
-            var result = new List<int>();
-            foreach (var keypart in factintkey) 
-            {
-                if (table.Taxonomy.DimensionDomainsOfMembers.ContainsKey(keypart))
-                {
-                    var items = GetAspectItems(keypart, table);
-                    if (items.Any(i => i.Contains(Literals.DefaultMember))) 
-                    {
-                        result.Add(keypart);
-                    }
-                }
-            }
-            return result;
-        }
+        //public static List<int> GetOptionalItems(int[] factintkey,Table table) 
+        //{
+        //    var result = new List<int>();
+        //    foreach (var keypart in factintkey) 
+        //    {
+        //        if (table.Taxonomy.DimensionDomainsOfMembers.ContainsKey(keypart))
+        //        {
+        //            var items = GetAspectItems(keypart, table);
+        //            if (items.Any(i => i.Contains(Literals.DefaultMember))) 
+        //            {
+        //                result.Add(keypart);
+        //            }
+        //        }
+        //    }
+        //    return result;
+        //}
 
         public static List<string> GetAspectItems(int dimkey, Table table)
         {
@@ -336,7 +336,8 @@ namespace LogicalModel
         {
             foreach (var item in items)
             {
-                var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
+                var existing = target.FirstOrDefault(i => i.DimensionItem == item.DimensionItem);
+                //var existing = target.FirstOrDefault(i => i.Domain == item.Domain && i.DimensionItem == item.DimensionItem);
                 if (existing == null)
                 {
                     target.Add(item);

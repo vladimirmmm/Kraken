@@ -176,7 +176,7 @@ namespace Utilities
             if (uri.Scheme != "http")
             {
                 path = Path.GetFullPath(uri.AbsolutePath);
-                path = HttpUtility.UrlDecode(path);
+                //path = HttpUtility.UrlDecode(path);
 
             }
             else

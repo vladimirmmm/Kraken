@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Collections;
 using Utilities;
+using System.Globalization;
 
 namespace XBRLProcessor.Mapping
 {
@@ -520,6 +521,14 @@ namespace XBRLProcessor.Mapping
                 if (!String.IsNullOrEmpty(stringval))
                 {
                     value = stringval;
+                    if (propertyTypeName == "Decimal")
+                    {
+                        decimal decval;
+                        if (decimal.TryParse(stringval, NumberStyles.Number, CultureInfo.InvariantCulture, out decval))
+                        {
+                            value = decval;
+                        }
+                    }
                     if (propertyTypeName == "Int32")
                     {
                         int intval;

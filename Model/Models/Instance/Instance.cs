@@ -890,5 +890,10 @@ namespace LogicalModel
             }
             return sb.ToString();
         }
+
+        public virtual string ExecuteXPath(string XPath)
+        {
+            return "";
+        }
     }
 }

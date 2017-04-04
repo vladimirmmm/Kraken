@@ -33,8 +33,8 @@ namespace BaseModel
             set { _Children = value; }
         }
 
-        private int _Order = 0;
-        public int Order
+        private decimal _Order = 0;
+        public decimal Order
         {
             get { return _Order; }
             set { _Order = value; }

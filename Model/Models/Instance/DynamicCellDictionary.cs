@@ -250,30 +250,30 @@ namespace LogicalModel.Models
                 dynamiccell.Column = ColDictionary[typedfactstring];
 
             }
-            if (dynamiccell.CellID != cell.CellID)
-            {
-                //var cellfactstring = fact.FactString;
-                //if (CellOfFact.ContainsKey(fact.FactString))
-                if (1 == 2)
-                {
-                    //var existing = CellOfFact[fact.FactString];
+            //if (dynamiccell.CellID != cell.CellID)
+            //{
+            //    //var cellfactstring = fact.FactString;
+            //    //if (CellOfFact.ContainsKey(fact.FactString))
+            //    if (1 == 2)
+            //    {
+            //        //var existing = CellOfFact[fact.FactString];
 
-                    var existingfacts = TaxonomyEngine.CurrentEngine.CurrentInstance.FactDictionary.FactsByTaxonomyKey[fact.InstanceKey];
-                    //var existingfact = existingfacts.FirstOrDefault(i => i.FactString == fact.FactString);
-                    var ctid = typeof(InstanceFact).IsAssignableFrom(fact.GetType()) ? ((InstanceFact)fact).ContextID : "";
-                    var msg = String.Format("Fact {0} already exist >> {1}!", fact, ctid);
-                    Utilities.Logger.WriteLine(msg);
-                }
-                else
-                {
-                    //var item = this.Instance.FactDictionary[fact.FactIntkeys];
-                    //CellOfFact.Add(fact.FactString, dynamiccell.CellID);
-                }
-            }
-            else
-            {
+            //        var existingfacts = TaxonomyEngine.CurrentEngine.CurrentInstance.FactDictionary.FactsByTaxonomyKey[fact.InstanceKey];
+            //        //var existingfact = existingfacts.FirstOrDefault(i => i.FactString == fact.FactString);
+            //        var ctid = typeof(InstanceFact).IsAssignableFrom(fact.GetType()) ? ((InstanceFact)fact).ContextID : "";
+            //        var msg = String.Format("Fact {0} already exist >> {1}!", fact, ctid);
+            //        Utilities.Logger.WriteLine(msg);
+            //    }
+            //    else
+            //    {
+            //        //var item = this.Instance.FactDictionary[fact.FactIntkeys];
+            //        //CellOfFact.Add(fact.FactString, dynamiccell.CellID);
+            //    }
+            //}
+            //else
+            //{
 
-            }
+            //}
             fact.Cells.Add(dynamiccell.CellID);
 
             return dynamiccell;
@@ -348,30 +348,30 @@ namespace LogicalModel.Models
                 dynamiccell.Column = ColDictionary[typedfactstring];
 
             }
-            if (dynamiccell.CellID != cell.CellID)
-            {
-                //var cellfactstring = fact.FactString;
-                //if (CellOfFact.ContainsKey(fact.FactString))
-                if (1 == 2)
-                {
-                    //var existing = CellOfFact[fact.FactString];
+            //if (dynamiccell.CellID != cell.CellID)
+            //{
+            //    //var cellfactstring = fact.FactString;
+            //    //if (CellOfFact.ContainsKey(fact.FactString))
+            //    //if (1 == 2)
+            //    //{
+            //    //    //var existing = CellOfFact[fact.FactString];
 
-                    var existingfacts = TaxonomyEngine.CurrentEngine.CurrentInstance.FactDictionary.FactsByTaxonomyKey[fact.InstanceKey];
-                    //var existingfact = existingfacts.FirstOrDefault(i => i.FactString == fact.FactString);
-                    var ctid = typeof(InstanceFact).IsAssignableFrom(fact.GetType()) ? ((InstanceFact)fact).ContextID : "";
-                    var msg = String.Format("Fact {0} already exist >> {1}!", fact, ctid);
-                    Utilities.Logger.WriteLine(msg);
-                }
-                else
-                {
-                    //var item = this.Instance.FactDictionary[fact.FactIntkeys];
-                    //CellOfFact.Add(fact.FactString, dynamiccell.CellID);
-                }
-            }
-            else 
-            {
+            //    //    var existingfacts = TaxonomyEngine.CurrentEngine.CurrentInstance.FactDictionary.FactsByTaxonomyKey[fact.InstanceKey];
+            //    //    //var existingfact = existingfacts.FirstOrDefault(i => i.FactString == fact.FactString);
+            //    //    var ctid = typeof(InstanceFact).IsAssignableFrom(fact.GetType()) ? ((InstanceFact)fact).ContextID : "";
+            //    //    var msg = String.Format("Fact {0} already exist >> {1}!", fact, ctid);
+            //    //    Utilities.Logger.WriteLine(msg);
+            //    //}
+            //    //else
+            //    //{
+            //    //    //var item = this.Instance.FactDictionary[fact.FactIntkeys];
+            //    //    //CellOfFact.Add(fact.FactString, dynamiccell.CellID);
+            //    //}
+            //}
+            //else 
+            //{
 
-            }
+            //}
             fact.Cells.Add(dynamiccell.CellID);
 
             return dynamiccell;

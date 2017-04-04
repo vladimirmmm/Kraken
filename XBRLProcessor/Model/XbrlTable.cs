@@ -381,7 +381,7 @@ namespace XBRLProcessor.Model
             result = String.Format("{0}{1} <{2}> {3} code{4} >> {5}", axis, li.ID, li.Category, isabstract, li.LabelCode, li.FactString);
             return result;
         }
-       
+
         public void LoadDefinitionHierarchy(LogicalModel.Table logicaltable)
         {
             var rootlocator = new Locator();
@@ -389,8 +389,13 @@ namespace XBRLProcessor.Model
             var rootNode = new Hierarchy<Locator>(rootlocator);
             DefinitionItems.Clear();
             DefinitionItems.Add(rootNode);
+            XmlNamespaceManager nsmanager = null;
+            var refdoc = this.Taxonomy.TaxonomyDocuments.FirstOrDefault(i => i.LocalPath == this.DefinitionPath);
+            if (refdoc != null)
+            {
+                nsmanager = Utilities.Xml.GetTaxonomyNamespaceManager(refdoc.XmlDocument);
+            }
 
-         
             foreach (var definitionlink in DefinitionLinks)
             {
                 definitionlink.LoadHierarchy();
@@ -400,7 +405,7 @@ namespace XBRLProcessor.Model
             foreach (var definitionlink in DefinitionLinks)
             {
                 var locatorswithroles = definitionlink.DefinitionRoot.Where(i => !String.IsNullOrEmpty(i.Item.TargetRole));
-                foreach (var l in locatorswithroles) 
+                foreach (var l in locatorswithroles)
                 {
                     var ss = DefinitionLinks.FirstOrDefault(i => i.Role == l.Item.TargetRole).DefinitionRoot;
                     ss.Item.RoleType = l.Item.RoleType;
@@ -422,7 +427,7 @@ namespace XBRLProcessor.Model
                         //no domain member found
                     }
                 }
-                else 
+                else
                 {
                     var hasall = definitionlink.DefinitionArcs.Any(i => i.RoleType == ArcRoleType.all);
                     if (hasall)
@@ -431,16 +436,18 @@ namespace XBRLProcessor.Model
                         definitionlink.DefinitionRoot.Parent = rootNode;
                     }
                 }
-            
 
-            }          
+
+            }
 
             DefinitionRoot = rootNode;
 
             LocateDefinitions();
 
+            var nontrivialdomains = new Dictionary<string, LogicalModel.Dimensions.DimensionDomain>();
+
             var hypercubenodes = DefinitionItems.Where(i => i.Item.RoleType.In(ArcRoleType.all, ArcRoleType.notAll)).ToList();
-            foreach (var hypercubenode in hypercubenodes) 
+            foreach (var hypercubenode in hypercubenodes)
             {
                 var hypercube = new LogicalModel.HyperCube();
                 //map the concepts
@@ -453,7 +460,7 @@ namespace XBRLProcessor.Model
                     concepts.AddRange(parentconcepts);
                 }
 
-                foreach (var conceptnode in concepts) 
+                foreach (var conceptnode in concepts)
                 {
                     var logicalconcept = new LogicalModel.Concept();
                     if (conceptnode.Item.Element != null)
@@ -462,7 +469,7 @@ namespace XBRLProcessor.Model
                         logicalconcept.Name = conceptnode.Item.Element.Name;
                         hypercube.Concepts.Add(logicalconcept);
                     }
-                    else 
+                    else
                     {
                         Logger.WriteLine(String.Format("Concept Element not found for {0}!", conceptnode.Item.ID));
                     }
@@ -474,18 +481,24 @@ namespace XBRLProcessor.Model
                 domains = domains.Where(i => i.Children.FirstOrDefault(j => !j.Item.Element.IsDefaultMember) != null).ToList();
 
                 var hypercubeitems = hypercubenode.Where(i => i.Item.RoleType == ArcRoleType.hypercube_dimension); //.Where(i => i.Children.Count > 0)
-                foreach (var hypercubeitem in hypercubeitems) 
+                foreach (var hypercubeitem in hypercubeitems)
                 {
                     var logicalhypercubeitem = new LogicalModel.Dimensions.DimensionItem();
                     //logicalhypercubeitem.Content = hypercubeitem.Item.Element.Key;
                     logicalhypercubeitem.Name = hypercubeitem.Item.Element.Name;
                     logicalhypercubeitem.Namespace = hypercubeitem.Item.Element.Namespace;
                     logicalhypercubeitem.LabelID = hypercubeitem.Item.LabelID;
+
+                    var fixedns = Taxonomy.FindNamespacePrefix(hypercubeitem.Item.Element.NamespaceURI, hypercubeitem.Item.Element.Namespace);
+                    if (fixedns != logicalhypercubeitem.Namespace)
+                    {
+                        logicalhypercubeitem.Namespace = fixedns;
+                    }
                     //if (logicalhypercubeitem.Name.Contains("RCP")) 
                     //{
 
                     //}
-                    if (hypercubeitem.Children.Count == 0) 
+                    if (hypercubeitem.Children.Count == 0)
                     {
                         var domainref = hypercubeitem.Item.Element.TypedDomainRef;
                         if (!String.IsNullOrEmpty(domainref))
@@ -522,7 +535,7 @@ namespace XBRLProcessor.Model
                                 hypercube.DimensionItems.Add(logicalhypercubeitem);
 
                             }
-                            else 
+                            else
                             {
                             }
                         }
@@ -534,41 +547,90 @@ namespace XBRLProcessor.Model
                     {
                         hypercube.DimensionItems.Add(logicalhypercubeitem);
                     }
-                    else 
+                    else
                     {
 
                     }
 
-                    foreach (var domain in completedomains) 
+                    foreach (var domain in completedomains)
                     {
-                        var logicaldomain= new LogicalModel.Dimensions.DimensionDomain();
+                        var logicaldomain = new LogicalModel.Dimensions.DimensionDomain();
                         logicaldomain.Content = domain.Item.Element.Key;
                         logicaldomain.Name = domain.Item.Element.Name;
                         logicaldomain.DimensionItem = logicalhypercubeitem;
                         logicaldomain.LabelID = domain.Item.LabelID;
                         logicalhypercubeitem.Domains.Add(logicaldomain);
-                        
+
                         var domainmembers = domain.Children;//.Where(i=>!i.Item.Element.IsDefaultMember).ToList();
-                        foreach (var domainmember in domainmembers) 
+                        foreach (var domainmember in domainmembers)
                         {
 
-                                var logicalmember = new LogicalModel.Dimensions.DimensionMember();
-                                logicalmember.Content = domainmember.Item.Element.Key;
-                                logicalmember.Name = domainmember.Item.Element.Name;
-                                logicalmember.Domain = logicaldomain;
-                                logicalmember.LabelID = domainmember.Item.LabelID;
-                                logicalmember.IsDefaultMember = domainmember.Item.Element.IsDefaultMember;
-                                logicaldomain.DomainMembers.Add(logicalmember);
-      
+                            var logicalmember = new LogicalModel.Dimensions.DimensionMember();
+                            logicalmember.Content = domainmember.Item.Element.Key;
+                            logicalmember.Name = domainmember.Item.Element.Name;
+
+                            var memelement = domainmember.Item.Element;
+                            var memfixedns = Taxonomy.FindNamespacePrefix(memelement.NamespaceURI, memelement.Namespace);
+                            var memberdomain = logicaldomain; 
+                            //if (memfixedns != logicaldomain.ID)
+                            //{
+                            //    LogicalModel.Dimensions.DimensionDomain ntdomain = null;
+                            //    if (!nontrivialdomains.ContainsKey(memfixedns)) 
+                            //    {
+                            //        ntdomain = new LogicalModel.Dimensions.DimensionDomain();
+                            //        var domelement = Taxonomy.GetDomain(memfixedns);
+                            //        logicaldomain.Content = domelement.Key;
+                            //        logicaldomain.Name = domelement.Name;
+                            //        logicaldomain.DimensionItem = logicalhypercubeitem;
+                            //        nontrivialdomains.Add(memfixedns, ntdomain);
+                            //    }
+                            //    ntdomain = nontrivialdomains[memfixedns];
+                            //    memberdomain = ntdomain;
+                            //}
+
+                            logicalmember.Domain = memberdomain;
+                            logicalmember.LabelID = domainmember.Item.LabelID;
+                            logicalmember.IsDefaultMember = domainmember.Item.Element.IsDefaultMember;
+                            logicaldomain.DomainMembers.Add(logicalmember);
+
                         }
                     }
 
                 }
 
                 logicaltable.HyperCubes.Add(hypercube);
-            
+
+
+
             }
-           
+            /*
+            foreach (var hc in logicaltable.HyperCubes)
+            {
+                foreach (var dimitem in hc.DimensionItems)
+                {
+                    foreach (var domitem in dimitem.Domains)
+                    {
+                        var nsuri = nsmanager.LookupNamespace(domitem.Namespace);
+                        var fixedns = Taxonomy.FindNamespacePrefix(nsuri, domitem.Namespace);
+                        if (fixedns != domitem.Namespace)
+                        {
+                            domitem.Namespace = fixedns;
+                        }
+
+                        foreach (var member in domitem.DomainMembers)
+                        {
+                            var memnsuri = nsmanager.LookupNamespace(member.Domain.Namespace);
+                            var memfixedns = Taxonomy.FindNamespacePrefix(nsuri, member.Domain.Namespace);
+                            if (memfixedns != member.Domain.Namespace)
+                            {
+                                domitem.Namespace = memfixedns;
+                            }
+                        }
+                    }
+
+                }
+            }
+            */
         }
 
         public void Clear() 

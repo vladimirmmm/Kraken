@@ -12,7 +12,7 @@
     <ul class="treeview" binding-items="Children" binding-mode="recursive">
         <li binding-type="template" class="$bind:Item.CssClass$" uid="$bind:{uid}$">
             <a href=" javascript:void(0)" itemid="$bind:{Item.ID}$" title="$bind:Item.Description$" onclick="$bind: app.taxonomycontainer.TableInfoSelected('{Item.ID}', '{Item.Type}', this); $">
-                $bind:Item.Name$
+                $bind:Item.ID$
             </a>
             &nbsp;
             <span>$bind:Item.ExtensionText$</span>

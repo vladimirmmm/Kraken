@@ -59,28 +59,28 @@ namespace Utilities
             return result;
         }
 
-        private void test() 
-        {
-            var a = new List<int>() { 10, 11 };
-            var b = new List<int>() { 100, 101,102 };
-            var c = new List<int>() { 8, 9 };
+        //private void test() 
+        //{
+        //    var a = new List<int>() { 10, 11 };
+        //    var b = new List<int>() { 100, 101,102 };
+        //    var c = new List<int>() { 8, 9 };
 
-            var all = new List<List<int>>();
-            all.Add(a);
-            all.Add(b);
-            all.Add(c);
+        //    var all = new List<List<int>>();
+        //    all.Add(a);
+        //    all.Add(b);
+        //    all.Add(c);
 
-            var items = CartesianProduct(all);
-            foreach (var item in items)
-            {
-                var s ="";
-                foreach (var subitem in item)
-                {
-                    s += String.Format("{0},", subitem);
-                }
-                Logger.WriteLine(s);
-            }
-            int z = 0;
-        }
+        //    var items = CartesianProduct(all);
+        //    foreach (var item in items)
+        //    {
+        //        var s ="";
+        //        foreach (var subitem in item)
+        //        {
+        //            s += String.Format("{0},", subitem);
+        //        }
+        //        Logger.WriteLine(s);
+        //    }
+        //    int z = 0;
+        //}
     }
 }

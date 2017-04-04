@@ -21,81 +21,20 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
     }
     public class ConceptNameFilter : ConceptFilter
     {
-        public ConceptQName Concept { get; set; }
+        private List<ConceptQName> _Concepts = new List<ConceptQName>();
+        public List<ConceptQName> Concepts { get { return _Concepts; } set { _Concepts = value; } }
 
         public override string ToString()
         {
-            return String.Format("{0} >> {1}", base.ToString(), this.Concept.QName.Content);
+            var sb = new StringBuilder();
+            sb.Append(String.Format("{0} >> ", base.ToString()));
+            foreach (var concept in _Concepts) 
+            {
+                sb.Append(concept.QName.Content + ",");
+            }
+            return sb.ToString();
         }
-        /*
-        public override Func<string, bool> GetFunc(FactBaseQuery fbq)
-        {
-            Func<string, bool> f = null;
-            List<Func<string, bool>> functions = new List<Func<string, bool>>();
 
-            if (!Complement)
-            {
-                fbq.DictFilters = fbq.DictFilters + String.Format("{0}, ", Concept.QName.Content);
-
-                functions.Add((s) =>
-                {
-            
-                    var sconceptpart = s.Substring(0, s.IndexOf(","));
-                    return sconceptpart.EndsWith(Concept.QName.Content);
-                });
-
-            }
-            else
-            {
-                fbq.FalseFilters = fbq.FalseFilters + String.Format("{0}, ", Concept.QName.Content);
-                functions.Add((s) =>
-                {
-                    var sconceptpart = s.Substring(0, s.IndexOf(","));
-                    return !sconceptpart.EndsWith(Concept.QName.Content);
-                });
-            }
-
-
-
-            f = (s) => functions.All(fx => fx(s));
-
-            return f;
-        }
-        */
-        /*
-        public override List<FactBaseQuery> GetQueries(Taxonomy taxonomy, int level = 0)
-        {
-            var queries = new List<FactBaseQuery>();
-            var query = new FactBaseQuery();
-            var factparts = taxonomy.FactParts;
-            var factsofparts = taxonomy.FactsOfParts;
-
-
-      
-            var tag = Concept.QName.Content;
-            query.Concept = tag;
-            if (!Complement)
-            {
-                query.DictFilters = query.DictFilters + String.Format("{0} ", tag);
-                if (factparts.ContainsKey(tag))
-                {
-                    query.DictFilterIndexes.Add(factparts[tag]);
-                }
-            }
-            else 
-            {
-                query.FalseFilters = query.DictFilters + String.Format("{0} ", tag);
-                if (factparts.ContainsKey(tag))
-                {
-                    query.NegativeDictFilterIndexes.Add(factparts[tag]);
-                }
-            }
-            queries.Add(query);
-            SetCover(queries);
-
-            return queries;
-        }
-        */
         public override FactBaseQuery GetQuery(Taxonomy taxonomy, Hierarchy<XbrlIdentifiable> currentfilter, FactBaseQuery parent)
         {
             //Console.WriteLine(String.Format("ConceptFilter.GetQuery( {0} ) ", currentfilter.Item));
@@ -103,31 +42,50 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
             var factparts = taxonomy.FactParts;
             var factsofparts = taxonomy.FactsOfParts;
             //var query = new FactBaseQuery();
-            var query = parent;
-
-
-            var tag = Concept.QName.Content;
-            query.Concept = tag;
-            if (!Complement)
+            FactBaseQuery result=null;
+            var queries = new List<FactBaseQuery>();
+            if (Concepts.Count == 1) 
             {
-                query.DictFilters = parent.DictFilters + String.Format("{0} ", tag);
-                if (factparts.ContainsKey(tag))
+
+            }
+            foreach (var concept in Concepts)
+            {
+                var query = new FactBaseQuery();
+                queries.Add(query);
+                var tag = concept.QName.Content;
+                query.Concept = tag;
+                if (!Complement)
                 {
-                    query.DictFilterIndexes.Add(factparts[tag]);
+                    query.DictFilters = parent.DictFilters + String.Format("{0} ", tag);
+                    if (factparts.ContainsKey(tag))
+                    {
+                        query.DictFilterIndexes.Add(factparts[tag]);
+                    }
+                }
+                else
+                {
+                    query.FalseFilters = parent.DictFilters + String.Format("{0} ", tag);
+                    if (factparts.ContainsKey(tag))
+                    {
+                        query.NegativeDictFilterIndexes.Add(factparts[tag]);
+                    }
+                }
+                SetCover(query);
+
+            }
+            if (queries.Count == 1)
+            {
+                result = queries.FirstOrDefault();
+            }
+            if (queries.Count > 1)
+            {
+                result = new FactPoolQuery();
+                foreach(var query in queries)
+                {
+                    result.AddChildQuery(query);
                 }
             }
-            else
-            {
-                query.FalseFilters = parent.DictFilters + String.Format("{0} ", tag);
-                if (factparts.ContainsKey(tag))
-                {
-                    query.NegativeDictFilterIndexes.Add(factparts[tag]);
-                }
-            }
-
-            SetCover(query);
-
-            return query;
+            return result;
         }
     }
 

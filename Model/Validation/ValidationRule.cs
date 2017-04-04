@@ -936,7 +936,19 @@ namespace LogicalModel.Validation
             }
         }
     }
-    
+    public class GeneralValidationParameter
+    {
+        public string Name { get; set; }
+        public string TranslatedName { get; set; }
+        public string XPathName { get; set; }
+        public string XPath { get; set; }
+        public string XPathType { get; set; }
+
+        public string GetValue(Instance instance) 
+        {
+            return instance.ExecuteXPath(XPath);
+        }
+    }
 
     public class SimpleValidationParameter 
     {

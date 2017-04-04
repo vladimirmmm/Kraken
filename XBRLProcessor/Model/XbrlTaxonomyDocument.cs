@@ -82,34 +82,18 @@ namespace XBRLProcessor.Models
         public void LoadXmlDocument() 
         {
     
-            XmlReader xmlReader = XmlReader.Create(this.LocalPath, XmlReaderSettings);
-            ////extract and flatten data from the xml doc
-            //XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.XmlResolver = null;
-            //xmlDoc.Load(xmlReader);
-            //var xmlReader = XmlReader.Create(LocalPath, settings);
-            //var xpathd = new System.Xml.XPath.XPathDocument();
-            //var nav = xpathd.CreateNavigator();
-            //nav.
+     
+     
             _XmlDocument = new XmlDocument();
-            //_XmlDocument.Load(this.LocalPath);
-            _XmlDocument.Load(xmlReader);
+            _XmlDocument.Load(this.LocalPath);
+            //XmlReader xmlReader = XmlReader.Create(this.LocalPath, XmlReaderSettings);
+            //_XmlDocument.Load(xmlReader);
 
+            //Utilities.Logger.WriteLine("LoadXmlDocument " + this.LocalPath);
+
+           
         }
-        //public void test()
-        //{
-        //    var xmlreadersettings = new XmlReaderSettings();
-        //    xmlreadersettings.ValidationType = ValidationType.None;
-        //    xmlreadersettings.DtdProcessing = DtdProcessing.Parse;
-        //    xmlreadersettings.ConformanceLevel = ConformanceLevel.Fragment;
-        //    xmlreadersettings.XmlResolver = null;
-        //    XmlReader xmlReader = XmlReader.Create(@"C:\Users\vladimir.balacescu\AppData\Roaming\XbrlStudio\Taxonomies\www.xbrl.org\in\bk\2009\in-gaap-roles-2009-06-30.xsd", xmlreadersettings);
-        //    //extract and flatten data from the xml doc
-        //    XmlDocument xmlDoc = new XmlDocument();
-        //    xmlDoc.XmlResolver = null;
-        //    xmlDoc.Load(xmlReader);
-  
-        //}
+
 
         private List<XmlNodeHandler> structurehandlers = new List<XmlNodeHandler>();
         private Dictionary<string, bool> _RelativeReferencedFiles = new Dictionary<string, bool>();
