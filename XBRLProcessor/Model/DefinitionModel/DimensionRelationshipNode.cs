@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Model.DefinitionModel
 {
-    class DimensionRelationshipNode
-    {
-    }
+    //class DimensionRelationshipNode
+    //{
+    //}
 }

@@ -421,10 +421,7 @@ namespace XBRLProcessor.Models
                                     var children = item.Children.Where(i =>
                                     {
                                         i.Item.Locate(doc);
-                                        if (i.Item.ID.Contains("es_MC")) 
-                                        {
-
-                                        }
+                                
                                         if (this.TaxonomyDocumentDictionary.ContainsKey(i.Item.Element.FileName))
                                         {
                                             var docx = this.TaxonomyDocumentDictionary[i.Item.Element.FileName];
@@ -530,6 +527,14 @@ namespace XBRLProcessor.Models
                                                         dimkv.Value.Add(ns);
                                                     }
                                                 }
+                                                if (domkey != ns) 
+                                                {
+                                                    if (!DomainAliases.ContainsKey(ns)) 
+                                                    {
+                                                        DomainAliases.Add(ns, domkey);
+                                                    }
+                                              
+                                                }
                                                 domkey = ns;
                                                 //ix1++;
                                             }
@@ -628,6 +633,7 @@ namespace XBRLProcessor.Models
                 fd.CounterFactParts = CounterFactParts;
                 fd.FactParts = FactParts;
                 fd.DimensionDomainsOfMembers = DimensionDomainsOfMembers;
+                fd.DomainAliases = DomainAliases;
                 fd.DomainsOfDimensions = DomainsofDimensions;
                 Utilities.FS.WriteAllText(this.TaxonomyDimensionPath, Utilities.Converters.ToJson(fd));
 
@@ -639,6 +645,7 @@ namespace XBRLProcessor.Models
                 this.CounterFactParts = fd.CounterFactParts;
                 this.FactParts = fd.FactParts;
                 this.DimensionDomainsOfMembers = fd.DimensionDomainsOfMembers == null ? new Dictionary<int, int>() : fd.DimensionDomainsOfMembers;
+                this.DomainAliases = fd.DomainAliases == null ? new Dictionary<string, string>() : fd.DomainAliases;
                 this.DomainsofDimensions = fd.DomainsOfDimensions == null ? new Dictionary<string, List<string>>() : fd.DomainsOfDimensions;
             }
             //var dimensiondomainparts = this.FactParts.Where(i => i.Key.EndsWith(":")).ToList();
@@ -656,6 +663,7 @@ namespace XBRLProcessor.Models
             //public SortedDictionary<int, List<int>> MembersOfDimensionDomains { get; set; }
             public Dictionary<int, int> DimensionDomainsOfMembers { get; set; }
             public Dictionary<string, List<string>> DomainsOfDimensions { get; set; }
+            public Dictionary<string, string> DomainAliases { get; set; }
 
 
         }

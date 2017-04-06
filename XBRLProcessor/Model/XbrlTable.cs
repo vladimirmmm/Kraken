@@ -82,7 +82,11 @@ namespace XBRLProcessor.Model
         [JsonIgnore]
         public List<Model.DefinitionModel.Filter.DimensionFilter> DimensionFilters { get { return _DimensionFilters; } set { _DimensionFilters = value; } }
 
+        private List<Model.DefinitionModel.Filter.DimensionRelationShip> _DimensionRelationShips = new List<Model.DefinitionModel.Filter.DimensionRelationShip>();
+        [JsonIgnore]
+        public List<Model.DefinitionModel.Filter.DimensionRelationShip> DimensionRelationShips { get { return _DimensionRelationShips; } set { _DimensionRelationShips = value; } }
 
+        //DimensionRelationShip
 
         private List<TableNode> _Tables = new List<TableNode>();
         [JsonIgnore]
@@ -192,6 +196,7 @@ namespace XBRLProcessor.Model
             Identifiables.AddRange(RuleNodes);
             Identifiables.AddRange(AspectNodes);
             Identifiables.AddRange(DimensionFilters);
+            Identifiables.AddRange(DimensionRelationShips);
             Arcs.AddRange(BreakdownTrees);
             Arcs.AddRange(TableBreakDowns);
             Arcs.AddRange(DefinitionNodeSubTrees);
@@ -222,6 +227,23 @@ namespace XBRLProcessor.Model
 
                         }
                     }
+                    var drel = df as DimensionRelationShip;
+                    if (drel != null)
+                    {
+                        var member = drel.Member;
+                        if (member != null)
+                        {
+                            li.Role = drel.LinkRole;
+                            li.RoleAxis = drel.Axis;
+                            var dim = new LogicalModel.Dimension();
+                            dim.DimensionItem = drel.Dimension.QName.Content;
+                            dim.Domain = drel.Member.Domain;
+                            dim.DomainMember = member.Value;
+                            li.Dimensions.Add(dim);
+                        }
+                       
+                    }
+
                 }
 
                 var rule = identifiable as RuleNode;
@@ -315,17 +337,6 @@ namespace XBRLProcessor.Model
                 var concept = li.Item.Concept;
                 if (concept != null)
                 {
-                    //var nsprefix = concept.Namespace;
-                    //if (!d_con.ContainsKey(nsprefix))
-                    //{
-                    //    var ns = nsmanager.LookupNamespace(nsprefix);
-                    //    var nsdoc = Taxonomy.TaxonomyDocumentNSDictionary.ContainsKey(ns)?Taxonomy.TaxonomyDocumentNSDictionary[ns]:null;
-                    //    if (nsdoc != null)
-                    //    {
-                    //        d_con.Add(nsprefix, nsdoc.TargetNamespacePrefix);
-                    //    }
-                    //}
-                    //concept.Namespace = d_con.ContainsKey(nsprefix) ? d_con[nsprefix] : concept.Namespace;
                     
                     var nsuri = nsmanager.LookupNamespace(concept.Namespace);
                     concept.Namespace = Taxonomy.FindNamespacePrefix(nsuri, concept.Namespace);                

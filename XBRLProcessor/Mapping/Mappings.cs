@@ -135,6 +135,13 @@ namespace XBRLProcessor.Mapping
             return cm;
         }
 
+        public static ClassMapping<C> Map<C>(string XmlTag, Action<XmlNode,Object> CustomMapping) where C : class
+        {
+            var cm = new ClassMapping<C>(XmlTag);
+            cm.CustomMapping = CustomMapping;
+            return cm;
+        }
+
         public Mapping GetMapping(Type type) 
         {
             return MappingCollection.FirstOrDefault(i => i.ClassType == type);
@@ -282,6 +289,7 @@ namespace XBRLProcessor.Mapping
             }
         }
 
+
         public override object Map(XmlNode node)
         {
             var instance =  Activator.CreateInstance(ClassType);
@@ -292,6 +300,7 @@ namespace XBRLProcessor.Mapping
     public class ClassMapping<TClass> : ClassMapping where TClass:class
     {
 
+        public Action<XmlNode,Object> CustomMapping = null;
         //public List<PropertyMapping<TClass>> PropertyMappings = new List<PropertyMapping<TClass>>();
         public ClassMapping(string XmlSelector) 
         {
@@ -310,6 +319,11 @@ namespace XBRLProcessor.Mapping
 
         public override T Map<T>(XmlNode node, T target)
         {
+            if (CustomMapping != null) 
+            {
+                CustomMapping(node, target);
+                return target;
+            }
             foreach (var pm in PropertyMappings)
             {
                 pm.Map(node, target);
@@ -320,6 +334,11 @@ namespace XBRLProcessor.Mapping
         public override T Map<T>(XmlNode node)
         {
             var instance =  Activator.CreateInstance<T>();
+            if (CustomMapping != null)
+            {
+                CustomMapping(node, instance);
+                return instance;
+            }
             foreach (var pm in PropertyMappings) 
             {
                 pm.Map(node, instance);
@@ -331,7 +350,11 @@ namespace XBRLProcessor.Mapping
         {
             var instance = Activator.CreateInstance<TClass>();
             var basepropertymappings = new List<PropertyMapping>();
-            
+            if (CustomMapping != null)
+            {
+                CustomMapping(node, instance);
+                return instance;
+            }
             foreach (var pm in PropertyMappings)
             {
                 pm.Map(node, instance);
@@ -445,7 +468,7 @@ namespace XBRLProcessor.Mapping
                 propertyTypeName = Property.PropertyType.GetGenericArguments()[0].Name;
             }
             object existingvalue = Getter(instance as TClass);
-            var node = nodes.FirstOrDefault();
+            var node = nodes.FirstOrDefault();     
 
             LoadNameSpaces(node.OwnerDocument);
             Object value = null;

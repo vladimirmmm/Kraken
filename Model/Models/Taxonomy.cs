@@ -52,6 +52,7 @@ namespace LogicalModel
         public Dictionary<int, string> CounterFactParts = new Dictionary<int, string>();
         //public SortedDictionary<int, List<int>> MembersOfDimensionDomains = new SortedDictionary<int, List<int>>();
         public Dictionary<int, int> DimensionDomainsOfMembers = new Dictionary<int, int>();
+        public Dictionary<string, string> DomainAliases = new Dictionary<string, string>();
         public Dictionary<string, List<string>> DomainsofDimensions = new Dictionary<string, List<string>>();
 
         public Dictionary<int, string> CellIndexDictionary = new Dictionary<int, string>();
@@ -1934,6 +1935,14 @@ namespace LogicalModel
                 //return new Label();
             }
             var domainelement = GetDomain(domain);
+            if (domainelement == null)
+            {
+                var realdomainname = this.DomainAliases.ContainsKey(domain) ? this.DomainAliases[domain] : null;
+                if (realdomainname != null) 
+                {
+                    domainelement = GetDomain(realdomainname);
+                }
+            }
             var memberelement = this.SchemaElements.FirstOrDefault(i => i.Name == member && i.Namespace == domain);
 
             var labelkey = Label.GetKey(domainelement.Name, memberelement.ID);

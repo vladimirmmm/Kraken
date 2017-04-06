@@ -147,6 +147,7 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<table:tableBreakdownArc>", (XbrlTable i) => i.TableBreakDowns),
                     Mappings.PropertyMap("<table:aspectNodeFilterArc>", (XbrlTable i) => i.AspectNodeFilters),
                     Mappings.PropertyMap("<table:definitionNodeSubtreeArc>", (XbrlTable i) => i.DefinitionNodeSubTrees),
+                    Mappings.PropertyMap("<table:dimensionRelationshipNode>", (XbrlTable i) => i.DimensionRelationShips),
                     Mappings.PropertyMap("<table:ruleNode>", (XbrlTable i) => i.RuleNodes),                    
                     Mappings.PropertyMap("<table:aspectNode>", (XbrlTable i) => i.AspectNodes),                    
                     Mappings.PropertyMap("<df:explicitDimension>", (XbrlTable i) => i.DimensionFilters),                    
@@ -204,6 +205,37 @@ namespace XBRLProcessor.Mapping
 
                  Mappings.Map<ExplicitDimensionFilter>("<df:explicitDimension>",
                     Mappings.PropertyMap("<df:member>", (ExplicitDimensionFilter i) => i.Members)
+                 ),
+                 Mappings.Map<DimensionQName>("<table:dimension>", 
+                    Mappings.PropertyMap("@content", (DimensionQName i) => i.QName)
+                 ),    
+                 Mappings.Map<QName>("<table:relationshipSource>", 
+                    Mappings.PropertyMap("/@content", (QName i) => i.Content)
+                 ),   
+
+                  Mappings.Map<DimensionRelationShip>("<table:dimensionRelationshipNode>",(System.Xml.XmlNode node,Object target)=>
+                  {
+                      /*
+                        <table:relationshipSource>ebacrr_GA:x0</table:relationshipSource>
+                        <table:linkrole>http://www.bde.es/xbrl/role/dict/dom/ebacrr_GA/GA16</table:linkrole>
+                        <table:dimension>ebacrr_dim:RCP</table:dimension>
+                        <table:formulaAxis>descendant-or-self</table:formulaAxis>
+                       */
+                      var t = target as DimensionRelationShip;
+                      var n_rel = Utilities.Xml.SelectSingleNode(node,"//table:relationshipSource");
+                      var n_linkrole = Utilities.Xml.SelectSingleNode(node, "//table:linkrole");
+                      var n_dimension = Utilities.Xml.SelectSingleNode(node, "//table:dimension");
+                      var n_axis = Utilities.Xml.SelectSingleNode(node, "//table:formulaAxis");
+                      var a_id = node.Attributes["id"];
+                      var a_labelid = node.Attributes["xlink:label"];
+                      t.Dimension = t.Dimension == null ? new DimensionQName() : t.Dimension;
+                      t.Dimension.QName.Content = n_dimension == null ? "" : n_dimension.InnerText.Trim();
+                      t.Member.Content = n_rel == null ? "" : n_rel.InnerText.Trim();
+                      t.Axis = n_axis == null ? "" : n_axis.InnerText.Trim();
+                      t.LinkRole = n_linkrole == null ? "" : n_linkrole.InnerText.Trim();
+                      t.ID = a_id == null ? "" : a_id.Value;
+                      t.LabelID = a_labelid == null ? "" : a_labelid.Value;
+                  }
                  ),
 
                  //Mappings.Map<TypedDimensionFilter>("<df:typedDimension>"),

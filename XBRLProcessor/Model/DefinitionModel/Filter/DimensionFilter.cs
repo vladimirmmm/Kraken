@@ -28,6 +28,35 @@ namespace XBRLProcessor.Model.DefinitionModel.Filter
 
 
     }
+    public class DimensionRelationShip : DimensionFilter
+    {
+
+        private QName _Member = new QName("");
+        public QName Member { get { return _Member; } set { _Member = value; } }
+
+  
+        private String _LinkRole = "";
+        public String LinkRole { get { return _LinkRole; } set { _LinkRole = value; } }
+
+        //private String _ArcRole = "";
+        //public String ArcRole { get { return _ArcRole; } set { _ArcRole = value; } }
+
+
+        public string Axis { get; set; }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(base.ToString());
+            sb.Append(" - {");
+
+            sb.Append(Member.Content + ", ");
+        
+            sb.Append("}");
+
+            return String.Format("{0}", sb.ToString());
+        }
+    }
     public class ExplicitDimensionFilter : DimensionFilter
     {
         private List<DimensionMember> _Members = new List<DimensionMember>();
