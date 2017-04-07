@@ -26,23 +26,29 @@ namespace LogicalModel.Validation
                 var p = ruleresult.Parameters.FirstOrDefault(i => i.Name == rulefactparameter.Name);
                 
                 p.InstanceFacts = p.FactIDs.SelectMany(i => instance.GetFactsByIdString(i)).ToList();
-                var newfactids = new List<string>();
-                foreach (var factid in p.FactIDs) 
-                {
-                    var facts = instance.GetFactsByIdString(factid);
-                    if (facts.Count> 0)
-                    {
-                        foreach (var fact in facts) 
-                        {
-                            newfactids.Add(String.Format("I:{0}", fact.IX));
 
-                        }
-                    }
-                    else 
-                    {
-                        newfactids.Add(factid);
-                    }
+                var newfactids = new List<string>();
+                foreach (var fact in p.InstanceFacts)
+                {
+                    newfactids.Add(String.Format("I:{0}", fact.IX));
+
                 }
+                //foreach (var factid in p.FactIDs) 
+                //{
+                //    var facts = instance.GetFactsByIdString(factid);
+                //    if (facts.Count> 0)
+                //    {
+                //        foreach (var fact in facts) 
+                //        {
+                //            newfactids.Add(String.Format("I:{0}", fact.IX));
+
+                //        }
+                //    }
+                //    else 
+                //    {
+                //        newfactids.Add(factid);
+                //    }
+                //}
                 p.FactIDs = newfactids;
             }
             

@@ -809,6 +809,7 @@ namespace LogicalModel.Validation
 
                             rp.CurrentFacts.Add(realfact);
                             rp.StringValue = realfact.Value;
+                            rp.StringValues = new string[] { realfact.Value };
                             rp.Decimals = new string[] { realfact.Decimals };
                   
                             //		Decimal.MaxValue	79228162514264337593543950335	decimal

@@ -191,10 +191,30 @@ namespace LogicalModel
                 ).Select(i => i.MapID));
             return result.ToArray();
         }
-        public List<int> GetDimensionDomains() 
+        public List<int> GetDimensionDomains(Taxonomy Taxonomy) 
         {
             var result = new List<int>();
-            result.AddRange(Dimensions.Where(i => !i.IsDefaultMember).Select(i => i.DomMapID));
+            foreach (var dim in Dimensions) 
+            {
+                result.Add(dim.DomMapID);
+                if (Taxonomy.DomainAliases.ContainsKey(dim.Domain)) 
+                {
+                    var domalias = Taxonomy.DomainAliases[dim.Domain];
+                    var dimdomalias = String.Format("[{0}]{1}", dim.DimensionItem, domalias);
+                    var domaliasid = Taxonomy.FactParts[dimdomalias];
+                    result.Add(domaliasid);
+                }
+            }
+            result = result.Distinct().ToList();
+            //var domains = Dimensions.Where(i => !i.IsDefaultMember).Select(i =>
+            //    String.Format("[{0}]{1}",i.DimensionItem, 
+            //    Taxonomy.DomainAliases.ContainsKey(i.Domain) ? Taxonomy.DomainAliases[i.Domain] : i.Domain)).Distinct().ToList();
+            //var domainids = domains.Select(i => Taxonomy.FactParts[i]).ToList();
+            //result.AddRange(domainids);
+
+            //result.AddRange(Dimensions.Where(i => !i.IsDefaultMember).Select(i => i.DomMapID));
+            
+
 
             return result;
         }

@@ -1023,7 +1023,7 @@ namespace XBRLProcessor.Models
 
                         }
                     }
-
+                    var nrofrules = 0;
                     foreach (var validdoc in validationdocuments)
                     {
                         var xpathcontainer = Utilities.Xml.GetXPath("//gen:link");
@@ -1058,7 +1058,7 @@ namespace XBRLProcessor.Models
                                     var xasssertion = assertion.Copy();
                                     //var logicalrule = validation.GetLogicalRule_Tmp(assertion, validdoc);
                                     var logicalrule = validation.GetLogicalRule(assertion, validdoc);
-
+                                    nrofrules++;
                                     //var logicalrule = validation.GetLogicalRule(xasssertion, validdoc);
 
                                     if (logicalrule.FunctionName.Contains("boiv78712w"))
@@ -1087,6 +1087,7 @@ namespace XBRLProcessor.Models
 
                         }
                     }
+                    Logger.WriteLine(String.Format("Nr of processed validation rules: {0}."));
 
                     this.ValidationRules = this.ValidationRules.OrderBy(i => i.ID, StringComparer.Ordinal).ToList();
 
@@ -1166,6 +1167,29 @@ namespace XBRLProcessor.Models
         public AttributeSelector l_id = new AttributeSelector(Attributes.LabelID);
         public AttributeSelector l_role = new AttributeSelector(Attributes.LabelRole);
         public AttributeSelector l_language = new AttributeSelector(Attributes.Language);
+
+        public string LocateLabelID(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)
+        {
+            var labelid = Utilities.Xml.Attr(node, l_id);
+            var result = labelid;
+            var xpathexpr = new XPathContainer("gen:arc[@xlink:to='" + labelid + "']", new List<string>() { "gen", "xlink" });
+            var locatorarc = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr).FirstOrDefault();
+            if (locatorarc != null)
+            {
+                var locfrom = Utilities.Xml.Attr(locatorarc, "xlink:from");
+                var xpathexpr2 = new XPathContainer("link:loc[@xlink:label='" + locfrom + "']", new List<string>() { "link", "xlink" });
+
+                var locator = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr2).FirstOrDefault();
+                if (locator != null)
+                {
+                    var href = Utilities.Xml.Attr(locator, "xlink:href");
+                    var hrefid = href.Substring(href.LastIndexOf("#") + 1);
+                    result = hrefid;
+                }
+            }
+            return result;
+        }
+
         public bool HandleLabel(XmlNode node, LogicalModel.TaxonomyDocument taxonomydocument)
         {
 
@@ -1186,32 +1210,40 @@ namespace XBRLProcessor.Models
             }
    
             var newlabel = new LogicalModel.Label();
+            labelid = LocateLabelID(node, taxonomydocument);
             newlabel.LabelID = labelid;
             newlabel.Lang = lang;
             newlabel.FileName = FileID;
-            if (role.In(Roles.LabelCodeRoles))
+            //if (role.In(Roles.LabelCodeRoles))
+            //{
+            //    var xpathexpr = new XPathContainer("gen:arc[@xlink:to='" + labelid + "']", new List<string>() { "gen","xlink"});
+            //    var locatorarc = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr).FirstOrDefault();
+            //    if (locatorarc != null)
+            //    {
+            //        var locfrom = Utilities.Xml.Attr(locatorarc,"xlink:from");
+            //        var xpathexpr2 = new XPathContainer("link:loc[@xlink:label='" + locfrom + "']", new List<string>() { "link", "xlink" });
+
+            //        var locator = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr2).FirstOrDefault();
+            //        if (locator != null)
+            //        {
+            //            var href = Utilities.Xml.Attr(locator, "xlink:href");
+            //            var hrefid = href.Substring(href.LastIndexOf("#") + 1);
+            //            var loclabelid = hrefid;
+            //            if (!string.IsNullOrEmpty(loclabelid))
+            //            {
+            //                newlabel.LocalID = loclabelid;
+            //            }
+            //        }
+            //    }
+            //}
+            if (newlabel.Key == "val[en]label_eba_v4761_m") 
             {
-                var xpathexpr = new XPathContainer("gen:arc[@xlink:to='" + labelid + "']", new List<string>() { "gen","xlink"});
-                var locatorarc = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr).FirstOrDefault();
-                if (locatorarc != null)
-                {
-                    var locfrom = Utilities.Xml.Attr(locatorarc,"xlink:from");
-                    var xpathexpr2 = new XPathContainer("link:loc[@xlink:label='" + locfrom + "']", new List<string>() { "link", "xlink" });
 
-                    var locator = Utilities.Xml.SelectNodes(node.ParentNode, xpathexpr2).FirstOrDefault();
-                    if (locator != null)
-                    {
-                        var href = Utilities.Xml.Attr(locator, "xlink:href");
-                        var hrefid = href.Substring(href.LastIndexOf("#") + 1);
-                        var loclabelid = hrefid;
-                        if (!string.IsNullOrEmpty(loclabelid))
-                        {
-                            newlabel.LocalID = loclabelid;
-                        }
-                    }
-                }
             }
+            if (newlabel.Key == "val[en]eba_v4761_m")
+            { 
 
+            }
             var label = FindLabel(newlabel.Key, false);
 
             if (label == null)
@@ -1224,10 +1256,19 @@ namespace XBRLProcessor.Models
             {
             }
             var handled = false;
-       
-            if (!handled && role.In(Roles.LabelCodeRoles))
+            if (labeltext == "23543") 
+            {
+
+            }
+            if (!handled && role.In(Roles.LabelRCCodeRoles))
             {
                 label.Code = labeltext;
+                handled = true;
+
+            }
+            if (!handled && role.In(Roles.LabelDPMCodeRoles))
+            {
+                label.DPMCode = labeltext;
                 handled = true;
 
             }

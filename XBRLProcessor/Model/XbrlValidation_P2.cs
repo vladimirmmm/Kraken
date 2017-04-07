@@ -214,9 +214,8 @@ namespace XBRLProcessor.Model
                 }
 
             }
-         
 
-
+            query.Simplify();
             return query;
         }
        

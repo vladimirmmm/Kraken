@@ -168,8 +168,8 @@ namespace XBRLProcessor.Mapping
                     Mappings.PropertyMap("<df:qnameExpression>", (DimensionMember i) => i.QNameExpression),
                     Mappings.PropertyMap("<df:linkrole>", (DimensionMember i) => i.LinkRole),
                     Mappings.PropertyMap("<df:arcrole>", (DimensionMember i) => i.ArcRole),
-                    Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.Axis),
-                    Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.IsDefaultMember)
+                    Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.Axis)
+                    //Mappings.PropertyMap("<df:axis>", (DimensionMember i) => i.IsDefaultMember)
                  ),
                  Mappings.Map<VariableArc>("<variable:variableArc>",
                     Mappings.PropertyMap("name", (VariableArc i) => i.Name)
@@ -222,10 +222,10 @@ namespace XBRLProcessor.Mapping
                         <table:formulaAxis>descendant-or-self</table:formulaAxis>
                        */
                       var t = target as DimensionRelationShip;
-                      var n_rel = Utilities.Xml.SelectSingleNode(node,"//table:relationshipSource");
-                      var n_linkrole = Utilities.Xml.SelectSingleNode(node, "//table:linkrole");
-                      var n_dimension = Utilities.Xml.SelectSingleNode(node, "//table:dimension");
-                      var n_axis = Utilities.Xml.SelectSingleNode(node, "//table:formulaAxis");
+                      var n_rel = Utilities.Xml.SelectChildNode(node,"table:relationshipSource");
+                      var n_linkrole = Utilities.Xml.SelectChildNode(node, "table:linkrole");
+                      var n_dimension = Utilities.Xml.SelectChildNode(node, "table:dimension");
+                      var n_axis = Utilities.Xml.SelectChildNode(node, "table:formulaAxis");
                       var a_id = node.Attributes["id"];
                       var a_labelid = node.Attributes["xlink:label"];
                       t.Dimension = t.Dimension == null ? new DimensionQName() : t.Dimension;

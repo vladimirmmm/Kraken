@@ -46,6 +46,7 @@ namespace LogicalModel.Base
             if (qry != this)
             {
                 qry.Parent = this;
+              
                 if (!ChildQueries.Contains(qry))
                 {
                     ChildQueries.Add(qry);
@@ -72,7 +73,7 @@ namespace LogicalModel.Base
         }
         public bool IsEmpty()
         {
-            return this.DictFilterIndexes.Count == 0 && this.NegativeDictFilterIndexes.Count == 0;
+            return this.DictFilterIndexes.Count == 0 && this.NegativeDictFilterIndexes.Count == 0 && this.ChildQueries.Count==0;
         }
 
         public bool HasFilters()
@@ -162,8 +163,8 @@ namespace LogicalModel.Base
         }
         public static void BaseMerge(FactBaseQuery source, FactBaseQuery target)
         {
-            target.DictFilterIndexes.AddRange(source.DictFilterIndexes);
-            target.NegativeDictFilterIndexes.AddRange(source.NegativeDictFilterIndexes);
+            target.DictFilterIndexes.AddRange(source.DictFilterIndexes.Except(target.DictFilterIndexes));
+            target.NegativeDictFilterIndexes.AddRange(source.NegativeDictFilterIndexes.Except(target.NegativeDictFilterIndexes));
 
         }
         public static void Merge(FactBaseQuery source, FactBaseQuery target)
@@ -697,6 +698,25 @@ namespace LogicalModel.Base
         internal void ClearParent()
         {
             this.Parent = null;
+        }
+
+        public void Simplify()
+        {
+            var queriestoremove = new List<FactBaseQuery>();
+            foreach (var query in ChildQueries) 
+            {
+                BaseMerge(query, this);
+                query.DictFilterIndexes.Clear();
+                query.NegativeDictFilterIndexes.Clear();
+                if (query.IsEmpty())
+                {
+                    queriestoremove.Add(query);
+                }
+            }
+            foreach (var query in queriestoremove)
+            {
+                ChildQueries.Remove(query);
+            }
         }
     }
 

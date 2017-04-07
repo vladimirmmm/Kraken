@@ -172,7 +172,7 @@
             var parts = factstring.split(',');
             parts.forEach(
                 (part) => {
-                    if (!EndsWith(part,Model.Dimension.DefaultMember)) {
+                    if (!EndsWith(part,":"+Model.Dimension.DefaultMember)) {
                         var val = me.GetFactPartKeyFromString(part);
                         if (!IsNull(val)) {
                             result.push(val);

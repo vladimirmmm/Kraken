@@ -428,6 +428,12 @@ namespace Utilities
             return SelectChildNodes(node, XPath).FirstOrDefault();
         }
 
+        public static XmlNode SelectChildNode(XmlNode node, string xpath)
+        {
+            XmlNamespaceManager manager = Utilities.Xml.GetTaxonomyNamespaceManager(node.OwnerDocument);
+            return node.SelectSingleNode(xpath, manager);
+        }
+
         public static XPathContainer GetXPath(string XmlSelector) 
         {
             var xpathcontainer = new XPathContainer();

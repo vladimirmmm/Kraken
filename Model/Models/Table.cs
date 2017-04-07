@@ -717,7 +717,7 @@ namespace LogicalModel
                 {
                     if (!item.IsKey)
                     {
-                        extdomains.AddRange(item.GetDimensionDomains());
+                        extdomains.AddRange(item.GetDimensionDomains(Taxonomy));
                     }
                 }
                 extdomains = extdomains.Distinct().ToList();
@@ -725,7 +725,7 @@ namespace LogicalModel
                 {
                     if (!item.IsKey)
                     {
-                        rowdomains.AddRange(item.GetDimensionDomains());
+                        rowdomains.AddRange(item.GetDimensionDomains(Taxonomy));
                     }
                 }
                 rowdomains = rowdomains.Distinct().ToList();
@@ -733,7 +733,7 @@ namespace LogicalModel
                 {
                     if (!item.IsKey)
                     {
-                        coldomains.AddRange(item.GetDimensionDomains());
+                        coldomains.AddRange(item.GetDimensionDomains(Taxonomy));
                     }
                 }
                 coldomains = coldomains.Distinct().ToList();
@@ -747,7 +747,7 @@ namespace LogicalModel
                         if (!item.IsKey)
                         {
                             var keyswithoutdomains = item.GetAspectKeysWithoutDomains();
-                            var domains = item.GetDimensionDomains();
+                            var domains = item.GetDimensionDomains(Taxonomy);
                             var unuseddomains = extdomains.Except(domains);
                             var data = (IntervalList)this.Taxonomy.SearchFactsGetIndex4(keyswithoutdomains, this.FactsOfParts, ffacts, false);
 
@@ -765,11 +765,15 @@ namespace LogicalModel
                     }
                     for (int i = 0; i < rows.Count; i++)
                     {
+                        if (i == 38) 
+                        {
+
+                        }
                         var item = rows[i];
                         var keys = item.GetAspectKeys();
                         if (!item.IsKey)
                         {
-                            var domains = item.GetDimensionDomains();
+                            var domains = item.GetDimensionDomains(Taxonomy);
                             var unuseddomains = rowdomains.Except(domains);
                             var data = (IntervalList)this.Taxonomy.SearchFactsGetIndex4(keys, this.FactsOfParts, ffacts, false);
                             data.Normalize();
@@ -789,7 +793,7 @@ namespace LogicalModel
                         var keys = item.GetAspectKeys();
                         if (!item.IsKey)
                         {
-                            var domains = item.GetDimensionDomains();
+                            var domains = item.GetDimensionDomains(Taxonomy);
                             var unuseddomains = coldomains.Except(domains);
                             var data = (IntervalList)this.Taxonomy.SearchFactsGetIndex4(keys, this.FactsOfParts, ffacts, false);
                             data.Normalize();
@@ -820,6 +824,10 @@ namespace LogicalModel
         
                     foreach (var row in Rows)
                     {
+                        if (row.Item.LabelCode == "390") 
+                        {
+
+                        }
                         rowdata = rowintervaldict.ContainsKey(rowix) ? rowintervaldict[rowix] : null;
                         if (rowdata != null)
                         {
@@ -930,22 +938,11 @@ namespace LogicalModel
                                         IList<int> results = new List<int>();
 
                                         results = Utilities.Objects.IntersectSorted(extvsrow, coldata, null);
-                                        //results = results.Where(i => this.Taxonomy.FactsManager.FactsOfPages.FactKeyCountOfIndexes[i] == factintkey.Length).ToList();
-
-                                        //var old_results = this.Taxonomy.SearchFactsGetIndex4(factintkey, this.FactsOfParts, null, true, false);
-
-
-                                        //if (old_results.Count != results.Count)
-                                        //{
-
-                                        //}
-                                        //if (old_results.Count > results.Count)
-                                        //{
-                                        //    var difference = Utilities.Objects.SortedExcept(old_results, results);
-                                        //    var str = this.Taxonomy.GetFactStringKeys(difference);
-                                        //}
-                                       
                                         cell.IsBlocked = results.Count == 0;
+
+                                        if (results.Count == 0) 
+                                        {
+                                        }
 
                                         foreach (var factindex in results)
                                         {
@@ -1028,7 +1025,8 @@ namespace LogicalModel
                     }
                 }
             }
-            sbe.Clear();
+            //sbe.Clear();
+            sbe.AppendLine();
             sbe.AppendLine("ID: " + this.ID);
             sbe.AppendLine("Name: " + this.Name);
             sbe.AppendLine("Extenstions");

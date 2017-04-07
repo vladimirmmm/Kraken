@@ -22,6 +22,7 @@ namespace LogicalModel
         public string _LabelID = "";
         public string _Content = "";
         public string _Code = "";
+        public string _DPMCode = "";
         public string _Lang = "";
         public string _FileName = "";
         public string _Type = "";
@@ -69,6 +70,7 @@ namespace LogicalModel
         }
         public string Content { get { return _Content; } set { _Content = value; } }
         public string Code { get { return _Code; } set { _Code = value; } }
+        public string DPMCode { get { return _DPMCode; } set { _DPMCode = value; } }
         public string Lang { get { return _Lang; } set { _Lang = value; } }
         public string FileName { get { return _FileName; } set { _FileName = value; } }
 

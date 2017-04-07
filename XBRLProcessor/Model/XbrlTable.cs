@@ -238,8 +238,10 @@ namespace XBRLProcessor.Model
                             var dim = new LogicalModel.Dimension();
                             dim.DimensionItem = drel.Dimension.QName.Content;
                             dim.Domain = drel.Member.Domain;
-                            dim.DomainMember = member.Value;
+                            //dim.DomainMember = member.Value;
+                            dim.SetTyped();
                             li.Dimensions.Add(dim);
+                            li.Category = LogicalModel.LayoutItemCategory.Aspect;
                         }
                        
                     }

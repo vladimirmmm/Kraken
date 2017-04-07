@@ -505,6 +505,10 @@ namespace LogicalModel
                 foreach (var rule in Taxonomy.ValidationRules)
                 {
                     //TODO
+                    if (rule.ID.Contains("v4739"))
+                    {
+
+                    }
                     rule.Function = Taxonomy.ValidationFunctionContainer.FunctionDictionary[rule.FunctionName];
                     var ruleresults = rule.Validate(this);
                     if (ruleresults.Count > 0) 

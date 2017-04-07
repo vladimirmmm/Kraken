@@ -26,8 +26,9 @@ namespace XBRLProcessor.Literals
     public class Roles 
     {
         public static string[] FindRoles = { "http://www.eurofiling.info/xbrl/role/filing-indicator-code" };
-        public static string[] LabelCodeRoles = { "http://www.eurofiling.info/xbrl/role/rc-code", "http://www.eba.europa.eu/xbrl/role/dpm-db-id" };
-        public static string[] LabelTextRoles = { "http://www.xbrl.org/2008/role/label", "http://www.xbrl.org/2003/role/label", "http://www.xbrl.org/2010/role/message" };
+        public static string[] LabelRCCodeRoles = { "http://www.eurofiling.info/xbrl/role/rc-code" };
+        public static string[] LabelDPMCodeRoles = { "http://www.eba.europa.eu/xbrl/role/dpm-db-id" };
+        public static string[] LabelTextRoles = { "http://www.xbrl.org/2008/role/label", "http://www.xbrl.org/2003/role/label", "http://www.xbrl.org/2010/role/message", "http://www.xbrl.org/2008/role/verboseLabel" };
 
     }
     public class Literal

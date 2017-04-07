@@ -176,7 +176,7 @@ namespace XBRLProcessor.Model
             logicalrule.RawInfo = rawval;
             Utilities.FS.AppendAllText(Taxonomy.TaxonomyValidationFolder + "Validations_XML.txt", rawval);
 
-            if (logicalrule.ID.Contains("es_v354"))/*,"es_v354"*/
+            if (logicalrule.ID.Contains("1058"))/*,"es_v354"*/
             {
 
             }

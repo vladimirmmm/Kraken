@@ -52,6 +52,8 @@ namespace LogicalModel.Validation
             }
 
         }
+
+
         public static void ExecuteExplicitFiltering(Taxonomy taxonomy, ValidationRule rule)
         {
             if (rule.ID.Contains("es_v308"))
@@ -143,11 +145,23 @@ namespace LogicalModel.Validation
             }
        
         }
+
+        public static int GetFactCount(ValidationParameter p) 
+        {
+            var c = 0;
+            foreach (var facts in p.TaxFacts) 
+            {
+                c += facts.Count;
+            }
+            return c;
+        }
+
         public static void ExecuteMatching(Taxonomy taxonomy, ValidationRule rule)
         {
             var factparameters = rule.Parameters.Where(i => !i.IsGeneral).ToList();
             var paramtaxfactdict = new Dictionary<ValidationParameter, List<List<int>>>();
-            var p1 = factparameters.FirstOrDefault();
+            var nonsequencedfactparameters = factparameters.Where(i => !i.BindAsSequence).ToList();
+            var p1 = nonsequencedfactparameters.OrderByDescending(i => GetFactCount(i)).ThenBy(i => i.Name).FirstOrDefault();
             if ((Object)p1 == null) 
             {
                 return;
@@ -194,6 +208,7 @@ namespace LogicalModel.Validation
                
             }
         }
+        
         public static void ExecuteImplicitFiltering(Taxonomy taxonomy, ValidationRule rule)
         {
             var dict = new Dictionary<int, int[]>();
@@ -412,6 +427,18 @@ namespace LogicalModel.Validation
             return result;
         }
 
+        public static string GetFactsOfRule(ValidationRule rule) 
+        {
+            var sb = new StringBuilder();
+            foreach (var p in rule.Parameters) 
+            {
+                sb.AppendLine(p.Name);
+                sb.AppendLine(TaxonomyEngine.CurrentEngine.CurrentTaxonomy.GetFactStringKeys(p.TaxFacts));
+                sb.AppendLine("________________________________________________");
+            }
+
+            return sb.ToString();
+        }
 
         public static List<ValidationRuleResult> ExpandResult(Instance instance, ValidationRuleResult ruleresult, List<int> groupaspects)
         {
@@ -564,6 +591,8 @@ namespace LogicalModel.Validation
             }
             var p1 = rule.Parameters.FirstOrDefault(i => !i.IsGeneral && !i.BindAsSequence);
             var factparameters = rule.Parameters.Where(i => !i.IsGeneral).ToList();
+            var nonsequencedfactparameters = factparameters.Where(i => !i.BindAsSequence).ToList();
+            p1 = nonsequencedfactparameters.OrderByDescending(i => GetFactCount(i)).FirstOrDefault();
             var sb = new StringBuilder();
             foreach (var p in factparameters) 
             {
